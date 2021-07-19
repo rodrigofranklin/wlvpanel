@@ -14,7 +14,7 @@ ui <- dashboardPage(
     titleWidth = 250
   ),
   sidebar = dashboardSidebar(
-    width = 250,
+    width = 220,
     sidebarMenu(
       id = "menu",
       menuItem(
@@ -120,7 +120,7 @@ ui <- dashboardPage(
       tabItem(
         tabName = "País",
         column(
-          width = 8,
+          width = 7,
           shinydashboard::box(
             width = "100%",
             title = textOutput("titulo_painel"),
@@ -140,7 +140,7 @@ ui <- dashboardPage(
           )
         ),
         column(
-          width = 4,
+          width = 5,
           shinydashboard::box(
             width = "100%",
             title = "Detalhamento Setorial",

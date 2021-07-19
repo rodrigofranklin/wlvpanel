@@ -106,7 +106,8 @@ server <- function(input, output, session) {
       ordering = TRUE,
       searching = FALSE,
       paging = FALSE,
-      scrollY= "100%",
+      #pageLength = 8,
+      scrollY= "740",
       info = FALSE, 
       lengthChange = FALSE
     )
@@ -122,7 +123,8 @@ server <- function(input, output, session) {
       ordering = TRUE,
       searching = FALSE,
       paging = FALSE,
-      scrollY= "100%",
+      #pageLength = 8,
+      scrollY= "740",
       info = FALSE, 
       lengthChange = FALSE
     )
