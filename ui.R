@@ -106,8 +106,10 @@ ui <- dashboardPage(
       input.menu == "Transferências"',
       radioButtons(inputId = "transacoes_agregacao", choices = c("Agregado", "Por setor de origem"), selected = "Agregado", label = ""),
       radioButtons(inputId = "transacoes_versao", choices = c("WIOD13", "WIOD16"), selected = "WIOD13", label = "Base de dados:"),
-    )
-
+    ),
+    dashboard_footer("https://worldlabourvalues.org","https://worldlabourvalues.org/images/a_batallar_ideas.png",
+                     "🄯 CC-BY-NC SA 4.0 World Labour Values Task Force",
+                     "64px")
     
         
   ),
@@ -228,7 +230,7 @@ ui <- dashboardPage(
         tabName = "Transferências"
         
       )      
-    )
+    ),
     
   )
 )
