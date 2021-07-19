@@ -104,7 +104,7 @@ ui <- dashboardPage(
       input.menu == "Importações" |
       input.menu == "Saldos" |
       input.menu == "Transferências"',
-      radioButtons(inputId = "transacoes_agregacao", choices = c("Agregado", "Por setor de origem", "Por setor de destino"), selected = "Agregado", label = ""),
+      radioButtons(inputId = "transacoes_agregacao", choices = c("Agregado", "Por setor de origem"), selected = "Agregado", label = ""),
       radioButtons(inputId = "transacoes_versao", choices = c("WIOD13", "WIOD16"), selected = "WIOD13", label = "Base de dados:"),
     )
 
@@ -194,9 +194,20 @@ ui <- dashboardPage(
                shinydashboard::box(
                  width="100%",
                  d3tree3Output("exportacoes_monetarias")
-               )
-        )
-        
+       #        )
+        ),
+        #column(width= 6,
+               shinydashboard::box(
+                 width="100%",
+                 d3tree3Output("exportacoes_valores")
+             )
+        ),
+      column(width= 6,
+             shinydashboard::box(
+               width="100%",
+               d3tree3Output("exportacoes_transferencias")
+             )
+      )
         
       ),      
 
