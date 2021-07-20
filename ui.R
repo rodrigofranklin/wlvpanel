@@ -108,8 +108,8 @@ ui <- dashboardPage(
       radioButtons(inputId = "transacoes_versao", choices = c("WIOD13", "WIOD16"), selected = "WIOD13", label = "Base de dados:"),
     ),
     dashboard_footer("https://worldlabourvalues.org","https://worldlabourvalues.org/images/a_batallar_ideas.png",
-                     "🄯 CC-BY-NC SA 4.0 World Labour Values Task Force",
-                     "64px")
+                     "🄯 CC-BY-NC SA 4.0 Grupo de Estudos Concretos sobre Teoria do Valor",
+                     "32px")
     
         
   ),
