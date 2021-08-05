@@ -1,5 +1,4 @@
 ui <- dashboardPage(
-  
   # footer = 
   #   tags$div(tags$i(class="fa fa-copyright fa-flip-horizontal"),
   #            tags$a(href="https://gitlab.com/rodrigoesborges/worldlabourvalues",
@@ -112,6 +111,7 @@ ui <- dashboardPage(
         
   ),
   body = dashboardBody(
+    tags$head(includeHTML(("www/google_analytics.html"))),
     tabItems(
 
 ### País -------------------------------
