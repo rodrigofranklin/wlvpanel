@@ -27,10 +27,9 @@ server <- function(input, output, session) {
     switch(paste0(input$transacoes_versao,input$transacoes_agregacao),
              "WIOD13Agregado" = 1,
              "WIOD13Por setor de origem" = 2,
-             "WIOD13Por setor de destino" = 3,
-             "WIOD16Agregado" = 4,
-             "WIOD16Por setor de origem" = 5,
-             "WIOD16Por setor de destino" = 6)
+             "WIOD16Agregado" = 3,
+             "WIOD16Por setor de origem" = 4
+             )
   })
 
 
@@ -107,7 +106,8 @@ server <- function(input, output, session) {
       ordering = TRUE,
       searching = FALSE,
       paging = FALSE,
-      scrollY= "100%",
+      #pageLength = 8,
+      scrollY= "740",
       info = FALSE, 
       lengthChange = FALSE
     )
@@ -123,7 +123,8 @@ server <- function(input, output, session) {
       ordering = TRUE,
       searching = FALSE,
       paging = FALSE,
-      scrollY= "100%",
+      #pageLength = 8,
+      scrollY= "740",
       info = FALSE, 
       lengthChange = FALSE
     )
@@ -227,432 +228,131 @@ server <- function(input, output, session) {
     selecao <- fazer_selecao()
     
     agrupamento <- case_when(
-      selecao %% 3 == 1 ~  c("pais_d","sect_d"),
-      selecao %% 3 == 2 ~  c("sector_origen","sect_d"),
-      selecao %% 3 == 0 ~  c("pais_d","sect_d")
+      selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+      selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
       )
 
+    agrupamento <- unlist(agrupamento)
     dados <- prep_treemap(agru = agrupamento)
 
-    d3tree3(treemap(dados, index = agrupamento, vSize = "valor",
+    d3tree3(treemap(dados, title = "exportações monetárias",  index = agrupamento, vSize = "valor",
                    type = "index", palette = "Set1"))
     }
     )
 
   
   
-  output$exportacoes_valores <- renderPlot({
+  output$exportacoes_valores <- renderD3tree3({
     selecao <- fazer_selecao()
     
-    if (selecao < 4) {
-      dados <- m_io_13 %>% 
-        agregado(input$ano_transacoes,"exportacoes_pm", linhas_13()) %>% 
-        as.data.table()
-      
-    } else if (selecao > 3) {
-      m_paises_16 %>% 
-        agregado(input$ano_transacoes, "exportacoes_valores", input$pais_transacoes)
-      
-    } else if (selecao == 5) {
-      m_io_16 %>% 
-        agregado(input$ano_transacoes, "exportacoes_valores", linhas_16()) %>% 
-        rowSums()
-    } else if (selecao == 6) {
-      m_io_16 %>% 
-        agregado(input$ano_transacoes, "exportacoes_valores", linhas_16()) %>% 
-        limitar_colunas(-colunas_16()) %>% 
-        colSums()
-    }})
+    agrupamento <- case_when(
+      selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+      selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+    )
 
-  output$exportacoes_transferencias <- renderPlot({
-    selecao <- fazer_selecao()
+    agrupamento <- unlist(agrupamento)
+    dados <- prep_treemap(agru = agrupamento,el = "exportacoes_valores")
     
-    if (selecao == 1) {
-      temp <- m_paises_13 %>% 
-        agregado(input$ano_transacoes,
-                 "transferências.valores",
-                  input$pais_transacoes)
-      dados <- data.frame(valor = temp, pais = names(temp))
-      treemap(dados, index="pais", vSize = "valor", type = "value")
-    } else if (selecao == 2) {
-      m_io_13 %>% 
-        agregado(input$ano_transacoes,
-                 "transferências.valores",
-                 linhas_13()) %>% 
-        rowSums()
-    } else if (selecao == 3) {
-      m_io_13 %>% 
-        agregado(input$ano_transacoes, "transferências.valores", linhas_13()) %>% 
-        limitar_colunas(-colunas_16()) %>% 
-        colSums()
-    } else if (selecao == 4) {
-      m_paises_16 %>% 
-        agregado(input$ano_transacoes, "transferências.valores", input$pais_transacoes)
-      
-    } else if (selecao == 5) {
-      m_io_16 %>% 
-        agregado(input$ano_transacoes, "transferências.valores", linhas_16()) %>% 
-        rowSums()
-    } else if (selecao == 6) {
-      m_io_16 %>% 
-        agregado(input$ano_transacoes, "transferências.valores", linhas_16()) %>% 
-        limitar_colunas(-colunas_16()) %>% 
-        colSums()
-    }},
-    rownames = TRUE)
-  
-  output$importacoes_monetarias <- renderTable({
-    selecao <- fazer_selecao()
-    if (selecao == 1) {
-      m_paises_13 %>% 
-        agregado(input$ano_transacoes,
-                 "exportacoes_pm",
-                 TRUE) %>% 
-        limitar_colunas(input$pais_transacoes)
-    } else if (selecao == 2) {
-      m_io_13 %>% 
-        agregado(input$ano_transacoes,
-                 "exportacoes_pm",
-                 -linhas_13()) %>% 
-        limitar_colunas(colunas_13()) %>% 
-        rowSums()
-    } else if (selecao == 3) {
-      m_io_13 %>% 
-        agregado(input$ano_transacoes,
-                 "exportacoes_pm",
-                 TRUE) %>% 
-        limitar_colunas(colunas_13()) %>% 
-        colSums()
-    } else if (selecao == 4) {
-      m_paises_16 %>% 
-        agregado(input$ano_transacoes,
-                 "exportacoes_pm",
-                 TRUE) %>% 
-        limitar_colunas(input$pais_transacoes)
-    } else if (selecao == 5) {
-      m_io_16 %>% 
-        agregado(input$ano_transacoes,
-                 "exportacoes_pm",
-                 -linhas_16()) %>% 
-        limitar_colunas(colunas_16()) %>% 
-        rowSums()
-    } else if (selecao == 6) {
-      m_io_16 %>% 
-        agregado(input$ano_transacoes,
-                 "exportacoes_pm",
-                 TRUE) %>% 
-        limitar_colunas(colunas_16()) %>% 
-        colSums()
-    }},
-    rownames = TRUE)
-  
-  output$importacoes_valores <- renderTable({
-    selecao <- fazer_selecao()
+    d3tree3(treemap(dados, title = "exportações em valores",  index = agrupamento, vSize = "valor",
+                    type = "index", palette = "Set1"))
     
-    if (selecao == 1) {
-      m_paises_13 %>% 
-        agregado(input$ano_transacoes, "exportacoes_valores", TRUE) %>% 
-          limitar_colunas(input$pais_transacoes)
-    } else if (selecao == 2) {
-      m_io_13 %>% 
-        agregado(input$ano_transacoes, "exportacoes_valores", -linhas_13()) %>% 
-        limitar_colunas(colunas_13()) %>% 
-        rowSums(na.rm = TRUE)
-    } else if (selecao == 3) {
-      m_io_13 %>% 
-        agregado(input$ano_transacoes, "exportacoes_valores", TRUE) %>% 
-        limitar_colunas(colunas_13()) %>% 
-        colSums()
-    } else if (selecao == 4) {
-      m_paises_16 %>% 
-        agregado(input$ano_transacoes, "exportacoes_valores", TRUE) %>% 
-        limitar_colunas(input$pais_transacoes)
-    } else if (selecao == 5) {
-      m_io_16 %>% 
-        agregado(input$ano_transacoes, "exportacoes_valores", -linhas_16()) %>% 
-        limitar_colunas(colunas_16()) %>% 
-        rowSums(na.rm = TRUE)
-    } else if (selecao == 6) {
-      m_io_16 %>% 
-        agregado(input$ano_transacoes, "exportacoes_valores", TRUE) %>% 
-        limitar_colunas(colunas_16()) %>% 
-        colSums()
-    }},
-    rownames = TRUE)
+})
 
-  output$importacoes_transferencias <- renderTable({
+  output$exportacoes_transferencias <- renderD3tree3({
     selecao <- fazer_selecao()
     
-    if (selecao == 1) {
-      m_paises_13 %>% 
-        agregado(input$ano_transacoes, "transferências.valores", TRUE) %>% 
-        limitar_colunas(input$pais_transacoes)
-    } else if (selecao == 2) {
-      m_io_13 %>% 
-        agregado(input$ano_transacoes, "transferências.valores", -linhas_13()) %>% 
-        limitar_colunas(colunas_13()) %>% 
-        rowSums(na.rm = TRUE)
-    } else if (selecao == 3) {
-      m_io_13 %>% 
-        agregado(input$ano_transacoes, "transferências.valores", TRUE) %>% 
-        limitar_colunas(colunas_13()) %>% 
-        colSums()
-    } else if (selecao == 4) {
-      m_paises_16 %>% 
-        agregado(input$ano_transacoes, "transferências.valores", TRUE) %>% 
-        limitar_colunas(input$pais_transacoes)
-    } else if (selecao == 5) {
-      m_io_16 %>% 
-        agregado(input$ano_transacoes, "transferências.valores", -linhas_16()) %>% 
-        limitar_colunas(colunas_16()) %>% 
-        rowSums(na.rm = TRUE)
-    } else if (selecao == 6) {
-      m_io_16 %>% 
-        agregado(input$ano_transacoes, "transferências.valores", TRUE) %>% 
-        limitar_colunas(colunas_16()) %>% 
-        colSums()
-    }},
-    rownames = TRUE)
+    agrupamento <- case_when(
+      selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+      selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+    )
+    
+    agrupamento <- unlist(agrupamento)
+    dados <- prep_treemap(agru = agrupamento,"transferencias_valores")
+    
+    d3tree3(treemap(dados, title = "Trasnferência de Valores",  index = agrupamento, vSize = "valor",
+                    type = "index", palette = "Set1"))
+    
+},
+)
   
-  output$saldo_monetarias <- renderTable({
+  output$importacoes_monetarias <- renderD3tree3({
     selecao <- fazer_selecao()
     
-    if (selecao == 1) {
-      m_paises_13 %>% 
-        agregado(input$ano_transacoes, "exportacoes_pm", input$pais_transacoes) %>% 
-        magrittr::subtract(
-          m_paises_13 %>% 
-            agregado(input$ano_transacoes, "exportacoes_pm", TRUE) %>% 
-            limitar_colunas(input$pais_transacoes)
-        )
-    } else if (selecao == 2) {
-      linhas <- match(colunas_13(), linhas_13())
-      
-      m_io_13 %>% 
-        agregado(input$ano_transacoes, "exportacoes_pm", TRUE) %>% 
-        limitar_colunas(colunas_13()) %>% 
-        colSums(na.rm = TRUE) %>%
-        magrittr::multiply_by(-1) %>% 
-        magrittr::add(
-          m_io_13 %>% 
-            agregado(input$ano_transacoes, "exportacoes_pm", linhas) %>% 
-            rowSums(na.rm = TRUE)
-        )
-    } else if (selecao == 3) {
-      m_io_13 %>% 
-        agregado(input$ano_transacoes, "exportacoes_pm", linhas_13()) %>% 
-        limitar_colunas(-colunas_13()) %>% 
-        colSums() %>% 
-        magrittr::subtract(
-          m_io_13 %>% 
-            agregado(input$ano_transacoes, "exportacoes_pm", -linhas_13()) %>% 
-            limitar_colunas(colunas_13()) %>% 
-            rowSums()
-        )
-    } else if (selecao == 4) {
-      m_paises_16 %>% 
-        agregado(input$ano_transacoes, "exportacoes_pm", input$pais_transacoes) %>% 
-        magrittr::subtract(
-          m_paises_16 %>% 
-            agregado(input$ano_transacoes, "exportacoes_pm", TRUE) %>% 
-            limitar_colunas(input$pais_transacoes)
-        )
-    } else if (selecao == 5) {
-      linhas <- match(colunas_16(), linhas_16())
-      
-      m_io_16 %>% 
-        agregado(input$ano_transacoes, "exportacoes_pm", TRUE) %>% 
-        limitar_colunas(colunas_16()) %>% 
-        colSums(na.rm = TRUE) %>%
-        magrittr::multiply_by(-1) %>% 
-        magrittr::add(
-          m_io_16 %>% 
-            agregado(input$ano_transacoes, "exportacoes_pm", linhas) %>% 
-            rowSums(na.rm = TRUE)
-        )
-    } else if (selecao == 6) {
-      m_io_16 %>% 
-        agregado(input$ano_transacoes, "exportacoes_pm", paises) %>% 
-        limitar_colunas(-colunas_16()) %>% 
-        colSums() %>% 
-        magrittr::subtract(
-          m_io_16 %>% 
-            agregado(input$ano_transacoes, "exportacoes_pm", -linhas_16()) %>% 
-            limitar_colunas(colunas_16()) %>% 
-            rowSums()
-        )
-    }},
-    rownames = TRUE)
+    agrupamento <- case_when(
+      selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+      selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+    )
+    agrupamento <- unlist(agrupamento)
+    dados <- prep_treemap(agru = agrupamento,el="importacoes_monetarias")
+    
+    d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
+                    type = "index", palette = "Set1"))
+    
+})
   
-  
-  output$saldo_valores <- renderTable({
+  output$importacoes_valores <- renderD3tree3({
     selecao <- fazer_selecao()
-    if (selecao == 1) {
-      m_paises_13 %>% 
-        agregado(input$ano_transacoes, "exportacoes_valores", input$pais_transacoes) %>% 
-        magrittr::subtract(
-          m_paises_13 %>% 
-            agregado(input$ano_transacoes, "exportacoes_valores", TRUE) %>% 
-            limitar_colunas(input$pais_transacoes)
-        )
-    } else if (selecao == 2) {
-      linhas <- match(colunas_13(), linhas_13())
-      
-      m_io_13 %>% 
-        agregado(input$ano_transacoes, "exportacoes_valores", TRUE) %>% 
-        limitar_colunas(colunas_13()) %>% 
-        colSums(na.rm = TRUE) %>%
-        magrittr::multiply_by(-1) %>% 
-        magrittr::add(
-          m_io_13 %>% 
-            agregado(input$ano_transacoes, "exportacoes_valores", linhas) %>% 
-            rowSums(na.rm = TRUE)
-        )
-    } else if (selecao == 3) {
-      m_io_13 %>% 
-        agregado(input$ano_transacoes,
-                 "exportacoes_valores",
-                 linhas_13()) %>% 
-        limitar_colunas(-colunas_13()) %>% 
-        colSums() %>% 
-        magrittr::subtract(
-          m_io_13 %>% 
-            agregado(input$ano_transacoes,
-                     "exportacoes_valores",
-                     -linhas_13()) %>% 
-            limitar_colunas(colunas_13()) %>% 
-            rowSums()
-        )
-    } else if (selecao == 4) {
-      m_paises_16 %>% 
-        agregado(input$ano_transacoes, "exportacoes_valores", input$pais_transacoes) %>% 
-        magrittr::subtract(
-            m_paises_16 %>% 
-              agregado(input$ano_transacoes, "exportacoes_valores", TRUE) %>% 
-              limitar_colunas(input$pais_transacoes)
-          )
-    } else if (selecao == 5) {
-      linhas <- match(colunas_16(), linhas_16())
-      
-        m_io_16 %>% 
-          agregado(input$ano_transacoes, "exportacoes_valores", TRUE) %>% 
-          limitar_colunas(colunas_16()) %>% 
-          colSums(na.rm = TRUE) %>%
-          magrittr::multiply_by(-1) %>% 
-          magrittr::add(
-            m_io_16 %>% 
-              agregado(input$ano_transacoes, "exportacoes_valores", linhas) %>% 
-              rowSums(na.rm = TRUE)
-          )
-    } else if (selecao == 6) {
-      m_io_16 %>% 
-        agregado(input$ano_transacoes,
-                 "exportacoes_valores",
-                 linhas_16()) %>% 
-        limitar_colunas(-colunas_16()) %>% 
-        colSums() %>% 
-        magrittr::subtract(
-          m_io_16 %>% 
-            agregado(input$ano_transacoes,
-                     "exportacoes_valores",
-                     -linhas_16()) %>% 
-            limitar_colunas(colunas_16()) %>% 
-            rowSums()
-        )
-    }},
-    rownames = TRUE)
+    
+    agrupamento <- case_when(
+      selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+      selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+    )
+    agrupamento <- unlist(agrupamento)
+    dados <- prep_treemap(agru = agrupamento,el="importacoes_valores")
+    
+    d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
+                    type = "index", palette = "Set1"))
+    
+})
   
-  output$saldo_transferencias <- renderTable({
+  output$saldo_monetarias <- renderD3tree3({
     selecao <- fazer_selecao()
-    if (selecao == 1) {
-      m_paises_13 %>% 
-        agregado(input$ano_transacoes,
-                 "transferências.valores",
-                 input$pais_transacoes) %>% 
-        magrittr::subtract(
-          m_paises_13 %>% 
-            agregado(input$ano_transacoes,
-                     "transferências.valores",
-                     TRUE) %>% 
-            limitar_colunas(input$pais_transacoes)
-        )
-    } else if (selecao == 2) {
-      linhas <- match(colunas_13(), linhas_13())
-      
-      m_io_13 %>% 
-        agregado(input$ano_transacoes,
-                 "transferências.valores",
-                 TRUE) %>% 
-        limitar_colunas(colunas_13()) %>% 
-        colSums(na.rm = TRUE) %>%
-        magrittr::multiply_by(-1) %>% 
-        magrittr::add(
-          m_io_13 %>% 
-            agregado(input$ano_transacoes,
-                     "transferências.valores",
-                     linhas) %>% 
-            rowSums(na.rm = TRUE)
-        )
-    } else if (selecao == 3) {
-      m_io_13 %>% 
-        agregado(input$ano_transacoes,
-                 "transferências.valores",
-                 linhas_13()) %>% 
-        limitar_colunas(-colunas_13()) %>% 
-        colSums() %>% 
-        magrittr::subtract(
-          m_io_13 %>% 
-            agregado(input$ano_transacoes,
-                     "transferências.valores",
-                     -linhas_13()) %>% 
-            limitar_colunas(colunas_13()) %>% 
-            rowSums()
-        )
-      
-    } else if (selecao == 4) {
-      m_paises_16 %>% 
-        agregado(input$ano_transacoes,
-                 "transferências.valores",
-                 input$pais_transacoes) %>% 
-        magrittr::subtract(
-          m_paises_16 %>% 
-            agregado(input$ano_transacoes,
-                     "transferências.valores",
-                     TRUE) %>% 
-            limitar_colunas(input$pais_transacoes))
-    } else if (selecao == 5) {
-      linhas <- match(colunas_16(), linhas_16())
-      
-      m_io_16 %>% 
-        agregado(input$ano_transacoes,
-                 "transferências.valores",
-                 TRUE) %>% 
-        limitar_colunas(colunas_16()) %>% 
-        colSums(na.rm = TRUE) %>%
-        magrittr::multiply_by(-1) %>% 
-        magrittr::add(
-          m_io_16 %>% 
-            agregado(input$ano_transacoes,
-                     "transferências.valores",
-                     linhas) %>% 
-            rowSums(na.rm = TRUE))
-    } else if (selecao == 6) {
-      m_io_16 %>% 
-        agregado(input$ano_transacoes,
-                 "transferências.valores",
-                 linhas_16()) %>% 
-        limitar_colunas(-colunas_16()) %>% 
-        colSums() %>% 
-        magrittr::subtract(
-          m_io_16 %>% 
-            agregado(input$ano_transacoes,
-                     "transferências.valores",
-                     -linhas_16) %>% 
-            limitar_colunas(colunas_16()) %>% 
-            rowSums()
-        )
-    }},
-    rownames = TRUE)
+    
+    agrupamento <- case_when(
+      selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+      selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+    )
+    agrupamento <- unlist(agrupamento)
+    dados <- prep_treemap(agru = agrupamento,el="saldo")
+    
+    d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
+                    type = "index", palette = "Set1"))
+    
+    
+    })
+  
+  
+  output$saldo_valores <- renderD3tree3({
+    selecao <- fazer_selecao()
+    
+    agrupamento <- case_when(
+      selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+      selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+    )
+    agrupamento <- unlist(agrupamento)
+    dados <- prep_treemap(agru = agrupamento,el="saldo_valores")
+    
+    d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
+                    type = "index", palette = "Set1"))
+    
+    
+})
+  
+  output$saldo_transferencias <- renderD3tree3({
+    selecao <- fazer_selecao()
+    
+    agrupamento <- case_when(
+      selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+      selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+    )
+    agrupamento <- unlist(agrupamento)
+    dados <- prep_treemap(agru = agrupamento,el="saldo_transferencias")
+    
+    d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
+                    type = "index", palette = "Set1"))
+    
+    
+    })
 
 ### Análise das transferências: tabelas sobre troca desigual e trocas nos setores
 ### improdutivos

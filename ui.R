@@ -13,7 +13,7 @@ ui <- dashboardPage(
     titleWidth = 250
   ),
   sidebar = dashboardSidebar(
-    width = 250,
+    width = 220,
     sidebarMenu(
       id = "menu",
       menuItem(
@@ -103,10 +103,12 @@ ui <- dashboardPage(
       input.menu == "Importações" |
       input.menu == "Saldos" |
       input.menu == "Transferências"',
-      radioButtons(inputId = "transacoes_agregacao", choices = c("Agregado", "Por setor de origem", "Por setor de destino"), selected = "Agregado", label = ""),
+      radioButtons(inputId = "transacoes_agregacao", choices = c("Agregado", "Por setor de origem"), selected = "Agregado", label = ""),
       radioButtons(inputId = "transacoes_versao", choices = c("WIOD13", "WIOD16"), selected = "WIOD13", label = "Base de dados:"),
-    )
-
+    ),
+    dashboard_footer("https://worldlabourvalues.org","https://worldlabourvalues.org/images/a_batallar_ideas.png",
+                     "🄯 CC-BY-NC SA 4.0 Grupo de Estudos Concretos sobre Teoria do Valor",
+                     "32px")
     
         
   ),
@@ -118,7 +120,7 @@ ui <- dashboardPage(
       tabItem(
         tabName = "País",
         column(
-          width = 8,
+          width = 7,
           shinydashboard::box(
             width = "100%",
             title = textOutput("titulo_painel"),
@@ -138,7 +140,7 @@ ui <- dashboardPage(
           )
         ),
         column(
-          width = 4,
+          width = 5,
           shinydashboard::box(
             width = "100%",
             title = "Detalhamento Setorial",
@@ -194,9 +196,20 @@ ui <- dashboardPage(
                shinydashboard::box(
                  width="100%",
                  d3tree3Output("exportacoes_monetarias")
-               )
-        )
-        
+       #        )
+        ),
+        #column(width= 6,
+               shinydashboard::box(
+                 width="100%",
+                 d3tree3Output("exportacoes_valores")
+             )
+        ),
+      column(width= 6,
+             shinydashboard::box(
+               width="100%",
+               d3tree3Output("exportacoes_transferencias")
+             )
+      )
         
       ),      
 
@@ -217,7 +230,7 @@ ui <- dashboardPage(
         tabName = "Transferências"
         
       )      
-    )
+    ),
     
   )
 )
