@@ -1,28 +1,39 @@
 
 server <- function(input, output, session) {
+
+  output$map <- renderLeaflet({
+    # Use leaflet() here, and only include aspects of the map that
+    # won't need to change dynamically (at least, not unless the
+    # entire map is being torn down and recreated).
+    leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
+      addTiles() %>%
+      setView(lat = 0, lng = 0, zoom = 3)
+  })
+
+
   linhas_13 <- reactive({
     encontrar_pais(m_io_13, input$pais, rownames)
   })
-  
+
   colunas_13 <- reactive({
     encontrar_pais(m_io_13, input$pais_transacoes, colnames)
   })
-  
+
   linhas_16 <- reactive({
     encontrar_pais(m_io_16, input$pais_transacoes, rownames)
   })
-  
+
   colunas_16 <- reactive({
     encontrar_pais(m_io_16, input$pais_transacoes, colnames)
   })
-  
+
   comerciantes_p <-  function(bd=13,pais = input$pais,ano = input$ano, elemento = "exportacoes_pm",qtde = 15) {
       mat <- get(paste0("m_paises_",bd))
       mat <- mat[as.character(ano),elemento,pais,]
       paises <- names(sort(mat,T)[2:(qtde+1)])
     }
- 
-  
+
+
   fazer_selecao <- reactive({
     switch(paste0(input$transacoes_versao,input$transacoes_agregacao),
              "WIOD13Agregado" = 1,
@@ -34,8 +45,8 @@ server <- function(input, output, session) {
 
 
   prep_treemap <- function(bd=input$transacoes_versao,
-                           pais = input$pais, 
-                           ano = input$ano, 
+                           pais = input$pais,
+                           ano = input$ano,
                            agr = input$transacoes_agregacao,
                            el = "exportacoes_pm",
                            qcorte = T,
@@ -44,8 +55,8 @@ server <- function(input, output, session) {
                            pod = 1) {
     bd <- ifelse(grepl("13",bd),13,16)
     p <- comerciantes_p(bd,pais,ano,el,10)
-    dados <- get(paste0("m_io_",bd)) %>% 
-      agregado(ano, el, get(paste0("linhas_",bd))()) %>% 
+    dados <- get(paste0("m_io_",bd)) %>%
+      agregado(ano, el, get(paste0("linhas_",bd))()) %>%
       as.data.table(keep.rownames = "paisect")%>%
       separate(paisect,c("pais_origen","sector_origen"),sep="\\.")%>%
       select(-pais_origen)%>%
@@ -58,18 +69,18 @@ server <- function(input, output, session) {
       left_join(setorest,by = c("sect_d" = "Code"))%>%
       transmute(pais_d = `Países`,sect_d = pt, valor)%>%
       mutate(across(-valor,as.factor))%>% ungroup()
-    
+
     dados
   }
-  
-   dados <- reactive({ 
+
+   dados <- reactive({
     paste0(input$transacoes_versao)
    })
-   
+
    output$debuga <- renderTable({
      glimpse(dados())
    })
-  
+
   output$pais <- renderDataTable(
     tabmil(t(sea_paises[,as.character(input$ano),,input$pais]))%>%
       left_join(varst)%>%
@@ -85,7 +96,7 @@ server <- function(input, output, session) {
       paging = FALSE,
       scrollY = "300",
       # pageLength = 10,
-      info = FALSE, 
+      info = FALSE,
       lengthChange = FALSE
     )
   )
@@ -95,7 +106,7 @@ server <- function(input, output, session) {
     plotaserie(dados)
   })
 
-  
+
   output$setores_pais_13 <- renderDataTable(
     tabmil(sea_setores_13[as.character(input$ano),
                    input$indicador,,
@@ -108,11 +119,11 @@ server <- function(input, output, session) {
       paging = FALSE,
       #pageLength = 8,
       scrollY= "740",
-      info = FALSE, 
+      info = FALSE,
       lengthChange = FALSE
     )
   )
-  
+
   output$setores_pais_16 <- renderDataTable(
     tabmil(sea_setores_16[as.character(input$ano),
                           input$indicador,,
@@ -125,31 +136,31 @@ server <- function(input, output, session) {
       paging = FALSE,
       #pageLength = 8,
       scrollY= "740",
-      info = FALSE, 
+      info = FALSE,
       lengthChange = FALSE
     )
   )
 
-  
-  output$titulo_detalhamento_pais <- 
+
+  output$titulo_detalhamento_pais <-
     renderText(
       paste(varst[varst$var==input$indicador,"pt"])
       )
 
-  
-  output$subtitulo_detalhamento_pais <- 
+
+  output$subtitulo_detalhamento_pais <-
     renderText(
       paste(paises[paises$Legenda==input$pais,1],
             "-",
             input$ano)
       )
-  
-  output$titulo_serie_pais <- 
+
+  output$titulo_serie_pais <-
     renderText(
       paste(varst[varst$var==input$indicador,"pt"])
     )
 
-  output$subtitulo_serie_pais <- 
+  output$subtitulo_serie_pais <-
     renderText(
       paste0(paises[paises$Legenda==input$pais,1],
              ", ",
@@ -157,15 +168,15 @@ server <- function(input, output, session) {
             " - ",
             as.character(ano_max)))
 
-  output$titulo_painel <- 
+  output$titulo_painel <-
     renderText(
       paste("Painel Geral:",paises[paises$Legenda==input$pais,1],
             "-",
             input$ano
             )
     )
-  
-  
+
+
   output$indicadores1 <- renderDT(
     {
       dados <- t(rbind(
@@ -178,10 +189,10 @@ server <- function(input, output, session) {
                   searching = FALSE,
                   paging = FALSE,
                   scrollY= "100%",
-                  info = FALSE, 
+                  info = FALSE,
                   lengthChange = FALSE
                 )
-      ) %>% 
+      ) %>%
         formatPercentage("WIOD13", 2)
       formatStyle(dados, names(dados$x$data),`line-height` = '10px')
     },
@@ -199,10 +210,10 @@ server <- function(input, output, session) {
                            searching = FALSE,
                            paging = FALSE,
                            scrollY= "100%",
-                           info = FALSE, 
+                           info = FALSE,
                            lengthChange = FALSE
                          )
-      ) %>% 
+      ) %>%
         formatPercentage("WIOD13", 2)
       formatStyle(dados, names(dados$x$data),`line-height` = '10px')
     },
@@ -224,245 +235,245 @@ server <- function(input, output, session) {
   # No entanto, os gráficos conforme tipo de variábel são concomitantes.
 
 ### Sim certamente possível
-  output$exportacoes_monetarias <- renderD3tree3({
-    selecao <- fazer_selecao()
-    
-    agrupamento <- case_when(
-      selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-      selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-      )
-
-    agrupamento <- unlist(agrupamento)
-    dados <- prep_treemap(agru = agrupamento)
-
-    d3tree3(treemap(dados, title = "exportações monetárias",  index = agrupamento, vSize = "valor",
-                   type = "index", palette = "Set1"))
-    }
-    )
-
-  
-  
-  output$exportacoes_valores <- renderD3tree3({
-    selecao <- fazer_selecao()
-    
-    agrupamento <- case_when(
-      selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-      selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-    )
-
-    agrupamento <- unlist(agrupamento)
-    dados <- prep_treemap(agru = agrupamento,el = "exportacoes_valores")
-    
-    d3tree3(treemap(dados, title = "exportações em valores",  index = agrupamento, vSize = "valor",
-                    type = "index", palette = "Set1"))
-    
-})
-
-  output$exportacoes_transferencias <- renderD3tree3({
-    selecao <- fazer_selecao()
-    
-    agrupamento <- case_when(
-      selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-      selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-    )
-    
-    agrupamento <- unlist(agrupamento)
-    dados <- prep_treemap(agru = agrupamento,"transferencias_valores")
-    
-    d3tree3(treemap(dados, title = "Trasnferência de Valores",  index = agrupamento, vSize = "valor",
-                    type = "index", palette = "Set1"))
-    
-},
-)
-  
-  output$importacoes_monetarias <- renderD3tree3({
-    selecao <- fazer_selecao()
-    
-    agrupamento <- case_when(
-      selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-      selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-    )
-    agrupamento <- unlist(agrupamento)
-    dados <- prep_treemap(agru = agrupamento,el="importacoes_monetarias")
-    
-    d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
-                    type = "index", palette = "Set1"))
-    
-})
-  
-  output$importacoes_valores <- renderD3tree3({
-    selecao <- fazer_selecao()
-    
-    agrupamento <- case_when(
-      selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-      selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-    )
-    agrupamento <- unlist(agrupamento)
-    dados <- prep_treemap(agru = agrupamento,el="importacoes_valores")
-    
-    d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
-                    type = "index", palette = "Set1"))
-    
-})
-  
-  output$saldo_monetarias <- renderD3tree3({
-    selecao <- fazer_selecao()
-    
-    agrupamento <- case_when(
-      selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-      selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-    )
-    agrupamento <- unlist(agrupamento)
-    dados <- prep_treemap(agru = agrupamento,el="saldo")
-    
-    d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
-                    type = "index", palette = "Set1"))
-    
-    
-    })
-  
-  
-  output$saldo_valores <- renderD3tree3({
-    selecao <- fazer_selecao()
-    
-    agrupamento <- case_when(
-      selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-      selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-    )
-    agrupamento <- unlist(agrupamento)
-    dados <- prep_treemap(agru = agrupamento,el="saldo_valores")
-    
-    d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
-                    type = "index", palette = "Set1"))
-    
-    
-})
-  
-  output$saldo_transferencias <- renderD3tree3({
-    selecao <- fazer_selecao()
-    
-    agrupamento <- case_when(
-      selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-      selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-    )
-    agrupamento <- unlist(agrupamento)
-    dados <- prep_treemap(agru = agrupamento,el="saldo_transferencias")
-    
-    d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
-                    type = "index", palette = "Set1"))
-    
-    
-    })
-
-### Análise das transferências: tabelas sobre troca desigual e trocas nos setores
-### improdutivos
-
-  ## Juntar tanto as exportacoes quanto as importacoes
-  output$td_envios_recebimentos <- renderTable({
-    selecao <- fazer_selecao()
-    if (selecao == 1) {
-      temp1 <- m_paises_13[as.character(input$ano_transacoes),
-                           "transferências_produtivas.valores",
-                           input$pais_transacoes,
-                           ]
-      temp2 <-  -m_paises_13[as.character(input$ano_transacoes),
-                            "transferências_produtivas.valores",
-                            ,
-                            input$pais_transacoes]
-      names(temp1) <- paste0("X.",names(temp1))
-      names(temp2) <- paste0("M.",names(temp2))
-      c(temp1, temp2)
-    } else if (selecao == 2) {
-    } else if (selecao == 3) {
-    } else if (selecao == 4) {
-    } else if (selecao == 5) {
-    } else if (selecao == 6) {
-    }
-  }, rownames = TRUE)
-
-  output$td_envios_recebimentos_saldo <- renderTable({
-    selecao <- fazer_selecao()
-    if (selecao == 1){
-      m_paises_13[as.character(input$ano_transacoes),
-                           "transferências_produtivas.valores",
-                           input$pais_transacoes,] -
-      m_paises_13[as.character(input$ano_transacoes),
-                          "transferências_produtivas.valores",
-                          ,input$pais_transacoes]
-    } else if (selecao == 2) {
-    } else if (selecao == 3) {
-    } else if (selecao == 4) {
-    } else if (selecao == 5) {
-    } else if (selecao == 6) {
-    }
-  }, rownames = TRUE)
-
-
-  output$improdutivos_envios_recebimentos <- renderTable({
-    selecao <- fazer_selecao()
-    if (selecao == 1){
-      temp1 <- m_paises_13[as.character(input$ano_transacoes),
-                           "transferencias_valores",
-                           input$pais_transacoes,] -
-        m_paises_13[as.character(input$ano_transacoes),
-                           "transferências_produtivas.valores",
-                           input$pais_transacoes,]
-      temp2 <-  -(m_paises_13[as.character(input$ano_transacoes),
-                            "transferencias_valores",
-                            ,input$pais_transacoes] -
-        m_paises_13[as.character(input$ano_transacoes),
-                    "transferências_produtivas.valores",
-                    ,input$pais_transacoes])
-      names(temp1) <- paste0("X.",names(temp1))
-      names(temp2) <- paste0("M.",names(temp2))
-      c(temp1, temp2)
-    } else if (selecao == 2) {
-    } else if (selecao == 3) {
-    } else if (selecao == 4) {
-    } else if (selecao == 5) {
-    } else if (selecao == 6) {
-    }
-  }, rownames = TRUE)
-
-
-  output$improdutivos_envios_recebimentos_saldo <- renderTable({
-    selecao <- fazer_selecao()
-    if (selecao == 1){
-      temp1 <- m_paises_13[as.character(input$ano_transacoes),
-                           "transferencias_valores",
-                           input$pais_transacoes,] -
-        m_paises_13[as.character(input$ano_transacoes),
-                    "transferências_produtivas.valores",
-                    input$pais_transacoes,] -
-        (m_paises_13[as.character(input$ano_transacoes),
-                              "transferencias_valores",
-                              ,input$pais_transacoes] -
-           m_paises_13[as.character(input$ano_transacoes),
-                                "transferências_produtivas.valores",
-                                ,input$pais_transacoes])
-    } else if (selecao == 2) {
-    } else if (selecao == 3) {
-    } else if (selecao == 4) {
-    } else if (selecao == 5) {
-    } else if (selecao == 6) {
-    }
-  }, rownames = TRUE)
-
-  output$proporcao_td_transferencias <- renderText({
-    as.character(sum(m_paises_13[as.character(input$ano_transacoes),
-                                 "transferências_produtivas.valores",
-                                 input$pais_transacoes,] +
-                       m_paises_13[as.character(input$ano_transacoes),
-                                   "transferências_produtivas.valores",
-                                   ,input$pais_transacoes])/
-                   sum(m_paises_13[as.character(input$ano_transacoes),
-                                   "transferencias_valores",
-                                   input$pais_transacoes,] +
-                         m_paises_13[as.character(input$ano_transacoes),
-                                     "transferencias_valores",
-                                     ,input$pais_transacoes]))
-  })
-  textOutput("proporcao_td_transferencias_saldo")
+#   output$exportacoes_monetarias <- renderD3tree3({
+#     selecao <- fazer_selecao()
+#     
+#     agrupamento <- case_when(
+#       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+#       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+#       )
+# 
+#     agrupamento <- unlist(agrupamento)
+#     dados <- prep_treemap(agru = agrupamento)
+# 
+#     d3tree3(treemap(dados, title = "exportações monetárias",  index = agrupamento, vSize = "valor",
+#                    type = "index", palette = "Set1"))
+#     }
+#     )
+# 
+#   
+#   
+#   output$exportacoes_valores <- renderD3tree3({
+#     selecao <- fazer_selecao()
+#     
+#     agrupamento <- case_when(
+#       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+#       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+#     )
+# 
+#     agrupamento <- unlist(agrupamento)
+#     dados <- prep_treemap(agru = agrupamento,el = "exportacoes_valores")
+#     
+#     d3tree3(treemap(dados, title = "exportações em valores",  index = agrupamento, vSize = "valor",
+#                     type = "index", palette = "Set1"))
+#     
+# })
+# 
+#   output$exportacoes_transferencias <- renderD3tree3({
+#     selecao <- fazer_selecao()
+#     
+#     agrupamento <- case_when(
+#       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+#       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+#     )
+#     
+#     agrupamento <- unlist(agrupamento)
+#     dados <- prep_treemap(agru = agrupamento,"transferencias_valores")
+#     
+#     d3tree3(treemap(dados, title = "Trasnferência de Valores",  index = agrupamento, vSize = "valor",
+#                     type = "index", palette = "Set1"))
+#     
+# },
+# )
+#   
+#   output$importacoes_monetarias <- renderD3tree3({
+#     selecao <- fazer_selecao()
+#     
+#     agrupamento <- case_when(
+#       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+#       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+#     )
+#     agrupamento <- unlist(agrupamento)
+#     dados <- prep_treemap(agru = agrupamento,el="importacoes_monetarias")
+#     
+#     d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
+#                     type = "index", palette = "Set1"))
+#     
+# })
+#   
+#   output$importacoes_valores <- renderD3tree3({
+#     selecao <- fazer_selecao()
+#     
+#     agrupamento <- case_when(
+#       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+#       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+#     )
+#     agrupamento <- unlist(agrupamento)
+#     dados <- prep_treemap(agru = agrupamento,el="importacoes_valores")
+#     
+#     d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
+#                     type = "index", palette = "Set1"))
+#     
+# })
+#   
+#   output$saldo_monetarias <- renderD3tree3({
+#     selecao <- fazer_selecao()
+#     
+#     agrupamento <- case_when(
+#       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+#       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+#     )
+#     agrupamento <- unlist(agrupamento)
+#     dados <- prep_treemap(agru = agrupamento,el="saldo")
+#     
+#     d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
+#                     type = "index", palette = "Set1"))
+#     
+#     
+#     })
+#   
+#   
+#   output$saldo_valores <- renderD3tree3({
+#     selecao <- fazer_selecao()
+#     
+#     agrupamento <- case_when(
+#       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+#       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+#     )
+#     agrupamento <- unlist(agrupamento)
+#     dados <- prep_treemap(agru = agrupamento,el="saldo_valores")
+#     
+#     d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
+#                     type = "index", palette = "Set1"))
+#     
+#     
+# })
+#   
+#   output$saldo_transferencias <- renderD3tree3({
+#     selecao <- fazer_selecao()
+#     
+#     agrupamento <- case_when(
+#       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+#       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+#     )
+#     agrupamento <- unlist(agrupamento)
+#     dados <- prep_treemap(agru = agrupamento,el="saldo_transferencias")
+#     
+#     d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
+#                     type = "index", palette = "Set1"))
+#     
+#     
+#     })
+# 
+# ### Análise das transferências: tabelas sobre troca desigual e trocas nos setores
+# ### improdutivos
+# 
+#   ## Juntar tanto as exportacoes quanto as importacoes
+#   output$td_envios_recebimentos <- renderTable({
+#     selecao <- fazer_selecao()
+#     if (selecao == 1) {
+#       temp1 <- m_paises_13[as.character(input$ano_transacoes),
+#                            "transferências_produtivas.valores",
+#                            input$pais_transacoes,
+#                            ]
+#       temp2 <-  -m_paises_13[as.character(input$ano_transacoes),
+#                             "transferências_produtivas.valores",
+#                             ,
+#                             input$pais_transacoes]
+#       names(temp1) <- paste0("X.",names(temp1))
+#       names(temp2) <- paste0("M.",names(temp2))
+#       c(temp1, temp2)
+#     } else if (selecao == 2) {
+#     } else if (selecao == 3) {
+#     } else if (selecao == 4) {
+#     } else if (selecao == 5) {
+#     } else if (selecao == 6) {
+#     }
+#   }, rownames = TRUE)
+# 
+#   output$td_envios_recebimentos_saldo <- renderTable({
+#     selecao <- fazer_selecao()
+#     if (selecao == 1){
+#       m_paises_13[as.character(input$ano_transacoes),
+#                            "transferências_produtivas.valores",
+#                            input$pais_transacoes,] -
+#       m_paises_13[as.character(input$ano_transacoes),
+#                           "transferências_produtivas.valores",
+#                           ,input$pais_transacoes]
+#     } else if (selecao == 2) {
+#     } else if (selecao == 3) {
+#     } else if (selecao == 4) {
+#     } else if (selecao == 5) {
+#     } else if (selecao == 6) {
+#     }
+#   }, rownames = TRUE)
+# 
+# 
+#   output$improdutivos_envios_recebimentos <- renderTable({
+#     selecao <- fazer_selecao()
+#     if (selecao == 1){
+#       temp1 <- m_paises_13[as.character(input$ano_transacoes),
+#                            "transferencias_valores",
+#                            input$pais_transacoes,] -
+#         m_paises_13[as.character(input$ano_transacoes),
+#                            "transferências_produtivas.valores",
+#                            input$pais_transacoes,]
+#       temp2 <-  -(m_paises_13[as.character(input$ano_transacoes),
+#                             "transferencias_valores",
+#                             ,input$pais_transacoes] -
+#         m_paises_13[as.character(input$ano_transacoes),
+#                     "transferências_produtivas.valores",
+#                     ,input$pais_transacoes])
+#       names(temp1) <- paste0("X.",names(temp1))
+#       names(temp2) <- paste0("M.",names(temp2))
+#       c(temp1, temp2)
+#     } else if (selecao == 2) {
+#     } else if (selecao == 3) {
+#     } else if (selecao == 4) {
+#     } else if (selecao == 5) {
+#     } else if (selecao == 6) {
+#     }
+#   }, rownames = TRUE)
+# 
+# 
+#   output$improdutivos_envios_recebimentos_saldo <- renderTable({
+#     selecao <- fazer_selecao()
+#     if (selecao == 1){
+#       temp1 <- m_paises_13[as.character(input$ano_transacoes),
+#                            "transferencias_valores",
+#                            input$pais_transacoes,] -
+#         m_paises_13[as.character(input$ano_transacoes),
+#                     "transferências_produtivas.valores",
+#                     input$pais_transacoes,] -
+#         (m_paises_13[as.character(input$ano_transacoes),
+#                               "transferencias_valores",
+#                               ,input$pais_transacoes] -
+#            m_paises_13[as.character(input$ano_transacoes),
+#                                 "transferências_produtivas.valores",
+#                                 ,input$pais_transacoes])
+#     } else if (selecao == 2) {
+#     } else if (selecao == 3) {
+#     } else if (selecao == 4) {
+#     } else if (selecao == 5) {
+#     } else if (selecao == 6) {
+#     }
+#   }, rownames = TRUE)
+# 
+#   output$proporcao_td_transferencias <- renderText({
+#     as.character(sum(m_paises_13[as.character(input$ano_transacoes),
+#                                  "transferências_produtivas.valores",
+#                                  input$pais_transacoes,] +
+#                        m_paises_13[as.character(input$ano_transacoes),
+#                                    "transferências_produtivas.valores",
+#                                    ,input$pais_transacoes])/
+#                    sum(m_paises_13[as.character(input$ano_transacoes),
+#                                    "transferencias_valores",
+#                                    input$pais_transacoes,] +
+#                          m_paises_13[as.character(input$ano_transacoes),
+#                                      "transferencias_valores",
+#                                      ,input$pais_transacoes]))
+#   })
+#   textOutput("proporcao_td_transferencias_saldo")
 
 }
 

@@ -1,240 +1,181 @@
-ui <- dashboardPage(
-  # footer = 
-  #   tags$div(tags$i(class="fa fa-copyright fa-flip-horizontal"),
-  #            tags$a(href="https://gitlab.com/rodrigoesborges/worldlabourvalues",
-  #                   icon("creative-commons")),
-  #            "Por: World Labour Values Task Force - ",
-  #            tags$a(href="https://worldlabourvalues.org",
-  #                   "Grupo de Estudos Concretos sobre Teoria do Valor")),
-  skin = "red",
-  title = "Banco de Dados Valor Trabalho Mundial",
-  header = dashboardHeader (
-    title = "Valor Trabalho Mundial",
-    titleWidth = 250
+ui <- navbarPage(
+
+  theme = shinytheme("yeti"),
+  collapsible = TRUE,
+  windowTitle = "World Labour Value Database",
+  title = "WLVD",
+
+  tabPanel(
+    "Country",
+    # Mapa (estilos para eliminar borda)
+    tags$style(type = "text/css", "#map {height: calc(100vh - 45px)  !important;}"),
+    leafletOutput("map", width = "100%"),
+    tags$style(type = "text/css", ".container-fluid {padding-left:0px;padding-right:0px;}"),
+    tags$style(type = "text/css", ".navbar {margin-bottom: 0px;}"),
+    tags$style(type = "text/css", ".container-fluid .navbar-header .navbar-brand {margin-left: 0px;}"),
+    
+    absolutePanel(
+      top = 60,
+      left = "2%",
+      width = "72%",
+      height = "200",
+      class = "panel panel-danger",
+      style =
+        "background-color: white;
+            z-index: 500;
+            padding: 0;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2)",
+      textOutput("titulo_painel"),
+      dataTableOutput("pais")
+    ),
+    
+    absolutePanel(
+      top = 60,
+      right = "2%",
+      width = "22%",
+      height = 1800,
+      class = "panel panel-danger",
+      style =
+        "background-color: white;
+        z-index: 500;
+        padding: 0;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        border-radius: 2px",
+      # tag$div(class="panel-heading", "Download")
+    ),
+    
+    
+    absolutePanel(
+      class = "panel panel-danger",
+      top = 280,
+      left = "2%",
+      width = "32%",
+      height = "250",
+      plotlyOutput("serie_pais")
+    )
   ),
-  sidebar = dashboardSidebar(
-    width = 220,
-    sidebarMenu(
-      id = "menu",
-      menuItem(
-        "País",
-        tabName = "País",
-        icon = icon("globe-americas")
-        
-        
-      ),
-      menuItem(
-        "Indicador",
-        tabName = "Indicador",
-        icon = icon("chart-line")
-        
-        
-      ),
-      menuItem(
-        "Comércio Internacional",
-        icon = icon("sync-alt"),
-        menuSubItem(
-          "Exportações",
-          tabName = "Exportações"
-        ),
-        menuSubItem(
-          "Importações",
-          tabName = "Importações"
-        ),
-        menuSubItem(
-          "Saldos",
-          tabName = "Saldos"
-        ),
-        menuSubItem(
-          "Transferências",
-          tabName = "Transferências"
-        )
-        
-        
-        
-      )
-    ),
-    hr(width = "80%"),
-    
-    conditionalPanel(
-      'input.menu == "País" |
-      input.menu == "Exportações" |
-      input.menu == "Importações" |
-      input.menu == "Saldos" |
-      input.menu == "Transferências"',
-      selectInput(inputId = "pais",
-                  label = "País:",
-                  choices = lista_paises,
-                  selected = "BRA")
-    ),
-    
-    selectInput(inputId = "indicador",
-                label = "Indicador:",
-                width = "100%",
-                choices = lista_variaveis_sea,
-                selected = "taxa_exploracao"),
 
-    sliderInput(inputId = "ano",
-                label = NULL,
-                min = ano_min,
-                max = ano_max,
-                value = 2009,
-                ticks = FALSE,
-                width = "100%",
-                sep = ""),
-
-    conditionalPanel(
-      'input.menu == "Indicador"',
-      
-      checkboxGroupInput(inputId = "versao",
-                         choices = lista_versoes,
-                         selected =  lista_versoes,
-                         label = "Base de dados:"),
-      
-      selectInput(inputId = "paises",
-                  label = "Países:",
-                  choices = lista_paises,
-                  selected = c("BRA","CHN","USA"),
-                  multiple = TRUE)      
-    ),
     
-    conditionalPanel(
-      'input.menu == "Exportações" |
-      input.menu == "Importações" |
-      input.menu == "Saldos" |
-      input.menu == "Transferências"',
-      radioButtons(inputId = "transacoes_agregacao", choices = c("Agregado", "Por setor de origem"), selected = "Agregado", label = ""),
-      radioButtons(inputId = "transacoes_versao", choices = c("WIOD13", "WIOD16"), selected = "WIOD13", label = "Base de dados:"),
+  column(
+    width = 7,
+    shinydashboard::box(
+      width = "100%",
+      title = ,
+      status = "danger",
+      solidHeader = TRUE,
+      # dataTableOutput("pais")
+      "xc"
     ),
-    dashboard_footer("https://worldlabourvalues.org","https://worldlabourvalues.org/images/a_batallar_ideas.png",
-                     "🄯 CC-BY-NC SA 4.0 Grupo de Estudos Concretos sobre Teoria do Valor",
-                     "32px")
-    
-        
+    shinydashboard::box(
+      width = "100%",
+      title = "Série Temporal",
+      status = "danger",
+      solidHeader = TRUE,
+      div(textOutput("titulo_serie_pais"), align = "center" ,
+          style = "font-size:20px; font-weight: bold"),
+      div(textOutput("subtitulo_serie_pais"), align = "center"),
+      # plotlyOutput("serie_pais")
+    )
   ),
-  body = dashboardBody(
-    tags$head(includeHTML(("www/google_analytics.html"))),
-    tabItems(
-
-### País -------------------------------
-      tabItem(
-        tabName = "País",
-        column(
-          width = 7,
-          shinydashboard::box(
-            width = "100%",
-            title = textOutput("titulo_painel"),
-            status = "danger",
-            solidHeader = TRUE,
-            dataTableOutput("pais")
-          ),
-          shinydashboard::box(
-            width = "100%",
-            title = "Série Temporal",
-            status = "danger",
-            solidHeader = TRUE,
-            div(textOutput("titulo_serie_pais"), align = "center" , 
-                style = "font-size:20px; font-weight: bold"),
-            div(textOutput("subtitulo_serie_pais"), align = "center"),
-            plotlyOutput("serie_pais")
-          )
+  
+  column(
+    width = 5,
+    shinydashboard::box(
+      width = "100%",
+      title = "Detalhamento Setorial",
+      status = "danger",
+      solidHeader = TRUE,
+      div(textOutput("titulo_detalhamento_pais"), align = "center",
+          style = "font-size:20px; font-weight: bold"),
+      div(textOutput("subtitulo_detalhamento_pais"), align = "center"),
+      tabsetPanel(
+        tabPanel(
+          "WIOD.13",
+          dataTableOutput("setores_pais_13")
         ),
-        column(
-          width = 5,
-          shinydashboard::box(
-            width = "100%",
-            title = "Detalhamento Setorial",
-            status = "danger",
-            solidHeader = TRUE,
-            div(textOutput("titulo_detalhamento_pais"), align = "center",
-                style = "font-size:20px; font-weight: bold"),
-            div(textOutput("subtitulo_detalhamento_pais"), align = "center"),
-            tabsetPanel(
-              tabPanel(
-                "WIOD.13",
-                dataTableOutput("setores_pais_13")
-              ),
-              tabPanel(
-                "WIOD.16",
-                dataTableOutput("setores_pais_16")
-              )
-            )
-          )
-          )
-        ),
-
-### Indicador -------------------------------
-      tabItem(
-        tabName = "Indicador",
-        shinydashboard::box(
-          width = "100%",
-          # title = "",
-          # solidHeader = TRUE,
-          status = "danger",
-          column(
-            width = 6,
-            dataTableOutput("indicadores1")
-          ),
-          column(
-            width = 6,
-            dataTableOutput("indicadores2")
-          )
-        ),
-        shinydashboard::box(
-          width = "100%",
-          title = "Série Temporal",
-          status = "danger",
-          solidHeader = TRUE,
-          plotlyOutput("serie")
-        )
-      ),
-
-### Exportações -------------------------------
-      tabItem(
-        tabName = "Exportações",
-        column(width= 6,
-               shinydashboard::box(
-                 width="100%",
-                 d3tree3Output("exportacoes_monetarias")
-       #        )
-        ),
-        #column(width= 6,
-               shinydashboard::box(
-                 width="100%",
-                 d3tree3Output("exportacoes_valores")
-             )
-        ),
-      column(width= 6,
-             shinydashboard::box(
-               width="100%",
-               d3tree3Output("exportacoes_transferencias")
-             )
+        tabPanel(
+          "WIOD.16",
+          dataTableOutput("setores_pais_16")
       )
-        
-      ),      
+    )
+  )
+  )
+  )
+
+# ### Indicador -------------------------------
+#       # tabItem(
+#       #   tabName = "Indicador",
+#       tabPanel(
+#         "Indicators",
+#         shinydashboard::box(
+#           width = "100%",
+#           # title = "",
+#           # solidHeader = TRUE,
+#           status = "danger",
+#           column(
+#             width = 6,
+#             dataTableOutput("indicadores1")
+#           ),
+#           column(
+#             width = 6,
+#             dataTableOutput("indicadores2")
+#           )
+#         ),
+#         shinydashboard::box(
+#           width = "100%",
+#           title = "Série Temporal",
+#           status = "danger",
+#           solidHeader = TRUE,
+#           plotlyOutput("serie")
+#         )
+#       ),
+# 
+# ### Exportações -------------------------------
+#       # tabItem(
+#       #   tabName = "Exportações",
+#       tabPanel(
+#         "Trade",
+#         column(width= 6,
+#                shinydashboard::box(
+#                  width="100%",
+#                  d3tree3Output("exportacoes_monetarias")
+#        #        )
+#         ),
+#         #column(width= 6,
+#                shinydashboard::box(
+#                  width="100%",
+#                  d3tree3Output("exportacoes_valores")
+#              )
+#         ),
+#       column(width= 6,
+#              shinydashboard::box(
+#                width="100%",
+#                d3tree3Output("exportacoes_transferencias")
+#              )
+#       )
+#         
+#       )      
 
 ### Importações -------------------------------
-      tabItem(
-        tabName = "Importações"
-        
-      ),      
-
-### Saldo -------------------------------
-      tabItem(
-        tabName = "Saldo"
-        
-      ),      
-
-### Transferências -------------------------------
-      tabItem(
-        tabName = "Transferências"
-        
-      )      
-    ),
+#       tabItem(
+#         tabName = "Importações"
+#         
+#       ),      
+# 
+# ### Saldo -------------------------------
+#       tabItem(
+#         tabName = "Saldo"
+#         
+#       ),      
+# 
+# ### Transferências -------------------------------
+#       tabItem(
+#         tabName = "Transferências"
+#         
+#       )      
+    # )
     
-  )
-)
-    
+
         
 # ### Painel "Indicador --------------    
 #     
