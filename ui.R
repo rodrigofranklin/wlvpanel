@@ -65,16 +65,18 @@ ui <- navbarPage(
   absolutePanel(
     class = "panel panel-default",
     style =
-      "background-color: rgba(255,255,255,0.3);
+      "background-color: rgba(255,255,255,0.9);
         z-index: 500;
         padding: 0;
         box-shadow: 0 0 10px rgba(0,0,0,0.2);
         border-radius: 2px",
     bottom = 20,
     left = "2%",
-    width = "200px",
+    width = "100px",
     height = "90px",
-    span((tags$i(p("World Labour Values Task Force"))))
+    span((tags$i(
+      p(align="center",img(src = "https://worldlabourvalues.org/images/a_batallar_ideas.png",
+            height = "32px"),"World Labour Values Task Force"))))
   )
 ),
 

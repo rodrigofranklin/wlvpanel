@@ -10,9 +10,9 @@ server <- function(input, output, session) {
       setView(lat = 0, lng = 0, zoom = 3)
   })
 
-  observeEvent(input$map_click, {
+  input$map_click <- reactive ({observeEvent(input$map_click, {
     click <- input$map_click
-  })
+  })})
   
   linhas_13 <- reactive({
     encontrar_pais(m_io_13, input$pais, rownames)
