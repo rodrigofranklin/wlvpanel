@@ -15,13 +15,15 @@ ui <- navbarPage(
     tags$style(type = "text/css", ".container-fluid .navbar-header .navbar-brand {margin-left: 0px;}"),
     
     absolutePanel(
+      id = "header",
       top = 60,
       left = "2%",
       width = "72%",
       height = "200",
-      class = "panel panel-danger",
+      class = "panel panel-default",
+      draggable = TRUE,
       style =
-        "background-color: white;
+        "background-color: rgba(255,255,255,0.3);
             z-index: 500;
             padding: 0;
             box-shadow: 0 0 10px rgba(0,0,0,0.2)",
@@ -34,9 +36,9 @@ ui <- navbarPage(
       right = "2%",
       width = "22%",
       height = 1800,
-      class = "panel panel-danger",
+      class = "panel panel-default",
       style =
-        "background-color: white;
+        "background-color: rgba(255,255,255,0.3);
         z-index: 500;
         padding: 0;
         box-shadow: 0 0 10px rgba(0,0,0,0.2);
@@ -46,14 +48,35 @@ ui <- navbarPage(
     
     
     absolutePanel(
-      class = "panel panel-danger",
+      class = "panel panel-default",
+      style =
+        "background-color: rgba(255,255,255,0.3);
+        z-index: 500;
+        padding: 0;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        border-radius: 2px",
       top = 280,
       left = "2%",
       width = "32%",
       height = "250",
       plotlyOutput("serie_pais")
-    )
-  ),
+    ),
+  
+  absolutePanel(
+    class = "panel panel-default",
+    style =
+      "background-color: rgba(255,255,255,0.3);
+        z-index: 500;
+        padding: 0;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        border-radius: 2px",
+    bottom = 20,
+    left = "2%",
+    width = "200px",
+    height = "90px",
+    span((tags$i(p("World Labour Values Task Force"))))
+  )
+),
 
     
   column(
