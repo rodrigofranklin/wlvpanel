@@ -1,6 +1,6 @@
 
 server <- function(input, output, session) {
-
+  
   output$map <- renderLeaflet({
     # Use leaflet() here, and only include aspects of the map that
     # won't need to change dynamically (at least, not unless the
@@ -9,11 +9,26 @@ server <- function(input, output, session) {
       addTiles() %>%
       setView(lat = 0, lng = 0, zoom = 3)
   })
-
-  input$map_click <- reactive ({observeEvent(input$map_click, {
-    click <- input$map_click
-  })})
+  pais <- reactiveVal()
+  pais("BRA")
   
+  observeEvent(input$map_click, {
+    click <- input$map_click
+    piso3 <- coords2country(data.frame(lng = click$lng, lat = click$lat))
+    text<-paste("Country:",piso3, "Lattitude ", click$lat, "Longtitude ", click$lng)
+    pafil <- (paises%>%filter(Legenda ==  piso3))$Legenda
+    p <- ifelse(is_empty(pafil),
+                pais(),pais(pafil))
+    updateSelectInput(inputId = "pais",
+                      selected = p)
+    proxy <- leafletProxy("map")
+    proxy %>% clearPopups() %>%
+      addPopups(click$lng, click$lat, text)
+  })
+  
+
+  
+
   linhas_13 <- reactive({
     encontrar_pais(m_io_13, input$pais, rownames)
   })
@@ -80,11 +95,13 @@ server <- function(input, output, session) {
     paste0(input$transacoes_versao)
    })
 
-   output$debuga <- renderTable({
-     glimpse(dados())
+   output$debuga <- renderText({
+     #glimpse(dados())
+     paste(input$pais)
    })
 
   output$pais <- renderDataTable(
+    
     tabmil(t(sea_paises[,as.character(input$ano),,input$pais]))%>%
       left_join(varst)%>%
       select(var = pt, 2:3),
@@ -173,10 +190,11 @@ server <- function(input, output, session) {
 
   output$titulo_painel <-
     renderText(
-      paste("Painel Geral:",paises[paises$Legenda==input$pais,1],
+      paste("Country Profile:",paises[paises$Legenda==input$pais,1],
             "-",
             input$ano
             )
+      
     )
 
 

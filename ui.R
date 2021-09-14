@@ -38,37 +38,39 @@ ui <- navbarPage(
       height = 1800,
       class = "panel panel-default",
       style =
-        "background-color: rgba(255,255,255,0.3);
+        "background-color: rgba(255,255,255,0.2);
         z-index: 500;
         padding: 0;
         box-shadow: 0 0 10px rgba(0,0,0,0.2);
         border-radius: 2px",
-      # tag$div(class="panel-heading", "Download")
+      # tag$div(class="panel-heading", "Download"),
+      selectInput("pais","Country",lista_paises, selected="BRA"),
+      sliderInput("ano","YEAR",min = 1995, max = 2021, value = 2009)
     ),
     
     
     absolutePanel(
       class = "panel panel-default",
       style =
-        "background-color: rgba(255,255,255,0.3);
+        "background-color: rgba(255,255,255,0.2);
         z-index: 500;
         padding: 0;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        box-shadow: 0 0 10px rgba(0,0,0,0.4);
         border-radius: 2px",
       top = 280,
       left = "2%",
       width = "32%",
       height = "250",
-      plotlyOutput("serie_pais")
+#      plotlyOutput("serie_pais")
     ),
   
   absolutePanel(
     class = "panel panel-default",
     style =
-      "background-color: rgba(255,255,255,0.9);
+      "background-color: rgba(255,255,255,0.2);
         z-index: 500;
         padding: 0;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        box-shadow: 0 0 10px rgba(0,0,0,0.9);
         border-radius: 2px",
     bottom = 20,
     left = "2%",
@@ -96,10 +98,11 @@ ui <- navbarPage(
       title = "Série Temporal",
       status = "danger",
       solidHeader = TRUE,
-      div(textOutput("titulo_serie_pais"), align = "center" ,
-          style = "font-size:20px; font-weight: bold"),
-      div(textOutput("subtitulo_serie_pais"), align = "center"),
+#      div(textOutput("titulo_serie_pais"), align = "center" ,
+#          style = "font-size:20px; font-weight: bold"),
+#      div(textOutput("subtitulo_serie_pais"), align = "center"),
       # plotlyOutput("serie_pais")
+      "xy"
     )
   ),
   
@@ -110,19 +113,20 @@ ui <- navbarPage(
       title = "Detalhamento Setorial",
       status = "danger",
       solidHeader = TRUE,
-      div(textOutput("titulo_detalhamento_pais"), align = "center",
-          style = "font-size:20px; font-weight: bold"),
-      div(textOutput("subtitulo_detalhamento_pais"), align = "center"),
-      tabsetPanel(
-        tabPanel(
-          "WIOD.13",
-          dataTableOutput("setores_pais_13")
-        ),
-        tabPanel(
-          "WIOD.16",
-          dataTableOutput("setores_pais_16")
-      )
-    )
+      "xz"
+#      div(textOutput("titulo_detalhamento_pais"), align = "center",
+#          style = "font-size:20px; font-weight: bold"),
+#      div(textOutput("subtitulo_detalhamento_pais"), align = "center"),
+    #   tabsetPanel(
+    #     tabPanel(
+    #       "WIOD.13",
+    #       dataTableOutput("setores_pais_13")
+    #     ),
+    #     tabPanel(
+    #       "WIOD.16",
+    #       dataTableOutput("setores_pais_16")
+    #   )
+    # )
   )
   )
   )
