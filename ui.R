@@ -13,13 +13,14 @@ ui <- navbarPage(
     tags$style(type = "text/css", ".container-fluid {padding-left:0px;padding-right:0px;}"),
     tags$style(type = "text/css", ".navbar {margin-bottom: 0px;}"),
     tags$style(type = "text/css", ".container-fluid .navbar-header .navbar-brand {margin-left: 0px;}"),
+    tags$style(type = "text/css", ".js-plotly-plot .plotly .main-svg:first-of-type {background: rgba(255,255,255,0.4) !important;}"),
     
     absolutePanel(
       id = "header",
-      top = 60,
-      left = "2%",
+      top = 50,
+      left = "1.5%",
       width = "72%",
-      height = "200",
+      height = "32%",
       class = "panel panel-default",
       draggable = TRUE,
       style =
@@ -32,21 +33,57 @@ ui <- navbarPage(
     ),
     
     absolutePanel(
-      top = 60,
-      right = "2%",
+      top = 50,
+      right = "1.5%",
       width = "22%",
-      height = 1800,
+      height = "28%",
       class = "panel panel-default",
       style =
         "background-color: rgba(255,255,255,0.2);
         z-index: 500;
         padding: 0;
         box-shadow: 0 0 10px rgba(0,0,0,0.2);
-        border-radius: 2px",
-      # tag$div(class="panel-heading", "Download"),
+        border-radius: 2px;
+        font-size: 10px",
+#      tag$div(class="panel-heading", "Download"),
       selectInput("pais","Country",lista_paises, selected="BRA"),
-      sliderInput("ano","YEAR",min = 1995, max = 2021, value = 2009)
-    ),
+      selectInput("indicador","Variable",lista_variaveis_sea, selected="taxa_exploracao"),
+      sliderInput("ano","YEAR",min = 1995, max = 2021, value = 2009, ticks = F, animate=T)
+),
+      absolutePanel(
+        top = "35%",
+        height = "75%",
+        right = "1.5%",
+        width = "22%",
+        style =
+          "background-color: rgba(255,255,255,0.2);
+        z-index: 500;
+        padding: 0;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        border-radius: 2px",
+#      column(
+#        width = 5,
+#        shinydashboard::box(
+#          width = "100%",
+#          title = "Detalhamento Setorial",
+#          status = "danger",
+#          solidHeader = TRUE,
+          div(textOutput("titulo_detalhamento_pais"), align = "center",
+              style = "font-size:16px; font-weight: bold;background-color: rgba(255,255,255,0.2)"),
+          div(textOutput("subtitulo_detalhamento_pais"), align = "center",
+              style = "background-color: rgba(255,255,255,0.2)"),
+           tabsetPanel(
+             tabPanel(
+               "WIOD.13",
+               dataTableOutput("setores_pais_13")
+             ),
+             tabPanel(
+               "WIOD.16",
+               dataTableOutput("setores_pais_16")
+             )
+           )
+        #)     
+      ),
     
     
     absolutePanel(
@@ -55,13 +92,34 @@ ui <- navbarPage(
         "background-color: rgba(255,255,255,0.2);
         z-index: 500;
         padding: 0;
-        box-shadow: 0 0 10px rgba(0,0,0,0.4);
+        box-shadow: 0 0 10px rgba(0,0,0,0);
         border-radius: 2px",
-      top = 280,
-      left = "2%",
-      width = "32%",
-      height = "250",
-#      plotlyOutput("serie_pais")
+      top = "44%",
+      left = "1%",
+      width = "34%",
+      height = "23%",
+      # column(
+      #   width = 7,
+        # shinydashboard::box(
+        #   width = "100%",
+        #   title = ,
+        #   status = "danger",
+        #   solidHeader = TRUE,
+        #   # dataTableOutput("pais")
+        #   "xc"
+        # ),
+        # shinydashboard::box(
+        #   width = "100%",
+        #   title = "Série Temporal",
+        #   status = "danger",
+        #   solidHeader = TRUE,
+          div(textOutput("titulo_serie_pais"), align = "center" ,
+              style = "font-size:18px; font-weight: bold"),
+          div(textOutput("subtitulo_serie_pais"), align = "center"),
+          plotlyOutput("serie_pais")
+          # )
+      #)
+
     ),
   
   absolutePanel(
@@ -71,65 +129,20 @@ ui <- navbarPage(
         z-index: 500;
         padding: 0;
         box-shadow: 0 0 10px rgba(0,0,0,0.9);
-        border-radius: 2px",
+        border-radius: 2px;
+        font-size: 8px;",
     bottom = 20,
-    left = "2%",
-    width = "100px",
-    height = "90px",
+    left = "48%",
+    width = "80px",
+    height = "36px",
     span((tags$i(
-      p(align="center",img(src = "https://worldlabourvalues.org/images/a_batallar_ideas.png",
-            height = "32px"),"World Labour Values Task Force"))))
-  )
-),
+      p(align="center", img(src = "https://worldlabourvalues.org/images/a_batallar_ideas.png",
+            height = "25px"),"World Labour Values Task Force"))))
 
-    
-  column(
-    width = 7,
-    shinydashboard::box(
-      width = "100%",
-      title = ,
-      status = "danger",
-      solidHeader = TRUE,
-      # dataTableOutput("pais")
-      "xc"
     ),
-    shinydashboard::box(
-      width = "100%",
-      title = "Série Temporal",
-      status = "danger",
-      solidHeader = TRUE,
-#      div(textOutput("titulo_serie_pais"), align = "center" ,
-#          style = "font-size:20px; font-weight: bold"),
-#      div(textOutput("subtitulo_serie_pais"), align = "center"),
-      # plotlyOutput("serie_pais")
-      "xy"
-    )
-  ),
+)
+)  
   
-  column(
-    width = 5,
-    shinydashboard::box(
-      width = "100%",
-      title = "Detalhamento Setorial",
-      status = "danger",
-      solidHeader = TRUE,
-      "xz"
-#      div(textOutput("titulo_detalhamento_pais"), align = "center",
-#          style = "font-size:20px; font-weight: bold"),
-#      div(textOutput("subtitulo_detalhamento_pais"), align = "center"),
-    #   tabsetPanel(
-    #     tabPanel(
-    #       "WIOD.13",
-    #       dataTableOutput("setores_pais_13")
-    #     ),
-    #     tabPanel(
-    #       "WIOD.16",
-    #       dataTableOutput("setores_pais_16")
-    #   )
-    # )
-  )
-  )
-  )
 
 # ### Indicador -------------------------------
 #       # tabItem(
