@@ -79,11 +79,14 @@ plotaserie <- function(dados,perc=F) {
   ifelse(ncol(dados)==3,
          p <- ggplot(dados,aes(x=ano,y=valor,col=bd)),
          p <- ggplot(dados,aes(x=ano,y=valor,col=pais,linetype=bd)))
-  p+geom_line(size = 1) +
+  p <- p+geom_line(size = 1) +
     scale_y_continuous(labels = comma_format(big.mark = ".", decimal.mark = ","))+
-    theme_minimal()
+    theme_minimal()+
+    theme(rect = element_rect(fill = "transparent"),panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA))
   
-  ggplotly()
+  ps <- ggplotly(p)
+  ps %>% layout(plot_bgcolor  = "rgba(255, 255, 255, 0.2)",
+              paper_bgcolor = "rgba(255, 255, 255, 0.2)")
   
 }
 milhares <- function(x){prettyNum(x,big.mark = ".",decimal.mark = ",")}

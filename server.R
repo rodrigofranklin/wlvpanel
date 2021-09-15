@@ -9,18 +9,14 @@ server <- function(input, output, session) {
       addTiles() %>%
       setView(lat = 0, lng = 0, zoom = 3)
   })
-  pais <- reactiveVal()
-  pais("BRA")
-  
+
   observeEvent(input$map_click, {
     click <- input$map_click
     piso3 <- coords2country(data.frame(lng = click$lng, lat = click$lat))
     text<-paste("Country:",piso3, "Lattitude ", click$lat, "Longtitude ", click$lng)
     pafil <- (paises%>%filter(Legenda ==  piso3))$Legenda
-    p <- ifelse(is_empty(pafil),
-                pais(),pais(pafil))
     updateSelectInput(inputId = "pais",
-                      selected = p)
+                      selected = pafil)
     proxy <- leafletProxy("map")
     proxy %>% clearPopups() %>%
       addPopups(click$lng, click$lat, text)
@@ -114,7 +110,7 @@ server <- function(input, output, session) {
       ordering = FALSE,
       searching = FALSE,
       paging = FALSE,
-      scrollY = "300",
+      scrollY = "200",
       # pageLength = 10,
       info = FALSE,
       lengthChange = FALSE
@@ -138,7 +134,7 @@ server <- function(input, output, session) {
       searching = FALSE,
       paging = FALSE,
       #pageLength = 8,
-      scrollY= "740",
+      scrollY= "340",
       info = FALSE,
       lengthChange = FALSE
     )
@@ -155,7 +151,7 @@ server <- function(input, output, session) {
       searching = FALSE,
       paging = FALSE,
       #pageLength = 8,
-      scrollY= "740",
+      scrollY= "340",
       info = FALSE,
       lengthChange = FALSE
     )
