@@ -25,6 +25,7 @@ sea_setores_16 <- readRDS(file = "dados/sea_setores_16.rds")
 
 varst <- read_csv2("dados/vars.csv")
 setorest <- read_csv2("dados/setores_t.csv")
+perfil_sumario <- c("taxa_exploracao","produto_total_pm","produto_total_valores","valor_forca_trabalho_total","lucro","taxa_exploracao_ocupados")
 ## Cria demais variáveis
 
 lista_versoes <- names(sea_paises[,1,1,1])
@@ -121,3 +122,6 @@ coords2country = function(points)
   #indices$continent   # returns the continent (6 continent model)
   #indices$REGION   # returns the continent (7 continent model)
 }
+
+
+
