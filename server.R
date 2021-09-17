@@ -5,26 +5,119 @@ server <- function(input, output, session) {
     # Use leaflet() here, and only include aspects of the map that
     # won't need to change dynamically (at least, not unless the
     # entire map is being torn down and recreated).
-    leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
+    leaflet(
+      options = leafletOptions(zoomControl = FALSE)) %>%
       addTiles() %>%
-      setView(lat = 0, lng = 0, zoom = 3)
+      setView(lat = 0, lng = 0, zoom = 3
+      )
   })
+  
+  
+
+  ####
+  ##Reactive values to use in more than one place (titles, popups)
+  titspais <- reactive({ 
+    return(paste(varst[varst$var==input$indicador,"pt"]))
+  }
+  )
+  
+  subtspais <- reactive({
+    return(paste0(paises[paises$Legenda==input$pais,1],
+           ", ",
+           as.character(ano_min),
+           " - ",
+           as.character(ano_max))
+    )
+    })
+  
+  ####
+
+    
+  
+  esconde <- reactiveVal(1)
+  
+  
+  observeEvent(input$xis,
+               esconde(0)
+               ,ignoreInit = T)
+  
+  
+  ####
+  
+  observeEvent(input$indicador,{
+               tiranpaises <- paises[!(paises$Legenda %in% c("WWW","ROW")),"Legenda"]
+               basecam <- sea_paises["WIOD13",as.character(input$ano),input$indicador,tiranpaises]
+               
+             camadas <- joinCountryData2Map(enframe(basecam),nameJoinColumn = "name")
+             labels <- sprintf("<strong>%s</strong><br/>%s : %g %s",
+               camadas$ADMIN, input$indicador, camadas$value, varst[varst$var == input$indicador,"type"]
+             ) %>% lapply(htmltools::HTML)
+               binas <- c(0,min(basecam, na.rm = T),median(basecam, na.rm = T),max(basecam, na.rm = T))
+               palas <- colorBin("YlOrRd" , 
+                                 domain = camadas$value,
+                                 bins = binas)
+               
+               proxy <- leafletProxy("map")
+               
+               proxy   %>%   
+                 addPolygons(data = camadas,
+                             fillColor = ~palas(camadas$value),
+                             color="white",
+                             weight = 0.5,
+                             opacity = 0.9,
+                             fillOpacity = 0.6,
+                             label = labels,
+                             labelOptions = labelOptions(textsize = "9px",direction="auto",style=list("font-weight" = "normal", padding = "3px 8px")),
+#                             highlight = highlightOptions(
+#                               weight = 1,
+#                               color = "#666",
+#                               dashArray = "",
+#                               fillOpacity = 0.7,
+ #                              bringToFront = TRUE)
+                              )%>%
+                 addLegend("bottomright",
+                                   values = camadas$value,
+                                   title = titspais(),
+                                   pal = palas
+               )
+  }
+  )
+  
+  observeEvent(input$pais,ignoreInit = T,{
+    esconde(1)
+  }
+               )
+
+  output$esconde <- reactive(
+    return(esconde())
+  )
+  outputOptions(output, 'esconde', suspendWhenHidden=FALSE)
+  
 
   observeEvent(input$map_click, {
     click <- input$map_click
     piso3 <- coords2country(data.frame(lng = click$lng, lat = click$lat))
-    text<-paste("Country:",piso3, "Lattitude ", click$lat, "Longtitude ", click$lng)
     pafil <- (paises%>%filter(Legenda ==  piso3))$Legenda
+    paisvei <- input$pais
     updateSelectInput(inputId = "pais",
                       selected = pafil)
-    proxy <- leafletProxy("map")
+    esconde(1)
+  })
+
+  
+  observeEvent(input$map_hover, {
+    hover <- input$map_hover
+    piso3 <- coords2country(data.frame(lng = hover$lng, lat = hover$lat))
+    paises%>%filter(Legenda = piso3)$Legenda
+    valorpontopais <- sea_paises[,as.character(max(input$ano)),,pafil]
+    text <- paste("Country:",pafil,"<br>",
+                  titspais(),"-",subtspais(),":",
+                  valorpontopais)
+    proxy <-leafletProxy("map")
     proxy %>% clearPopups() %>%
-      addPopups(click$lng, click$lat, text)
+      addLabelOnlyMarkers(hover$lng,hover$lat,label = text)
   })
   
-
-  
-
   linhas_13 <- reactive({
     encontrar_pais(m_io_13, input$pais, rownames)
   })
@@ -99,6 +192,8 @@ server <- function(input, output, session) {
   output$pais <- renderDataTable(
     
     tabmil(t(sea_paises[,as.character(input$ano),,input$pais]))%>%
+      filter(var %in% c(input$indicador,perfil_sumario))%>%
+      arrange(match(var,c(input$indicador,perfil_sumario)))%>%
       left_join(varst)%>%
       select(var = pt, 2:3),
    # rownames = TRUE,
@@ -110,7 +205,7 @@ server <- function(input, output, session) {
       ordering = FALSE,
       searching = FALSE,
       paging = FALSE,
-      scrollY = "200",
+#      scrollY = "200",
       # pageLength = 10,
       info = FALSE,
       lengthChange = FALSE
@@ -172,17 +267,11 @@ server <- function(input, output, session) {
       )
 
   output$titulo_serie_pais <-
-    renderText(
-      paste(varst[varst$var==input$indicador,"pt"])
-    )
+   renderText(titspais())
 
   output$subtitulo_serie_pais <-
     renderText(
-      paste0(paises[paises$Legenda==input$pais,1],
-             ", ",
-            as.character(ano_min),
-            " - ",
-            as.character(ano_max)))
+      subtspais())
 
   output$titulo_painel <-
     renderText(
