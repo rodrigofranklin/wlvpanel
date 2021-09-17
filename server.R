@@ -1,5 +1,6 @@
 
 server <- function(input, output, session) {
+ 
   
   output$map <- renderLeaflet({
     # Use leaflet() here, and only include aspects of the map that
@@ -13,26 +14,24 @@ server <- function(input, output, session) {
   })
   
   
-
+  
   ####
   ##Reactive values to use in more than one place (titles, popups)
   titspais <- reactive({ 
     return(paste(varst[varst$var==input$indicador,"pt"]))
-  }
-  )
+  })
   
   subtspais <- reactive({
     return(paste0(paises[paises$Legenda==input$pais,1],
-           ", ",
-           as.character(ano_min),
-           " - ",
-           as.character(ano_max))
-    )
-    })
+                  ", ",
+                  as.character(ano_min),
+                  " - ",
+                  as.character(ano_max)))
+  })
   
   ####
-
-    
+  
+  
   
   esconde <- reactiveVal(1)
   
@@ -45,58 +44,58 @@ server <- function(input, output, session) {
   ####
   
   observeEvent(input$indicador,{
-               tiranpaises <- paises[!(paises$Legenda %in% c("WWW","ROW")),"Legenda"]
-               basecam <- sea_paises["WIOD13",as.character(input$ano),input$indicador,tiranpaises]
-               
-             camadas <- joinCountryData2Map(enframe(basecam),nameJoinColumn = "name")
-             labels <- sprintf("<strong>%s</strong><br/>%s : %g %s",
-               camadas$ADMIN, input$indicador, camadas$value, varst[varst$var == input$indicador,"type"]
-             ) %>% lapply(htmltools::HTML)
-               binas <- c(0,min(basecam, na.rm = T),median(basecam, na.rm = T),max(basecam, na.rm = T))
-               palas <- colorBin("YlOrRd" , 
-                                 domain = camadas$value,
-                                 bins = binas)
-               
-               proxy <- leafletProxy("map")
-               
-               proxy   %>%  
-                  clearShapes() %>%
-                 clearControls()%>%
-                 addPolygons(data = camadas,
-                             fillColor = ~palas(camadas$value),
-                             color="white",
-                             weight = 0.5,
-                             opacity = 0.9,
-                             dashArray = "3",
-                             fillOpacity = 0.6,
-                             label = labels,
-                             labelOptions = labelOptions(textsize = "9px",direction="auto",style=list("font-weight" = "normal", padding = "3px 8px")),
-                             highlight = highlightOptions(
-                               weight = 1,
-                               color = "#666",
-                               dashArray = "",
-                               fillOpacity = 0.7,
-                              bringToFront = TRUE)
-                              )%>%
-                 addLegend("bottomright",
-                                   values = camadas$value,
-                                   title = titspais(),
-                                   pal = palas
-               )
+    tiranpaises <- paises[!(paises$Legenda %in% c("WWW","ROW")),"Legenda"]
+    basecam <- sea_paises["WIOD13",as.character(input$ano),input$indicador,tiranpaises]
+    
+    camadas <- joinCountryData2Map(enframe(basecam),nameJoinColumn = "name")
+    labels <- sprintf("<strong>%s</strong><br/>%s : %g %s",
+                      camadas$ADMIN, input$indicador, camadas$value, varst[varst$var == input$indicador,"type"]
+    ) %>% lapply(htmltools::HTML)
+    binas <- c(0,min(basecam, na.rm = T),median(basecam, na.rm = T),max(basecam, na.rm = T))
+    palas <- colorBin("YlOrRd" , 
+                      domain = camadas$value,
+                      bins = binas)
+    
+    proxy <- leafletProxy("map")
+    
+    proxy   %>%  
+      clearShapes() %>%
+      clearControls()%>%
+      addPolygons(data = camadas,
+                  fillColor = ~palas(camadas$value),
+                  color="white",
+                  weight = 0.5,
+                  opacity = 0.9,
+                  dashArray = "3",
+                  fillOpacity = 0.6,
+                  label = labels,
+                  labelOptions = labelOptions(textsize = "9px",direction="auto",style=list("font-weight" = "normal", padding = "3px 8px")),
+                  highlight = highlightOptions(
+                    weight = 1,
+                    color = "#666",
+                    dashArray = "",
+                    fillOpacity = 0.7,
+                    bringToFront = TRUE)
+      )%>%
+      addLegend("bottomright",
+                values = camadas$value,
+                title = titspais(),
+                pal = palas
+      )
   }
   )
   
   observeEvent(input$pais,ignoreInit = T,{
     esconde(1)
   }
-               )
-
+  )
+  
   output$esconde <- reactive(
     return(esconde())
   )
   outputOptions(output, 'esconde', suspendWhenHidden=FALSE)
   
-
+  
   observeEvent(input$map_click, {
     click <- input$map_click
     piso3 <- coords2country(data.frame(lng = click$lng, lat = click$lat))
@@ -104,9 +103,11 @@ server <- function(input, output, session) {
     paisvei <- input$pais
     updateSelectInput(inputId = "pais",
                       selected = pafil)
-    esconde(1)
+    if (piso3 %in% paises$Legenda) {
+      esconde(1)
+    }
   })
-
+  
   
   observeEvent(input$map_hover, {
     hover <- input$map_hover
@@ -124,185 +125,45 @@ server <- function(input, output, session) {
   linhas_13 <- reactive({
     encontrar_pais(m_io_13, input$pais, rownames)
   })
-
+  
   colunas_13 <- reactive({
     encontrar_pais(m_io_13, input$pais_transacoes, colnames)
   })
-
+  
   linhas_16 <- reactive({
     encontrar_pais(m_io_16, input$pais_transacoes, rownames)
   })
-
+  
   colunas_16 <- reactive({
     encontrar_pais(m_io_16, input$pais_transacoes, colnames)
   })
-
-  comerciantes_p <-  function(bd=13,pais = input$paistrade,ano = input$anotrade, elemento = "exportacoes_pm",qtde = 15) {
-      mat <- get(paste0("m_paises_",bd))
-      mat <- mat[as.character(ano),elemento,pais,1:40]
-      paises <- names(sort(mat,T)[2:(qtde+1)])
-    }
-
+  
+  comerciantes_p <-  function(bd=13,pais = input$pais,ano = input$ano, elemento = "exportacoes_pm",qtde = 15) {
+    mat <- get(paste0("m_paises_",bd))
+    mat <- mat[as.character(ano),elemento,pais,]
+    paises <- names(sort(mat,T)[2:(qtde+1)])
+  }
+  
+  
 
   fazer_selecao <- reactive({
     switch(paste0(input$transacoes_versao,input$transacoes_agregacao),
-             "WIOD13Agregado" = 1,
-             "WIOD13Por setor de origem" = 2,
-             "WIOD16Agregado" = 3,
-             "WIOD16Por setor de origem" = 4
-             )
+           "WIOD13Agregado" = 1,
+           "WIOD13Por setor de origem" = 2,
+           "WIOD16Agregado" = 3,
+           "WIOD16Por setor de origem" = 4
+    )
   })
 
 
 
-   dados <- reactive({
-    paste0(input$transacoes_versao)
-   })
 
-   output$debuga <- renderText({
-     #glimpse(dados())
-     paste(input$pais)
-   })
-
-  output$pais <- renderDataTable(
-    
-    tabmil(t(sea_paises[,as.character(input$ano),,input$pais]))%>%
-      filter(var %in% c(input$indicador,perfil_sumario))%>%
-      arrange(match(var,c(input$indicador,perfil_sumario)))%>%
-      left_join(varst)%>%
-      select(var = pt, 2:3),
-   # rownames = TRUE,
-#    spacing = "xs",
-#    striped = TRUE,
-#    hover = TRUE,
-#    width = "100%",
-    options = list(
-      ordering = FALSE,
-      searching = FALSE,
-      paging = FALSE,
-#      scrollY = "200",
-      # pageLength = 10,
-      info = FALSE,
-      lengthChange = FALSE
-    )
-  )
-
-  output$serie_pais <- renderPlotly({
-    dados <- sea_paises[,,input$indicador,input$pais]
-    plotaserie(dados)
-  })
-
-
-  output$setores_pais_13 <- renderDataTable(
-    tabmil(sea_setores_13[as.character(input$ano),
-                   input$indicador,,
-                   input$pais])%>%
-      left_join(setorest,by=c("var" = "Code"))%>%
-      select(sector=pt,value=x),
-    options = list(
-      ordering = TRUE,
-      searching = FALSE,
-      paging = FALSE,
-      #pageLength = 8,
-      scrollY= "340",
-      info = FALSE,
-      lengthChange = FALSE
-    )
-  )
-
-  output$setores_pais_16 <- renderDataTable(
-    tabmil(sea_setores_16[as.character(input$ano),
-                          input$indicador,,
-                          input$pais])%>%
-      left_join(setorest,by=c("var" = "Code"))%>%
-      select(sector=pt,value=x),
-    options = list(
-      ordering = TRUE,
-      searching = FALSE,
-      paging = FALSE,
-      #pageLength = 8,
-      scrollY= "340",
-      info = FALSE,
-      lengthChange = FALSE
-    )
-  )
-
-
-  output$titulo_detalhamento_pais <-
-    renderText(
-      paste(varst[varst$var==input$indicador,"pt"])
-      )
-
-
-  output$subtitulo_detalhamento_pais <-
-    renderText(
-      paste(paises[paises$Legenda==input$pais,1],
-            "-",
-            input$ano)
-      )
-
-  output$titulo_serie_pais <-
-   renderText(titspais())
-
-  output$subtitulo_serie_pais <-
-    renderText(
-      subtspais())
-
-  output$titulo_painel <-
-    renderText(
-      paste("Country Profile:",paises[paises$Legenda==input$pais,1],
-            "-",
-            input$ano
-            )
-      
-    )
-
-
-  output$indicadores <- renderDT(
-    {
-      dados <- t(rbind(
-        paises[match(names(sea_paises[1,1,1,]),paises[,3]),1],
-        sea_paises[,as.character(input$anoind),input$indicadorind,]))
-      dados <- datatable(dados,
-                rownames = 1,
-                options = list(
-                  ordering = TRUE,
-                  searching = TRUE,
-                  paging = FALSE,
-                  info = TRUE,
-                  #pageLength = 8,
-                  scrollY= 220,
-                  lengthChange = FALSE
-
-                )
-      ) %>%
-        formatPercentage("WIOD13", 2)
-      formatStyle(dados, names(dados$x$data),`line-height` = '10px')
-    },
-  )
 
   
-
-  output$serie <- renderPlotly({
-    dados <- sea_paises[input$versao,,
-                        input$indicadorind,
-                        input$paises]
-  plotaserie(dados)
-  })
-
-
-### sobre esses outputs que se seguem: é preciso melhorar. Seria possível ter
-### uma única função que fosse chamada conforme a seleção de (exportação,
-### importação e saldo), e chamada 3 vezes (monetária, valor e transferência)?
-  # Problema: os dados de exportacoes, importacoes e saldo são distintos.
-  # Mas são os mesmos dados conforme o tipo de variável (monetário, valor transf)
-  # No entanto, os gráficos conforme tipo de variábel são concomitantes.
-
-### Sim certamente possível
   
   prep_treemap <- function(bd=input$transacoes_versao,
-                           pais = input$paistrade,
-                           ano = input$anotrade,
+                           pais = input$pais,
+                           ano = input$ano,
                            agr = input$transacoes_agregacao,
                            el = "exportacoes_pm",
                            qcorte = T,
@@ -329,251 +190,407 @@ server <- function(input, output, session) {
     dados
   }
   
+  dados <- reactive({
+    paste0(input$transacoes_versao)
+  })
   
-   output$exportacoes_monetarias <- renderD3tree3({
-     selecao <- fazer_selecao()
-     
-     agrupamento <- case_when(
-       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-       )
- 
-     agrupamento <- unlist(agrupamento)
-     dados <- prep_treemap(agru = agrupamento)%>%filter(pais_d != "Resto do mundo")
+  output$debuga <- renderText({
+    #glimpse(dados())
+    paste(input$pais)
+  })
+  
+  output$pais <- renderDataTable(
+    
+    tabmil(t(sea_paises[,as.character(input$ano),,input$pais]))%>%
+      filter(var %in% c(input$indicador,perfil_sumario))%>%
+      arrange(match(var,c(input$indicador,perfil_sumario)))%>%
+      left_join(varst)%>%
+      select(var = pt, 2:3),
+    # rownames = TRUE,
+    #    spacing = "xs",
+    #    striped = TRUE,
+    #    hover = TRUE,
+    #    width = "100%",
+    options = list(
+      ordering = FALSE,
+      searching = FALSE,
+      paging = FALSE,
+      #      scrollY = "200",
+      # pageLength = 10,
+      info = FALSE,
+      lengthChange = FALSE
+    )
+  )
+  
+  output$serie_pais <- renderPlotly({
+    dados <- sea_paises[,,input$indicador,input$pais]
+    plotaserie(dados)
+  })
+  
+  
+  output$setores_pais_13 <- renderDataTable(
+    tabmil(sea_setores_13[as.character(input$ano),
+                          input$indicador,,
+                          input$pais])%>%
+      left_join(setorest,by=c("var" = "Code"))%>%
+      select(sector=pt,value=x),
+    options = list(
+      ordering = TRUE,
+      searching = FALSE,
+      paging = FALSE,
+      #pageLength = 8,
+      scrollY= "340",
+      info = FALSE,
+      lengthChange = FALSE
+    )
+  )
+  
+  output$setores_pais_16 <- renderDataTable(
+    tabmil(sea_setores_16[as.character(input$ano),
+                          input$indicador,,
+                          input$pais])%>%
+      left_join(setorest,by=c("var" = "Code"))%>%
+      select(sector=pt,value=x),
+    options = list(
+      ordering = TRUE,
+      searching = FALSE,
+      paging = FALSE,
+      #pageLength = 8,
+      scrollY= "340",
+      info = FALSE,
+      lengthChange = FALSE
+    )
+  )
+  
+  
+  output$titulo_detalhamento_pais <-
+    renderText(
+      paste(varst[varst$var==input$indicador,"pt"])
+    )
+  
+  
+  output$subtitulo_detalhamento_pais <-
+    renderText(
+      paste(paises[paises$Legenda==input$pais,1],
+            "-",
+            input$ano)
+    )
+  
+  output$titulo_serie_pais <-
+    renderText(titspais())
+  
+  output$subtitulo_serie_pais <-
+    renderText(
+      subtspais())
+  
+  output$titulo_painel <-
+    renderText(
+      paste("Country Profile:",paises[paises$Legenda==input$pais,1],
+            "-",
+            input$ano
+      )
+      
+    )
+  
+  
+  output$indicadores1 <- renderDT(
+    {
+      dados <- t(rbind(
+        paises[match(names(sea_paises[1,1,1,]),paises[,3]),1],
+        sea_paises[,as.character(input$anoind),input$indicadorind,]))
+      dados <- datatable(dados,
+                         rownames = 1,
+                         options = list(
+                           ordering = FALSE,
+                           searching = FALSE,
+                           paging = FALSE,
+                           scrollY= "100%",
+                           info = FALSE,
+                           lengthChange = FALSE
+                         )
+      ) %>%
+        formatPercentage("WIOD13", 2)
+      formatStyle(dados, names(dados$x$data),`line-height` = '10px')
+    },
+  )
+  
+  output$indicadores2 <- DT::renderDataTable(
+    {
+      dados <- t(rbind(
+        paises[match(names(sea_paises[1,1,1,]),paises[,3]),1],
+        sea_paises[,as.character(input$ano),input$indicador,]))[((num_paises/2)+1):num_paises,]
+      dados <- datatable(dados,
+                         rownames = 1,
+                         options = list(
+                           ordering = FALSE,
+                           searching = FALSE,
+                           paging = FALSE,
+                           scrollY= "100%",
+                           info = FALSE,
+                           lengthChange = FALSE
+                         )
+      ) %>%
+        formatPercentage("WIOD13", 2)
+      formatStyle(dados, names(dados$x$data),`line-height` = '10px')
+    },
+  )
+  
+  output$serie <- renderPlotly({
+    dados <- sea_paises[input$versao,,
+                        input$indicadorind,
+                        input$paises]
+    plotaserie(dados)
+  })
+  
+  
+  ### sobre esses outputs que se seguem: é preciso melhorar. Seria possível ter
+  ### uma única função que fosse chamada conforme a seleção de (exportação,
+  ### importação e saldo), e chamada 3 vezes (monetária, valor e transferência)?
+  # Problema: os dados de exportacoes, importacoes e saldo são distintos.
+  # Mas são os mesmos dados conforme o tipo de variável (monetário, valor transf)
+  # No entanto, os gráficos conforme tipo de variábel são concomitantes.
 
-     d3tree3(treemap(dados, index = agrupamento, vSize = "valor",
-                    type = "index", palette = "Set1"),
-             "Monetary Exports")
-     }
-     )
-# 
-#   
-#   
-   output$exportacoes_valores <- renderD3tree3({
-     selecao <- fazer_selecao()
-     
-     agrupamento <- case_when(
-       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-     )
- 
-     agrupamento <- unlist(agrupamento)
-     dados <- prep_treemap(agru = agrupamento,el = "exportacoes_valores")%>%filter(pais_d != "Resto do mundo")
-     
-     d3tree3(treemap(dados,  index = agrupamento, vSize = "valor",
-                     type = "index", palette = "Set1"),
-             rootname = "Exports in Value Terms")
-     
- })
- 
-   output$exportacoes_transferencias <- renderD3tree3({
-     selecao <- fazer_selecao()
-     
-     agrupamento <- case_when(
-       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-     )
-     
-     agrupamento <- unlist(agrupamento)
-     dados <- prep_treemap(agru = agrupamento,"transferencias_valores")%>%filter(pais_d != "Resto do mundo")
-     
-     d3tree3(treemap(dados, index = agrupamento, vSize = "valor",
-                     type = "value", palette = "Set1"),
-             rootname = "Value Transfers(Unequal Exchange)")
-     
- },
- )
-
-#   
-#   output$importacoes_monetarias <- renderD3tree3({
-#     selecao <- fazer_selecao()
-#     
-#     agrupamento <- case_when(
-#       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-#       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-#     )
-#     agrupamento <- unlist(agrupamento)
-#     dados <- prep_treemap(agru = agrupamento,el="importacoes_monetarias")
-#     
-#     d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
-#                     type = "index", palette = "Set1"))
-#     
-# })
-#   
-#   output$importacoes_valores <- renderD3tree3({
-#     selecao <- fazer_selecao()
-#     
-#     agrupamento <- case_when(
-#       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-#       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-#     )
-#     agrupamento <- unlist(agrupamento)
-#     dados <- prep_treemap(agru = agrupamento,el="importacoes_valores")
-#     
-#     d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
-#                     type = "index", palette = "Set1"))
-#     
-# })
-#   
-#   output$saldo_monetarias <- renderD3tree3({
-#     selecao <- fazer_selecao()
-#     
-#     agrupamento <- case_when(
-#       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-#       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-#     )
-#     agrupamento <- unlist(agrupamento)
-#     dados <- prep_treemap(agru = agrupamento,el="saldo")
-#     
-#     d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
-#                     type = "index", palette = "Set1"))
-#     
-#     
-#     })
-#   
-#   
-#   output$saldo_valores <- renderD3tree3({
-#     selecao <- fazer_selecao()
-#     
-#     agrupamento <- case_when(
-#       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-#       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-#     )
-#     agrupamento <- unlist(agrupamento)
-#     dados <- prep_treemap(agru = agrupamento,el="saldo_valores")
-#     
-#     d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
-#                     type = "index", palette = "Set1"))
-#     
-#     
-# })
-#   
-#   output$saldo_transferencias <- renderD3tree3({
-#     selecao <- fazer_selecao()
-#     
-#     agrupamento <- case_when(
-#       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-#       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-#     )
-#     agrupamento <- unlist(agrupamento)
-#     dados <- prep_treemap(agru = agrupamento,el="saldo_transferencias")
-#     
-#     d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
-#                     type = "index", palette = "Set1"))
-#     
-#     
-#     })
-# 
-# ### Análise das transferências: tabelas sobre troca desigual e trocas nos setores
-# ### improdutivos
-# 
-#   ## Juntar tanto as exportacoes quanto as importacoes
-#   output$td_envios_recebimentos <- renderTable({
-#     selecao <- fazer_selecao()
-#     if (selecao == 1) {
-#       temp1 <- m_paises_13[as.character(input$ano_transacoes),
-#                            "transferências_produtivas.valores",
-#                            input$pais_transacoes,
-#                            ]
-#       temp2 <-  -m_paises_13[as.character(input$ano_transacoes),
-#                             "transferências_produtivas.valores",
-#                             ,
-#                             input$pais_transacoes]
-#       names(temp1) <- paste0("X.",names(temp1))
-#       names(temp2) <- paste0("M.",names(temp2))
-#       c(temp1, temp2)
-#     } else if (selecao == 2) {
-#     } else if (selecao == 3) {
-#     } else if (selecao == 4) {
-#     } else if (selecao == 5) {
-#     } else if (selecao == 6) {
-#     }
-#   }, rownames = TRUE)
-# 
-#   output$td_envios_recebimentos_saldo <- renderTable({
-#     selecao <- fazer_selecao()
-#     if (selecao == 1){
-#       m_paises_13[as.character(input$ano_transacoes),
-#                            "transferências_produtivas.valores",
-#                            input$pais_transacoes,] -
-#       m_paises_13[as.character(input$ano_transacoes),
-#                           "transferências_produtivas.valores",
-#                           ,input$pais_transacoes]
-#     } else if (selecao == 2) {
-#     } else if (selecao == 3) {
-#     } else if (selecao == 4) {
-#     } else if (selecao == 5) {
-#     } else if (selecao == 6) {
-#     }
-#   }, rownames = TRUE)
-# 
-# 
-#   output$improdutivos_envios_recebimentos <- renderTable({
-#     selecao <- fazer_selecao()
-#     if (selecao == 1){
-#       temp1 <- m_paises_13[as.character(input$ano_transacoes),
-#                            "transferencias_valores",
-#                            input$pais_transacoes,] -
-#         m_paises_13[as.character(input$ano_transacoes),
-#                            "transferências_produtivas.valores",
-#                            input$pais_transacoes,]
-#       temp2 <-  -(m_paises_13[as.character(input$ano_transacoes),
-#                             "transferencias_valores",
-#                             ,input$pais_transacoes] -
-#         m_paises_13[as.character(input$ano_transacoes),
-#                     "transferências_produtivas.valores",
-#                     ,input$pais_transacoes])
-#       names(temp1) <- paste0("X.",names(temp1))
-#       names(temp2) <- paste0("M.",names(temp2))
-#       c(temp1, temp2)
-#     } else if (selecao == 2) {
-#     } else if (selecao == 3) {
-#     } else if (selecao == 4) {
-#     } else if (selecao == 5) {
-#     } else if (selecao == 6) {
-#     }
-#   }, rownames = TRUE)
-# 
-# 
-#   output$improdutivos_envios_recebimentos_saldo <- renderTable({
-#     selecao <- fazer_selecao()
-#     if (selecao == 1){
-#       temp1 <- m_paises_13[as.character(input$ano_transacoes),
-#                            "transferencias_valores",
-#                            input$pais_transacoes,] -
-#         m_paises_13[as.character(input$ano_transacoes),
-#                     "transferências_produtivas.valores",
-#                     input$pais_transacoes,] -
-#         (m_paises_13[as.character(input$ano_transacoes),
-#                               "transferencias_valores",
-#                               ,input$pais_transacoes] -
-#            m_paises_13[as.character(input$ano_transacoes),
-#                                 "transferências_produtivas.valores",
-#                                 ,input$pais_transacoes])
-#     } else if (selecao == 2) {
-#     } else if (selecao == 3) {
-#     } else if (selecao == 4) {
-#     } else if (selecao == 5) {
-#     } else if (selecao == 6) {
-#     }
-#   }, rownames = TRUE)
-# 
-#   output$proporcao_td_transferencias <- renderText({
-#     as.character(sum(m_paises_13[as.character(input$ano_transacoes),
-#                                  "transferências_produtivas.valores",
-#                                  input$pais_transacoes,] +
-#                        m_paises_13[as.character(input$ano_transacoes),
-#                                    "transferências_produtivas.valores",
-#                                    ,input$pais_transacoes])/
-#                    sum(m_paises_13[as.character(input$ano_transacoes),
-#                                    "transferencias_valores",
-#                                    input$pais_transacoes,] +
-#                          m_paises_13[as.character(input$ano_transacoes),
-#                                      "transferencias_valores",
-#                                      ,input$pais_transacoes]))
-#   })
-#   textOutput("proporcao_td_transferencias_saldo")
-
+  ### Sim certamente possível
+  #   output$exportacoes_monetarias <- renderD3tree3({
+  #     selecao <- fazer_selecao()
+  #     
+  #     agrupamento <- case_when(
+  #       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+  #       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+  #       )
+  # 
+  #     agrupamento <- unlist(agrupamento)
+  #     dados <- prep_treemap(agru = agrupamento)
+  # 
+  #     d3tree3(treemap(dados, title = "exportações monetárias",  index = agrupamento, vSize = "valor",
+  #                    type = "index", palette = "Set1"))
+  #     }
+  #     )
+  # 
+  #   
+  #   
+  #   output$exportacoes_valores <- renderD3tree3({
+  #     selecao <- fazer_selecao()
+  #     
+  #     agrupamento <- case_when(
+  #       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+  #       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+  #     )
+  # 
+  #     agrupamento <- unlist(agrupamento)
+  #     dados <- prep_treemap(agru = agrupamento,el = "exportacoes_valores")
+  #     
+  #     d3tree3(treemap(dados, title = "exportações em valores",  index = agrupamento, vSize = "valor",
+  #                     type = "index", palette = "Set1"))
+  #     
+  # })
+  # 
+  #   output$exportacoes_transferencias <- renderD3tree3({
+  #     selecao <- fazer_selecao()
+  #     
+  #     agrupamento <- case_when(
+  #       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+  #       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+  #     )
+  #     
+  #     agrupamento <- unlist(agrupamento)
+  #     dados <- prep_treemap(agru = agrupamento,"transferencias_valores")
+  #     
+  #     d3tree3(treemap(dados, title = "Trasnferência de Valores",  index = agrupamento, vSize = "valor",
+  #                     type = "index", palette = "Set1"))
+  #     
+  # },
+  # )
+  #   
+  #   output$importacoes_monetarias <- renderD3tree3({
+  #     selecao <- fazer_selecao()
+  #     
+  #     agrupamento <- case_when(
+  #       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+  #       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+  #     )
+  #     agrupamento <- unlist(agrupamento)
+  #     dados <- prep_treemap(agru = agrupamento,el="importacoes_monetarias")
+  #     
+  #     d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
+  #                     type = "index", palette = "Set1"))
+  #     
+  # })
+  #   
+  #   output$importacoes_valores <- renderD3tree3({
+  #     selecao <- fazer_selecao()
+  #     
+  #     agrupamento <- case_when(
+  #       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+  #       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+  #     )
+  #     agrupamento <- unlist(agrupamento)
+  #     dados <- prep_treemap(agru = agrupamento,el="importacoes_valores")
+  #     
+  #     d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
+  #                     type = "index", palette = "Set1"))
+  #     
+  # })
+  #   
+  #   output$saldo_monetarias <- renderD3tree3({
+  #     selecao <- fazer_selecao()
+  #     
+  #     agrupamento <- case_when(
+  #       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+  #       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+  #     )
+  #     agrupamento <- unlist(agrupamento)
+  #     dados <- prep_treemap(agru = agrupamento,el="saldo")
+  #     
+  #     d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
+  #                     type = "index", palette = "Set1"))
+  #     
+  #     
+  #     })
+  #   
+  #   
+  #   output$saldo_valores <- renderD3tree3({
+  #     selecao <- fazer_selecao()
+  #     
+  #     agrupamento <- case_when(
+  #       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+  #       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+  #     )
+  #     agrupamento <- unlist(agrupamento)
+  #     dados <- prep_treemap(agru = agrupamento,el="saldo_valores")
+  #     
+  #     d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
+  #                     type = "index", palette = "Set1"))
+  #     
+  #     
+  # })
+  #   
+  #   output$saldo_transferencias <- renderD3tree3({
+  #     selecao <- fazer_selecao()
+  #     
+  #     agrupamento <- case_when(
+  #       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+  #       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+  #     )
+  #     agrupamento <- unlist(agrupamento)
+  #     dados <- prep_treemap(agru = agrupamento,el="saldo_transferencias")
+  #     
+  #     d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
+  #                     type = "index", palette = "Set1"))
+  #     
+  #     
+  #     })
+  # 
+  # ### Análise das transferências: tabelas sobre troca desigual e trocas nos setores
+  # ### improdutivos
+  # 
+  #   ## Juntar tanto as exportacoes quanto as importacoes
+  #   output$td_envios_recebimentos <- renderTable({
+  #     selecao <- fazer_selecao()
+  #     if (selecao == 1) {
+  #       temp1 <- m_paises_13[as.character(input$ano_transacoes),
+  #                            "transferências_produtivas.valores",
+  #                            input$pais_transacoes,
+  #                            ]
+  #       temp2 <-  -m_paises_13[as.character(input$ano_transacoes),
+  #                             "transferências_produtivas.valores",
+  #                             ,
+  #                             input$pais_transacoes]
+  #       names(temp1) <- paste0("X.",names(temp1))
+  #       names(temp2) <- paste0("M.",names(temp2))
+  #       c(temp1, temp2)
+  #     } else if (selecao == 2) {
+  #     } else if (selecao == 3) {
+  #     } else if (selecao == 4) {
+  #     } else if (selecao == 5) {
+  #     } else if (selecao == 6) {
+  #     }
+  #   }, rownames = TRUE)
+  # 
+  #   output$td_envios_recebimentos_saldo <- renderTable({
+  #     selecao <- fazer_selecao()
+  #     if (selecao == 1){
+  #       m_paises_13[as.character(input$ano_transacoes),
+  #                            "transferências_produtivas.valores",
+  #                            input$pais_transacoes,] -
+  #       m_paises_13[as.character(input$ano_transacoes),
+  #                           "transferências_produtivas.valores",
+  #                           ,input$pais_transacoes]
+  #     } else if (selecao == 2) {
+  #     } else if (selecao == 3) {
+  #     } else if (selecao == 4) {
+  #     } else if (selecao == 5) {
+  #     } else if (selecao == 6) {
+  #     }
+  #   }, rownames = TRUE)
+  # 
+  # 
+  #   output$improdutivos_envios_recebimentos <- renderTable({
+  #     selecao <- fazer_selecao()
+  #     if (selecao == 1){
+  #       temp1 <- m_paises_13[as.character(input$ano_transacoes),
+  #                            "transferencias_valores",
+  #                            input$pais_transacoes,] -
+  #         m_paises_13[as.character(input$ano_transacoes),
+  #                            "transferências_produtivas.valores",
+  #                            input$pais_transacoes,]
+  #       temp2 <-  -(m_paises_13[as.character(input$ano_transacoes),
+  #                             "transferencias_valores",
+  #                             ,input$pais_transacoes] -
+  #         m_paises_13[as.character(input$ano_transacoes),
+  #                     "transferências_produtivas.valores",
+  #                     ,input$pais_transacoes])
+  #       names(temp1) <- paste0("X.",names(temp1))
+  #       names(temp2) <- paste0("M.",names(temp2))
+  #       c(temp1, temp2)
+  #     } else if (selecao == 2) {
+  #     } else if (selecao == 3) {
+  #     } else if (selecao == 4) {
+  #     } else if (selecao == 5) {
+  #     } else if (selecao == 6) {
+  #     }
+  #   }, rownames = TRUE)
+  # 
+  # 
+  #   output$improdutivos_envios_recebimentos_saldo <- renderTable({
+  #     selecao <- fazer_selecao()
+  #     if (selecao == 1){
+  #       temp1 <- m_paises_13[as.character(input$ano_transacoes),
+  #                            "transferencias_valores",
+  #                            input$pais_transacoes,] -
+  #         m_paises_13[as.character(input$ano_transacoes),
+  #                     "transferências_produtivas.valores",
+  #                     input$pais_transacoes,] -
+  #         (m_paises_13[as.character(input$ano_transacoes),
+  #                               "transferencias_valores",
+  #                               ,input$pais_transacoes] -
+  #            m_paises_13[as.character(input$ano_transacoes),
+  #                                 "transferências_produtivas.valores",
+  #                                 ,input$pais_transacoes])
+  #     } else if (selecao == 2) {
+  #     } else if (selecao == 3) {
+  #     } else if (selecao == 4) {
+  #     } else if (selecao == 5) {
+  #     } else if (selecao == 6) {
+  #     }
+  #   }, rownames = TRUE)
+  # 
+  #   output$proporcao_td_transferencias <- renderText({
+  #     as.character(sum(m_paises_13[as.character(input$ano_transacoes),
+  #                                  "transferências_produtivas.valores",
+  #                                  input$pais_transacoes,] +
+  #                        m_paises_13[as.character(input$ano_transacoes),
+  #                                    "transferências_produtivas.valores",
+  #                                    ,input$pais_transacoes])/
+  #                    sum(m_paises_13[as.character(input$ano_transacoes),
+  #                                    "transferencias_valores",
+  #                                    input$pais_transacoes,] +
+  #                          m_paises_13[as.character(input$ano_transacoes),
+  #                                      "transferencias_valores",
+  #                                      ,input$pais_transacoes]))
+  #   })
+  #   textOutput("proporcao_td_transferencias_saldo")
+>>>>>>> 1f91ed0 (Identação)
 }
 
 
