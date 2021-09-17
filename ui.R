@@ -1,10 +1,10 @@
 ui <- navbarPage(
-
+  
   theme = shinytheme("yeti"),
   collapsible = TRUE,
   windowTitle = "World Labour Value Database",
   title = "WLVD",
-
+  
   tabPanel(
     "Country",
     # Mapa (estilos para eliminar borda)
@@ -18,7 +18,7 @@ ui <- navbarPage(
     tags$style(type = "text/css", "tr.odd {background-color: rgba(249,249,249,0.7) !important};"),
     tags$style(type = "text/css", "tr.even {background-color: rgba(255,255,255,0.7) !important};"),
     tags$style(type = "text/css", "tr.even.selected {background-color: rgba(176, 190, 217,0.6) !important};"),
-
+    
     absolutePanel(
       id="controls",
       top = 50,
@@ -45,110 +45,110 @@ ui <- navbarPage(
             z-index: 500;
             padding: 0;
             box-shadow: 0 0 10px rgba(0,0,0,0.2)",
-    absolutePanel(
-      id = "header",
-      top = 50,
-      left = "1.5%",
-      width = "72%",
-      height = "32%",
-      style =
-        "background-color: rgba(255,255,255,0.01);
+                     absolutePanel(
+                       id = "header",
+                       top = 50,
+                       left = "1.5%",
+                       width = "72%",
+                       height = "32%",
+                       style =
+                         "background-color: rgba(255,255,255,0.01);
             z-index: 500;
             padding: 0;
             box-shadow: 0 0 0px rgba(0,0,0,0);
             border-radius= none",
-#      draggable = TRUE,
-      textOutput("titulo_painel"),
-      dataTableOutput("pais")
-      ),
-    
-absolutePanel(
-  id = "fechabaixa",
-  top = 50,
-  left = "40%",
-  style =
-    "z-index: 501;
+                       #      draggable = TRUE,
+                       textOutput("titulo_painel"),
+                       dataTableOutput("pais")
+                     ),
+                     
+                     absolutePanel(
+                       id = "fechabaixa",
+                       top = 50,
+                       left = "40%",
+                       style =
+                         "z-index: 501;
     padding: 0;
     border-line: none;
     font-size: 8px",
-  tags$div(tags$table(tags$tr(tags$td(actionButton("xis","X",
-                                                          style ="border-radius: 20px;
+                       tags$div(tags$table(tags$tr(tags$td(actionButton("xis","X",
+                                                                        style ="border-radius: 20px;
                                                           border-color: transparent;
                                                           background-color: rgba(80,30,30,0.4)")),
-                                     tags$td(width = "20px",""),
-                                     tags$td(a(href="worldlabourvalues.org","Download data")),
-                                     
-  )))
-),
-      absolutePanel(
-        top = "35%",
-        height = "75%",
-        right = "1.5%",
-        width = "22%",
-        style =
-          "background-color: rgba(255,255,255,0.05);
+                                                   tags$td(width = "20px",""),
+                                                   tags$td(a(href="worldlabourvalues.org","Download data")),
+                                                   
+                       )))
+                     ),
+                     absolutePanel(
+                       top = "35%",
+                       height = "75%",
+                       right = "1.5%",
+                       width = "22%",
+                       style =
+                         "background-color: rgba(255,255,255,0.05);
         z-index: 500;
         padding: 0;
         box-shadow: 0 0 0px rgba(0,0,0,0);
         border-radius: none",
-          div(textOutput("titulo_detalhamento_pais"), align = "center",
-              style = "font-size:16px; font-weight: bold;background-color: rgba(255,255,255,0.2)"),
-          div(textOutput("subtitulo_detalhamento_pais"), align = "center",
-              style = "background-color: rgba(255,255,255,0.2)"),
-           tabsetPanel(
-             tabPanel(
-               "WIOD.13",
-               dataTableOutput("setores_pais_13")
-             ),
-             tabPanel(
-               "WIOD.16",
-               dataTableOutput("setores_pais_16")
-             )
-           )
-      ),
-    
-    
+                       div(textOutput("titulo_detalhamento_pais"), align = "center",
+                           style = "font-size:16px; font-weight: bold;background-color: rgba(255,255,255,0.2)"),
+                       div(textOutput("subtitulo_detalhamento_pais"), align = "center",
+                           style = "background-color: rgba(255,255,255,0.2)"),
+                       tabsetPanel(
+                         tabPanel(
+                           "WIOD.13",
+                           dataTableOutput("setores_pais_13")
+                         ),
+                         tabPanel(
+                           "WIOD.16",
+                           dataTableOutput("setores_pais_16")
+                         )
+                       )
+                     ),
+                     
+                     
+                     absolutePanel(
+                       style =
+                         "background-color: rgba(255,255,255,0);
+        z-index: 500;
+        padding: 0;
+        box-shadow: 0 0 0px rgba(0,0,0,0);
+        border-radius: none",
+                       top = "44%",
+                       left = "1%",
+                       width = "34%",
+                       height = "23%",
+                       div(textOutput("titulo_serie_pais"), align = "center" ,
+                           style = "font-size:18px; font-weight: bold"),
+                       div(textOutput("subtitulo_serie_pais"), align = "center"),
+                       plotlyOutput("serie_pais")
+                     )
+    ), 
     absolutePanel(
+      id = "credits",
+      class = "panel panel-default",
       style =
-        "background-color: rgba(255,255,255,0);
-        z-index: 500;
-        padding: 0;
-        box-shadow: 0 0 0px rgba(0,0,0,0);
-        border-radius: none",
-      top = "44%",
-      left = "1%",
-      width = "34%",
-      height = "23%",
-          div(textOutput("titulo_serie_pais"), align = "center" ,
-              style = "font-size:18px; font-weight: bold"),
-          div(textOutput("subtitulo_serie_pais"), align = "center"),
-          plotlyOutput("serie_pais")
-           )
-), 
-  absolutePanel(
-    id = "credits",
-    class = "panel panel-default",
-    style =
-      "background-color: rgba(255,255,255,0.2);
+        "background-color: rgba(255,255,255,0.2);
         z-index: 500;
         padding: 0;
         box-shadow: 0 0 10px rgba(0,0,0,0.3);
         border-radius: 5px;
         ",
-    bottom = 20,
-    left = "48%",
-    width = "110px",
-    height = "50px",
-    tags$i(tags$table(tags$tr(tags$td(img(src = "https://worldlabourvalues.org/images/a_batallar_ideas.png",
-                                                   height = "32px",
-                                                   style = "-webkit-filter: grayscale(100%); filter: grayscale(80%)")),
-                                           tags$td(tags$p("World Labour Values Task Force",align="center"),colspan=3,
-                                                   style = "font-size: 9px;")),
-                                 tags$tr(tags$td(tags$p("🄯 CC-BY-NC SA 4.0", align="center"),colspan=4,
-                                                 style = "font-size: 8px;"))))
-
+      bottom = 20,
+      left = "48%",
+      width = "110px",
+      height = "50px",
+      tags$i(tags$table(tags$tr(tags$td(img(src = "https://worldlabourvalues.org/images/a_batallar_ideas.png",
+                                            height = "32px",
+                                            style = "-webkit-filter: grayscale(100%); filter: grayscale(80%)")),
+                                tags$td(tags$p("World Labour Values Task Force",align="center"),colspan=3,
+                                        style = "font-size: 9px;")),
+                        tags$tr(tags$td(tags$p("🄯 CC-BY-NC SA 4.0", align="center"),colspan=4,
+                                        style = "font-size: 8px;"))))
+      
     )
-)
+  )
 )  
   
 
