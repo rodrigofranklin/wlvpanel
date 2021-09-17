@@ -148,63 +148,110 @@ absolutePanel(
                                                  style = "font-size: 8px;"))))
 
     )
-)
+),
+tabPanel(
+  "Indicators",
+  absolutePanel(
+    id="controls",
+    top = 50,
+    right = "1.5%",
+    width = "22%",
+    height = "28%",
+    class = "panel panel-default",
+    style =
+      "background-color: rgba(255,255,255,0.2);
+        z-index: 504;
+        padding: 0;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        border-radius: 2px;
+        font-size: 10px",
+#    selectInput("pais","Country",lista_paises, selected="BRA"),
+    selectInput("indicadorind","Variable",lista_variaveis_sea, selected="taxa_exploracao"),
+    sliderInput("anoind","YEAR",min = 1995, max = 2021, value = 2009, ticks = F, animate=T),
+    checkboxGroupInput(inputId = "versao",
+                   choices = lista_versoes,
+                   selected =  lista_versoes,
+                   label = "Base de dados:"),
+     selectInput(inputId = "paises",
+            label = "Países:",
+            choices = lista_paises,
+            selected = c("BRA","CHN","USA"),
+            multiple = TRUE)   
+  ),
+  absolutePanel(
+    "Série Temporal",
+    width = "70%",
+    height = "43%",
+    top = 50,
+    left = "1.5%",
+    class = "panel panel-default",
+    plotlyOutput("serie", height="85%")
+  ),
+  absolutePanel(
+      top = "54%",
+      left = "1.5%",
+      width = "70%",
+      height = "35%",
+      class = "panel panel-default",
+      dataTableOutput("indicadores")
+    ),
+  
+),
+tabPanel(
+  "Trade",
+  absolutePanel(
+     "tradecontrols",
+     top = 50,
+     right = "1.5%",
+     width = "22%",
+     height = "28%",
+     class = "panel panel-default",
+     style =
+       "background-color: rgba(255,255,255,0.2);
+        z-index: 504;
+        padding: 0;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        border-radius: 2px;
+        font-size: 10px",
+     selectInput("paistrade","Country",lista_paises, selected="BRA"),
+     radioButtons(inputId = "transacoes_agregacao", choices = c("Agregado", "Por setor de origem"), selected = "Agregado", label = ""),
+     radioButtons(inputId = "transacoes_versao", choices = c("WIOD13", "WIOD16"), selected = "WIOD13", label = "Base de dados:"),
+     sliderInput("anotrade","YEAR",min = 1995, max = 2021, value = 2009, ticks = F, animate=T)
+  ),
+  absolutePanel(
+    width="30%",
+    top=50,
+    height="30%",
+    left="1.5%",
+    d3tree3Output("exportacoes_monetarias")
+  ),
+  absolutePanel(
+    width="30%",
+    top=50,
+    height="30%",
+    left="33.5%",
+    d3tree3Output("exportacoes_valores")
+    ),
+  absolutePanel(
+    width="30%",
+    bottom=50,
+    height="30%",
+    left="1.5%",
+    d3tree3Output("exportacoes_transferencias")
+  )
+  )
+
 )  
   
 
 # ### Indicador -------------------------------
 #       # tabItem(
 #       #   tabName = "Indicador",
-#       tabPanel(
-#         "Indicators",
-#         shinydashboard::box(
-#           width = "100%",
-#           # title = "",
-#           # solidHeader = TRUE,
-#           status = "danger",
-#           column(
-#             width = 6,
-#             dataTableOutput("indicadores1")
-#           ),
-#           column(
-#             width = 6,
-#             dataTableOutput("indicadores2")
-#           )
-#         ),
-#         shinydashboard::box(
-#           width = "100%",
-#           title = "Série Temporal",
-#           status = "danger",
-#           solidHeader = TRUE,
-#           plotlyOutput("serie")
-#         )
-#       ),
+
 # 
 # ### Exportações -------------------------------
 #       # tabItem(
 #       #   tabName = "Exportações",
-#       tabPanel(
-#         "Trade",
-#         column(width= 6,
-#                shinydashboard::box(
-#                  width="100%",
-#                  d3tree3Output("exportacoes_monetarias")
-#        #        )
-#         ),
-#         #column(width= 6,
-#                shinydashboard::box(
-#                  width="100%",
-#                  d3tree3Output("exportacoes_valores")
-#              )
-#         ),
-#       column(width= 6,
-#              shinydashboard::box(
-#                width="100%",
-#                d3tree3Output("exportacoes_transferencias")
-#              )
-#       )
-#         
-#       )      
 
 ### Importações -------------------------------
 #       tabItem(

@@ -60,11 +60,13 @@ plotaserie <- function(dados,perc=F) {
   
   if(length(dim(dados))>2){
     dados <- as.data.table(dados)
+    print(head(dados))
     ifelse(ncol(dados)==5,
            names(dados) <- c("bd","ano","indicador","pais","valor"),
            names(dados) <- c("bd","ano","pais","valor")
     )
-    dados <- dados %>% mutate(ano = as.Date(paste0("01/01/",ano),
+    print(dados$ano)
+    dados <- dados %>% mutate(ano = as.Date(paste0("1/1/",ano),
                                             tryFormats="%d/%m/%Y"),
                               across(c(-ano,-valor),as.factor))
   }else{

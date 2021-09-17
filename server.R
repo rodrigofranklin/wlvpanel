@@ -137,9 +137,9 @@ server <- function(input, output, session) {
     encontrar_pais(m_io_16, input$pais_transacoes, colnames)
   })
 
-  comerciantes_p <-  function(bd=13,pais = input$pais,ano = input$ano, elemento = "exportacoes_pm",qtde = 15) {
+  comerciantes_p <-  function(bd=13,pais = input$paistrade,ano = input$anotrade, elemento = "exportacoes_pm",qtde = 15) {
       mat <- get(paste0("m_paises_",bd))
-      mat <- mat[as.character(ano),elemento,pais,]
+      mat <- mat[as.character(ano),elemento,pais,1:40]
       paises <- names(sort(mat,T)[2:(qtde+1)])
     }
 
@@ -154,34 +154,6 @@ server <- function(input, output, session) {
   })
 
 
-  prep_treemap <- function(bd=input$transacoes_versao,
-                           pais = input$pais,
-                           ano = input$ano,
-                           agr = input$transacoes_agregacao,
-                           el = "exportacoes_pm",
-                           qcorte = T,
-                           qtde = 15,
-                           agru = agrupamento,
-                           pod = 1) {
-    bd <- ifelse(grepl("13",bd),13,16)
-    p <- comerciantes_p(bd,pais,ano,el,10)
-    dados <- get(paste0("m_io_",bd)) %>%
-      agregado(ano, el, get(paste0("linhas_",bd))()) %>%
-      as.data.table(keep.rownames = "paisect")%>%
-      separate(paisect,c("pais_origen","sector_origen"),sep="\\.")%>%
-      select(-pais_origen)%>%
-      pivot_longer(-c(sector_origen),names_to="paisect_d",values_to="valor")%>%
-      separate(paisect_d,c("pais_d","sect_d"),sep="\\.")%>%
-      mutate(pais_d = ifelse(pais_d %in% p,pais_d,"ROW"))%>%
-      dplyr::group_by(across(all_of(agru)))%>%
-      summarize(valor=sum(valor))%>%
-      left_join(paises, by = c("pais_d" = "Legenda"))%>%
-      left_join(setorest,by = c("sect_d" = "Code"))%>%
-      transmute(pais_d = `Países`,sect_d = pt, valor)%>%
-      mutate(across(-valor,as.factor))%>% ungroup()
-
-    dados
-  }
 
    dados <- reactive({
     paste0(input$transacoes_versao)
@@ -286,20 +258,22 @@ server <- function(input, output, session) {
     )
 
 
-  output$indicadores1 <- renderDT(
+  output$indicadores <- renderDT(
     {
       dados <- t(rbind(
         paises[match(names(sea_paises[1,1,1,]),paises[,3]),1],
-        sea_paises[,as.character(input$ano),input$indicador,]))[1:(num_paises/2),]
+        sea_paises[,as.character(input$anoind),input$indicadorind,]))
       dados <- datatable(dados,
                 rownames = 1,
                 options = list(
-                  ordering = FALSE,
-                  searching = FALSE,
+                  ordering = TRUE,
+                  searching = TRUE,
                   paging = FALSE,
-                  scrollY= "100%",
-                  info = FALSE,
+                  info = TRUE,
+                  #pageLength = 8,
+                  scrollY= 220,
                   lengthChange = FALSE
+
                 )
       ) %>%
         formatPercentage("WIOD13", 2)
@@ -307,30 +281,11 @@ server <- function(input, output, session) {
     },
   )
 
-  output$indicadores2 <- DT::renderDataTable(
-    {
-      dados <- t(rbind(
-        paises[match(names(sea_paises[1,1,1,]),paises[,3]),1],
-        sea_paises[,as.character(input$ano),input$indicador,]))[((num_paises/2)+1):num_paises,]
-      dados <- datatable(dados,
-                         rownames = 1,
-                         options = list(
-                           ordering = FALSE,
-                           searching = FALSE,
-                           paging = FALSE,
-                           scrollY= "100%",
-                           info = FALSE,
-                           lengthChange = FALSE
-                         )
-      ) %>%
-        formatPercentage("WIOD13", 2)
-      formatStyle(dados, names(dados$x$data),`line-height` = '10px')
-    },
-  )
+  
 
   output$serie <- renderPlotly({
     dados <- sea_paises[input$versao,,
-                        input$indicador,
+                        input$indicadorind,
                         input$paises]
   plotaserie(dados)
   })
@@ -344,56 +299,91 @@ server <- function(input, output, session) {
   # No entanto, os gráficos conforme tipo de variábel são concomitantes.
 
 ### Sim certamente possível
-#   output$exportacoes_monetarias <- renderD3tree3({
-#     selecao <- fazer_selecao()
-#     
-#     agrupamento <- case_when(
-#       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-#       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-#       )
-# 
-#     agrupamento <- unlist(agrupamento)
-#     dados <- prep_treemap(agru = agrupamento)
-# 
-#     d3tree3(treemap(dados, title = "exportações monetárias",  index = agrupamento, vSize = "valor",
-#                    type = "index", palette = "Set1"))
-#     }
-#     )
+  
+  prep_treemap <- function(bd=input$transacoes_versao,
+                           pais = input$paistrade,
+                           ano = input$anotrade,
+                           agr = input$transacoes_agregacao,
+                           el = "exportacoes_pm",
+                           qcorte = T,
+                           qtde = 15,
+                           agru = agrupamento,
+                           pod = 1) {
+    bd <- ifelse(grepl("13",bd),13,16)
+    p <- comerciantes_p(bd,pais,ano,el,10)
+    dados <- get(paste0("m_io_",bd)) %>%
+      agregado(ano, el, get(paste0("linhas_",bd))()) %>%
+      as.data.table(keep.rownames = "paisect")%>%
+      separate(paisect,c("pais_origen","sector_origen"),sep="\\.")%>%
+      select(-pais_origen)%>%
+      pivot_longer(-c(sector_origen),names_to="paisect_d",values_to="valor")%>%
+      separate(paisect_d,c("pais_d","sect_d"),sep="\\.")%>%
+      mutate(pais_d = ifelse(pais_d %in% p,pais_d,"ROW"))%>%
+      dplyr::group_by(across(all_of(agru)))%>%
+      summarize(valor=sum(valor))%>%
+      left_join(paises, by = c("pais_d" = "Legenda"))%>%
+      left_join(setorest,by = c("sect_d" = "Code"))%>%
+      transmute(pais_d = `Países`,sect_d = pt, valor)%>%
+      mutate(across(-valor,as.factor))%>% ungroup()
+    
+    dados
+  }
+  
+  
+   output$exportacoes_monetarias <- renderD3tree3({
+     selecao <- fazer_selecao()
+     
+     agrupamento <- case_when(
+       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+       )
+ 
+     agrupamento <- unlist(agrupamento)
+     dados <- prep_treemap(agru = agrupamento)%>%filter(pais_d != "Resto do mundo")
+
+     d3tree3(treemap(dados, index = agrupamento, vSize = "valor",
+                    type = "index", palette = "Set1"),
+             "Monetary Exports")
+     }
+     )
 # 
 #   
 #   
-#   output$exportacoes_valores <- renderD3tree3({
-#     selecao <- fazer_selecao()
-#     
-#     agrupamento <- case_when(
-#       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-#       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-#     )
-# 
-#     agrupamento <- unlist(agrupamento)
-#     dados <- prep_treemap(agru = agrupamento,el = "exportacoes_valores")
-#     
-#     d3tree3(treemap(dados, title = "exportações em valores",  index = agrupamento, vSize = "valor",
-#                     type = "index", palette = "Set1"))
-#     
-# })
-# 
-#   output$exportacoes_transferencias <- renderD3tree3({
-#     selecao <- fazer_selecao()
-#     
-#     agrupamento <- case_when(
-#       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-#       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-#     )
-#     
-#     agrupamento <- unlist(agrupamento)
-#     dados <- prep_treemap(agru = agrupamento,"transferencias_valores")
-#     
-#     d3tree3(treemap(dados, title = "Trasnferência de Valores",  index = agrupamento, vSize = "valor",
-#                     type = "index", palette = "Set1"))
-#     
-# },
-# )
+   output$exportacoes_valores <- renderD3tree3({
+     selecao <- fazer_selecao()
+     
+     agrupamento <- case_when(
+       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+     )
+ 
+     agrupamento <- unlist(agrupamento)
+     dados <- prep_treemap(agru = agrupamento,el = "exportacoes_valores")%>%filter(pais_d != "Resto do mundo")
+     
+     d3tree3(treemap(dados,  index = agrupamento, vSize = "valor",
+                     type = "index", palette = "Set1"),
+             rootname = "Exports in Value Terms")
+     
+ })
+ 
+   output$exportacoes_transferencias <- renderD3tree3({
+     selecao <- fazer_selecao()
+     
+     agrupamento <- case_when(
+       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+     )
+     
+     agrupamento <- unlist(agrupamento)
+     dados <- prep_treemap(agru = agrupamento,"transferencias_valores")%>%filter(pais_d != "Resto do mundo")
+     
+     d3tree3(treemap(dados, index = agrupamento, vSize = "valor",
+                     type = "value", palette = "Set1"),
+             rootname = "Value Transfers(Unequal Exchange)")
+     
+ },
+ )
+
 #   
 #   output$importacoes_monetarias <- renderD3tree3({
 #     selecao <- fazer_selecao()
