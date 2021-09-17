@@ -59,21 +59,24 @@ server <- function(input, output, session) {
                
                proxy <- leafletProxy("map")
                
-               proxy   %>%   
+               proxy   %>%  
+                  clearShapes() %>%
+                 clearControls()%>%
                  addPolygons(data = camadas,
                              fillColor = ~palas(camadas$value),
                              color="white",
                              weight = 0.5,
                              opacity = 0.9,
+                             dashArray = "3",
                              fillOpacity = 0.6,
                              label = labels,
                              labelOptions = labelOptions(textsize = "9px",direction="auto",style=list("font-weight" = "normal", padding = "3px 8px")),
-#                             highlight = highlightOptions(
-#                               weight = 1,
-#                               color = "#666",
-#                               dashArray = "",
-#                               fillOpacity = 0.7,
- #                              bringToFront = TRUE)
+                             highlight = highlightOptions(
+                               weight = 1,
+                               color = "#666",
+                               dashArray = "",
+                               fillOpacity = 0.7,
+                              bringToFront = TRUE)
                               )%>%
                  addLegend("bottomright",
                                    values = camadas$value,
