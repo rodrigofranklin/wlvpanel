@@ -48,6 +48,7 @@ server <- function(input, output, session) {
     basecam <- sea_paises["WIOD13",as.character(input$ano),input$indicador,tiranpaises]
     
     camadas <- joinCountryData2Map(enframe(basecam),nameJoinColumn = "name")
+    camadas <- camadas[camadas$ISO3 %in% tiranpaises,]
     labels <- sprintf("<strong>%s</strong><br/>%s : %g %s",
                       camadas$ADMIN, input$indicador, camadas$value, varst[varst$var == input$indicador,"type"]
     ) %>% lapply(htmltools::HTML)
