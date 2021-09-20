@@ -35,7 +35,7 @@ ui <- navbarPage(
         font-size: 10px",
       selectInput("pais","Country",lista_paises, selected="BRA"),
       selectInput("indicador","Variable",lista_variaveis_sea, selected="taxa_exploracao"),
-      sliderInput("ano","YEAR",min = 1995, max = 2021, value = 2009, ticks = F, animate=T)
+      sliderInput("ano","YEAR",min = 1995, max = 2021, value = 2009, ticks = F, animate=T, sep = "")
     ),
     
     
