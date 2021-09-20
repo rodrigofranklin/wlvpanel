@@ -399,13 +399,14 @@ server <- function(input, output, session) {
      )
      
      agrupamento <- unlist(agrupamento)
-     dados <- prep_treemap(agru = agrupamento,"transferencias_valores")%>%filter(pais_d != "Resto do mundo")
+     dados <- prep_treemap(agru = agrupamento,el="transferencias_valores")%>%filter(pais_d != "Resto do mundo")%>%
+       mutate(sinal = valor , valor = abs(valor))
      
-     d3tree3(treemap(dados, index = agrupamento, vSize = "valor",
-                     type = "value", palette = "Set1"),
+     d3tree3(treemap(dados, index = agrupamento, vSize = "valor",vColor = "sinal",
+                     type = "value", palette = "RdYlOr"),
              rootname = "Value Transfers(Unequal Exchange)")
      
- },
+ }
  )
 
 #   
@@ -419,8 +420,8 @@ server <- function(input, output, session) {
 #     agrupamento <- unlist(agrupamento)
 #     dados <- prep_treemap(agru = agrupamento,el="importacoes_monetarias")
 #     
-#     d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
-#                     type = "index", palette = "Set1"))
+#     d3tree3(treemap(dados, index = agrupamento, vSize = "valor",
+#                     type = "index", palette = "Set1"),)
 #     
 # })
 #   

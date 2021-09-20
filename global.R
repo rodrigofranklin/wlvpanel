@@ -88,8 +88,9 @@ plotaserie <- function(dados,perc=F) {
     theme(rect = element_rect(fill = "transparent"),panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA))
   
   ps <- ggplotly(p)
-  ps %>% layout(plot_bgcolor  = "rgba(255, 255, 255, 0.2)",
-              paper_bgcolor = "rgba(255, 255, 255, 0.2)")
+  # ps %>% layout(plot_bgcolor  = "rgba(255, 255, 255, 0.2)",
+  #             paper_bgcolor = "rgba(255, 255, 255, 0.2)")
+  ps
   
 }
 milhares <- function(x){prettyNum(x,big.mark = ".",decimal.mark = ",")}
