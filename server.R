@@ -7,10 +7,13 @@ server <- function(input, output, session) {
     # won't need to change dynamically (at least, not unless the
     # entire map is being torn down and recreated).
     leaflet(
-      options = leafletOptions(zoomControl = FALSE)) %>%
-      addTiles() %>%
-      setView(lat = 0, lng = 0, zoom = 3
-      )
+      options = leafletOptions(
+        zoomControl = FALSE,
+        worldCopyJump = TRUE,
+        minZoom = 2,
+        )) %>%
+      addProviderTiles(providers$CartoDB.Positron) %>%
+      setView(lat = 0, lng = 0, zoom = 3)
   })
   
   
@@ -29,25 +32,15 @@ server <- function(input, output, session) {
                   as.character(ano_max)))
   })
   
-  ####
-  
-  
-  
-  esconde <- reactiveVal(1)
-  
-  
-  observeEvent(input$xis,
-               esconde(0)
-               ,ignoreInit = T)
-  
-  
-  ####
-  
   observeEvent(input$indicador,{
     tiranpaises <- paises[!(paises$Legenda %in% c("WWW","ROW")),"Legenda"]
     basecam <- sea_paises["WIOD13",as.character(input$ano),input$indicador,tiranpaises]
     
-    camadas <- joinCountryData2Map(enframe(basecam),nameJoinColumn = "name")
+    camadas <- 
+      joinCountryData2Map(
+        enframe(basecam),
+        nameJoinColumn = "name",
+        mapResolution = "high")
     camadas <- camadas[camadas$ISO3 %in% tiranpaises,]
     labels <- sprintf("<strong>%s</strong><br/>%s : %g %s",
                       camadas$ADMIN, input$indicador, camadas$value, varst[varst$var == input$indicador,"type"]
@@ -86,14 +79,24 @@ server <- function(input, output, session) {
   }
   )
   
-  observeEvent(input$pais,ignoreInit = T,{
-    esconde(1)
-  }
+  esconde <- reactiveVal(0)
+  
+  observeEvent(
+    input$xis,
+    esconde(0),
+    ignoreInit = T
+  )
+
+  observeEvent(
+    input$pais,
+    esconde(1),
+    ignoreInit = T
   )
   
   output$esconde <- reactive(
     return(esconde())
   )
+  
   outputOptions(output, 'esconde', suspendWhenHidden=FALSE)
   
   
@@ -102,9 +105,9 @@ server <- function(input, output, session) {
     piso3 <- coords2country(data.frame(lng = click$lng, lat = click$lat))
     pafil <- (paises%>%filter(Legenda ==  piso3))$Legenda
     paisvei <- input$pais
-    updateSelectInput(inputId = "pais",
-                      selected = pafil)
     if (piso3 %in% paises$Legenda) {
+      updateSelectInput(inputId = "pais",
+                      selected = pafil)
       esconde(1)
     }
   })
@@ -591,7 +594,6 @@ server <- function(input, output, session) {
   #                                      ,input$pais_transacoes]))
   #   })
   #   textOutput("proporcao_td_transferencias_saldo")
->>>>>>> 1f91ed0 (Identação)
 }
 
 
