@@ -13,7 +13,7 @@ server <- function(input, output, session) {
         minZoom = 2,
         )) %>%
       addProviderTiles(providers$CartoDB.Positron) %>%
-      setView(lat = 0, lng = 0, zoom = 3)
+      setView(lat = 0, lng = 0, zoom = 2)
   })
   
   
@@ -46,10 +46,11 @@ server <- function(input, output, session) {
                       camadas$ADMIN, input$indicador, camadas$value, varst[varst$var == input$indicador,"type"]
     ) %>% lapply(htmltools::HTML)
     binas <- c(0,min(basecam, na.rm = T),median(basecam, na.rm = T),max(basecam, na.rm = T))
-    palas <- colorBin("YlOrRd" , 
-                      domain = camadas$value,
-                      bins = binas)
-    
+    palas <- colorBin("Reds" , 
+                      domain = camadas$value)
+                      
+                      # bins = binas)
+    #YlOrRd
     proxy <- leafletProxy("map")
     
     proxy   %>%  
@@ -58,9 +59,9 @@ server <- function(input, output, session) {
       addPolygons(data = camadas,
                   fillColor = ~palas(camadas$value),
                   color="white",
-                  weight = 0.5,
-                  opacity = 0.9,
-                  dashArray = "3",
+                  weight = 0,
+                  opacity = 0.5,
+                  dashArray = "1",
                   fillOpacity = 0.6,
                   label = labels,
                   labelOptions = labelOptions(textsize = "9px",direction="auto",style=list("font-weight" = "normal", padding = "3px 8px")),
@@ -83,7 +84,7 @@ server <- function(input, output, session) {
   
   observeEvent(
     input$xis,
-    esconde(0),
+    {esconde(0)},
     ignoreInit = T
   )
 
@@ -99,7 +100,12 @@ server <- function(input, output, session) {
   
   outputOptions(output, 'esconde', suspendWhenHidden=FALSE)
   
-  
+  observeEvent(
+    input$ano,
+    esconde(1),
+    ignoreInit = T
+  )
+    
   observeEvent(input$map_click, {
     click <- input$map_click
     piso3 <- coords2country(data.frame(lng = click$lng, lat = click$lat))
