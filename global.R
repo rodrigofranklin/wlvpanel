@@ -30,11 +30,16 @@ perfil_sumario <- c("taxa_exploracao","produto_total_pm","produto_total_valores"
 
 lista_versoes <- names(sea_paises[,1,1,1])
 lista_anos <- names(sea_paises[1,,1,1])
-lista_variaveis_sea <- names(sea_paises[1,1,,1])
+
 lista_paises <- paises[,3]
 names(lista_paises) <- paises[match(paises[,3], lista_paises),1]
+lista_paises <- c("",lista_paises)
+names(lista_paises)[1] <- "Search a country..."
 
+lista_variaveis_sea <- names(sea_paises[1,1,,1])
 names(lista_variaveis_sea) <- (tibble(var=lista_variaveis_sea)%>%left_join(varst)%>%select(pt))[[1]]
+lista_variaveis_sea <- c("",lista_variaveis_sea)
+names(lista_variaveis_sea)[1] <- "Search an indicator..."
 
 ano_min <- as.numeric(lista_anos[1])
 ano_max <- as.numeric(last(lista_anos))

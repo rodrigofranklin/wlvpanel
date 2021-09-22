@@ -25,28 +25,25 @@ ui <- navbarPage(
       right = "1.5%",
       width = "22%",
       height = "28%",
-      class = "panel panel-default",
-      style =
-        "background-color: rgba(255,255,255,0.2);
-        z-index: 504;
-        padding: 0;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
-        border-radius: 2px;
-        font-size: 10px",
-      selectInput("pais","Country",lista_paises, selected="BRA"),
-      selectInput("indicador","Variable",lista_variaveis_sea, selected="taxa_exploracao"),
-      sliderInput("ano","YEAR",min = 1995, max = 2021, value = 2009, ticks = F, animate=T, sep = "")
+      style = "z-index: 504; font-size: 10px; padding: 0",
+         # padding: 0;
+         # box-shadow: 0 0 0px rgba(0,0,0,0);
+         # border-radius: 0px;
+         # font-size: 10px",
+      selectInput("pais",NULL,lista_paises, selected=NULL, selectize = TRUE),
+      selectInput("indicador",NULL,lista_variaveis_sea, selected="taxa_exploracao"),
+      sliderInput("ano",NULL,min = 1995, max = 2021, value = 2009, ticks = F, animate=T, sep = "")
     ),
-    
     
     conditionalPanel(
       "output.esconde",
-      style =
-        "background-color: rgba(255,255,255,0.3);
-        z-index: 500;
-        padding: 0;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2)",
-                     
+      # style =
+      #   "background-color: rgba(255,255,255,0.3);
+      #   z-index: 500;
+      #   padding: 0;
+      #   box-shadow: 0 0 10px rgba(0,0,0,0.2)",
+      
+      # Painel resumo do país               
       absolutePanel(
         id = "header",
         top = 50,
@@ -63,28 +60,28 @@ ui <- navbarPage(
         dataTableOutput("pais")
       ),
       
+      # Botão fechar
       absolutePanel(
         id = "fechabaixa",
         top = 50,
-        left = "40%",
+        left = "50%",
         style =
           "z-index: 501;
           padding: 0;
           border-line: none;
-          font-size: 8px",
-        tags$div(tags$table(tags$tr(tags$td(actionButton("xis","X",
-                                                         style ="border-radius: 20px;
-                                                          border-color: transparent;
-                                                          background-color: rgba(80,30,30,0.4)")),
-                                    tags$td(width = "20px",""),
-                                    tags$td(a(href="worldlabourvalues.org","Download data")),
-                                    
-        )))
+          font-size: 8px;
+          border-radius: 50px;
+          border-color: transparent;
+          background-color: rgba(80,30,30,0.4)",
+        tags$div(actionButton("xis","X",
+                                 style ="border-radius: 50px;
+                                  border-color: transparent;
+                                  background-color: rgba(80,30,30,0.4)"))
       ),                     
-                     
+
+      # Painel de distribuição setorial
       absolutePanel(
         top = "35%",
-        # height = "75%",
         right = "1.5%",
         width = "22%",
         style =
@@ -108,25 +105,28 @@ ui <- navbarPage(
           )
         )
       ),                     
+
+      # Painel de série temporal
+      absolutePanel(
+        style =
+          "background-color: rgba(255,255,255,0);
+          z-index: 500;
+          padding: 0;
+          box-shadow: 0 0 0px rgba(0,0,0,0);
+          border-radius: none",
+        top = "44%",
+        left = "1%",
+        width = "34%",
+        height = "23%",
+        div(textOutput("titulo_serie_pais"), align = "center" ,
+            style = "font-size:18px; font-weight: bold"),
+        div(textOutput("subtitulo_serie_pais"), align = "center"),
+        plotlyOutput("serie_pais")
+      )
+
+    ),                      
                      
                      
-                     absolutePanel(
-                       style =
-                         "background-color: rgba(255,255,255,0);
-        z-index: 500;
-        padding: 0;
-        box-shadow: 0 0 0px rgba(0,0,0,0);
-        border-radius: none",
-                       top = "44%",
-                       left = "1%",
-                       width = "34%",
-                       height = "23%",
-                       div(textOutput("titulo_serie_pais"), align = "center" ,
-                           style = "font-size:18px; font-weight: bold"),
-                       div(textOutput("subtitulo_serie_pais"), align = "center"),
-                       plotlyOutput("serie_pais")
-                     )
-    ), 
     absolutePanel(
       id = "credits",
       class = "panel panel-default",
@@ -180,6 +180,7 @@ ui <- navbarPage(
                   selected = c("BRA","CHN","USA"),
                   multiple = TRUE)   
     ),
+    
     absolutePanel(
       "Série Temporal",
       width = "70%",
@@ -189,6 +190,7 @@ ui <- navbarPage(
       class = "panel panel-default",
       plotlyOutput("serie", height="85%")
     ),
+    
     absolutePanel(
       top = "54%",
       left = "1.5%",
@@ -199,6 +201,7 @@ ui <- navbarPage(
     ),
     
   ),
+  
   tabPanel(
     "Trade",
     absolutePanel(
