@@ -24,15 +24,30 @@ ui <- navbarPage(
       top = 50,
       right = "1.5%",
       width = "22%",
-      height = "28%",
+      height = "0",
       style = "z-index: 504; font-size: 10px; padding: 0",
          # padding: 0;
          # box-shadow: 0 0 0px rgba(0,0,0,0);
          # border-radius: 0px;
          # font-size: 10px",
-      selectInput("pais",NULL,lista_paises, selected=NULL, selectize = TRUE),
-      selectInput("indicador",NULL,lista_variaveis_sea, selected="taxa_exploracao"),
-      sliderInput("ano",NULL,min = ano_min, max = ano_max, value = 2009, ticks = F, animate=F, sep = "")
+      selectInput(
+        "pais",
+        label = NULL,
+        choices = lista_paises),
+      selectInput(
+        "indicador",
+        label = NULL,
+        choices = lista_variaveis_sea, 
+        selected = "taxa_exploracao"),
+      sliderInput(
+        "ano",
+        label = NULL,
+        min = ano_min, 
+        max = ano_max, 
+        value = 2009, 
+        ticks = F, 
+        animate=F, 
+        sep = "")
     ),
     
     conditionalPanel(
