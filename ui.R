@@ -33,7 +33,8 @@ ui <- navbarPage(
       selectInput(
         "pais",
         label = NULL,
-        choices = lista_paises),
+        choices = lista_paises,
+        selectize = TRUE),
       selectInput(
         "indicador",
         label = NULL,
