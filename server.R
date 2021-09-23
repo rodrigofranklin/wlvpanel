@@ -49,7 +49,12 @@ server <- function(input, output, session) {
   
   labels <- reactive(
     sprintf(
-      "<strong>%s</strong><br/>%s : %g %s",
+      "<p style='
+      text-align: center;
+      border-style: none none solid;
+      border-width: 1px;
+      font-weight: bold'>
+      %s</p>%s : %g %s",
       camada_base1()$ADMIN,
       input$indicador,
       camada_base1()$value,
