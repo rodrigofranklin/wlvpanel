@@ -99,8 +99,10 @@ plotaserie <- function(dados,perc=F) {
   
 }
 milhares <- function(x){prettyNum(x,big.mark = ".",decimal.mark = ",")}
+
 tabmil <- function(x) {
-  x <- as.data.table(x,keep.rownames="var")%>%mutate(across(where(is.numeric),milhares))
+  x <- as.data.table(x,keep.rownames="var") %>%
+    mutate(across(where(is.numeric),milhares))
 }
 
 # The single argument to this function, points, is a data.frame in which:
