@@ -32,7 +32,7 @@ ui <- navbarPage(
          # font-size: 10px",
       selectInput("pais",NULL,lista_paises, selected=NULL, selectize = TRUE),
       selectInput("indicador",NULL,lista_variaveis_sea, selected="taxa_exploracao"),
-      sliderInput("ano",NULL,min = 1995, max = 2021, value = 2009, ticks = F, animate=T, sep = "")
+      sliderInput("ano",NULL,min = ano_min, max = ano_max, value = 2009, ticks = F, animate=F, sep = "")
     ),
     
     conditionalPanel(

@@ -1,7 +1,6 @@
 
 server <- function(input, output, session) {
  
-  
   output$map <- renderLeaflet({
     # Use leaflet() here, and only include aspects of the map that
     # won't need to change dynamically (at least, not unless the
@@ -11,13 +10,12 @@ server <- function(input, output, session) {
         zoomControl = FALSE,
         worldCopyJump = TRUE,
         minZoom = 2,
-        )) %>%
+      )) %>%
       addProviderTiles(providers$CartoDB.Positron) %>%
       setView(lat = 0, lng = 0, zoom = 2)
   })
   
-  
-  
+
   ####
   ##Reactive values to use in more than one place (titles, popups)
   titspais <- reactive({ 
@@ -32,59 +30,77 @@ server <- function(input, output, session) {
                   as.character(ano_max)))
   })
   
-  observeEvent(input$indicador,{
-    tiranpaises <- paises[!(paises$Legenda %in% c("WWW","ROW")),"Legenda"]
-    basecam <- sea_paises["WIOD13",as.character(input$ano),input$indicador,tiranpaises]
-    
+  #-------- Valores reativos para utilizar no leaflet
+  # camada_base1 (talvez incluir novas camadas para outras bases?)
+  # labels (para o hover)
+  # fill_group (para selecionar os elementos a apagar (o objetivo é permitir
+  # apagar os poligonos antigos após desenhar os novos))
+  
+  camada_base1 <- reactive({
+    basecam <- sea_paises[1,as.character(input$ano),input$indicador,]
     camadas <- 
       joinCountryData2Map(
         enframe(basecam),
         nameJoinColumn = "name",
         mapResolution = "high")
-    camadas <- camadas[camadas$ISO3 %in% tiranpaises,]
-    labels <- sprintf("<strong>%s</strong><br/>%s : %g %s",
-                      camadas$ADMIN, input$indicador, camadas$value, varst[varst$var == input$indicador,"type"]
-    ) %>% lapply(htmltools::HTML)
-    binas <- c(0,min(basecam, na.rm = T),median(basecam, na.rm = T),max(basecam, na.rm = T))
-    palas <- colorBin("Reds" , 
-                      domain = camadas$value)
-                      
-                      # bins = binas)
-    #YlOrRd
-    proxy <- leafletProxy("map")
-    
-    proxy   %>%  
-      clearShapes() %>%
-      clearControls()%>%
-      addPolygons(data = camadas,
-                  fillColor = ~palas(camadas$value),
-                  color="white",
-                  weight = 0,
-                  opacity = 0.5,
-                  dashArray = "1",
-                  fillOpacity = 0.6,
-                  label = labels,
-                  labelOptions = labelOptions(textsize = "9px",direction="auto",style=list("font-weight" = "normal", padding = "3px 8px")),
-                  highlight = highlightOptions(
-                    weight = 1,
-                    color = "#666",
-                    dashArray = "",
-                    fillOpacity = 0.7,
-                    bringToFront = TRUE)
-      )%>%
-      addLegend("bottomright",
-                values = camadas$value,
-                title = titspais(),
-                pal = palas
-      )
-  }
+    camadas <- camadas[camadas$ISO3 %in% paises$Legenda,]
+    camadas
+  })
+  
+  labels <- reactive(
+    sprintf(
+      "<strong>%s</strong><br/>%s : %g %s",
+      camada_base1()$ADMIN,
+      input$indicador,
+      camada_base1()$value,
+      varst[varst$var == input$indicador,"type"]) %>%
+      lapply(htmltools::HTML)
   )
   
+  fill_group <- reactiveVal(0)
+  
+  # Atualização dos polígonos conforme os dados são alterados
+  observeEvent(camada_base1(),{
+
+    palas <- colorBin("Reds", domain = camada_base1()$value)
+    fill_group(fill_group()+1)
+    
+    proxy <- leafletProxy("map")
+    proxy   %>%
+      # clearShapes() %>%
+      addPolygons(
+        data = camada_base1(),
+        fillColor = ~palas(value),
+        fillOpacity = 0.6,
+        group = as.character(fill_group()),
+        color = "#EBD6D8",
+        weight = 1,
+        label = labels(),
+        labelOptions = labelOptions(
+          textsize = "9px",
+          direction ="auto",
+          style = list("font-weight" = "normal", padding = "3px 8px")),
+        highlightOptions = highlightOptions(
+          color = "#666",
+          fillOpacity = 0.7,
+          bringToFront = TRUE)) %>%
+      clearGroup(as.character(fill_group()-1)) %>%
+      removeControl(as.character(fill_group()-1))  %>%
+      addLegend("bottomright",
+                layerId = as.character(fill_group()),
+                values = camada_base1()$value,
+                title = titspais(),
+                pal = palas)
+  })
+  
+  # sistema para esconder os painéis
+  # 0 -> esconde; 1-> mostra
+  # ingnoreInit é importante para manter o valor em 0 no início do painel
   esconde <- reactiveVal(0)
   
   observeEvent(
     input$xis,
-    {esconde(0)},
+    esconde(0),
     ignoreInit = T
   )
 
@@ -100,12 +116,7 @@ server <- function(input, output, session) {
   
   outputOptions(output, 'esconde', suspendWhenHidden=FALSE)
   
-  observeEvent(
-    input$ano,
-    esconde(1),
-    ignoreInit = T
-  )
-    
+  # efeito do clique no mapa: selecionar país e mostrar painéis
   observeEvent(input$map_click, {
     click <- input$map_click
     piso3 <- coords2country(data.frame(lng = click$lng, lat = click$lat))
@@ -119,18 +130,18 @@ server <- function(input, output, session) {
   })
   
   
-  observeEvent(input$map_hover, {
-    hover <- input$map_hover
-    piso3 <- coords2country(data.frame(lng = hover$lng, lat = hover$lat))
-    paises%>%filter(Legenda = piso3)$Legenda
-    valorpontopais <- sea_paises[,as.character(max(input$ano)),,pafil]
-    text <- paste("Country:",pafil,"<br>",
-                  titspais(),"-",subtspais(),":",
-                  valorpontopais)
-    proxy <-leafletProxy("map")
-    proxy %>% clearPopups() %>%
-      addLabelOnlyMarkers(hover$lng,hover$lat,label = text)
-  })
+  # observeEvent(input$map_hover, {
+  #   hover <- input$map_hover
+  #   piso3 <- coords2country(data.frame(lng = hover$lng, lat = hover$lat))
+  #   paises%>%filter(Legenda = piso3)$Legenda
+  #   valorpontopais <- sea_paises[,as.character(max(input$ano)),,pafil]
+  #   text <- paste("Country:",pafil,"<br>",
+  #                 titspais(),"-",subtspais(),":",
+  #                 valorpontopais)
+  #   proxy <-leafletProxy("map")
+  #   proxy %>% clearPopups() %>%
+  #     addLabelOnlyMarkers(hover$lng,hover$lat,label = text)
+  # })
   
   linhas_13 <- reactive({
     encontrar_pais(m_io_13, input$pais, rownames)
