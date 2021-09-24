@@ -1,10 +1,9 @@
 ui <- navbarPage(
-  
   theme = shinytheme("yeti"),
   collapsible = TRUE,
   windowTitle = "World Labour Value Database",
   title = "WLVD",
-
+  
   tabPanel(
     "Country",
     # Mapa (estilos para eliminar borda)
@@ -26,7 +25,7 @@ ui <- navbarPage(
       right = 5,
       style = "z-index: 5000"
     ),
-    
+
     absolutePanel(
       id="controls",
       top = 50,
@@ -34,20 +33,19 @@ ui <- navbarPage(
       width = "22%",
       height = "0",
       style = "z-index: 504; font-size: 10px; padding: 0",
-         # padding: 0;
-         # box-shadow: 0 0 0px rgba(0,0,0,0);
-         # border-radius: 0px;
-         # font-size: 10px",
+
       selectInput(
         "pais",
         label = NULL,
         choices = lista_paises,
         selectize = TRUE),
+
       selectInput(
         "indicador",
         label = NULL,
         choices = lista_variaveis_sea, 
         selected = "taxa_exploracao"),
+      
       sliderInput(
         "ano",
         label = NULL,
@@ -60,20 +58,15 @@ ui <- navbarPage(
     ),
     
     conditionalPanel(
-      "output.esconde",
-      # style =
-      #   "background-color: rgba(255,255,255,0.3);
-      #   z-index: 500;
-      #   padding: 0;
-      #   box-shadow: 0 0 10px rgba(0,0,0,0.2)",
-      
+      "output.iso3!=''",
+
       # Painel resumo do país               
       absolutePanel(
         id = "header",
         top = 50,
         left = "1.5%",
         width = "72%",
-        height = "32%",
+        height = "1",
         style =
           "background-color: rgba(255,255,255,0.01);
           z-index: 500;
@@ -110,10 +103,10 @@ ui <- navbarPage(
         width = "22%",
         style =
           "background-color: rgba(255,255,255,0.05);
-        z-index: 500;
-        padding: 0;
-        box-shadow: 0 0 0px rgba(0,0,0,0);
-        border-radius: none",
+          z-index: 500;
+          padding: 0;
+          box-shadow: 0 0 0px rgba(0,0,0,0);
+          border-radius: none",
         div(textOutput("titulo_detalhamento_pais"), align = "center",
             style = "font-size:16px; font-weight: bold;background-color: rgba(255,255,255,0.2)"),
         div(textOutput("subtitulo_detalhamento_pais"), align = "center",
@@ -138,10 +131,9 @@ ui <- navbarPage(
           padding: 0;
           box-shadow: 0 0 0px rgba(0,0,0,0);
           border-radius: none",
-        top = "44%",
+        top = "35%",
         left = "1%",
         width = "34%",
-        height = "23%",
         div(textOutput("titulo_serie_pais"), align = "center" ,
             style = "font-size:18px; font-weight: bold"),
         div(textOutput("subtitulo_serie_pais"), align = "center"),
