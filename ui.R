@@ -4,7 +4,7 @@ ui <- navbarPage(
   collapsible = TRUE,
   windowTitle = "World Labour Value Database",
   title = "WLVD",
-  
+
   tabPanel(
     "Country",
     # Mapa (estilos para eliminar borda)
@@ -18,6 +18,14 @@ ui <- navbarPage(
     tags$style(type = "text/css", "tr.odd {background-color: rgba(249,249,249,0.7) !important};"),
     tags$style(type = "text/css", "tr.even {background-color: rgba(255,255,255,0.7) !important};"),
     tags$style(type = "text/css", "tr.even.selected {background-color: rgba(176, 190, 217,0.6) !important};"),
+    
+    absolutePanel(
+      id="restart",
+      actionButton("restart", "reiniciar servidor", style = "padding: 2px; font-size: 8px"),
+      top = 5,
+      right = 5,
+      style = "z-index: 5000"
+    ),
     
     absolutePanel(
       id="controls",

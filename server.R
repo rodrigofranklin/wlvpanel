@@ -1,6 +1,8 @@
 
 server <- function(input, output, session) {
  
+  observeEvent(input$restart,write(NULL, file = "dados/restart.txt"))
+  
   output$map <- renderLeaflet({
     # Use leaflet() here, and only include aspects of the map that
     # won't need to change dynamically (at least, not unless the
