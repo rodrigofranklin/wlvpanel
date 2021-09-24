@@ -42,7 +42,7 @@ server <- function(input, output, session) {
       joinCountryData2Map(
         enframe(basecam),
         nameJoinColumn = "name",
-        mapResolution = "high")
+        mapResolution = "low")
     camadas <- camadas[camadas$ISO3 %in% paises$Legenda,]
     camadas
   })
