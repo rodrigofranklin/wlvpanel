@@ -20,8 +20,8 @@ m_paises_16 <- readRDS(file = "dados/m_paises_16.rds")
 sea_setores_13 <- readRDS(file = "dados/sea_setores_13.rds")
 sea_setores_16 <- readRDS(file = "dados/sea_setores_16.rds")
 
-# m_io_13 <- readRDS(file = "dados/m_io_13.rds")
-# m_io_16 <- readRDS(file = "dados/m_io_16.rds")
+m_io_13 <- readRDS(file = "dados/m_io_13.rds")
+m_io_16 <- readRDS(file = "dados/m_io_16.rds")
 
 varst <- read_csv2("dados/vars.csv")
 setorest <- read_csv2("dados/setores_t.csv")
