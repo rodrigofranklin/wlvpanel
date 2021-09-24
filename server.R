@@ -32,6 +32,9 @@ server <- function(input, output, session) {
                   as.character(ano_max)))
   })
   
+  # usado para controlar exibição dos paineis
+  output$iso3 <- renderText(input$pais)
+  
   #-------- Valores reativos para utilizar no leaflet
   # camada_base1 (talvez incluir novas camadas para outras bases?)
   # labels (para o hover)
@@ -100,39 +103,19 @@ server <- function(input, output, session) {
                 pal = palas)
   })
   
-  # sistema para esconder os painéis
-  # 0 -> esconde; 1-> mostra
-  # ingnoreInit é importante para manter o valor em 0 no início do painel
-  esconde <- reactiveVal(0)
-  
+  # Botão para fechar painel e voltar para o mapa
   observeEvent(
     input$xis,
-    esconde(0),
-    ignoreInit = T
+    updateSelectInput(inputId = "pais", selected = "")
   )
-
-  observeEvent(
-    input$pais,
-    esconde(1),
-    ignoreInit = T
-  )
-  
-  output$esconde <- reactive(
-    return(esconde())
-  )
-  
-  outputOptions(output, 'esconde', suspendWhenHidden=FALSE)
   
   # efeito do clique no mapa: selecionar país e mostrar painéis
   observeEvent(input$map_click, {
     click <- input$map_click
     piso3 <- coords2country(data.frame(lng = click$lng, lat = click$lat))
-    pafil <- (paises%>%filter(Legenda ==  piso3))$Legenda
-    paisvei <- input$pais
     if (piso3 %in% paises$Legenda) {
       updateSelectInput(inputId = "pais",
-                      selected = pafil)
-      esconde(1)
+                      selected = piso3)
     }
   })
   
@@ -222,10 +205,6 @@ server <- function(input, output, session) {
     paste0(input$transacoes_versao)
   })
   
-  output$debuga <- renderText({
-    #glimpse(dados())
-    paste(input$pais)
-  })
   
   output$pais <- renderDataTable(
     
@@ -299,9 +278,7 @@ server <- function(input, output, session) {
   
   output$subtitulo_detalhamento_pais <-
     renderText(
-      paste(paises[paises$Legenda==input$pais,1],
-            "-",
-            input$ano)
+      paste(paises[paises$Legenda==input$pais,1],"-",input$ano)
     )
   
   output$titulo_serie_pais <-
@@ -320,8 +297,12 @@ server <- function(input, output, session) {
       
     )
   
+  outs <- outputOptions(output)
+  lapply(names(outs), function(name) {
+    outputOptions(output, name, suspendWhenHidden = FALSE) 
+  })
   
-  output$indicadores1 <- renderDT(
+  output$indicadores <- renderDT(
     {
       dados <- t(rbind(
         paises[match(names(sea_paises[1,1,1,]),paises[,3]),1],
@@ -424,6 +405,7 @@ server <- function(input, output, session) {
  }
  )
 
+   
 #   
 #   output$importacoes_monetarias <- renderD3tree3({
 #     selecao <- fazer_selecao()
