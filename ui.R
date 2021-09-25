@@ -46,7 +46,6 @@ ui <- navbarPage(
     left = 0,
     width = "300px",
     height = 20,
-    strong(
     tags$table(
       tags$tr(
         tags$td(
@@ -60,7 +59,7 @@ ui <- navbarPage(
           " CC-BY-NC SA 4.0",
           style = "font-size: 10px;")
       )
-    ))
+    )
   ),
   
   tabPanel(
