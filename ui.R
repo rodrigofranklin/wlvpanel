@@ -3,12 +3,71 @@ ui <- navbarPage(
   collapsible = TRUE,
   windowTitle = "World Labour Value Database",
   title = "WLVD",
+
+  # header contém o botão e o painel de configuração.
+  # há um conditionalPanel a mais apenas para servir como container.
+  header = conditionalPanel(
+    1,
+    absolutePanel(
+      id="config",
+      top = 10,
+      right = 10,
+      style = "z-index: 5000",
+      actionLink(
+        "config_button",
+        label = NULL, 
+        style = "padding: 2px; font-size: 20px; color: white",
+        icon = icon("cog", lib = "glyphicon")
+      )
+    # ),
+    # conditionalPanel(
+    #   "output.show_config_panel % 2 != 0",
+    #   absolutePanel(
+    #     top = 70,
+    #     left = 70,
+    #     class="panel panel-default",
+    #     style = "z-index: 5000",
+    #     div("WLVD Setup", class = "panel-heading"),
+    #     "XXX",
+    #     draggable = TRUE
+    #   )
+    )
+  ),
+  
+  # footer contém o painel de créditos.
+  footer = absolutePanel(
+    id = "credits",
+    fixed = TRUE,
+    style =
+      "background-color: rgba(255,255,255,0.6);
+        z-index: 500;
+        padding: 0",
+    bottom = 0,
+    left = 0,
+    width = "300px",
+    height = 20,
+    strong(
+    tags$table(
+      tags$tr(
+        tags$td(
+          img(src = "https://worldlabourvalues.org/images/a_batallar_ideas.png",
+              height = "20px",
+              style = "-webkit-filter: grayscale(100%);
+                filter: grayscale(80%)")),
+        tags$td(
+          "World Labour Values Task Force | ",
+          span("©",style ="display: inline-block; text-align: right; margin: 0px; -moz-transform: scaleX(-1); -o-transform: scaleX(-1); -webkit-transform: scaleX(-1); transform: scaleX(-1); filter: FlipH; -ms-filter: “FlipH”"),
+          " CC-BY-NC SA 4.0",
+          style = "font-size: 10px;")
+      )
+    ))
+  ),
   
   tabPanel(
     "Country",
     # Mapa (estilos para eliminar borda)
     tags$style(type = "text/css", "#map {height: calc(100vh - 45px)  !important;
-               z-index: 500;}"),
+               z-index: 50;}"),
     leafletOutput("map", width = "100%"),
     tags$style(type = "text/css", ".container-fluid {padding-left:0px;padding-right:0px;}"),
     tags$style(type = "text/css", ".navbar {margin-bottom: 0px;}"),
@@ -18,14 +77,6 @@ ui <- navbarPage(
     tags$style(type = "text/css", "tr.even {background-color: rgba(255,255,255,0.7) !important};"),
     tags$style(type = "text/css", "tr.even.selected {background-color: rgba(176, 190, 217,0.6) !important};"),
     
-    absolutePanel(
-      id="restart",
-      actionButton("restart", "reiniciar servidor", style = "padding: 2px; font-size: 8px"),
-      top = 5,
-      right = 5,
-      style = "z-index: 5000"
-    ),
-
     absolutePanel(
       id="controls",
       top = 50,
@@ -131,7 +182,7 @@ ui <- navbarPage(
           padding: 0;
           box-shadow: 0 0 0px rgba(0,0,0,0);
           border-radius: none",
-        top = "35%",
+        top = "320",
         left = "1%",
         width = "34%",
         div(textOutput("titulo_serie_pais"), align = "center" ,
@@ -140,33 +191,8 @@ ui <- navbarPage(
         plotlyOutput("serie_pais")
       )
 
-    ),                      
-                     
-                     
-    absolutePanel(
-      id = "credits",
-      class = "panel panel-default",
-      style =
-        "background-color: rgba(255,255,255,0.2);
-        z-index: 500;
-        padding: 0;
-        box-shadow: 0 0 10px rgba(0,0,0,0.3);
-        border-radius: 5px;
-        ",
-      bottom = 20,
-      left = "48%",
-      width = "110px",
-      height = "50px",
-      tags$i(tags$table(tags$tr(tags$td(img(src = "https://worldlabourvalues.org/images/a_batallar_ideas.png",
-                                            height = "32px",
-                                            style = "-webkit-filter: grayscale(100%); filter: grayscale(80%)")),
-                                tags$td(tags$p("World Labour Values Task Force",align="center"),colspan=3,
-                                        style = "font-size: 9px;")),
-                        tags$tr(tags$td(tags$p("🄯 CC-BY-NC SA 4.0", align="center"),colspan=4,
-                                        style = "font-size: 8px;"))))
-      )
-    ),
-  
+    )
+  ),                  
   tabPanel(
     "Indicators",
     absolutePanel(
@@ -215,7 +241,6 @@ ui <- navbarPage(
       class = "panel panel-default",
       dataTableOutput("indicadores")
     ),
-    
   ),
   
   tabPanel(
@@ -260,6 +285,11 @@ ui <- navbarPage(
       left="1.5%",
       d3tree3Output("exportacoes_transferencias")
     )
+  ),
+  
+  tabPanel(
+    "Download",
+    "xxx",
   )
 
 )  
