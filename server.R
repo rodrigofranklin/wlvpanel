@@ -1,6 +1,140 @@
 
 server <- function(input, output, session) {
  
+  output$country_data_panel <- renderUI({
+    if (input$pais != "") {
+      tagList(
+
+        # Botão fechar
+        actionButton(
+          inputId = "xis",
+          label = NULL,
+          icon = icon("times"), # Esse ícone só está carregando se colocar um ícone no meno do navbar...
+          style ="border-radius: 50%;
+                  border-color: transparent;
+                  color: white;
+                  font-size:12px;
+                  position: absolute;
+                  top: 58px;
+                  left: calc(50vw - 17px);
+                  z-index: 501;
+                  background-color: rgba(127,127,127,1)"
+        ),
+        
+        
+        absolutePanel(
+          top = 75,
+          left = 10,
+          style =
+            "overflow-y:scroll;
+            z-index:500;
+            height: calc(100vh - 75px);
+            padding: 20px;
+            width:calc(100vw - 20px);
+            background-color: rgba(242,243,246,1);
+            border: solid;
+            border-width: 1px;
+            border-color: rgba(221,221,221,1);",
+
+          paises[paises$Legenda==input$pais,1] %>%
+            div(style = "font-size: 24px;
+                font-weight: bold") ,
+          
+          # country profile
+          absolutePanel(
+            top = 70,
+            left = 20,
+            width = "72%",
+            # height = 203,
+            class = "panel panel-default",
+            
+
+              fluidRow(
+                column(
+                  width = 6,
+                  paste("Country Profile -", input$ano)
+                ),
+                column(
+                  width = 6,
+                  # chakraSliderInput(
+                  #   "ano_painel",
+                  #   label = NULL,
+                  #   min = ano_min, 
+                  #   max = ano_max, 
+                  #   sep = "") %>%
+                  #   p(style = "font-size: '20px'")
+                   
+                )
+              ) %>%
+
+              div(class = "panel-heading",
+                  style = "background-image:none;
+                  background: white;
+                  font-size: 16px; 
+                  font-weight: bold;
+                  padding: 3px 5px;
+                  "),
+            
+            dataTableOutput("profile") %>%
+              div(class = "panel-body",
+                  style = "background-image:none;
+                  background: white;
+                  padding: 0;")
+          ),
+          
+          # Painel de série temporal
+          absolutePanel(
+            class = "panel panel-default",
+            top = 285,
+            left = 20,
+            width = "34%",
+            height = 250,
+            textOutput("titulo_serie_pais") %>%
+              div(class = "panel-heading",
+                  style = "background-image:none;
+                  background: white;
+                  font-size:16px; 
+                  font-weight: bold;
+                  padding: 3px 5px;
+                  "),
+            
+            plotlyOutput("serie_pais") %>%
+              div(class = "panel-body",
+                  style = "padding:0")
+          ),
+          
+        # Painel de distribuição setorial
+        absolutePanel(
+          top = "35%",
+          right = "1.5%",
+          width = "22%",
+          style =
+            "background-color: rgba(255,255,255,0.05);
+          z-index: 500;
+          padding: 0;
+          box-shadow: 0 0 0px rgba(0,0,0,0);
+          border-radius: none",
+          div(textOutput("titulo_detalhamento_pais"), align = "center",
+              style = "font-size:16px; font-weight: bold;background-color: rgba(255,255,255,0.2)"),
+          div(textOutput("subtitulo_detalhamento_pais"), align = "center",
+              style = "background-color: rgba(255,255,255,0.2)"),
+          tabsetPanel(
+            tabPanel(
+              "WIOD.13",
+              dataTableOutput("setores_pais_13")
+            ),
+            tabPanel(
+              "WIOD.16",
+              dataTableOutput("setores_pais_16")
+            )
+          )
+        )
+        )
+        
+        
+      )}
+  })
+  
   output$show_config_panel <- reactive(input$config_button)
   
   output$map <- renderLeaflet({
@@ -31,9 +165,6 @@ server <- function(input, output, session) {
                   " - ",
                   as.character(ano_max)))
   })
-  
-  # usado para controlar exibição dos paineis
-  output$iso3 <- renderText(input$pais)
   
   #-------- Valores reativos para utilizar no leaflet
   # camada_base1 (talvez incluir novas camadas para outras bases?)
@@ -201,18 +332,19 @@ server <- function(input, output, session) {
   })
   
   
-  output$pais <- renderDataTable(
+  output$profile <- renderDataTable(
     
     tabmil(t(sea_paises[,as.character(input$ano),,input$pais]))%>%
       filter(var %in% c(input$indicador,perfil_sumario))%>%
       arrange(match(var,c(input$indicador,perfil_sumario)))%>%
       left_join(varst)%>%
       select(var = pt, 2:3),
-    # rownames = TRUE,
-    #    spacing = "xs",
-    #    striped = TRUE,
-    #    hover = TRUE,
-    #    width = "100%",
+    rownames = FALSE,
+       # spacing = "xs",
+       # striped = TRUE,
+       # hover = TRUE,
+       # width = "100%",
+    class = "profile_table",
     options = list(
       ordering = FALSE,
       searching = FALSE,
@@ -283,15 +415,7 @@ server <- function(input, output, session) {
     renderText(
       subtspais())
   
-  output$titulo_painel <-
-    renderText(
-      paste("Country Profile:",paises[paises$Legenda==input$pais,1],
-            "-",
-            input$ano
-      )
-      
-    )
-  
+
   outs <- outputOptions(output)
   lapply(names(outs), function(name) {
     outputOptions(output, name, suspendWhenHidden = FALSE) 

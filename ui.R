@@ -5,9 +5,7 @@ ui <- navbarPage(
   title = "WLVD",
 
   # header contém o botão e o painel de configuração.
-  # há um conditionalPanel a mais apenas para servir como container.
-  header = conditionalPanel(
-    1,
+  header = tagList(
     absolutePanel(
       id="config",
       top = 10,
@@ -17,7 +15,7 @@ ui <- navbarPage(
         "config_button",
         label = NULL, 
         style = "padding: 2px; font-size: 20px; color: white",
-        icon = icon("cog", lib = "glyphicon")
+        icon = icon("cog")
       )
     # ),
     # conditionalPanel(
@@ -40,7 +38,7 @@ ui <- navbarPage(
     fixed = TRUE,
     style =
       "background-color: rgba(255,255,255,0.6);
-        z-index: 500;
+        z-index: 100;
         padding: 0",
     bottom = 0,
     left = 0,
@@ -75,6 +73,12 @@ ui <- navbarPage(
     tags$style(type = "text/css", "tr.odd {background-color: rgba(249,249,249,0.7) !important};"),
     tags$style(type = "text/css", "tr.even {background-color: rgba(255,255,255,0.7) !important};"),
     tags$style(type = "text/css", "tr.even.selected {background-color: rgba(176, 190, 217,0.6) !important};"),
+    tags$style(type = "text/css", ".profile_table {
+      line-height: 0.5 !important;
+      border-style: none !important;
+        border-color: red !important;
+
+    }"),
     
     absolutePanel(
       id="controls",
@@ -82,7 +86,7 @@ ui <- navbarPage(
       right = "1.5%",
       width = "22%",
       height = "0",
-      style = "z-index: 504; font-size: 10px; padding: 0",
+      style = "z-index: 100; font-size: 10px; padding: 0",
 
       selectInput(
         "pais",
@@ -107,90 +111,8 @@ ui <- navbarPage(
         sep = "")
     ),
     
-    conditionalPanel(
-      "output.iso3!=''",
-
-      # Painel resumo do país               
-      absolutePanel(
-        id = "header",
-        top = 50,
-        left = "1.5%",
-        width = "72%",
-        height = "1",
-        style =
-          "background-color: rgba(255,255,255,0.01);
-          z-index: 500;
-          padding: 0;
-          box-shadow: 0 0 0px rgba(0,0,0,0);
-          border-radius= none",
-        textOutput("titulo_painel"),
-        dataTableOutput("pais")
-      ),
-      
-      # Botão fechar
-      absolutePanel(
-        id = "fechabaixa",
-        top = 50,
-        left = "50%",
-        style =
-          "z-index: 501;
-          padding: 0;
-          border-line: none;
-          font-size: 8px;
-          border-radius: 50px;
-          border-color: transparent;
-          background-color: rgba(80,30,30,0.4)",
-        tags$div(actionButton("xis","X",
-                                 style ="border-radius: 50px;
-                                  border-color: transparent;
-                                  background-color: rgba(80,30,30,0.4)"))
-      ),                     
-
-      # Painel de distribuição setorial
-      absolutePanel(
-        top = "35%",
-        right = "1.5%",
-        width = "22%",
-        style =
-          "background-color: rgba(255,255,255,0.05);
-          z-index: 500;
-          padding: 0;
-          box-shadow: 0 0 0px rgba(0,0,0,0);
-          border-radius: none",
-        div(textOutput("titulo_detalhamento_pais"), align = "center",
-            style = "font-size:16px; font-weight: bold;background-color: rgba(255,255,255,0.2)"),
-        div(textOutput("subtitulo_detalhamento_pais"), align = "center",
-            style = "background-color: rgba(255,255,255,0.2)"),
-        tabsetPanel(
-          tabPanel(
-            "WIOD.13",
-            dataTableOutput("setores_pais_13")
-          ),
-          tabPanel(
-            "WIOD.16",
-            dataTableOutput("setores_pais_16")
-          )
-        )
-      ),                     
-
-      # Painel de série temporal
-      absolutePanel(
-        style =
-          "background-color: rgba(255,255,255,0);
-          z-index: 500;
-          padding: 0;
-          box-shadow: 0 0 0px rgba(0,0,0,0);
-          border-radius: none",
-        top = "320",
-        left = "1%",
-        width = "34%",
-        div(textOutput("titulo_serie_pais"), align = "center" ,
-            style = "font-size:18px; font-weight: bold"),
-        div(textOutput("subtitulo_serie_pais"), align = "center"),
-        plotlyOutput("serie_pais")
-      )
-
-    )
+    uiOutput("country_data_panel"),
+    
   ),                  
   tabPanel(
     "Indicators",
@@ -219,7 +141,7 @@ ui <- navbarPage(
                   label = "Países:",
                   choices = lista_paises,
                   selected = c("BRA","CHN","USA"),
-                  multiple = TRUE)   
+                  multiple = TRUE)
     ),
     
     absolutePanel(
@@ -288,6 +210,7 @@ ui <- navbarPage(
   
   tabPanel(
     "Download",
+    icon = icon("download"), #coloquei esse ícone pq o font-awesome não está funcionando se não colocar algo aqui!
     "xxx",
   )
 )  
