@@ -87,17 +87,20 @@ plotaserie <- function(dados,perc=F) {
   ifelse(ncol(dados)==3,
          p <- ggplot(dados,aes(x=ano,y=valor,col=bd)),
          p <- ggplot(dados,aes(x=ano,y=valor,col=pais,linetype=bd)))
-  p <- p+geom_line(size = 1) +
-    scale_y_continuous(labels = comma_format(big.mark = ".", decimal.mark = ","))+
-    theme_minimal()+
-    theme(rect = element_rect(fill = "transparent"),panel.background = element_rect(fill = "transparent", colour = NA),  plot.background = element_rect(fill = "transparent", colour = NA))
+  p <- p+geom_line(size = 1)  +
+    geom_line(size = 1) +
+    theme_classic() +
+    theme(axis.title = element_blank(),
+          axis.line = element_blank(),
+          axis.ticks = element_blank(),
+          axis.text = element_text(size = 8, colour = "grey60"),
+          legend.position='none')
   
-  ps <- ggplotly(p)
-  # ps %>% layout(plot_bgcolor  = "rgba(255, 255, 255, 0.2)",
-  #             paper_bgcolor = "rgba(255, 255, 255, 0.2)")
-  ps
-  
+
+  ps <- ggplotly(p, height = 220)
+
 }
+
 milhares <- function(x){prettyNum(x,big.mark = ".",decimal.mark = ",")}
 
 tabmil <- function(x) {
