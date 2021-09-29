@@ -21,7 +21,7 @@ server <- function(input, output, session) {
                   background-color: rgba(127,127,127,1)"
         ),
         
-        
+        # Painel dados país
         absolutePanel(
           top = 75,
           left = 10,
@@ -31,7 +31,7 @@ server <- function(input, output, session) {
             height: calc(100vh - 75px);
             padding: 20px;
             width:calc(100vw - 20px);
-            background-color: rgba(242,243,246,1);
+            background-color: rgba(242,243,246,0.95);
             border: solid;
             border-width: 1px;
             border-color: rgba(221,221,221,1);",
@@ -44,8 +44,7 @@ server <- function(input, output, session) {
           absolutePanel(
             top = 70,
             left = 20,
-            width = "72%",
-            # height = 203,
+            style = "width: calc(68% + 20px)",
             class = "panel panel-default",
             
 
@@ -82,6 +81,32 @@ server <- function(input, output, session) {
                   padding: 0;")
           ),
           
+          # Painel de download
+          absolutePanel(
+            top = 70,
+            right = 5,
+            height = 100,
+            style = "
+              left: calc(68% + 60px);
+            ",
+            
+              class = "panel panel-default",
+              "Download" %>%
+              div(class = "panel-heading",
+                  style = "background-image:none;
+                  background: white;
+                  font-size: 16px; 
+                  font-weight: bold;
+                  padding: 3px 5px;
+                  "),
+            
+            "Link1" %>%
+              div(class = "panel-body",
+                  style = "padding:0")
+            
+            
+          ),
+          
           # Painel de série temporal
           absolutePanel(
             class = "panel panel-default",
@@ -103,32 +128,70 @@ server <- function(input, output, session) {
                   style = "padding:0")
           ),
           
+          # Painel de série temporal2
+          absolutePanel(
+            class = "panel panel-default",
+            top = 285,
+            width = "34%",
+            height = 250,
+            style = "left: calc(34% + 40px)",
+            varst$pt[29] %>%
+              div(class = "panel-heading",
+                  style = "background-image:none;
+                  background: white;
+                  font-size:16px; 
+                  font-weight: bold;
+                  padding: 3px 5px;
+                  "),
+            
+            plotlyOutput("serie_pais2") %>%
+              div(class = "panel-body",
+                  style = "padding:0")
+          ),
+          
         # Painel de distribuição setorial
         absolutePanel(
-          top = "35%",
-          right = "1.5%",
-          width = "22%",
-          style =
-            "background-color: rgba(255,255,255,0.05);
-          z-index: 500;
-          padding: 0;
-          box-shadow: 0 0 0px rgba(0,0,0,0);
-          border-radius: none",
-          div(textOutput("titulo_detalhamento_pais"), align = "center",
-              style = "font-size:16px; font-weight: bold;background-color: rgba(255,255,255,0.2)"),
-          div(textOutput("subtitulo_detalhamento_pais"), align = "center",
-              style = "background-color: rgba(255,255,255,0.2)"),
-          tabsetPanel(
-            tabPanel(
-              "WIOD.13",
-              dataTableOutput("setores_pais_13")
-            ),
-            tabPanel(
-              "WIOD.16",
-              dataTableOutput("setores_pais_16")
+          style = "
+            top: 190px;
+            left: calc(68% + 60px);
+            right: 5px;
+            height: 100vh;
+          ",
+          
+          div(
+            class = "panel panel-default",
+            style ="
+              position:sticky;
+              top:0;
+              height: calc(100vh - 120px);
+
+            ",
+          "Setorial distribution" %>%
+            div(class = "panel-heading",
+                style = "background-image:none;
+                  background: white;
+                  font-size:16px; 
+                  font-weight: bold;
+                  padding: 3px 5px;
+                  "),
+          tagList(
+            input$indicador,
+            tabsetPanel(
+              type = "tabs",
+              tabPanel(
+                "WIOD.13",
+                dataTableOutput("setores_pais_13")
+              ),
+              tabPanel(
+                "WIOD.16",
+                dataTableOutput("setores_pais_16")
+              )
             )
-          )
-        )
+          ) %>%
+            div(class = "panel-body",
+                style = "padding:0")
+        
+        ))
         )
         
         
@@ -366,6 +429,10 @@ server <- function(input, output, session) {
     plotaserie(dados)
   })
   
+  output$serie_pais2 <- renderPlotly({
+    dados <- sea_paises[,,varst$var[29],input$pais]
+    plotaserie(dados)
+  })
   
   output$setores_pais_13 <- renderDataTable(
     tabmil(sea_setores_13[as.character(input$ano),
@@ -378,7 +445,7 @@ server <- function(input, output, session) {
       searching = FALSE,
       paging = FALSE,
       #pageLength = 8,
-      scrollY= "340",
+      scrollY= "calc(100vh - 250px)",
       info = FALSE,
       lengthChange = FALSE
     )
@@ -395,7 +462,7 @@ server <- function(input, output, session) {
       searching = FALSE,
       paging = FALSE,
       #pageLength = 8,
-      scrollY= "340",
+      scrollY= "calc(100vh - 250px)",
       info = FALSE,
       lengthChange = FALSE
     )
@@ -528,197 +595,6 @@ server <- function(input, output, session) {
      
  }
  )
-
-   
-#   
-#   output$importacoes_monetarias <- renderD3tree3({
-#     selecao <- fazer_selecao()
-#     
-#     agrupamento <- case_when(
-#       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-#       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-#     )
-#     agrupamento <- unlist(agrupamento)
-#     dados <- prep_treemap(agru = agrupamento,el="importacoes_monetarias")
-#     
-#     d3tree3(treemap(dados, index = agrupamento, vSize = "valor",
-#                     type = "index", palette = "Set1"),)
-#     
-# })
-#   
-#   output$importacoes_valores <- renderD3tree3({
-#     selecao <- fazer_selecao()
-#     
-#     agrupamento <- case_when(
-#       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-#       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-#     )
-#     agrupamento <- unlist(agrupamento)
-#     dados <- prep_treemap(agru = agrupamento,el="importacoes_valores")
-#     
-#     d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
-#                     type = "index", palette = "Set1"))
-#     
-# })
-#   
-#   output$saldo_monetarias <- renderD3tree3({
-#     selecao <- fazer_selecao()
-#     
-#     agrupamento <- case_when(
-#       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-#       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-#     )
-#     agrupamento <- unlist(agrupamento)
-#     dados <- prep_treemap(agru = agrupamento,el="saldo")
-#     
-#     d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
-#                     type = "index", palette = "Set1"))
-#     
-#     
-#     })
-#   
-#   
-#   output$saldo_valores <- renderD3tree3({
-#     selecao <- fazer_selecao()
-#     
-#     agrupamento <- case_when(
-#       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-#       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-#     )
-#     agrupamento <- unlist(agrupamento)
-#     dados <- prep_treemap(agru = agrupamento,el="saldo_valores")
-#     
-#     d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
-#                     type = "index", palette = "Set1"))
-#     
-#     
-# })
-#   
-#   output$saldo_transferencias <- renderD3tree3({
-#     selecao <- fazer_selecao()
-#     
-#     agrupamento <- case_when(
-#       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-#       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-#     )
-#     agrupamento <- unlist(agrupamento)
-#     dados <- prep_treemap(agru = agrupamento,el="saldo_transferencias")
-#     
-#     d3tree3(treemap(dados, title = "exportações",  index = agrupamento, vSize = "valor",
-#                     type = "index", palette = "Set1"))
-#     
-#     
-#     })
-# 
-# ### Análise das transferências: tabelas sobre troca desigual e trocas nos setores
-# ### improdutivos
-# 
-#   ## Juntar tanto as exportacoes quanto as importacoes
-#   output$td_envios_recebimentos <- renderTable({
-#     selecao <- fazer_selecao()
-#     if (selecao == 1) {
-#       temp1 <- m_paises_13[as.character(input$ano_transacoes),
-#                            "transferências_produtivas.valores",
-#                            input$pais_transacoes,
-#                            ]
-#       temp2 <-  -m_paises_13[as.character(input$ano_transacoes),
-#                             "transferências_produtivas.valores",
-#                             ,
-#                             input$pais_transacoes]
-#       names(temp1) <- paste0("X.",names(temp1))
-#       names(temp2) <- paste0("M.",names(temp2))
-#       c(temp1, temp2)
-#     } else if (selecao == 2) {
-#     } else if (selecao == 3) {
-#     } else if (selecao == 4) {
-#     } else if (selecao == 5) {
-#     } else if (selecao == 6) {
-#     }
-#   }, rownames = TRUE)
-# 
-#   output$td_envios_recebimentos_saldo <- renderTable({
-#     selecao <- fazer_selecao()
-#     if (selecao == 1){
-#       m_paises_13[as.character(input$ano_transacoes),
-#                            "transferências_produtivas.valores",
-#                            input$pais_transacoes,] -
-#       m_paises_13[as.character(input$ano_transacoes),
-#                           "transferências_produtivas.valores",
-#                           ,input$pais_transacoes]
-#     } else if (selecao == 2) {
-#     } else if (selecao == 3) {
-#     } else if (selecao == 4) {
-#     } else if (selecao == 5) {
-#     } else if (selecao == 6) {
-#     }
-#   }, rownames = TRUE)
-# 
-# 
-#   output$improdutivos_envios_recebimentos <- renderTable({
-#     selecao <- fazer_selecao()
-#     if (selecao == 1){
-#       temp1 <- m_paises_13[as.character(input$ano_transacoes),
-#                            "transferencias_valores",
-#                            input$pais_transacoes,] -
-#         m_paises_13[as.character(input$ano_transacoes),
-#                            "transferências_produtivas.valores",
-#                            input$pais_transacoes,]
-#       temp2 <-  -(m_paises_13[as.character(input$ano_transacoes),
-#                             "transferencias_valores",
-#                             ,input$pais_transacoes] -
-#         m_paises_13[as.character(input$ano_transacoes),
-#                     "transferências_produtivas.valores",
-#                     ,input$pais_transacoes])
-#       names(temp1) <- paste0("X.",names(temp1))
-#       names(temp2) <- paste0("M.",names(temp2))
-#       c(temp1, temp2)
-#     } else if (selecao == 2) {
-#     } else if (selecao == 3) {
-#     } else if (selecao == 4) {
-#     } else if (selecao == 5) {
-#     } else if (selecao == 6) {
-#     }
-#   }, rownames = TRUE)
-# 
-# 
-#   output$improdutivos_envios_recebimentos_saldo <- renderTable({
-#     selecao <- fazer_selecao()
-#     if (selecao == 1){
-#       temp1 <- m_paises_13[as.character(input$ano_transacoes),
-#                            "transferencias_valores",
-#                            input$pais_transacoes,] -
-#         m_paises_13[as.character(input$ano_transacoes),
-#                     "transferências_produtivas.valores",
-#                     input$pais_transacoes,] -
-#         (m_paises_13[as.character(input$ano_transacoes),
-#                               "transferencias_valores",
-#                               ,input$pais_transacoes] -
-#            m_paises_13[as.character(input$ano_transacoes),
-#                                 "transferências_produtivas.valores",
-#                                 ,input$pais_transacoes])
-#     } else if (selecao == 2) {
-#     } else if (selecao == 3) {
-#     } else if (selecao == 4) {
-#     } else if (selecao == 5) {
-#     } else if (selecao == 6) {
-#     }
-#   }, rownames = TRUE)
-# 
-#   output$proporcao_td_transferencias <- renderText({
-#     as.character(sum(m_paises_13[as.character(input$ano_transacoes),
-#                                  "transferências_produtivas.valores",
-#                                  input$pais_transacoes,] +
-#                        m_paises_13[as.character(input$ano_transacoes),
-#                                    "transferências_produtivas.valores",
-#                                    ,input$pais_transacoes])/
-#                    sum(m_paises_13[as.character(input$ano_transacoes),
-#                                    "transferencias_valores",
-#                                    input$pais_transacoes,] +
-#                          m_paises_13[as.character(input$ano_transacoes),
-#                                      "transferencias_valores",
-#                                      ,input$pais_transacoes]))
-#   })
-#   textOutput("proporcao_td_transferencias_saldo")
 
 }
 
