@@ -23,9 +23,13 @@ sea_setores_16 <- readRDS(file = "dados/sea_setores_16.rds")
 m_io_13 <- readRDS(file = "dados/m_io_13.rds")
 m_io_16 <- readRDS(file = "dados/m_io_16.rds")
 
+
 varst <- read_csv2("dados/vars.csv")
 setorest <- read_csv2("dados/setores_t.csv")
 perfil_sumario <- c("taxa_exploracao","produto_total_pm","produto_total_valores","valor_forca_trabalho_total","lucro","taxa_exploracao_ocupados")
+var_groups <- read.csv2("dados/var_groups.csv")
+meta_var <- read.csv2("dados/meta_var.csv")
+
 ## Cria demais variáveis
 
 lista_versoes <- names(sea_paises[,1,1,1])
@@ -136,5 +140,29 @@ coords2country = function(points)
   #indices$REGION   # returns the continent (7 continent model)
 }
 
+add_tag <- function (first_tag, new_tag) {
+  first_tag <- tagList(first_tag, new_tag)
+}
 
+graphPanel <- function (indicator, panel_top, panel_left) {
+  absolutePanel(
+    class = "panel panel-default",
+    top = panel_top,
+    width = "34%",
+    height = 250,
+    style = paste0("left: calc(",panel_left,")"),
+    varst$pt[varst$var == indicator] %>%
+      div(class = "panel-heading",
+          style = "background-image:none;
+                  background: white;
+                  font-size:16px; 
+                  font-weight: bold;
+                  padding: 3px 5px;
+                  "),
+    
+    plotlyOutput(indicator) %>%
+      div(class = "panel-body",
+          style = "padding:0")
+  )
+}
 

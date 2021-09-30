@@ -1,6 +1,53 @@
 
 server <- function(input, output, session) {
- 
+
+  
+  #### Cria todos os outputs para os gráficos do país
+  top <- 285
+  country_graphs <- NULL
+  
+  for (x in var_groups$cod_group) {
+    # Printar linha do título do grupo
+    
+    country_graphs <- country_graphs %>% tagList(
+      var_groups$group_name[x] %>%
+        absolutePanel(
+          top = top,
+          style = "font-size: 18px;
+                font-weight: bold;"
+        )
+    )
+    
+    top <- top + 25
+    left <- "20px"
+    graph_position <- 1
+    
+    for (y in meta_var$cod_var[meta_var$cod_group == x]) {
+      # printar cada gráfico
+      country_graphs <- country_graphs %>% tagList(
+        graphPanel(y, top, left)
+      )
+      if (graph_position != 1) {
+        top <- top + 270
+        left <- "20px"
+      } else {
+        left <- "34% + 40px"
+      }
+      graph_position <- graph_position * -1
+    }
+    if (graph_position == 1) {
+      top <- top + 25
+    } else {
+      top <- top + 275
+    }
+      
+  }
+  # Fim da criação dos gráficos do país
+  
+  style_distribuicao <- paste0(
+   "top: 190px;left: calc(68% + 60px);right: 5px;height: ", top, "px;"
+   )
+  
   output$country_data_panel <- renderUI({
     if (input$pais != "") {
       tagList(
@@ -85,78 +132,47 @@ server <- function(input, output, session) {
           absolutePanel(
             top = 70,
             right = 5,
-            height = 100,
+            # height = 100,
             style = "
               left: calc(68% + 60px);
             ",
             
               class = "panel panel-default",
-              "Download" %>%
+            
+            tagList(
+              shiny::icon("flag",
+                   style = "color: gray"),
+              " Download country data"
+            ) %>%
               div(class = "panel-heading",
                   style = "background-image:none;
                   background: white;
                   font-size: 16px; 
                   font-weight: bold;
-                  padding: 3px 5px;
+                  padding: 15px !important;
                   "),
             
-            "Link1" %>%
+            tagList(
+              shiny::icon("chart-pie",
+                   style = "color: gray"),
+              " Download setorial data") %>%
               div(class = "panel-body",
-                  style = "padding:0")
+                  style = "background-image:none;
+                  background: white;
+                  font-size: 16px; 
+                  font-weight: bold;
+                  padding: 15px !important;
+                  ")
             
             
           ),
           
-          # Painel de série temporal
-          absolutePanel(
-            class = "panel panel-default",
-            top = 285,
-            left = 20,
-            width = "34%",
-            height = 250,
-            textOutput("titulo_serie_pais") %>%
-              div(class = "panel-heading",
-                  style = "background-image:none;
-                  background: white;
-                  font-size:16px; 
-                  font-weight: bold;
-                  padding: 3px 5px;
-                  "),
-            
-            plotlyOutput("serie_pais") %>%
-              div(class = "panel-body",
-                  style = "padding:0")
-          ),
-          
-          # Painel de série temporal2
-          absolutePanel(
-            class = "panel panel-default",
-            top = 285,
-            width = "34%",
-            height = 250,
-            style = "left: calc(34% + 40px)",
-            varst$pt[29] %>%
-              div(class = "panel-heading",
-                  style = "background-image:none;
-                  background: white;
-                  font-size:16px; 
-                  font-weight: bold;
-                  padding: 3px 5px;
-                  "),
-            
-            plotlyOutput("serie_pais2") %>%
-              div(class = "panel-body",
-                  style = "padding:0")
-          ),
+          country_graphs,
+
           
         # Painel de distribuição setorial
         absolutePanel(
-          style = "
-            top: 190px;
-            left: calc(68% + 60px);
-            right: 5px;
-            height: 100vh;
-          ",
+          style = style_distribuicao,
           
           div(
             class = "panel panel-default",
@@ -424,14 +440,11 @@ server <- function(input, output, session) {
     )
   )
   
-  output$serie_pais <- renderPlotly({
-    dados <- sea_paises[,,input$indicador,input$pais]
-    plotaserie(dados)
-  })
-  
-  output$serie_pais2 <- renderPlotly({
-    dados <- sea_paises[,,varst$var[29],input$pais]
-    plotaserie(dados)
+  lapply(varst$var, function(i) {
+    output[[i]] <- renderPlotly({
+      dados <- sea_paises[,,i,input$pais]
+      plotaserie(dados)
+    })
   })
   
   output$setores_pais_13 <- renderDataTable(
@@ -469,31 +482,7 @@ server <- function(input, output, session) {
   )
   
   
-  output$titulo_detalhamento_pais <-
-    renderText(
-      paste(varst[varst$var==input$indicador,"pt"])
-    )
-  
-  
-  output$subtitulo_detalhamento_pais <-
-    renderText(
-      paste(paises[paises$Legenda==input$pais,1],"-",input$ano)
-    )
-  
-  output$titulo_serie_pais <-
-    renderText(titspais())
-  
-  output$subtitulo_serie_pais <-
-    renderText(
-      subtspais())
-  
-
-  outs <- outputOptions(output)
-  lapply(names(outs), function(name) {
-    outputOptions(output, name, suspendWhenHidden = FALSE) 
-  })
-  
-  output$indicadores <- renderDT(
+   output$indicadores <- renderDT(
     {
       dados <- t(rbind(
         paises[match(names(sea_paises[1,1,1,]),paises[,3]),1],
