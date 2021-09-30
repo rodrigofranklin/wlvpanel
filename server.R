@@ -1,6 +1,78 @@
 
 server <- function(input, output, session) {
 
+  ### Country indicator panel com transparência
+  output$country_indicator_panel <- renderUI({
+    if (input$pais != "") {
+      absolutePanel(
+        top = 45,
+        left = 0,
+        width = "40%",
+        style = "
+        background-color: rgba(0,0,0,0.3); 
+        z-index: 100;
+        height: calc(100vh - 45px)
+      ",
+        
+        # close button
+        absolutePanel(
+          right = 0,
+          actionLink(
+            "close_button",
+            label = NULL, 
+            style = "padding: 10px; font-size: 14px; color: white; right:0",
+            icon = icon("times")
+          )
+        ),
+        
+        paises[ paises$Legenda==input$pais, 1] %>%
+          div(style = "
+              position: relative;
+              top: 70px;
+              font-size: 38px;
+              font-weight: bold;
+              text-align: center;
+          "),
+        
+        plotlyOutput("country_indicator_graph") %>%
+          div(
+            style = "
+              position: relative;
+              top: 30vh;
+            ",
+          ),
+        
+        # Show_me_more Button
+        actionButton(
+          "show_me_more",
+          label = "Show me more",
+        ) %>%
+          div(style = "
+              position: relative;
+              top: 300px;
+              font-size: 24px;
+              text-align: center;
+          ")
+      )
+    }
+  })
+  
+  outputOptions(output, "country_indicator_panel", priority = 10)
+  
+  show_panel <- reactiveVal(-1)
+  
+  observeEvent(input$show_me_more, {
+    show_panel(show_panel() * -1)
+  })
+  
+  # Botão para fechar painel e voltar para o mapa
+  observeEvent(
+    input$close_button,
+    {updateSelectInput(inputId = "pais", selected = "")
+    show_panel(show_panel() * -1)}
+    
+  )
+  
   
   #### Cria todos os outputs para os gráficos do país
   top <- 285
@@ -49,12 +121,12 @@ server <- function(input, output, session) {
    )
   
   output$country_data_panel <- renderUI({
-    if (input$pais != "") {
+    if (show_panel() == 1) {
       tagList(
 
         # Botão fechar
         actionButton(
-          inputId = "xis",
+          inputId = "close_country_data_panel",
           label = NULL,
           icon = icon("times"), # Esse ícone só está carregando se colocar um ícone no meno do navbar...
           style ="border-radius: 50%;
@@ -315,8 +387,8 @@ server <- function(input, output, session) {
   
   # Botão para fechar painel e voltar para o mapa
   observeEvent(
-    input$xis,
-    updateSelectInput(inputId = "pais", selected = "")
+    input$close_country_data_panel,
+    show_panel(show_panel() * -1)
   )
   
   # efeito do clique no mapa: selecionar país e mostrar painéis
@@ -440,6 +512,9 @@ server <- function(input, output, session) {
       dados <- sea_paises[,,i,input$pais]
       plotaserie(dados)
     })
+    
+    outputOptions(output,i, suspendWhenHidden = FALSE)
+    outputOptions(output,i, priority = 0)
   })
   
   output$setores_pais_13 <- renderDataTable(
@@ -499,6 +574,7 @@ server <- function(input, output, session) {
       formatStyle(dados, names(dados$x$data),`line-height` = '10px')
     },
   )
+   
   output$serie <- renderPlotly({
     dados <- sea_paises[input$versao,,
                         input$indicadorind,
@@ -506,6 +582,12 @@ server <- function(input, output, session) {
     plotaserie(dados)
   })
   
+  output$country_indicator_graph <- renderPlotly({
+    dados <- sea_paises[,,
+                        input$indicador,
+                        input$pais]
+    plotaserie(dados)
+  })
   
   ### sobre esses outputs que se seguem: é preciso melhorar. Seria possível ter
   ### uma única função que fosse chamada conforme a seleção de (exportação,
