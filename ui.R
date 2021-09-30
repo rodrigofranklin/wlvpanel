@@ -83,7 +83,6 @@ ui <- navbarPage(
     }"),
     
     absolutePanel(
-      id="controls",
       top = 50,
       right = "1.5%",
       width = "22%",
@@ -112,6 +111,8 @@ ui <- navbarPage(
         animate=F, 
         sep = "")
     ),
+    
+    uiOutput("country_indicator_panel"),
     
     uiOutput("country_data_panel"),
     
