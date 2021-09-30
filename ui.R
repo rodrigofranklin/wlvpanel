@@ -17,7 +17,7 @@ ui <- navbarPage(
         style = "padding: 2px; font-size: 20px; color: white",
         icon = icon("cog")
       )
-    # ),
+    ),
     # conditionalPanel(
     #   "output.show_config_panel % 2 != 0",
     #   absolutePanel(
@@ -29,6 +29,8 @@ ui <- navbarPage(
     #     "XXX",
     #     draggable = TRUE
     #   )
+    tags$head(
+      includeHTML("www/google_analytics.html")
     )
   ),
   
