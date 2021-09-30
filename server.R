@@ -1,104 +1,118 @@
-
 server <- function(input, output, session) {
 
-  ### Country indicator panel com transparência
-  output$country_indicator_panel <- renderUI({
-    if (input$pais != "") {
-      absolutePanel(
-        top = 45,
-        left = 0,
-        width = "40%",
-        style = "
-        background-color: rgba(0,0,0,0.3); 
-        z-index: 100;
-        height: calc(100vh - 45px)
-      ",
-        
-        # close button
-        absolutePanel(
-          right = 0,
-          actionLink(
-            "close_button",
-            label = NULL, 
-            style = "padding: 10px; font-size: 14px; color: white; right:0",
-            icon = icon("times")
-          )
-        ),
-        
-        paises[ paises$Legenda==input$pais, 1] %>%
-          div(style = "
-              position: relative;
-              top: 70px;
-              font-size: 38px;
-              font-weight: bold;
-              text-align: center;
-          "),
-        
-        plotlyOutput("country_indicator_graph") %>%
-          div(
-            style = "
-              position: relative;
-              top: 30vh;
-            ",
-          ),
-        
-        # Show_me_more Button
-        actionButton(
-          "show_me_more",
-          label = "Show me more",
-        ) %>%
-          div(style = "
-              position: relative;
-              top: 300px;
-              font-size: 24px;
-              text-align: center;
-          ")
-      )
-    }
-  })
+  # ### Country indicator panel com transparência
+  # output$country_indicator_panel <- renderUI({
+  #   if (input$pais != "") {
+  #     absolutePanel(
+  #       top = 45,
+  #       left = 0,
+  #       width = "40%",
+  #       style = "
+  #       background-color: rgba(0,0,0,0.3); 
+  #       z-index: 100;
+  #       height: calc(100vh - 45px)
+  #     ",
+  #       
+  #       # close button
+  #       absolutePanel(
+  #         right = 0,
+  #         actionLink(
+  #           "close_button",
+  #           label = NULL, 
+  #           style = "padding: 10px; font-size: 14px; color: white; right:0",
+  #           icon = icon("times")
+  #         )
+  #       ),
+  #       
+  #       paises[ paises$Legenda==input$pais, 1] %>%
+  #         div(style = "
+  #             position: relative;
+  #             top: 70px;
+  #             font-size: 38px;
+  #             font-weight: bold;
+  #             text-align: center;
+  #         "),
+  #       
+  #       plotlyOutput("country_indicator_graph") %>%
+  #         div(
+  #           style = "
+  #             position: relative;
+  #             top: 30vh;
+  #           ",
+  #         ),
+  #       
+  #       # Show_me_more Button
+  #       actionButton(
+  #         "show_me_more",
+  #         label = "Show me more",
+  #       ) %>%
+  #         div(style = "
+  #             position: relative;
+  #             top: 300px;
+  #             font-size: 24px;
+  #             text-align: center;
+  #         ")
+  #     )
+  #   }
+  # })
+  # 
+  # outputOptions(output, "country_indicator_panel", priority = 10)
+  # # Botão para fechar painel e voltar para o mapa
+  # observeEvent(
+  #   input$close_button,
+  #   {updateSelectInput(inputId = "pais", selected = "")
+  #     show_panel(show_panel() * -1)}
+  #   
+  # )  
   
-  outputOptions(output, "country_indicator_panel", priority = 10)
+  # show_panel <- reactiveVal(-1)
+  # 
+  # observeEvent(input$show_me_more, {
+  #   show_panel(show_panel() * -1)
+  # })
   
-  show_panel <- reactiveVal(-1)
+  ## Panel: all_data_country ----------
+  ## Painel com detalhamento completo dos países.
+  # Tabela de resumo, distribuição setorial e gráficos de todas as variáveis
   
-  observeEvent(input$show_me_more, {
-    show_panel(show_panel() * -1)
-  })
+  # Inicia variáveis
+  top <- 285 # posição a partir da qual os gráficos serão plotados
+  country_graphs <- NULL # tagList com todos os gráficos e títulos de grupos
   
-  # Botão para fechar painel e voltar para o mapa
-  observeEvent(
-    input$close_button,
-    {updateSelectInput(inputId = "pais", selected = "")
-    show_panel(show_panel() * -1)}
-    
-  )
-  
-  
-  #### Cria todos os outputs para os gráficos do país
-  top <- 285
-  country_graphs <- NULL
-  
+  # Cria todos os outputs para os gráficos do país
   for (x in var_groups$cod_group) {
-    # Printar linha do título do grupo
     
-    country_graphs <- country_graphs %>% tagList(
+    # Título do gráfico
+    country_graphs <-  tagList(
+      country_graphs,
       var_groups$group_name[x] %>%
         absolutePanel(
           top = top,
-          style = "font-size: 18px;
-                font-weight: bold;"
+          style = "
+            font-size: 18px;
+            font-weight: bold;
+          "
         )
     )
     
+    # altera posição para próximo gráfico
     top <- top + 25
+    
+    # Os gráficos podem ficar em duas colunas.
+    # Define os dados para a coluna da direita.
     left <- "20px"
     graph_position <- 1
     
+    # Gráficos do grupo
     for (y in meta_var$cod_var[meta_var$cod_group == x]) {
-      # printar cada gráfico
-      country_graphs <- country_graphs %>% tagList(
+
+      # inclui um gráfico
+      country_graphs <- tagList(
+        country_graphs,
         graphPanel(y, top, left)
       )
+      
+      # altera posição para próximo gráfico
       if (graph_position != 1) {
         top <- top + 270
         left <- "20px"
@@ -107,21 +121,45 @@ server <- function(input, output, session) {
       }
       graph_position <- graph_position * -1
     }
+    
+    # altera topo para próximo grupo
     if (graph_position == 1) {
       top <- top + 25
     } else {
       top <- top + 275
     }
-      
   }
+  
   # Fim da criação dos gráficos do país
   
-  style_distribuicao <- paste0(
-   "top: 190px;left: calc(68% + 60px);right: 5px;height: ", top, "px;"
-   )
+  # cria outputs para todos os gráficos
+  # ANTEÇÃO:
+  # 1. NÃO USAR "FOR"
+  # 2. A opção suspendWhenHidden cria grande lag para mostrar o painel
+  lapply(varst$var, function(i) {
+    output[[i]] <- renderPlotly({
+      dados <- sea_paises[,,i,input$pais]
+      plotaserie(dados)
+    })
+    # outputOptions(output,i, suspendWhenHidden = FALSE)
+    # outputOptions(output,i, priority = 0)
+  })  
   
+  distribution_table_height <- paste0("height: ", top, "px;")
+  
+
+  
+  # Botão para fechar painel e voltar para o mapa
+  observeEvent(
+    input$close_country_data_panel,
+    updateSelectInput(inputId = "pais", selected = "")
+
+  )
+  
+  # Painel com todos os dados do país
   output$country_data_panel <- renderUI({
-    if (show_panel() == 1) {
+      if (input$pais != "") {
+    # if (show_panel() == 1) {
       tagList(
 
         # Botão fechar
@@ -244,7 +282,12 @@ server <- function(input, output, session) {
           
         # Painel de distribuição setorial
         absolutePanel(
-          style = style_distribuicao,
+          style = "
+            top: 190px;
+            left: calc(68% + 60px);
+            right: 5px;
+          ",
+          style = distribution_table_height,
           
           div(
             class = "panel panel-default",
@@ -385,12 +428,6 @@ server <- function(input, output, session) {
                 pal = palas)
   })
   
-  # Botão para fechar painel e voltar para o mapa
-  observeEvent(
-    input$close_country_data_panel,
-    show_panel(show_panel() * -1)
-  )
-  
   # efeito do clique no mapa: selecionar país e mostrar painéis
   observeEvent(input$map_click, {
     click <- input$map_click
@@ -506,16 +543,6 @@ server <- function(input, output, session) {
       lengthChange = FALSE
     )
   )
-  
-  lapply(varst$var, function(i) {
-    output[[i]] <- renderPlotly({
-      dados <- sea_paises[,,i,input$pais]
-      plotaserie(dados)
-    })
-    
-    outputOptions(output,i, suspendWhenHidden = FALSE)
-    outputOptions(output,i, priority = 0)
-  })
   
   output$setores_pais_13 <- renderDataTable(
     tabmil(sea_setores_13[as.character(input$ano),
