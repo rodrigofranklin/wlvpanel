@@ -101,7 +101,7 @@ plotaserie <- function(dados,perc=F) {
           legend.position='none')
   
 
-  ps <- ggplotly(p, height = 220)
+  ps <- ggplotly(p)
 
 }
 
@@ -140,10 +140,6 @@ coords2country = function(points)
   #indices$REGION   # returns the continent (7 continent model)
 }
 
-add_tag <- function (first_tag, new_tag) {
-  first_tag <- tagList(first_tag, new_tag)
-}
-
 graphPanel <- function (indicator, panel_top, panel_left) {
   absolutePanel(
     class = "panel panel-default",
@@ -151,18 +147,108 @@ graphPanel <- function (indicator, panel_top, panel_left) {
     width = "34%",
     height = 250,
     style = paste0("left: calc(",panel_left,")"),
-    varst$pt[varst$var == indicator] %>%
+    tags$table(
+      style = "
+        ",
+      width = "100%",
+      tags$tr(
+        tags$td(
+          width = "100%",
+          actionLink(
+            inputId = paste0(indicator,"_title"),
+            label = varst$pt[varst$var == indicator],
+            style = "
+              font-size:14px; 
+              font-weight: bold;
+              color: gray;
+            "
+          )
+        ),
+        tags$td(
+          actionLink(
+            inputId = paste0(indicator,"_info"),
+            label = NULL,
+            style = "
+              text-align: right;
+              font-size:14px; 
+              color: gray;
+            ",
+            icon = icon("info-circle")
+          )
+        )
+      )
+    ) %>%
       div(class = "panel-heading",
           style = "background-image:none;
                   background: white;
-                  font-size:16px; 
-                  font-weight: bold;
                   padding: 3px 5px;
                   "),
-    
-    plotlyOutput(indicator) %>%
+    plotlyOutput(indicator, height = 220, width = "32vw") %>%
       div(class = "panel-body",
-          style = "padding:0")
+          style = "
+            padding:0px;
+            text-align: center;
+          ")
   )
 }
 
+# Inicia variáveis
+top <- 285 # posição a partir da qual os gráficos serão plotados
+country_graphs <- NULL # tagList com todos os gráficos e títulos de grupos
+
+# Cria todos os outputs para os gráficos do país
+for (x in var_groups$cod_group) {
+  
+  # Título do gráfico
+  country_graphs <-  tagList(
+    country_graphs,
+    var_groups$group_name[x] %>%
+      absolutePanel(
+        top = top,
+        style = "
+            font-size: 18px;
+            font-weight: bold;
+          "
+      )
+  )
+  
+  # altera posição para próximo gráfico
+  top <- top + 25
+  
+  # Os gráficos podem ficar em duas colunas.
+  # Define os dados para a coluna da direita.
+  left <- "20px"
+  graph_position <- 1
+  
+  # Gráficos do grupo
+  for (y in meta_var$cod_var[meta_var$cod_group == x]) {
+    
+    # inclui um gráfico
+    country_graphs <- tagList(
+      country_graphs,
+      graphPanel(y, top, left)
+    )
+    
+    # altera posição para próximo gráfico
+    if (graph_position != 1) {
+      top <- top + 270
+      left <- "20px"
+    } else {
+      left <- "34% + 40px"
+    }
+    graph_position <- graph_position * -1
+  }
+  
+  # altera topo para próximo grupo
+  if (graph_position == 1) {
+    top <- top + 25
+  } else {
+    top <- top + 275
+  }
+}
+
+# Determina o tamanho da tabela de distribuição setorial
+# (para adequado funcionamento da posição "sticky")
+distribution_table_height <- paste0("height: ", top, "px;")
+
+# Fim da criação dos gráficos do país

@@ -6,58 +6,117 @@ ui <- navbarPage(
 
   # header contém o botão e o painel de configuração.
   header = tagList(
-    absolutePanel(
-      id="config",
-      top = 10,
-      right = 10,
-      style = "z-index: 5000",
-      actionLink(
-        "config_button",
-        label = NULL, 
-        style = "padding: 2px; font-size: 20px; color: white",
-        icon = icon("cog")
+    
+    # Loading panel... (para ocultar todos os conditionalPanels)
+    conditionalPanel(
+      "output.loading!=''",
+      absolutePanel(
+        top = 45,
+        left = 0,
+        right = 0,
+        bottom = 0,
+        style = "
+          background-color: rgba(220, 222, 225, 1);
+          text-align: center;
+          z-index: 100000;
+        ",
+        img(
+          src = "hug.gif",
+          height = "50px",
+          style = "
+            position: fixed;
+            top: calc(50vh - 25px);
+            left: calc(50vw - 25px);
+          "
+        ) 
       )
     ),
-    # conditionalPanel(
-    #   "output.show_config_panel % 2 != 0",
-    #   absolutePanel(
-    #     top = 70,
-    #     left = 70,
-    #     class="panel panel-default",
-    #     style = "z-index: 5000",
-    #     div("WLVD Setup", class = "panel-heading"),
-    #     "XXX",
-    #     draggable = TRUE
-    #   )
+
+    # Google Analytics
     tags$head(
       includeHTML("www/google_analytics.html")
+    ),
+
+    # Config Button
+    actionLink(
+      "config_button",
+      label = NULL,
+      style = "
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        font-size: 20px;
+        color: white;
+        z-index: 5000;
+      ",
+      icon = icon("cog")
+    ),
+    
+    # Config Panel
+    conditionalPanel(
+      "input.config_button % 2 != 0",
+      absolutePanel(
+        top = 45,
+        left = 0,
+        right = 0,
+        bottom = 0,
+        style = "
+          background-color: rgba(0, 0, 0, 0.4);
+          text-align: center;
+          z-index: 5000;
+        ",
+        absolutePanel(
+          top = "calc(50vh - 100px)",
+          left = "calc(50vw - 100px)",
+          width = 200,
+          height = 200,
+          class="panel panel-default",
+          div("WLVD Setup", class = "panel-heading"),
+          "XXX"
+        ) 
+      )
     )
   ),
   
   # footer contém o painel de créditos.
   footer = absolutePanel(
-    id = "credits",
     fixed = TRUE,
-    style =
-      "background-color: rgba(255,255,255,0.6);
-        z-index: 100;
-        padding: 0",
+    style = "
+      background-color: rgba(255,255,255,0.6);
+      z-index: 100;
+      padding: 0px
+    ",
     bottom = 0,
     left = 0,
-    width = "300px",
+    width = 300,
     height = 20,
     tags$table(
       tags$tr(
         tags$td(
           img(src = "https://worldlabourvalues.org/images/a_batallar_ideas.png",
               height = "20px",
-              style = "-webkit-filter: grayscale(100%);
-                filter: grayscale(80%)")),
+              style = "
+                -webkit-filter: grayscale(100%);
+                filter: grayscale(80%)
+          ")
+        ),
         tags$td(
           "World Labour Values Task Force | ",
-          span("©",style ="display: inline-block; text-align: right; margin: 0px; -moz-transform: scaleX(-1); -o-transform: scaleX(-1); -webkit-transform: scaleX(-1); transform: scaleX(-1); filter: FlipH; -ms-filter: “FlipH”"),
+          span("©", style = "
+              display: inline-block;
+              text-align: right;
+              margin: 0px;
+              -moz-transform: scaleX(-1);
+              -o-transform: scaleX(-1);
+              -webkit-transform: scaleX(-1);
+              transform: scaleX(-1);
+              filter: FlipH;
+              -ms-filter: 'FlipH'
+            "
+          ),
           " CC-BY-NC SA 4.0",
-          style = "font-size: 10px;")
+          style = "font-size: 10px;"
+        )
       )
     )
   ),
@@ -66,7 +125,7 @@ ui <- navbarPage(
     "Country",
     # Mapa (estilos para eliminar borda)
     tags$style(type = "text/css", "#map {height: calc(100vh - 45px)  !important;
-               z-index: 50;}"),
+               z-index: 1;}"),
     leafletOutput("map", width = "100%"),
     tags$style(type = "text/css", ".container-fluid {padding-left:0px;padding-right:0px;}"),
     tags$style(type = "text/css", ".navbar {margin-bottom: 0px;}"),
@@ -79,15 +138,15 @@ ui <- navbarPage(
       line-height: 0.5 !important;
       border-style: none !important;
         border-color: red !important;
-
     }"),
     
+    # Panel of Inputs
     absolutePanel(
       top = 50,
       right = "1.5%",
       width = "22%",
       height = "0",
-      style = "z-index: 100; font-size: 10px; padding: 0",
+      style = "z-index: 100; font-size: 10px; padding: 0px",
 
       selectInput(
         "pais",
@@ -100,7 +159,7 @@ ui <- navbarPage(
         label = NULL,
         choices = lista_variaveis_sea, 
         selected = "taxa_exploracao"),
-      
+
       sliderInput(
         "ano",
         label = NULL,
@@ -111,10 +170,27 @@ ui <- navbarPage(
         animate=F, 
         sep = "")
     ),
+
+    # uiOutput("country_indicator_panel"),
     
-    uiOutput("country_indicator_panel"),
+    # uiOutput("country_data_panel"),
     
-    uiOutput("country_data_panel"),
+    source("panel_country_all_data.R", local = TRUE)$value,
+    
+    # Loading gif...
+    # Aparece assim que input.pais se modifica.
+    # É sobreposto após output.pais se modificar.
+    conditionalPanel(
+      "input.pais != ''",
+      img(src = "hug.gif",
+          height = "50px",
+          style = "
+                position: fixed;
+                top: calc(50vh - 25px);
+                left: calc(50vw - 25px);
+                z-index: 50;
+          ") 
+    )
     
   ),                  
   tabPanel(
@@ -213,7 +289,7 @@ ui <- navbarPage(
   
   tabPanel(
     "Download",
-    icon = icon("download"), #coloquei esse ícone pq o font-awesome não está funcionando se não colocar algo aqui!
+    # icon = icon("download"), #coloquei esse ícone pq o font-awesome não está funcionando se não colocar algo aqui!
     "xxx",
   )
 

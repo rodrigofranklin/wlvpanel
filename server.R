@@ -1,5 +1,6 @@
 server <- function(input, output, session) {
 
+  ## Panel: country_indicator ------------
   # ### Country indicator panel com transparência
   # output$country_indicator_panel <- renderUI({
   #   if (input$pais != "") {
@@ -75,261 +76,119 @@ server <- function(input, output, session) {
   ## Painel com detalhamento completo dos países.
   # Tabela de resumo, distribuição setorial e gráficos de todas as variáveis
   
-  # Inicia variáveis
-  top <- 285 # posição a partir da qual os gráficos serão plotados
-  country_graphs <- NULL # tagList com todos os gráficos e títulos de grupos
-  
-  # Cria todos os outputs para os gráficos do país
-  for (x in var_groups$cod_group) {
-    
-    # Título do gráfico
-    country_graphs <-  tagList(
-      country_graphs,
-      var_groups$group_name[x] %>%
-        absolutePanel(
-          top = top,
-          style = "
-            font-size: 18px;
-            font-weight: bold;
-          "
-        )
-    )
-    
-    # altera posição para próximo gráfico
-    top <- top + 25
-    
-    # Os gráficos podem ficar em duas colunas.
-    # Define os dados para a coluna da direita.
-    left <- "20px"
-    graph_position <- 1
-    
-    # Gráficos do grupo
-    for (y in meta_var$cod_var[meta_var$cod_group == x]) {
 
-      # inclui um gráfico
-      country_graphs <- tagList(
-        country_graphs,
-        graphPanel(y, top, left)
-      )
-      
-      # altera posição para próximo gráfico
-      if (graph_position != 1) {
-        top <- top + 270
-        left <- "20px"
-      } else {
-        left <- "34% + 40px"
-      }
-      graph_position <- graph_position * -1
-    }
-    
-    # altera topo para próximo grupo
-    if (graph_position == 1) {
-      top <- top + 25
-    } else {
-      top <- top + 275
-    }
-  }
   
-  # Fim da criação dos gráficos do país
-  
-  # cria outputs para todos os gráficos
-  # ANTEÇÃO:
-  # 1. NÃO USAR "FOR"
-  # 2. A opção suspendWhenHidden cria grande lag para mostrar o painel
+  # cria outputs para todos os gráficos e observeEvents para todos os títulos
+  # e incones de info
+  # ANTEÇÃO: NÃO USAR "FOR"
   lapply(varst$var, function(i) {
+
     output[[i]] <- renderPlotly({
       dados <- sea_paises[,,i,input$pais]
       plotaserie(dados)
     })
-    # outputOptions(output,i, suspendWhenHidden = FALSE)
-    # outputOptions(output,i, priority = 0)
+
+    observeEvent(input[[paste0(i,"_info")]],{
+      show_info_panel(1)
+    })
+    
+    observeEvent(input[[paste0(i,"_title")]],{
+      updateSelectInput(inputId = "indicador", selected = i)
+    })
+
+    outputOptions(output,i, suspendWhenHidden = FALSE)
+    outputOptions(output,i, priority = 10)
   })  
   
-  distribution_table_height <- paste0("height: ", top, "px;")
+  # Usado para controlar exibição dos paineis. (Output carrega após Input)
+  output$pais <- renderText(paises[paises$Legenda==input$pais,1])
+  outputOptions(output, 'pais', suspendWhenHidden=FALSE)
+  outputOptions(output, 'pais', priority=100)
   
+  output$ano <- renderText(input$ano)
 
-  
+  output$indicador <- renderText(varst$pt[varst$var==input$indicador])
+
   # Botão para fechar painel e voltar para o mapa
   observeEvent(
     input$close_country_data_panel,
     updateSelectInput(inputId = "pais", selected = "")
-
   )
   
-  # Painel com todos os dados do país
-  output$country_data_panel <- renderUI({
-      if (input$pais != "") {
-    # if (show_panel() == 1) {
-      tagList(
-
-        # Botão fechar
-        actionButton(
-          inputId = "close_country_data_panel",
-          label = NULL,
-          icon = icon("times"), # Esse ícone só está carregando se colocar um ícone no meno do navbar...
-          style ="border-radius: 50%;
-                  border-color: transparent;
-                  color: white;
-                  font-size:12px;
-                  position: absolute;
-                  top: 58px;
-                  left: calc(50vw - 17px);
-                  z-index: 501;
-                  background-color: rgba(127,127,127,1)"
-        ),
-        
-        # Painel dados país
-        absolutePanel(
-          top = 75,
-          left = 10,
-          style =
-            "overflow-y:scroll;
-            z-index:500;
-            height: calc(100vh - 75px);
-            padding: 20px;
-            width:calc(100vw - 20px);
-            background-color: rgba(242,243,246,0.95);
-            border: solid;
-            border-width: 1px;
-            border-color: rgba(221,221,221,1);",
-
-          paises[paises$Legenda==input$pais,1] %>%
-            div(style = "font-size: 24px;
-                font-weight: bold") ,
-          
-          # country profile
-          absolutePanel(
-            top = 70,
-            left = 20,
-            style = "width: calc(68% + 20px)",
-            class = "panel panel-default",
-            
-
-              fluidRow(
-                column(
-                  width = 6,
-                  paste("Country Profile -", input$ano)
-                ),
-                column(
-                  width = 6,
-                  # chakraSliderInput(
-                  #   "ano_painel",
-                  #   label = NULL,
-                  #   min = ano_min, 
-                  #   max = ano_max, 
-                  #   sep = "") %>%
-                  #   p(style = "font-size: '20px'")
-                   
-                )
-              ) %>%
-
-              div(class = "panel-heading",
-                  style = "background-image:none;
-                  background: white;
-                  font-size: 16px; 
-                  font-weight: bold;
-                  padding: 3px 5px;
-                  "),
-            
-            dataTableOutput("profile") %>%
-              div(class = "panel-body",
-                  style = "background-image:none;
-                  background: white;
-                  padding: 0;")
-          ),
-          
-          # Painel de download
-          absolutePanel(
-            top = 70,
-            right = 5,
-            # height = 100,
-            style = "
-              left: calc(68% + 60px);
-            ",
-            
-              class = "panel panel-default",
-            
-            tagList(
-              shiny::icon("flag",
-                   style = "color: gray"),
-              " Download country data"
-            ) %>%
-              div(class = "panel-heading",
-                  style = "background-image:none;
-                  background: white;
-                  font-size: 16px; 
-                  font-weight: bold;
-                  padding: 15px !important;
-                  "),
-            
-            tagList(
-              shiny::icon("chart-pie",
-                   style = "color: gray"),
-              " Download setorial data") %>%
-              div(class = "panel-body",
-                  style = "background-image:none;
-                  background: white;
-                  font-size: 16px; 
-                  font-weight: bold;
-                  padding: 15px !important;
-                  ")
-            
-            
-          ),
-          
-          country_graphs,
-
-          
-        # Painel de distribuição setorial
-        absolutePanel(
-          style = "
-            top: 190px;
-            left: calc(68% + 60px);
-            right: 5px;
-          ",
-          style = distribution_table_height,
-          
-          div(
-            class = "panel panel-default",
-            style ="
-              position:sticky;
-              top:0;
-              height: calc(100vh - 120px);
-
-            ",
-          "Setorial distribution" %>%
-            div(class = "panel-heading",
-                style = "background-image:none;
-                  background: white;
-                  font-size:16px; 
-                  font-weight: bold;
-                  padding: 3px 5px;
-                  "),
-          tagList(
-            input$indicador,
-            tabsetPanel(
-              type = "tabs",
-              tabPanel(
-                "WIOD.13",
-                dataTableOutput("setores_pais_13")
-              ),
-              tabPanel(
-                "WIOD.16",
-                dataTableOutput("setores_pais_16")
-              )
-            )
-          ) %>%
-            div(class = "panel-body",
-                style = "padding:0")
-        
-        ))
-        )
-        
-        
-      )}
-  })
+  output$profile <- renderDataTable(
+    tabmil(t(sea_paises[,as.character(input$ano),,input$pais]))%>%
+      filter(var %in% c(input$indicador,perfil_sumario))%>%
+      arrange(match(var,c(input$indicador,perfil_sumario)))%>%
+      left_join(varst)%>%
+      select(var = pt, 2:3),
+    rownames = FALSE,
+    # spacing = "xs",
+    # striped = TRUE,
+    # hover = TRUE,
+    # width = "100%",
+    class = "profile_table",
+    options = list(
+      ordering = FALSE,
+      searching = FALSE,
+      paging = FALSE,
+      #      scrollY = "200",
+      # pageLength = 10,
+      info = FALSE,
+      lengthChange = FALSE
+    )
+  )
   
-  output$show_config_panel <- reactive(input$config_button)
+  outputOptions(output, "profile", suspendWhenHidden = FALSE)
+  
+  output$setores_pais_13 <- renderDataTable(
+    tabmil(sea_setores_13[as.character(input$ano),
+                          input$indicador,,
+                          input$pais])%>%
+      left_join(setorest,by=c("var" = "Code"))%>%
+      select(sector=pt,value=x),
+    rownames = FALSE,
+    options = list(
+      ordering = TRUE,
+      searching = FALSE,
+      paging = FALSE,
+      #pageLength = 8,
+      scrollY= "calc(100vh - 250px)",
+      info = FALSE,
+      lengthChange = FALSE
+    )
+  )
+  outputOptions(output, "setores_pais_13", suspendWhenHidden = FALSE)
+  
+  output$setores_pais_16 <- renderDataTable(
+    tabmil(sea_setores_16[as.character(input$ano),
+                          input$indicador,,
+                          input$pais])%>%
+      left_join(setorest,by=c("var" = "Code"))%>%
+      select(sector=pt,value=x),
+    rownames = FALSE,
+    options = list(
+      ordering = TRUE,
+      searching = FALSE,
+      paging = FALSE,
+      #pageLength = 8,
+      scrollY= "calc(100vh - 250px)",
+      info = FALSE,
+      lengthChange = FALSE
+    )
+  )
+  outputOptions(output, "setores_pais_16", suspendWhenHidden = FALSE)
+  
+  
+  config_button_pressed <- reactiveVal(0)
+  
+  output$show_config_panel <- reactive(
+    config_button_pressed()
+  )
+  
+  observeEvent(
+    input$config_button,
+    config_button_pressed(1)
+  )
   
   output$map <- renderLeaflet({
     # Use leaflet() here, and only include aspects of the map that
@@ -433,6 +292,7 @@ server <- function(input, output, session) {
     click <- input$map_click
     piso3 <- coords2country(data.frame(lng = click$lng, lat = click$lat))
     if (piso3 %in% paises$Legenda) {
+      updateTextInput(inputId = "wait", value = "guenta_firme")
       updateSelectInput(inputId = "pais",
                       selected = piso3)
     }
@@ -525,63 +385,7 @@ server <- function(input, output, session) {
   })
   
   
-  output$profile <- renderDataTable(
-    
-    tabmil(t(sea_paises[,as.character(input$ano),,input$pais]))%>%
-      filter(var %in% c(input$indicador,perfil_sumario))%>%
-      arrange(match(var,c(input$indicador,perfil_sumario)))%>%
-      left_join(varst)%>%
-      select(var = pt, 2:3),
-    rownames = FALSE,
-       # spacing = "xs",
-       # striped = TRUE,
-       # hover = TRUE,
-       # width = "100%",
-    class = "profile_table",
-    options = list(
-      ordering = FALSE,
-      searching = FALSE,
-      paging = FALSE,
-      #      scrollY = "200",
-      # pageLength = 10,
-      info = FALSE,
-      lengthChange = FALSE
-    )
-  )
-  
-  output$setores_pais_13 <- renderDataTable(
-    tabmil(sea_setores_13[as.character(input$ano),
-                          input$indicador,,
-                          input$pais])%>%
-      left_join(setorest,by=c("var" = "Code"))%>%
-      select(sector=pt,value=x),
-    options = list(
-      ordering = TRUE,
-      searching = FALSE,
-      paging = FALSE,
-      #pageLength = 8,
-      scrollY= "calc(100vh - 250px)",
-      info = FALSE,
-      lengthChange = FALSE
-    )
-  )
-  
-  output$setores_pais_16 <- renderDataTable(
-    tabmil(sea_setores_16[as.character(input$ano),
-                          input$indicador,,
-                          input$pais])%>%
-      left_join(setorest,by=c("var" = "Code"))%>%
-      select(sector=pt,value=x),
-    options = list(
-      ordering = TRUE,
-      searching = FALSE,
-      paging = FALSE,
-      #pageLength = 8,
-      scrollY= "calc(100vh - 250px)",
-      info = FALSE,
-      lengthChange = FALSE
-    )
-  )
+
   
   
    output$indicadores <- renderDT(
@@ -671,7 +475,9 @@ server <- function(input, output, session) {
      
  }
  )
-
+  output$loading <- renderText("")
+  outputOptions(output, 'loading', suspendWhenHidden=FALSE)
+  
 }
 
 
