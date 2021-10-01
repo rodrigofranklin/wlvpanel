@@ -1,3 +1,4 @@
+tagList(
 conditionalPanel(
   "output.pais != ''",
   
@@ -34,11 +35,10 @@ conditionalPanel(
             border-width: 1px;
             border-color: rgba(221,221,221,1);
           ",
-    
     # Título
     textOutput("pais") %>%
       div(style = "font-size: 24px; font-weight: bold") ,
-    
+
     # Panel: country_profile
     absolutePanel(
       top = 70,
@@ -49,7 +49,6 @@ conditionalPanel(
       fluidRow(
         column(
           width = 6,
-          "Country Profile -",
           textOutput("ano")
         ),
         column(
@@ -127,8 +126,8 @@ conditionalPanel(
       top = "190px",
       left = "calc(68% + 60px)",
       right = "5px",
-      style = distribution_table_height,
-      
+      height = (top-200),
+
       div(
         class = "panel panel-default",
         style ="
@@ -161,6 +160,58 @@ conditionalPanel(
           div(class = "panel-body",
               style = "padding:0;")
       )
-    )
+    ),
+    
   )
+),
+
+conditionalPanel(
+  "output.show_info_panel !=0",
+  
+  absolutePanel(
+    id = "info_background",
+    style = "
+          position: fixed !important;
+          top: 45px;
+          left: 0px;
+          right: 0px;
+          bottom: 0px;
+          background-color: rgba(0, 0, 0, 0.4);
+          text-align: center;
+          z-index: 50000;
+        "
+  ),
+  
+  absolutePanel(
+    top = "calc(50vh - 30vh)",
+    left = "calc(50vw - 30vw)",
+    width = "60vw",
+    height = "60vh",
+    class="panel panel-default",
+    style = "z-index: 50000;",
+    div(class = "panel-heading",
+        textOutput("info_indicator"),
+        actionLink(
+          "info_close_button",
+          label = NULL,
+          top = 5,
+          right = 5,
+          style = "
+              position: absolute;
+              top: 5px;
+              right: 10px;
+              padding: 0px;
+              font-size: 14px;
+              color: gray;
+            ",
+          icon = icon("times")
+        )
+    ),
+    
+    div(class = "panel-body",
+        uiOutput("info_text"))
+  ) 
 )
+)
+
+
