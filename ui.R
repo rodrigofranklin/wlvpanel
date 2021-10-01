@@ -6,6 +6,7 @@ ui <- navbarPage(
 
   # header contém o botão e o painel de configuração.
   header = tagList(
+    useShinyjs(),  # Set up shinyjs
     
     # Loading panel... (para ocultar todos os conditionalPanels)
     conditionalPanel(
@@ -171,10 +172,9 @@ ui <- navbarPage(
         sep = "")
     ),
 
-    # uiOutput("country_indicator_panel"),
+    # source("country_indicator_panel.R", local = TRUE)$value,
     
-    # uiOutput("country_data_panel"),
-    
+
     source("panel_country_all_data.R", local = TRUE)$value,
     
     # Loading gif...

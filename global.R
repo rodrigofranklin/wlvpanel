@@ -246,9 +246,4 @@ for (x in var_groups$cod_group) {
     top <- top + 275
   }
 }
-
-# Determina o tamanho da tabela de distribuição setorial
-# (para adequado funcionamento da posição "sticky")
-distribution_table_height <- paste0("height: ", top, "px;")
-
 # Fim da criação dos gráficos do país

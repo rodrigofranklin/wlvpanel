@@ -90,9 +90,10 @@ server <- function(input, output, session) {
 
     observeEvent(input[[paste0(i,"_info")]],{
       show_info_panel(1)
+      info_indicator(i)
     })
     
-    observeEvent(input[[paste0(i,"_title")]],{
+    observeEvent(input[[paste0(i,"_title")]], ignoreInit = TRUE, {
       updateSelectInput(inputId = "indicador", selected = i)
     })
 
@@ -100,12 +101,33 @@ server <- function(input, output, session) {
     outputOptions(output,i, priority = 10)
   })  
   
+  # Open/close system for info_panel
+  show_info_panel <- reactiveVal(0)
+  output$show_info_panel <- renderText(show_info_panel())
+  outputOptions(output,"show_info_panel", suspendWhenHidden = FALSE)
+  observeEvent(input$info_close_button, show_info_panel(0))
+  onclick(id = "info_background", show_info_panel(0))
+  
+  info_indicator <- reactiveVal("")
+  output$info_indicator <- renderText({
+    varst$pt[varst$var == info_indicator()]
+  })
+  
+  output$info_text <- renderUI({
+    tagList(
+      p(strong("Description: "),
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+        style = "text-align: justifY;"
+      )
+    )
+  })
+  
   # Usado para controlar exibição dos paineis. (Output carrega após Input)
   output$pais <- renderText(paises[paises$Legenda==input$pais,1])
   outputOptions(output, 'pais', suspendWhenHidden=FALSE)
   outputOptions(output, 'pais', priority=100)
   
-  output$ano <- renderText(input$ano)
+  output$ano <- renderText(paste0("Country profile - ",input$ano))
 
   output$indicador <- renderText(varst$pt[varst$var==input$indicador])
 
