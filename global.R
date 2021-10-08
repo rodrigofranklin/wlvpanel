@@ -202,7 +202,7 @@ for (x in var_groups$cod_group) {
   # Título do gráfico
   country_graphs <-  tagList(
     country_graphs,
-    var_groups$group_name[x] %>%
+    var_groups$group_name[var_groups$cod_group == x] %>%
       absolutePanel(
         top = top,
         style = "
