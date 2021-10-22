@@ -3,7 +3,8 @@ ui <- navbarPage(
   collapsible = TRUE,
   windowTitle = "World Labour Value Database",
   title = "WLVD",
-
+  selected = 2,
+  
   # header contém o botão e o painel de configuração.
   header = tagList(
     useShinyjs(),  # Set up shinyjs
@@ -38,45 +39,7 @@ ui <- navbarPage(
       includeHTML("www/google_analytics.html")
     ),
 
-    # Config Button
-    actionLink(
-      "config_button",
-      label = NULL,
-      style = "
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        font-size: 20px;
-        color: white;
-        z-index: 5000;
-      ",
-      icon = icon("cog")
-    ),
-    
-    # Config Panel
-    conditionalPanel(
-      "input.config_button % 2 != 0",
-      absolutePanel(
-        top = 45,
-        left = 0,
-        right = 0,
-        bottom = 0,
-        style = "
-          background-color: rgba(0, 0, 0, 0.4);
-          text-align: center;
-          z-index: 5000;
-        ",
-        absolutePanel(
-          top = "calc(50vh - 100px)",
-          left = "calc(50vw - 100px)",
-          width = 200,
-          height = 200,
-          class="panel panel-default",
-          div("WLVD Setup", class = "panel-heading"),
-          "XXX"
-        ) 
-      )
-    )
+    config_panel
   ),
   
   # footer contém o painel de créditos.
@@ -123,7 +86,7 @@ ui <- navbarPage(
   ),
   
   tabPanel(
-    "Country",
+    l("Country"),
     # Mapa (estilos para eliminar borda)
     tags$style(type = "text/css", "#map {height: calc(100vh - 45px)  !important;
                z-index: 1;}"),
@@ -132,34 +95,60 @@ ui <- navbarPage(
     tags$style(type = "text/css", ".navbar {margin-bottom: 0px;}"),
     tags$style(type = "text/css", ".container-fluid .navbar-header .navbar-brand {margin-left: 0px;}"),
     tags$style(type = "text/css", ".js-plotly-plot .plotly .main-svg:first-of-type {background: rgba(255,255,255,0.4) !important;}"),
-    tags$style(type = "text/css", "tr.odd {background-color: rgba(249,249,249,0.7) !important};"),
-    tags$style(type = "text/css", "tr.even {background-color: rgba(255,255,255,0.7) !important};"),
-    tags$style(type = "text/css", "tr.even.selected {background-color: rgba(176, 190, 217,0.6) !important};"),
+    # tags$style(type = "text/css", "tr.odd {background-color: rgba(249,249,249,0.7) !important};"),
+    # tags$style(type = "text/css", "tr.even {background-color: rgba(255,255,255,0.7) !important};"),
+    # tags$style(type = "text/css", "tr.even.selected {background-color: rgba(176, 190, 217,0.6) !important};"),
     tags$style(type = "text/css", ".profile_table {
       line-height: 0.5 !important;
       border-style: none !important;
         border-color: red !important;
     }"),
     
+    
+    # table.dataTable thead th, table.dataTable thead td
+    tags$style(type = "text/css", "table.dataTable thead th {
+      border-bottom-width: 2px;
+      border-color: #999999;
+      font-size: 14px;
+      font-weight: normal;
+      text-align: right;
+      padding: 15px;
+      padding-right: 30px;
+      color: #999999;
+    }"),
+    
+    tags$style(type = "text/css", "table.dataTable thead .sorting {
+      background-image: none;
+    }"),
+
+    tags$style(type = "text/css", "table.dataTable thead .sorting_asc {
+      border-color: rgb(51, 51, 51);
+      color: rgb(51, 51, 51);
+      font-weight: bold;
+    }"),
+    
+    tags$style(type = "text/css", "table.dataTable thead .sorting_desc {
+      border-color: rgb(51, 51, 51);
+      color: rgb(51, 51, 51);
+      font-weight: bold;
+    }"),
+    
+
     # Panel of Inputs
     absolutePanel(
-      top = 50,
+      id = "inputs_panel",
+      top = 60,
       right = "1.5%",
       width = "22%",
-      height = "0",
-      style = "z-index: 100; font-size: 10px; padding: 0px",
+      # draggable = TRUE,
+      style = "z-index: 100;
+      font-size: 10px; 
+      padding: 10px 10px 0px 10px; 
+      background-color: rgba(0,0,0,0.1);",
 
-      selectInput(
-        "pais",
-        label = NULL,
-        choices = lista_paises,
-        selectize = TRUE),
+      uiOutput("select.country"),
 
-      selectInput(
-        "indicador",
-        label = NULL,
-        choices = lista_variaveis_sea, 
-        selected = "taxa_exploracao"),
+      uiOutput("select.indicator"),
 
       sliderInput(
         "ano",
@@ -169,13 +158,15 @@ ui <- navbarPage(
         value = 2009, 
         ticks = F, 
         animate=F, 
-        sep = "")
+        sep = ""),
+      
+      uiOutput("select.base") %>% div(style = "text-align: right")
+    # ) %>%  jqui_draggable(options = list(containment = "parent")),
     ),
 
-    # source("country_indicator_panel.R", local = TRUE)$value,
-    
-
-    source("panel_country_all_data.R", local = TRUE)$value,
+    # country_tp_panel,
+    country_panel,
+    indicator_info_panel,
     
     # Loading gif...
     # Aparece assim que input.pais se modifica.
@@ -193,58 +184,85 @@ ui <- navbarPage(
     )
     
   ),                  
+
   tabPanel(
-    "Indicators",
-    absolutePanel(
-      id="controls",
-      top = 50,
-      right = "1.5%",
-      width = "22%",
-      height = "28%",
-      class = "panel panel-default",
-      style =
-        "background-color: rgba(255,255,255,0.2);
-        z-index: 504;
-        padding: 0;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
-        border-radius: 2px;
-        font-size: 10px",
-      #    selectInput("pais","Country",lista_paises, selected="BRA"),
-      selectInput("indicadorind","Variable",lista_variaveis_sea, selected="taxa_exploracao"),
-      sliderInput("anoind","YEAR",min = 1995, max = 2021, value = 2009, ticks = F, animate=T),
-      checkboxGroupInput(inputId = "versao",
-                         choices = lista_versoes,
-                         selected =  lista_versoes,
-                         label = "Base de dados:"),
-      selectInput(inputId = "paises",
-                  label = "Países:",
-                  choices = lista_paises,
-                  selected = c("BRA","CHN","USA"),
-                  multiple = TRUE)
-    ),
+    l("Indicators"),
+    value = 2,
+    style = "
+      background-color: rgba(242,243,246,1);
+      height: calc(100vh - 45px);
+      overflow-y:scroll;
+    ",
+  
     
-    absolutePanel(
-      "Série Temporal",
-      width = "70%",
-      height = "43%",
-      top = 50,
-      left = "1.5%",
-      class = "panel panel-default",
-      plotlyOutput("serie", height="85%")
-    ),
-    
-    absolutePanel(
-      top = "54%",
-      left = "1.5%",
-      width = "70%",
-      height = "35%",
-      class = "panel panel-default",
-      dataTableOutput("indicadores")
-    ),
+    tags$table(
+      width = "100%",
+      height = "100%",
+      tags$tr(
+        tags$td(
+          width = "75%",
+          style = "
+            vertical-align: top;
+            padding: 20px;
+          ",
+          div(
+            class = "panel panel-default",
+            div(
+              class = "panel-body",
+              height = "100%",
+              width = "100%",
+              style = "padding: 0px !important",
+              tags$head(tags$style(HTML("
+                #termo.form-control{
+                  background: url('search_textinput3.png') top left no-repeat;
+                  height: 32px;
+                  padding-left:35px;
+                  font-size: 13px;
+                }"
+              ))),
+              
+              textInput(
+                inputId = "termo",
+                label = NULL,
+                placeholder = "pesquisar...",
+                width = 300
+              ) %>% 
+                tagAppendAttributes(
+                  style = "
+                    margin-bottom: 20px !important;
+                    margin-left: 15px;
+                    margin-top: 20px;
+                    margin-right: 15px;
+                  "),
+              uiOutput("indicators_links")
+            )
+          )
+        ),
+        
+        tags$td(
+          width = "25%",
+          style = "
+            vertical-align: top;
+            padding: 20px 20px 20px 0px;
+          ",
+          div(
+            class = "panel panel-default",
+            style = "
+              border-top: 0px;
+            ",
+            div(
+              class = "panel-body",
+              style = "
+                padding: 0px;
+              ",
+              uiOutput("groups_links")
+    ))))),
+
+    panel_indicators
   ),
   
   tabPanel(
-    "Trade",
+    l("Trade"),
     absolutePanel(
       "tradecontrols",
       top = 50,
@@ -288,8 +306,7 @@ ui <- navbarPage(
   ),
   
   tabPanel(
-    "Download",
-    # icon = icon("download"), #coloquei esse ícone pq o font-awesome não está funcionando se não colocar algo aqui!
+    l("Download"),
     "xxx",
   )
 

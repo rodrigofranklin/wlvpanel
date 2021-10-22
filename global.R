@@ -19,6 +19,10 @@ m_paises_16 <- readRDS(file = "dados/m_paises_16.rds")
 
 sea_setores_13 <- readRDS(file = "dados/sea_setores_13.rds")
 sea_setores_16 <- readRDS(file = "dados/sea_setores_16.rds")
+sea_sectors <- NULL
+sea_sectors[["WIOD13"]] <- sea_setores_13
+sea_sectors[["WIOD16"]] <- sea_setores_16
+
 
 m_io_13 <- readRDS(file = "dados/m_io_13.rds")
 m_io_16 <- readRDS(file = "dados/m_io_16.rds")
@@ -32,8 +36,9 @@ meta_var <- read.csv2("dados/meta_var.csv")
 
 ## Cria demais variáveis
 
-lista_versoes <- names(sea_paises[,1,1,1])
 lista_anos <- names(sea_paises[1,,1,1])
+default_indicator <- "taxa_exploracao"
+
 
 lista_paises <- paises[,3]
 names(lista_paises) <- paises[match(paises[,3], lista_paises),1]
@@ -41,9 +46,9 @@ lista_paises <- c("",lista_paises)
 names(lista_paises)[1] <- "Search a country..."
 
 lista_variaveis_sea <- names(sea_paises[1,1,,1])
-names(lista_variaveis_sea) <- (tibble(var=lista_variaveis_sea)%>%left_join(varst)%>%select(pt))[[1]]
-lista_variaveis_sea <- c("",lista_variaveis_sea)
-names(lista_variaveis_sea)[1] <- "Search an indicator..."
+names(lista_variaveis_sea) <- (tibble(var=lista_variaveis_sea)%>%left_join(varst, by = "var")%>%select(pt))[[1]]
+# lista_variaveis_sea <- c("",lista_variaveis_sea)
+# names(lista_variaveis_sea)[1] <- "Search an indicator..."
 
 ano_min <- as.numeric(lista_anos[1])
 ano_max <- as.numeric(last(lista_anos))
@@ -93,6 +98,7 @@ plotaserie <- function(dados,perc=F) {
          p <- ggplot(dados,aes(x=ano,y=valor,col=pais,linetype=bd)))
   p <- p+geom_line(size = 1)  +
     geom_line(size = 1) +
+    geom_point(colour = "white", pch = 21, size = 1.5)+
     theme_classic() +
     theme(axis.title = element_blank(),
           axis.line = element_blank(),
@@ -140,110 +146,10 @@ coords2country = function(points)
   #indices$REGION   # returns the continent (7 continent model)
 }
 
-graphPanel <- function (indicator, panel_top, panel_left) {
-  absolutePanel(
-    class = "panel panel-default",
-    top = panel_top,
-    width = "34%",
-    height = 250,
-    style = paste0("left: calc(",panel_left,")"),
-    tags$table(
-      style = "
-        ",
-      width = "100%",
-      tags$tr(
-        tags$td(
-          width = "100%",
-          actionLink(
-            inputId = paste0(indicator,"_title"),
-            label = varst$pt[varst$var == indicator],
-            style = "
-              font-size:14px; 
-              font-weight: bold;
-              color: gray;
-            "
-          )
-        ),
-        tags$td(
-          actionLink(
-            inputId = paste0(indicator,"_info"),
-            label = NULL,
-            style = "
-              text-align: right;
-              font-size:14px; 
-              color: gray;
-            ",
-            icon = icon("info-circle")
-          )
-        )
-      )
-    ) %>%
-      div(class = "panel-heading",
-          style = "background-image:none;
-                  background: white;
-                  padding: 3px 5px;
-                  "),
-    plotlyOutput(indicator, height = 220, width = "32vw") %>%
-      div(class = "panel-body",
-          style = "
-            padding:0px;
-            text-align: center;
-          ")
-  )
-}
+# source("country_tp_panel.R", local = TRUE)
 
-# Inicia variáveis
-top <- 285 # posição a partir da qual os gráficos serão plotados
-country_graphs <- NULL # tagList com todos os gráficos e títulos de grupos
+source("panel_setup.R", local = TRUE)
+source("panel_country_all_data.R", local = TRUE)
+source("panel_indicators.R", local = TRUE)
 
-# Cria todos os outputs para os gráficos do país
-for (x in var_groups$cod_group) {
-  
-  # Título do gráfico
-  country_graphs <-  tagList(
-    country_graphs,
-    var_groups$group_name[var_groups$cod_group == x] %>%
-      absolutePanel(
-        top = top,
-        style = "
-            font-size: 18px;
-            font-weight: bold;
-          "
-      )
-  )
-  
-  # altera posição para próximo gráfico
-  top <- top + 25
-  
-  # Os gráficos podem ficar em duas colunas.
-  # Define os dados para a coluna da direita.
-  left <- "20px"
-  graph_position <- 1
-  
-  # Gráficos do grupo
-  for (y in meta_var$cod_var[meta_var$cod_group == x]) {
-    
-    # inclui um gráfico
-    country_graphs <- tagList(
-      country_graphs,
-      graphPanel(y, top, left)
-    )
-    
-    # altera posição para próximo gráfico
-    if (graph_position != 1) {
-      top <- top + 270
-      left <- "20px"
-    } else {
-      left <- "34% + 40px"
-    }
-    graph_position <- graph_position * -1
-  }
-  
-  # altera topo para próximo grupo
-  if (graph_position == 1) {
-    top <- top + 25
-  } else {
-    top <- top + 275
-  }
-}
-# Fim da criação dos gráficos do país
+

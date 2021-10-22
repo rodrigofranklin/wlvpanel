@@ -1,216 +1,37 @@
 server <- function(input, output, session) {
-
-  ## Panel: country_indicator ------------
-  # ### Country indicator panel com transparência
-  # output$country_indicator_panel <- renderUI({
-  #   if (input$pais != "") {
-  #     absolutePanel(
-  #       top = 45,
-  #       left = 0,
-  #       width = "40%",
-  #       style = "
-  #       background-color: rgba(0,0,0,0.3); 
-  #       z-index: 100;
-  #       height: calc(100vh - 45px)
-  #     ",
-  #       
-  #       # close button
-  #       absolutePanel(
-  #         right = 0,
-  #         actionLink(
-  #           "close_button",
-  #           label = NULL, 
-  #           style = "padding: 10px; font-size: 14px; color: white; right:0",
-  #           icon = icon("times")
-  #         )
-  #       ),
-  #       
-  #       paises[ paises$Legenda==input$pais, 1] %>%
-  #         div(style = "
-  #             position: relative;
-  #             top: 70px;
-  #             font-size: 38px;
-  #             font-weight: bold;
-  #             text-align: center;
-  #         "),
-  #       
-  #       plotlyOutput("country_indicator_graph") %>%
-  #         div(
-  #           style = "
-  #             position: relative;
-  #             top: 30vh;
-  #           ",
-  #         ),
-  #       
-  #       # Show_me_more Button
-  #       actionButton(
-  #         "show_me_more",
-  #         label = "Show me more",
-  #       ) %>%
-  #         div(style = "
-  #             position: relative;
-  #             top: 300px;
-  #             font-size: 24px;
-  #             text-align: center;
-  #         ")
-  #     )
-  #   }
-  # })
-  # 
-  # outputOptions(output, "country_indicator_panel", priority = 10)
-  # # Botão para fechar painel e voltar para o mapa
-  # observeEvent(
-  #   input$close_button,
-  #   {updateSelectInput(inputId = "pais", selected = "")
-  #     show_panel(show_panel() * -1)}
-  #   
-  # )  
   
-  # show_panel <- reactiveVal(-1)
-  # 
-  # observeEvent(input$show_me_more, {
-  #   show_panel(show_panel() * -1)
-  # })
+  
+  panel_setup_server(input, output)
+  
+ # RV -> Valores reativos para passar para outras funções
+  RV <- NULL
+  RV$bases <- reactive(
+    unique(
+      c(
+        input$base1,
+        input$base2,
+        input$base3,
+        input$base4
+      )
+    )
+  )
+  RV$ibases <- isolate(RV$bases())
+  RV$indicator <- reactive(
+    if (is.null(input$indicator)) {
+      default_indicator
+    } else {
+      input$indicator
+    }
+  )
+
   
   ## Panel: all_data_country ----------
   ## Painel com detalhamento completo dos países.
   # Tabela de resumo, distribuição setorial e gráficos de todas as variáveis
+  panel_country_server(input, output, RV)
+  # panel_country_tp_server(input, output, sea_paises)
   
-
-  
-  # cria outputs para todos os gráficos e observeEvents para todos os títulos
-  # e incones de info
-  # ANTEÇÃO: NÃO USAR "FOR"
-  lapply(varst$var, function(i) {
-
-    output[[i]] <- renderPlotly({
-      dados <- sea_paises[,,i,input$pais]
-      plotaserie(dados)
-    })
-
-    observeEvent(input[[paste0(i,"_info")]],{
-      show_info_panel(1)
-      info_indicator(i)
-    })
-    
-    observeEvent(input[[paste0(i,"_title")]], ignoreInit = TRUE, {
-      updateSelectInput(inputId = "indicador", selected = i)
-    })
-
-    outputOptions(output,i, suspendWhenHidden = FALSE)
-    outputOptions(output,i, priority = 10)
-  })  
-  
-  # Open/close system for info_panel
-  show_info_panel <- reactiveVal(0)
-  output$show_info_panel <- renderText(show_info_panel())
-  outputOptions(output,"show_info_panel", suspendWhenHidden = FALSE)
-  observeEvent(input$info_close_button, show_info_panel(0))
-  onclick(id = "info_background", show_info_panel(0))
-  
-  info_indicator <- reactiveVal("")
-  output$info_indicator <- renderText({
-    varst$pt[varst$var == info_indicator()]
-  })
-  
-  output$info_text <- renderUI({
-    tagList(
-      p(strong("Description: "),
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-        style = "text-align: justifY;"
-      )
-    )
-  })
-  
-  # Usado para controlar exibição dos paineis. (Output carrega após Input)
-  output$pais <- renderText(paises[paises$Legenda==input$pais,1])
-  outputOptions(output, 'pais', suspendWhenHidden=FALSE)
-  outputOptions(output, 'pais', priority=100)
-  
-  output$ano <- renderText(paste0("Country profile - ",input$ano))
-
-  output$indicador <- renderText(varst$pt[varst$var==input$indicador])
-
-  # Botão para fechar painel e voltar para o mapa
-  observeEvent(
-    input$close_country_data_panel,
-    updateSelectInput(inputId = "pais", selected = "")
-  )
-  
-  output$profile <- renderDataTable(
-    tabmil(t(sea_paises[,as.character(input$ano),,input$pais]))%>%
-      filter(var %in% c(input$indicador,perfil_sumario))%>%
-      arrange(match(var,c(input$indicador,perfil_sumario)))%>%
-      left_join(varst)%>%
-      select(var = pt, 2:3),
-    rownames = FALSE,
-    # spacing = "xs",
-    # striped = TRUE,
-    # hover = TRUE,
-    # width = "100%",
-    class = "profile_table",
-    options = list(
-      ordering = FALSE,
-      searching = FALSE,
-      paging = FALSE,
-      #      scrollY = "200",
-      # pageLength = 10,
-      info = FALSE,
-      lengthChange = FALSE
-    )
-  )
-  
-  outputOptions(output, "profile", suspendWhenHidden = FALSE)
-  
-  output$setores_pais_13 <- renderDataTable(
-    tabmil(sea_setores_13[as.character(input$ano),
-                          input$indicador,,
-                          input$pais])%>%
-      left_join(setorest,by=c("var" = "Code"))%>%
-      select(sector=pt,value=x),
-    rownames = FALSE,
-    options = list(
-      ordering = TRUE,
-      searching = FALSE,
-      paging = FALSE,
-      #pageLength = 8,
-      scrollY= "calc(100vh - 250px)",
-      info = FALSE,
-      lengthChange = FALSE
-    )
-  )
-  outputOptions(output, "setores_pais_13", suspendWhenHidden = FALSE)
-  
-  output$setores_pais_16 <- renderDataTable(
-    tabmil(sea_setores_16[as.character(input$ano),
-                          input$indicador,,
-                          input$pais])%>%
-      left_join(setorest,by=c("var" = "Code"))%>%
-      select(sector=pt,value=x),
-    rownames = FALSE,
-    options = list(
-      ordering = TRUE,
-      searching = FALSE,
-      paging = FALSE,
-      #pageLength = 8,
-      scrollY= "calc(100vh - 250px)",
-      info = FALSE,
-      lengthChange = FALSE
-    )
-  )
-  outputOptions(output, "setores_pais_16", suspendWhenHidden = FALSE)
-  
-  
-  config_button_pressed <- reactiveVal(0)
-  
-  output$show_config_panel <- reactive(
-    config_button_pressed()
-  )
-  
-  observeEvent(
-    input$config_button,
-    config_button_pressed(1)
-  )
+  panel_indicators_server(input, output, RV)
   
   output$map <- renderLeaflet({
     # Use leaflet() here, and only include aspects of the map that
@@ -226,29 +47,47 @@ server <- function(input, output, session) {
       setView(lat = 0, lng = 0, zoom = 2)
   })
   
+  output$select.country <- renderUI({
+    country_list <- names(sea_paises[1,1,1,])
+    names(country_list) <- language_file[country_list,input$l]
+    country_list <- c("",country_list)
+    names(country_list)[1] <- language_file["Search a country...",input$l]
+    selectInput(
+      "pais",
+      label = NULL,
+      choices = country_list,
+    )
+  })
+  
+  output$select.indicator <- renderUI({
+    indicators_list <- names(sea_paises[1,1,,1])
+    names(indicators_list) <- language_file[indicators_list,input$l]
+    selectInput(
+      "indicator",
+      label = NULL,
+      choices = indicators_list,
+      selected = default_indicator
+      )    
+  })
+  
+  output$select.base <- renderUI({
+    radioButtons(
+      inputId = "map_base", 
+      choices = RV$bases(), 
+      label = NULL)
+  })
 
   ####
   ##Reactive values to use in more than one place (titles, popups)
-  titspais <- reactive({ 
-    return(paste(varst[varst$var==input$indicador,"pt"]))
-  })
-  
-  subtspais <- reactive({
-    return(paste0(paises[paises$Legenda==input$pais,1],
-                  ", ",
-                  as.character(ano_min),
-                  " - ",
-                  as.character(ano_max)))
-  })
-  
+
   #-------- Valores reativos para utilizar no leaflet
   # camada_base1 (talvez incluir novas camadas para outras bases?)
   # labels (para o hover)
   # fill_group (para selecionar os elementos a apagar (o objetivo é permitir
   # apagar os poligonos antigos após desenhar os novos))
-  
+
   camada_base1 <- reactive({
-    basecam <- sea_paises[1,as.character(input$ano),input$indicador,]
+    basecam <- sea_paises[input$map_base,as.character(input$ano),RV$indicator(),]
     camadas <- 
       joinCountryData2Map(
         enframe(basecam),
@@ -267,9 +106,9 @@ server <- function(input, output, session) {
       font-weight: bold'>
       %s</p>%s : %g %s",
       camada_base1()$ADMIN,
-      input$indicador,
+      RV$indicator(),
       camada_base1()$value,
-      varst[varst$var == input$indicador,"type"]) %>%
+      varst[varst$var == RV$indicator(),"type"]) %>%
       lapply(htmltools::HTML)
   )
   
@@ -305,7 +144,6 @@ server <- function(input, output, session) {
       addLegend("bottomright",
                 layerId = as.character(fill_group()),
                 values = camada_base1()$value,
-                title = titspais(),
                 pal = palas)
   })
   
@@ -319,20 +157,6 @@ server <- function(input, output, session) {
                       selected = piso3)
     }
   })
-  
-  
-  # observeEvent(input$map_hover, {
-  #   hover <- input$map_hover
-  #   piso3 <- coords2country(data.frame(lng = hover$lng, lat = hover$lat))
-  #   paises%>%filter(Legenda = piso3)$Legenda
-  #   valorpontopais <- sea_paises[,as.character(max(input$ano)),,pafil]
-  #   text <- paste("Country:",pafil,"<br>",
-  #                 titspais(),"-",subtspais(),":",
-  #                 valorpontopais)
-  #   proxy <-leafletProxy("map")
-  #   proxy %>% clearPopups() %>%
-  #     addLabelOnlyMarkers(hover$lng,hover$lat,label = text)
-  # })
   
   linhas_13 <- reactive({
     encontrar_pais(m_io_13, input$pais, rownames)
@@ -405,46 +229,7 @@ server <- function(input, output, session) {
   dados <- reactive({
     paste0(input$transacoes_versao)
   })
-  
-  
 
-  
-  
-   output$indicadores <- renderDT(
-    {
-      dados <- t(rbind(
-        paises[match(names(sea_paises[1,1,1,]),paises[,3]),1],
-        sea_paises[,as.character(input$anoind),input$indicadorind,]))
-      dados <- datatable(dados,
-                         rownames = 1,
-                         options = list(
-                           ordering = FALSE,
-                           searching = FALSE,
-                           paging = FALSE,
-                           scrollY= "100%",
-                           info = FALSE,
-                           lengthChange = FALSE
-                         )
-      ) %>%
-        formatPercentage("WIOD13", 2)
-      formatStyle(dados, names(dados$x$data),`line-height` = '10px')
-    },
-  )
-
-  output$serie <- renderPlotly({
-    dados <- sea_paises[input$versao,,
-                        input$indicadorind,
-                        input$paises]
-    plotaserie(dados)
-  })
-  
-  output$country_indicator_graph <- renderPlotly({
-    dados <- sea_paises[,,
-                        input$indicador,
-                        input$pais]
-    plotaserie(dados)
-  })
-  
   ### sobre esses outputs que se seguem: é preciso melhorar. Seria possível ter
   ### uma única função que fosse chamada conforme a seleção de (exportação,
   ### importação e saldo), e chamada 3 vezes (monetária, valor e transferência)?
@@ -500,6 +285,7 @@ server <- function(input, output, session) {
   output$loading <- renderText("")
   outputOptions(output, 'loading', suspendWhenHidden=FALSE)
   
+
 }
 
 
