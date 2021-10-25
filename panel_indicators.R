@@ -676,18 +676,21 @@ panel_indicators_server <- function (IP, OP, RV) {
   ## cell_clicked ----
   # Acrescenta países à lista de países selecionados
   observeEvent(IP$ind_all_countries_cell_clicked, {
+    # ignorar inicialização da variável "cell_clicked"
+    req(length(IP$ind_all_countries_cell_clicked) > 0)
+
     info = IP$ind_all_countries_cell_clicked
 
-    if ((IP$paises == "WWW") && !(is.null(info$value))) {
-      selected_countries <- 
+    if (IP$paises == "WWW") {
+      selected_countries <-
         names(sea_paises[1,1,1,])[info$row]
     } else {
-      selected_countries <- 
+      selected_countries <-
         unique(c(IP$paises, names(sea_paises[1,1,1,])[info$row]))
     }
-    
+
     updateSelectInput(inputId = "paises", selected = selected_countries)
-  }, ignoreInit = TRUE, ignoreNULL = TRUE, suspended = FALSE)
+  }, ignoreInit = TRUE)
   
   OP$select.country.ind <- renderUI({
     country_list <- names(sea_paises[1,1,1,])
