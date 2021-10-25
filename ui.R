@@ -3,7 +3,7 @@ ui <- navbarPage(
   collapsible = TRUE,
   windowTitle = "World Labour Value Database",
   title = "WLVD",
-  selected = 2,
+  # selected = 2,
   
   # header contém o botão e o painel de configuração.
   header = tagList(
@@ -88,9 +88,8 @@ ui <- navbarPage(
   tabPanel(
     l("Country"),
     # Mapa (estilos para eliminar borda)
-    tags$style(type = "text/css", "#map {height: calc(100vh - 45px)  !important;
-               z-index: 1;}"),
-    leafletOutput("map", width = "100%"),
+    tags$style(type = "text/css", "#map {z-index: 1;}"),
+    leafletOutput("map", width = "100%", height = "calc(100vh - 45px)"),
     tags$style(type = "text/css", ".container-fluid {padding-left:0px;padding-right:0px;}"),
     tags$style(type = "text/css", ".navbar {margin-bottom: 0px;}"),
     tags$style(type = "text/css", ".container-fluid .navbar-header .navbar-brand {margin-left: 0px;}"),

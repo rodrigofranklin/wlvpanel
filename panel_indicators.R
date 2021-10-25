@@ -156,37 +156,53 @@ panel_indicators <- conditionalPanel(
               tags$td(
                 style = "
                   font-size: 14px;
+                  vertical-align: middle;
                 ",
                 tabsetPanel(
+                  id = "graphs_panel",
                   type = "pills",
                   tabPanel(
                     title = l("Graph"),
-                    conditionalPanel(
-                      "output.paises != ''",
-                      plotlyOutput("serie",
-                                   width = "100%",
-                                   height = "400px")
-                    ),
-                    conditionalPanel(
-                      "output.paises == ''",
-                      div(
-                        width = "100%",
-                        style = "
-                        border: 1px;
-                          height: 400px !important;
-                          font-size: 48px;
-                          color: grey;
-                          text-align: center;
-                          vertical-align: middle;
-                        ",
-                        "   ",
+                    value = "Graph",
+                    div(
+                      width = "100%",
+                      style = "
+                        border-top-width: 1px;
+                        border-top-style: solid;
+                        height: 60vh !important;
+                        font-size: 64px;
+                        color: lightgray;
+                        text-align: center;
+                        vertical-align: middle;
+                      ",
+                      conditionalPanel(
+                        "output.paises != ''",
+                        plotlyOutput("serie",
+                                     width = "100%",
+                                     height = "60vh")
+                      ),
+                      conditionalPanel(
+                        "output.paises == ''",
                         icon("exclamation-triangle")
                       )
-                    ),
+                    )
                   ),
                   tabPanel(
                     title = l("Map"),
-                    "XXX"
+                    value = "Map",
+                    div(
+                      width = "100%",
+                      style = "
+                        border-top-width: 1px;
+                        border-top-style: solid;
+                        height: 60vh !important;
+                        font-size: 64px;
+                        color: lightgray;
+                        text-align: left;
+                        vertical-align: middle;
+                      ",
+                      leafletOutput("ind_map", width = "100%", height = "60vh")
+                    )
                   )
                 ) %>% 
                   tagAppendAttributes(
@@ -278,8 +294,15 @@ panel_indicators <- conditionalPanel(
                 animate=F, 
                 sep = ""),
               
-              uiOutput("select.bases")
+              conditionalPanel(
+                "input.graphs_panel == 'Graph'",
+                uiOutput("select.bases")
+              ),
               
+              conditionalPanel(
+                "input.graphs_panel == 'Map'",
+                uiOutput("choose.bases")
+              )
             ),
             # Downloads
             div(
@@ -330,8 +353,6 @@ panel_indicators_server <- function (IP, OP, RV) {
       })
   })
 
-  observeEvent(IP$depreciacao_link,show_indicator_panel(1))
-  
   OP$indicators_links <- renderUI({
     
     # Seleciona apenas os grupos com conteúdo conforme pesquisa
@@ -632,7 +653,7 @@ panel_indicators_server <- function (IP, OP, RV) {
   ## ind_selected_countries ----
   OP$ind_selected_countries <- renderDT({
     dados <- t(rbind(
-      language_file[names(sea_paises[1,1,1,]),IP$l],
+      language_file[names(sea_paises[1,1,1,IP$paises]),IP$l],
       sea_paises[,as.character(IP$anoind),IP$indicadorind,IP$paises]))
     
     sketch = withTags(table(
@@ -704,6 +725,15 @@ panel_indicators_server <- function (IP, OP, RV) {
       inline = TRUE)
   })
 
+  OP$choose.bases <- renderUI({
+    radioButtons(
+      inputId = "ind_map_base",
+      width = "100%",
+      choices = RV$bases(), 
+      label = NULL,
+      inline = TRUE)
+  })
+
   # Download links países e setores
   OP$indicator_link <- renderUI({
     indicator_link <- NULL
@@ -716,15 +746,60 @@ panel_indicators_server <- function (IP, OP, RV) {
     indicator_link[1:(length(indicator_link)-1)]
   })
   
-  observeEvent(IP$paises,{
-    if (IP$paises == "") {
-      IP$paises <- "WWW"
-    }
-  })
-  
   # Usado para controlar exibição dos paineis. (Output carrega após Input)
   OP$paises <- renderText(IP$paises)
   outputOptions(OP, 'paises', suspendWhenHidden=FALSE)
   outputOptions(OP, 'paises', priority=100)
   
+  ## Mapa ------
+  OP$ind_map <- renderLeaflet({
+    ind_map_data <- as.numeric(
+      sea_paises[
+        IP$ind_map_base,
+        as.character(IP$anoind),
+        IP$indicadorind,
+        as.character(countries_polygons$ISO3)])
+    
+    num_countries <- 1:length(countries_polygons$ISO3)
+    
+    labels_ind <- 
+      lapply(num_countries,
+             function(i) {
+               HTML(
+                 paste0(
+                   strong(language_file[
+                     as.character(countries_polygons$ISO3[i]),
+                     IP$l]),
+                   ": ",
+                   ind_map_data[i]
+                 ))
+             })
+    
+    palas <- colorBin("Reds", domain = ind_map_data)
+    
+    leaflet(
+      data = countries_polygons,
+      options = leafletOptions(
+        zoomControl = TRUE,
+        worldCopyJump = FALSE,
+        minZoom = 0.5,
+      )) %>%
+      setView(lat = 0, lng = 0, zoom = 0.8) %>%
+      setMaxBounds(-180, -90, 180, 90) %>%
+      addPolygons(
+        data = countries_polygons,
+        fillColor = ~palas(ind_map_data),
+        fillOpacity = 1,
+        color = "grey",
+        weight = 1,
+        label = labels_ind,
+        labelOptions = labelOptions(
+          textsize = "9px",
+          direction ="auto",
+          style = list("font-weight" = "normal", padding = "3px 8px")))  %>%
+      addLegend("bottomright",
+                values = ind_map_data,
+                pal = palas)
+  })
+
 }

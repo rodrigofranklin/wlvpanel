@@ -40,6 +40,11 @@ lista_anos <- names(sea_paises[1,,1,1])
 default_indicator <- "taxa_exploracao"
 
 
+countries_polygons <- 
+  getMap()
+countries_polygons <- 
+  countries_polygons[countries_polygons$ISO3 %in% paises$Legenda,]
+
 lista_paises <- paises[,3]
 names(lista_paises) <- paises[match(paises[,3], lista_paises),1]
 lista_paises <- c("",lista_paises)
