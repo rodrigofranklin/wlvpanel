@@ -35,5 +35,5 @@ subsave <- function(idiom,x) {
   write_csv2(a,paste0("dados/label_",idiom,".csv"))
 }
   
-lapply(idiomas,subsave,base)
+lapply(idiomas,subsave,trad)
 #5) Salva em csv separado por ponto e vírgula
