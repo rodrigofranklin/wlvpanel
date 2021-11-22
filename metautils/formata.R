@@ -1,16 +1,24 @@
 ##Formata SEA Países:
 
   ogpera <- function(x,qual = 0) {
-    sbrubles <- ifelse(qual == 0, sea_paises[,,x,],
-                       ifelse(qual == 1,sea_sectors$WIOD13[,x,,],
-                   sea_sectors$WIOD16[,x,,]))
+    if(qual == 0) {
+      sbrubles <- sea_paises[,,x,]
+      }
+    else if (qual == 1) {
+                       
+      sbrubles <- sea_sectors$WIOD13[,x,,]
+      } else {
+        sbrubles <- sea_sectors$WIOD16[,x,,]
+      }
+    print(str(sbrubles))
     if(varst[x,]$type == "percent") {
-      round(sbrubles*rep(100,length(sbrubles)),2)
+      a <- round(sbrubles*rep(100,length(sbrubles)),2)
     }
     else if (varst[x,]$type != "exchange"){
-      round(sbrubles/rep(1e6,length(sbrubles)),3)
+      a <- round(sbrubles/rep(1e6,length(sbrubles)),3)
     }
-    else {sbrubles}
+    else {a <- sbrubles}
+    a
   }
   
 
