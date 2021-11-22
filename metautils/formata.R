@@ -18,7 +18,7 @@ for (i in 1:length(names(sea_paises[1,1,,1]))) {
   
   sea_paises[,,i,] <- ogpera(i)
   sea_sectors$WIOD13[,i,,] <- ogpera(i,1)
-  sea_sectors$WIOD16[,i,,] <- ogpera(i,2)
+  if(i<24){sea_sectors$WIOD16[,i,,] <- ogpera(i,2)}
 }
 
 
