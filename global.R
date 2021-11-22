@@ -152,7 +152,7 @@ coords2country = function(points)
 }
 
 # source("country_tp_panel.R", local = TRUE)
-
+source("metautils/formata.R")
 source("panel_setup.R", local = TRUE)
 source("panel_country_all_data.R", local = TRUE)
 source("panel_indicators.R", local = TRUE)
