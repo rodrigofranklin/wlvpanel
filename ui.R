@@ -36,7 +36,20 @@ ui <- navbarPage(
 
     # Google Analytics
     tags$head(
-      includeHTML("www/google_analytics.html")
+      includeHTML("www/google_analytics.html"),
+      tags$script('
+                                var dimension = [0, 0];
+                                $(document).on("shiny:connected", function(e) {
+                                    dimension[0] = window.innerWidth;
+                                    dimension[1] = window.innerHeight;
+                                    Shiny.onInputChange("dimension", dimension);
+                                });
+                                $(window).resize(function(e) {
+                                    dimension[0] = window.innerWidth;
+                                    dimension[1] = window.innerHeight;
+                                    Shiny.onInputChange("dimension", dimension);
+                                });
+                            ')
     ),
 
     config_panel
@@ -156,7 +169,7 @@ ui <- navbarPage(
         max = ano_max, 
         value = 2009, 
         ticks = F, 
-        animate=F, 
+        animate=T, 
         sep = ""),
       
       uiOutput("select.base") %>% div(style = "text-align: right")
@@ -262,9 +275,24 @@ ui <- navbarPage(
   
   tabPanel(
     l("Trade"),
+    conditionalPanel(
+      "is.null(output$exportacoes_monetarias)",
+      p("Tenha Nervo/Be patient!",  style = "
+                position: fixed;
+                top: calc(50vh - 45px);
+                left: calc(50vw - 85px);
+                z-index: 50;"),
+      img(src = "hug.gif",
+          height = "50px",
+          style = "
+                position: fixed;
+                top: calc(50vh - 25px);
+                left: calc(50vw - 25px);
+                z-index: 50;
+          ") 
+    ),
     absolutePanel(
-      "tradecontrols",
-      top = 50,
+      top = 100,
       right = "1.5%",
       width = "22%",
       height = "28%",
@@ -279,7 +307,7 @@ ui <- navbarPage(
       selectInput("paistrade","Country",lista_paises, selected="BRA"),
       radioButtons(inputId = "transacoes_agregacao", choices = c("Agregado", "Por setor de origem"), selected = "Agregado", label = ""),
       radioButtons(inputId = "transacoes_versao", choices = c("WIOD13", "WIOD16"), selected = "WIOD13", label = "Base de dados:"),
-      sliderInput("anotrade","YEAR",min = 1995, max = 2021, value = 2009, ticks = F, animate=T)
+      sliderInput("anotrade","YEAR",min = 1995, max = 2021, value = 2009, ticks = F, animate=F)
     ),
     absolutePanel(
       width="30%",
@@ -306,7 +334,9 @@ ui <- navbarPage(
   
   tabPanel(
     l("Download"),
-    "xxx",
+    br(),br(),
+    a("WLVD Portable / BDMVT portátil",href = "cloud.worldlabourvalues.org/s/wlvdporta",
+      )
   )
 
 )  

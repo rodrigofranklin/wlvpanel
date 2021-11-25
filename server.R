@@ -117,7 +117,7 @@ server <- function(input, output, session) {
   # Atualização dos polígonos conforme os dados são alterados
   observeEvent(camada_base1(),{
 
-    palas <- colorBin("Reds", domain = camada_base1()$value)
+    palas <- colorBin(colorRampPalette(RColorBrewer::brewer.pal(9,name = 'Reds'))(length(camada_base1()$value)), domain = camada_base1()$value)
     fill_group(fill_group()+1)
     
     proxy <- leafletProxy("map")
@@ -191,23 +191,60 @@ server <- function(input, output, session) {
     )
   })
 
-
-
-
-
+  # prep_treemap <- function(bd=input$transacoes_versao,
+  #                          pais = input$paistrade,
+  #                          ano = input$anotrade,
+  #                          agr = input$transacoes_agregacao,
+  #                          el = "exportacoes_pm",
+  #                          qcorte = T,
+  #                          qtde = 9,
+  #                          agru = agrupamento,
+  #                          pod = 1) {
+  #   bd <- ifelse(grepl("13",bd),13,16)
+  #   p <- comerciantes_p(bd,pais,ano,el,9)
+  #   dados <- get(paste0("m_io_",bd)) %>%
+  #     agregado(ano, el, get(paste0("linhas_",bd))()) %>%
+  #     as.data.table(keep.rownames = "paisect")%>%
+  #     separate(paisect,c("pais_origen","sector_origen"),sep="\\.")%>%
+  #     select(-pais_origen)%>%
+  #     pivot_longer(-c(sector_origen),names_to="paisect_d",values_to="valor")%>%
+  #     separate(paisect_d,c("pais_d","sect_d"),sep="\\.")%>%
+  #     mutate(pais_d = ifelse(pais_d %in% p,pais_d,"ROW"))%>%
+  #     dplyr::group_by(across(all_of(agru)))%>%
+  #     summarize(valor=sum(valor))%>%
+  #     left_join(paises, by = c("pais_d" = "Legenda"))%>%
+  #     left_join(setorest,by = c("sect_d" = "Code"))%>%
+  #     transmute(pais_d = `Países`,sect_d = pt, valor)%>%
+  #     mutate(across(-valor,as.factor))%>% ungroup()
+  #   print(head(dados))
+  #   dados
+  # }
   
+  # dados <- reactive({
+  #   paste0(input$transacoes_versao)
+  # })
+  # 
+
+  ### sobre esses outputs que se seguem: é preciso melhorar. Seria possível ter
+  ### uma única função que fosse chamada conforme a seleção de (exportação,
+  ### importação e saldo), e chamada 3 vezes (monetária, valor e transferência)?
+  # Problema: os dados de exportacoes, importacoes e saldo são distintos.
+  # Mas são os mesmos dados conforme o tipo de variável (monetário, valor transf)
+  # No entanto, os gráficos conforme tipo de variábel são concomitantes.
+
+### Sim certamente possível
   
   prep_treemap <- function(bd=input$transacoes_versao,
-                           pais = input$pais,
-                           ano = input$ano,
+                           pais = input$paistrade,
+                           ano = input$anotrade,
                            agr = input$transacoes_agregacao,
                            el = "exportacoes_pm",
                            qcorte = T,
-                           qtde = 15,
+                           qtde = 9,
                            agru = agrupamento,
                            pod = 1) {
     bd <- ifelse(grepl("13",bd),13,16)
-    p <- comerciantes_p(bd,pais,ano,el,10)
+    p <- comerciantes_p(bd,pais,ano,el,9)
     dados <- get(paste0("m_io_",bd)) %>%
       agregado(ano, el, get(paste0("linhas_",bd))()) %>%
       as.data.table(keep.rownames = "paisect")%>%
@@ -217,56 +254,57 @@ server <- function(input, output, session) {
       separate(paisect_d,c("pais_d","sect_d"),sep="\\.")%>%
       mutate(pais_d = ifelse(pais_d %in% p,pais_d,"ROW"))%>%
       dplyr::group_by(across(all_of(agru)))%>%
-      summarize(valor=sum(valor))%>%
+      summarize(valor=sum(valor,na.rm=T))%>%
       left_join(paises, by = c("pais_d" = "Legenda"))%>%
       left_join(setorest,by = c("sect_d" = "Code"))%>%
       transmute(pais_d = `Países`,sect_d = pt, valor)%>%
       mutate(across(-valor,as.factor))%>% ungroup()
-    
+
+    print(head(dados))
     dados
   }
   
-  dados <- reactive({
-    paste0(input$transacoes_versao)
+  
+  output$exportacoes_monetarias <- renderD3tree3({
+    selecao <- fazer_selecao()
+
+    agrupamento <- case_when(
+      selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+      selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+    )
+
+    agrupamento <- unlist(agrupamento)
+    dados <- prep_treemap(agru = agrupamento)%>%filter(pais_d != "Resto do mundo")
+
+    d3tree3(treemap(dados, index = agrupamento, vSize = "valor",
+                    type = "index", palette = "Set1",
+                    title.legend = "valor"
+                    ),
+            "Monetary Exports")
   })
-
-  ### sobre esses outputs que se seguem: é preciso melhorar. Seria possível ter
-  ### uma única função que fosse chamada conforme a seleção de (exportação,
-  ### importação e saldo), e chamada 3 vezes (monetária, valor e transferência)?
-  # Problema: os dados de exportacoes, importacoes e saldo são distintos.
-  # Mas são os mesmos dados conforme o tipo de variável (monetário, valor transf)
-  # No entanto, os gráficos conforme tipo de variábel são concomitantes.
-
-  ### Sim certamente possível
-  #   output$exportacoes_monetarias <- renderD3tree3({
-  #     selecao <- fazer_selecao()
-  #     
-  #     agrupamento <- case_when(
-  #       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-  #       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-  #       )
-  # 
-#   
-#   
+  #
+#
+#
    output$exportacoes_valores <- renderD3tree3({
      selecao <- fazer_selecao()
-     
+
      agrupamento <- case_when(
        selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
        selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
      )
- 
+
      agrupamento <- unlist(agrupamento)
      dados <- prep_treemap(agru = agrupamento,el = "exportacoes_valores")%>%filter(pais_d != "Resto do mundo")
-     
+
      d3tree3(treemap(dados,  index = agrupamento, vSize = "valor",
-                     type = "index", palette = "Set1"),
+                     type = "index", palette = "Set1",
+                     title.legend = "valor"),
              rootname = "Exports in Value Terms")
      })
  
    output$exportacoes_transferencias <- renderD3tree3({
      selecao <- fazer_selecao()
-     
+     print(selecao)
      agrupamento <- case_when(
        selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
        selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
@@ -274,10 +312,16 @@ server <- function(input, output, session) {
      
      agrupamento <- unlist(agrupamento)
      dados <- prep_treemap(agru = agrupamento,el="transferencias_valores")%>%filter(pais_d != "Resto do mundo")%>%
-       mutate(sinal = valor , valor = abs(valor))
-     
-     d3tree3(treemap(dados, index = agrupamento, vSize = "valor",vColor = "sinal",
-                     type = "value", palette = "RdYlOr"),
+       mutate(sinal = round(valor) , 
+              valor = abs(valor),
+              posit = case_when(!(valor < 0) ~ "transfer",
+                                valor<0 ~ "rec."))
+     print(dados)
+     d3tree3(treemap(dados, index = c("posit",agrupamento), vSize = "valor",
+                     type = "index", 
+                      palette = "Set1",
+                     title.legend = "valor",
+                     ),
              rootname = "Value Transfers(Unequal Exchange)")
      
  }
