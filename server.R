@@ -315,12 +315,10 @@ server <- function(input, output, session) {
      dados <- prep_treemap(agru = agrupamento,el="transferencias_valores")%>%filter(pais_d != "Resto do mundo")%>%
        mutate(sinal = round(valor) , 
               valor = abs(valor),
-<<<<<<< HEAD
+
               posit = case_when(!(valor < 0) ~ "transfer",
                                 valor<0 ~ "rec."))
-=======
-              posit = as.factor(!(valor < 0)))
->>>>>>> 314c45fe6b8803a4041df7947b5f681aafb77bf8
+
      print(dados)
      d3tree3(treemap(dados, index = c("posit",agrupamento), vSize = "valor",
                      type = "index", 
