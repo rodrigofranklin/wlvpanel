@@ -134,7 +134,9 @@ for (x in var_groups$cod_group) {
       )
     }
     # indica a posição do próximo gráfico
-    graph_position <- graph_position * -1
+    tam <- reactiveVal(value = 1)
+    graph_position <- graph_position * -1 *tam(!(exists("dimension")|dimension>900))
+    
   }
   # se o último gráfico foi da coluna direita, inclui fim da linha  
   if (graph_position != 1) {
