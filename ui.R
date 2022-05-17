@@ -309,13 +309,36 @@ ui <- navbarPage(
       radioButtons(inputId = "transacoes_versao", choices = c("WIOD13", "WIOD16"), selected = "WIOD13", label = "Base de dados:"),
       sliderInput("anotrade","YEAR",min = 1995, max = 2021, value = 2009, ticks = F, animate=F)
     ),
-    tabPanel(
-      l("Download"),
-      br(),br(),
-      a("WLVD Portable / BDMVT portátil",href = "https://cloud.worldlabourvalues.org/s/5oDfapMJJdDMnSn",
-      )
+   
+  ),
+  tabPanel(
+    l("Download"),
+    br(),br(),
+    a("WLVD Portable / BDMVT portátil",href = "https://cloud.worldlabourvalues.org/s/5oDfapMJJdDMnSn",
     )
+  ),
+  # absolutePanel(
+  #   width="30%",
+  #   top=50,
+  #   height="30%",
+  #   left="1.5%",
+  #   d3tree3Output("exportacoes_monetarias")
+  # ),
+  # absolutePanel(
+  #   width="30%",
+  #   top=50,
+  #   height="30%",
+  #   left="33.5%",
+  #   d3tree3Output("exportacoes_valores")
+  #   ),
+  absolutePanel(
+    width="30%",
+    bottom=50,
+    height="30%",
+    left="1.5%",
+    d3tree3Output("exportacoes_transferencias")
   )
+
 )  
 # tabPanel(
 #   "Trade",
@@ -339,28 +362,6 @@ ui <- navbarPage(
 #      radioButtons(inputId = "transacoes_versao", choices = c("WIOD13", "WIOD16"), selected = "WIOD13", label = "Base de dados:"),
 #      sliderInput("anotrade","YEAR",min = 1995, max = 2021, value = 2009, ticks = F, animate=T)
 #   ),
-  # absolutePanel(
-  #   width="30%",
-  #   top=50,
-  #   height="30%",
-  #   left="1.5%",
-  #   d3tree3Output("exportacoes_monetarias")
-  # ),
-  # absolutePanel(
-  #   width="30%",
-  #   top=50,
-  #   height="30%",
-  #   left="33.5%",
-  #   d3tree3Output("exportacoes_valores")
-  #   ),
-  # absolutePanel(
-  #   width="30%",
-  #   bottom=50,
-  #   height="30%",
-  #   left="1.5%",
-  #   d3tree3Output("exportacoes_transferencias")
-  # )
-  # ),
 
   
 
