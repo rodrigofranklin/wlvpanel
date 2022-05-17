@@ -9,4 +9,4 @@ if( length( pacotesnovos ) ) utils::install.packages( pacotesnovos )
 rm(pacotes)
 cat("Bemvindo ao Painel de Valores Trabalho Mundiais\n
   Bienvenido al Panel de Datos de Valores-Trabajo Mundiales\n
-    Welcome to World Labour Values Datapanel")
+    Welcome to World Labour Values Datapanel\n")
