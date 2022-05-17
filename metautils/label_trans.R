@@ -8,9 +8,7 @@ library(tidyverse)
 base <- read_csv2("dados/label_pt-br.csv")
 
 #Lista de idiomas
-
 idiomas <- c("en","es","fr","zh-CN")
-
 
 coltrad <- function(xaxa) {
   b <- base%>% 

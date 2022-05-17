@@ -173,13 +173,14 @@ server <- function(input, output, session) {
   colunas_16 <- reactive({
     encontrar_pais(m_io_16, input$pais_transacoes, colnames)
   })
-  
-  comerciantes_p <-  function(bd=13,pais = input$pais,ano = input$ano, elemento = "exportacoes_pm",qtde = 15) {
-    mat <- get(paste0("m_paises_",bd))
-    mat <- mat[as.character(ano),elemento,pais,]
-    paises <- names(sort(mat,T)[2:(qtde+1)])
-  }
-  
+
+
+  comerciantes_p <-  function(bd=13,pais = input$paistrade,ano = input$anotrade, elemento = "exportacoes_pm",qtde = 15) {
+      mat <- get(paste0("m_paises_",bd))
+      mat <- mat[as.character(ano),elemento,pais,]
+      paises <- names(sort(mat,T)[2:(qtde+1)])
+    }
+
   
 
   fazer_selecao <- reactive({
@@ -224,6 +225,7 @@ server <- function(input, output, session) {
   #   paste0(input$transacoes_versao)
   # })
   # 
+<<<<<<< HEAD
 
   ### sobre esses outputs que se seguem: é preciso melhorar. Seria possível ter
   ### uma única função que fosse chamada conforme a seleção de (exportação,
@@ -232,6 +234,16 @@ server <- function(input, output, session) {
   # Mas são os mesmos dados conforme o tipo de variável (monetário, valor transf)
   # No entanto, os gráficos conforme tipo de variábel são concomitantes.
 
+=======
+
+  ### sobre esses outputs que se seguem: é preciso melhorar. Seria possível ter
+  ### uma única função que fosse chamada conforme a seleção de (exportação,
+  ### importação e saldo), e chamada 3 vezes (monetária, valor e transferência)?
+  # Problema: os dados de exportacoes, importacoes e saldo são distintos.
+  # Mas são os mesmos dados conforme o tipo de variável (monetário, valor transf)
+  # No entanto, os gráficos conforme tipo de variábel são concomitantes.
+
+>>>>>>> 9a62523589398707018026b59ded687027fadd7c
 ### Sim certamente possível
   
   prep_treemap <- function(bd=input$transacoes_versao,
