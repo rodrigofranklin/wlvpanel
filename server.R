@@ -41,7 +41,7 @@ server <- function(input, output, session) {
       options = leafletOptions(
         zoomControl = FALSE,
         worldCopyJump = TRUE,
-        minZoom = 2,
+        minZoom = 2
       )) %>%
       addProviderTiles(providers$CartoDB.Positron) %>%
       setView(lat = 0, lng = 0, zoom = 2)
@@ -55,7 +55,7 @@ server <- function(input, output, session) {
     selectInput(
       "pais",
       label = NULL,
-      choices = country_list,
+      choices = country_list
     )
   })
   
@@ -225,7 +225,6 @@ server <- function(input, output, session) {
   #   paste0(input$transacoes_versao)
   # })
   # 
-<<<<<<< HEAD
 
   ### sobre esses outputs que se seguem: é preciso melhorar. Seria possível ter
   ### uma única função que fosse chamada conforme a seleção de (exportação,
@@ -234,16 +233,6 @@ server <- function(input, output, session) {
   # Mas são os mesmos dados conforme o tipo de variável (monetário, valor transf)
   # No entanto, os gráficos conforme tipo de variábel são concomitantes.
 
-=======
-
-  ### sobre esses outputs que se seguem: é preciso melhorar. Seria possível ter
-  ### uma única função que fosse chamada conforme a seleção de (exportação,
-  ### importação e saldo), e chamada 3 vezes (monetária, valor e transferência)?
-  # Problema: os dados de exportacoes, importacoes e saldo são distintos.
-  # Mas são os mesmos dados conforme o tipo de variável (monetário, valor transf)
-  # No entanto, os gráficos conforme tipo de variábel são concomitantes.
-
->>>>>>> 9a62523589398707018026b59ded687027fadd7c
 ### Sim certamente possível
   
   prep_treemap <- function(bd=input$transacoes_versao,
@@ -334,7 +323,7 @@ server <- function(input, output, session) {
      d3tree3(treemap(dados, index = c("posit",agrupamento), vSize = "valor",
                      type = "index", 
                       palette = "Set1",
-                     title.legend = "valor",
+                     title.legend = "valor"
                      ),
              rootname = "Value Transfers(Unequal Exchange)")
      
