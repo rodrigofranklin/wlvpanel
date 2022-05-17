@@ -185,47 +185,132 @@ server <- function(input, output, session) {
 
   fazer_selecao <- reactive({
     switch(paste0(input$transacoes_versao,input$transacoes_agregacao),
-           "WIOD13Agregado" = 1,
-           "WIOD13Por setor de origem" = 2,
-           "WIOD16Agregado" = 3,
-           "WIOD16Por setor de origem" = 4
+           "WIOD13Aggr." = 1,
+           "WIOD13Sector" = 2,
+           "WIOD16Aggr." = 3,
+           "WIOD16Sector" = 4
     )
   })
 
-  # prep_treemap <- function(bd=input$transacoes_versao,
-  #                          pais = input$paistrade,
-  #                          ano = input$anotrade,
-  #                          agr = input$transacoes_agregacao,
-  #                          el = "exportacoes_pm",
-  #                          qcorte = T,
-  #                          qtde = 9,
-  #                          agru = agrupamento,
-  #                          pod = 1) {
-  #   bd <- ifelse(grepl("13",bd),13,16)
-  #   p <- comerciantes_p(bd,pais,ano,el,9)
-  #   dados <- get(paste0("m_io_",bd)) %>%
-  #     agregado(ano, el, get(paste0("linhas_",bd))()) %>%
-  #     as.data.table(keep.rownames = "paisect")%>%
-  #     separate(paisect,c("pais_origen","sector_origen"),sep="\\.")%>%
-  #     select(-pais_origen)%>%
-  #     pivot_longer(-c(sector_origen),names_to="paisect_d",values_to="valor")%>%
-  #     separate(paisect_d,c("pais_d","sect_d"),sep="\\.")%>%
-  #     mutate(pais_d = ifelse(pais_d %in% p,pais_d,"ROW"))%>%
-  #     dplyr::group_by(across(all_of(agru)))%>%
-  #     summarize(valor=sum(valor))%>%
-  #     left_join(paises, by = c("pais_d" = "Legenda"))%>%
-  #     left_join(setorest,by = c("sect_d" = "Code"))%>%
-  #     transmute(pais_d = `Países`,sect_d = pt, valor)%>%
-  #     mutate(across(-valor,as.factor))%>% ungroup()
-  #   print(head(dados))
-  #   dados
-  # }
+
+
+  dados <- reactive({
+    paste0(input$transacoes_versao)
+  })
   
-  # dados <- reactive({
-  #   paste0(input$transacoes_versao)
-  # })
-  # 
-<<<<<<< HEAD
+  output$debuga <- renderText({
+    #glimpse(dados())
+    paste(input$pais)
+  })
+  
+  output$pais <- renderDataTable(
+    
+    tabmil(t(sea_paises[,as.character(input$ano),,input$pais]))%>%
+      filter(var %in% c(input$indicador,perfil_sumario))%>%
+      arrange(match(var,c(input$indicador,perfil_sumario)))%>%
+      left_join(varst)%>%
+      select(var = pt, 2:3),
+    # rownames = TRUE,
+    #    spacing = "xs",
+    #    striped = TRUE,
+    #    hover = TRUE,
+    #    width = "100%",
+    options = list(
+      ordering = FALSE,
+      searching = FALSE,
+      paging = FALSE,
+      #      scrollY = "200",
+      # pageLength = 10,
+      info = FALSE,
+      lengthChange = FALSE
+    )
+  )
+  
+  output$serie_pais <- renderPlotly({
+    dados <- sea_paises[,,input$indicador,input$pais]
+    plotaserie(dados)
+  })
+  
+  
+  output$setores_pais_13 <- renderDataTable(
+    tabmil(sea_setores_13[as.character(input$ano),
+                          input$indicador,,
+                          input$pais])%>%
+      left_join(setorest,by=c("var" = "Code"))%>%
+      select(sector=pt,value=x),
+    options = list(
+      ordering = TRUE,
+      searching = FALSE,
+      paging = FALSE,
+      #pageLength = 8,
+      scrollY= "340",
+      info = FALSE,
+      lengthChange = FALSE
+    )
+  )
+  
+  output$setores_pais_16 <- renderDataTable(
+    tabmil(sea_setores_16[as.character(input$ano),
+                          input$indicador,,
+                          input$pais])%>%
+      left_join(setorest,by=c("var" = "Code"))%>%
+      select(sector=pt,value=x),
+    options = list(
+      ordering = TRUE,
+      searching = FALSE,
+      paging = FALSE,
+      #pageLength = 8,
+      scrollY= "340",
+      info = FALSE,
+      lengthChange = FALSE
+    )
+  )
+  
+  
+  output$titulo_detalhamento_pais <-
+    renderText(
+      paste(varst[varst$var==input$indicador,"pt"])
+    )
+  
+  
+  output$subtitulo_detalhamento_pais <-
+    renderText(
+      paste(paises[paises$Legenda==input$pais,1],
+            "-",
+            input$ano)
+    )
+  
+  output$titulo_serie_pais <-
+    renderText(titspais())
+  
+  output$subtitulo_serie_pais <-
+    renderText(
+      subtspais())
+  
+  output$titulo_painel <-
+    renderText({
+      paste("Country Profile:",paises[paises$Legenda==input$pais,1],
+            "-",
+            input$ano)
+      }
+      )
+      
+  output$indicadores <- renderDT({
+      dados <- t(rbind(
+        paises[match(names(sea_paises[1,1,1,]),paises[,3]),1],
+        sea_paises[,as.character(input$anoind),input$indicadorind,]))
+      dados <- datatable(dados,
+                rownames = 1,
+                options = list(
+                  ordering = TRUE,
+                  searching = TRUE,
+                  paging = FALSE,
+                  info = TRUE,
+                  #pageLength = 8,
+                  scrollY= 220,
+                  lengthChange = FALSE
+                ))
+})
 
   ### sobre esses outputs que se seguem: é preciso melhorar. Seria possível ter
   ### uma única função que fosse chamada conforme a seleção de (exportação,
@@ -234,7 +319,7 @@ server <- function(input, output, session) {
   # Mas são os mesmos dados conforme o tipo de variável (monetário, valor transf)
   # No entanto, os gráficos conforme tipo de variábel são concomitantes.
 
-=======
+
 
   ### sobre esses outputs que se seguem: é preciso melhorar. Seria possível ter
   ### uma única função que fosse chamada conforme a seleção de (exportação,
@@ -243,7 +328,6 @@ server <- function(input, output, session) {
   # Mas são os mesmos dados conforme o tipo de variável (monetário, valor transf)
   # No entanto, os gráficos conforme tipo de variábel são concomitantes.
 
->>>>>>> 9a62523589398707018026b59ded687027fadd7c
 ### Sim certamente possível
   
   prep_treemap <- function(bd=input$transacoes_versao,
@@ -272,8 +356,7 @@ server <- function(input, output, session) {
       transmute(pais_d = `Países`,sect_d = pt, valor)%>%
       mutate(across(-valor,as.factor))%>% ungroup()
 
-    print(head(dados))
-    dados
+        dados
   }
   
   
@@ -324,19 +407,34 @@ server <- function(input, output, session) {
      
      agrupamento <- unlist(agrupamento)
      dados <- prep_treemap(agru = agrupamento,el="transferencias_valores")%>%filter(pais_d != "Resto do mundo")%>%
-       mutate(sinal = round(valor) , 
+
+       mutate(sinal = !(round(valor) <0), 
               valor = abs(valor),
-
+              pais_d=as.factor(pais_d),
+              colorido=as.numeric(cut(valor,20,labels=F)),
               posit = case_when(!(valor < 0) ~ "transfer",
-                                valor<0 ~ "rec."))
-
-     print(dados)
-     d3tree3(treemap(dados, index = c("posit",agrupamento), vSize = "valor",
-                     type = "index", 
-                      palette = "Set1",
-                     title.legend = "valor",
-                     ),
-             rootname = "Value Transfers(Unequal Exchange)")
+                       valor<0 ~ "rec."))
+     
+     print(class(dados$colorido))
+     print(head(dados$colorido))
+     
+   
+   d3tree3(treemap(dados, index = c(posit,agrupamento), 
+                   vSize = "valor",
+                   vColor="colorido",
+                   algorithm = "pivotSize",
+                   type = "value", 
+                   palette = "Set1",
+                   title.legend = "Valores transferidos",
+                   inflate.labels = T),
+           rootname = "Value Transfers(Unequal Exchange)"
+   )
+   
+     # d3tree3(treemap(dados,  index=agrupamento,vSize = "tam", vColor="colorido",
+     #                 type = "index", algorithm = "pivotSize",
+     #                 sortId = "color", palette = "Set1"),
+     # 
+     #         rootname = "Value Transfers(Unequal Exchange)")
      
  }
  )
