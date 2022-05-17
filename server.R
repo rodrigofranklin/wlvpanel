@@ -406,14 +406,15 @@ server <- function(input, output, session) {
      )
      
      agrupamento <- unlist(agrupamento)
-     dados <- prep_treemap(agru = agrupamento,el="transferencias_valores")%>%filter(pais_d != "Resto do mundo")%>%
-
-       mutate(sinal = !(round(valor) <0), 
+     dados <- prep_treemap(agru = agrupamento,
+                           el="transferencias_valores")%>%
+       filter(pais_d != "Resto do mundo")%>%
+       mutate(sinal = !(valor <0), 
               valor = abs(valor),
               pais_d=as.factor(pais_d),
-              colorido=as.numeric(cut(valor,20,labels=F)),
+              colorido=-(sinal)*as.numeric(cut(valor,20,labels=F),
               posit = case_when(!(valor < 0) ~ "transfer",
-                       valor<0 ~ "rec."))
+                       valor<0 ~ "rec.")))
      
      print(class(dados$colorido))
      print(head(dados$colorido))
@@ -429,7 +430,7 @@ server <- function(input, output, session) {
                    inflate.labels = T),
            rootname = "Value Transfers(Unequal Exchange)"
    )
-   
+
      # d3tree3(treemap(dados,  index=agrupamento,vSize = "tam", vColor="colorido",
      #                 type = "index", algorithm = "pivotSize",
      #                 sortId = "color", palette = "Set1"),

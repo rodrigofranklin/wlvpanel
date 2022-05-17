@@ -7,4 +7,6 @@ if( length( pacotesnovos ) ) utils::install.packages( pacotesnovos )
  sapply(pacotes, function (x) {
    suppressPackageStartupMessages(require(x[[1]],character.only = T))}) 
 rm(pacotes)
-cat("Bienvenido al Panel de Datos Mundial de Valores-Trabajo")
+cat("Bemvindo ao Painel de Valores Trabalho Mundiais\n
+  Bienvenido al Panel de Datos de Valores-Trabajo Mundiales\n
+    Welcome to World Labour Values Datapanel")
