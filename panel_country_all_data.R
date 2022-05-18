@@ -16,9 +16,9 @@ country_graphs <- NULL # tagList com todos os gráficos e títulos de grupos
 plotaserie_country_all <- function(dados,perc=F) {
   ##produz data.frame com cada versão para juntar
   
-  base <- names(dados[,1])
-  anos <- names(dados[1,])
-  dados <- as.data.table(t(dados))
+  base <- base <- names(dados[rowSums(!is.na(dados[,]))!=0,1])
+  anos <- names(dados[1,colSums(!is.na(dados[,]))!=0])
+  dados <- as.data.table(t(dados[base,anos]))
   dados$year <- as.Date(paste0("01/01/",anos),
                         tryFormats="%d/%m/%Y")
   dados <- dados%>%pivot_longer(-year,names_to = "base",values_to="value")%>%
@@ -29,16 +29,18 @@ plotaserie_country_all <- function(dados,perc=F) {
   p <- p+
     geom_line( size = 0.5)  +
     geom_line(size = 0.5)  +
-    geom_point(col = "white", pch = 21, size = 1.5) +
+    # geom_point(col = "white", pch = 21, size = 1.5) +
     theme_classic() +
     theme(axis.title = element_blank(),
           axis.line = element_blank(),
           axis.ticks = element_blank(),
           axis.text = element_text(size = 8, colour = "grey60"),
-          legend.position='bottom')
+          legend.position='bottom',
+          legend.title = element_blank())
   
   
-  ggplotly(p, tooltip = c("value", "base")) %>% plotly::layout(legend = list(orientation = "h", x = 0.1, y = -0.1))
+  ggplotly(p, tooltip = c("value", "base")) %>% 
+    plotly::layout(legend = list(title = "", orientation = "h"))
   
 }
 

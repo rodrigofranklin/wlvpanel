@@ -8,33 +8,93 @@
 ##
 ########################################################################
 
+## Funções
+read_fst_array <- function(file_name) {
+  
+  ft <- fst::read_fst(file_name)  # single column data.frame
+  metaf <- paste0(file_name, ".meta")
+  if(file.exists(metaf)) {
+  meta_data <- readRDS(metaf)  # retrieve dim
+  
+  m <- ft[[1]]  
+  attr(m, "dim") <- meta_data$dim
+  dimensiones <- length(meta_data$dim)
+  meta_data <- meta_data[2:(dimensiones+1)]
+  # lapply(1:dimensiones,function(d,f) {
+  #   dimnames(f)[[d]] <- meta_data[[d]]
+  # })
+  dimnames(m) <- meta_data
+  
+  m} else {
+    ft
+  }
+}
+
 ## Seleciona versões
 #####
-versao_13  <- "July14"
-versao_resultado_13 <- "oficial_WIOD13"
-versao_16  <- "Nov16"
-versao_resultado_16 <- "oficial_WIOD16"
+method_list <- gsub("results/","",list.dirs("results",recursive = F))
+method_parameters <- paste0("results/",method_list, "/_parameters.csv")
+method_list <- method_list[file.exists(method_parameters)]
 
+## Carrega os dados de todos os modelos
+## E cria as listas das dimensões (que serão utilizadas como inputs)
 
-## Carrega os dados
+paises <- read.csv2("dados/paises.csv")
+
+sea_countries <- NULL
+sea_sectors <- NULL
+lista_anos <- NULL
+lista_variaveis_sea <- NULL
+lista_paises <- NULL
+
+x <- method_list[3]
+for (x in method_list) {
+
+  parameters <- read.csv2(paste0("results/",x,"/_parameters.csv"))
+
+  sea_countries$temp <- read_fst_array(file = paste0("results/",x,"/sea_countries.fst"))
+
+  lista_anos <- 
+    unique(c(lista_anos, rownames(sea_countries$temp[,1,])))
+
+  lista_variaveis_sea <- 
+    unique(c(lista_variaveis_sea, rownames(sea_countries$temp[1,,])))
+
+  # dimnames(sea_countries$temp)[[3]][
+  #   dimnames(sea_countries$temp)[[3]] %in% paises[,3]] <- 
+  #   paises[match(names(sea_countries$temp[1,1,]),paises[,3]),3][
+  #     dimnames(sea_countries$temp)[[3]] %in% paises[,3]]
+  #Converte os nomes de países Exiobase para ISO3
+  dimnames(sea_countries$temp)[[3]][
+    dimnames(sea_countries$temp)[[3]] %in% paises[,5]] <- 
+    paises[match(names(sea_countries$temp[1,1,]),paises[,5]),3][
+      dimnames(sea_countries$temp)[[3]] %in% paises[,5]]
+  
+  lista_paises <- 
+    unique(c(lista_paises, names(sea_countries$temp[1,1,])))
+  
+  names(sea_countries)[names(sea_countries) == "temp"] <- parameters$name
+  
+  sea_sectors$temp <- read_fst_array(file = paste0("results/",x,"/sea_sectors.fst"))
+  # dimnames(sea_sectors$temp)[[4]][
+  #   dimnames(sea_sectors$temp)[[4]] %in% paises[,3]] <- 
+  #   paises[match(names(sea_sectors$temp[1,1,1,]),paises[,3]),3][
+  #     dimnames(sea_sectors$temp)[[4]] %in% paises[,3]]
+  dimnames(sea_sectors$temp)[[4]][
+    dimnames(sea_sectors$temp)[[4]] %in% paises[,5]] <- 
+    paises[match(names(sea_sectors$temp[1,1,1,]),paises[,5]),3][
+      dimnames(sea_sectors$temp)[[4]] %in% paises[,5]]
+  
+  
+  
+  names(sea_sectors)[names(sea_sectors) == "temp"] <- parameters$name
+
+}
+
 #####
-paises <- read.csv2(file = "R/utils/painel/dados/paises.csv", 
-                    row.names = 1, check.names = F)
-num_paises <- dim(paises)[1]
-
-sea_paises_13 <- readRDS(file = paste0("resultados/",versao_resultado_13,"/sea_paises.rds"))
-sea_paises_16 <- readRDS(file = paste0("resultados/",versao_resultado_16,"/sea_paises.rds"))
-
-## Cria as listas das dimensões (que serão utilizadas como inputs)
-#####
-lista_versoes <- c("WIOD13", "WIOD16")
-lista_anos <- unique(c(rownames(sea_paises_13[,1,]), rownames(sea_paises_16[,1,])))
-lista_variaveis_sea <- unique(c(rownames(sea_paises_13[1,,]), rownames(sea_paises_16[1,,])))
-lista_paises <- unique(c(names(sea_paises_13[1,1,]), names(sea_paises_16[1,1,])))
-names(lista_paises) <- paises[match(paises[,3], lista_paises),1]
+lista_versoes <- names(sea_countries)
 
 ## Mescla os bancos de dados das duas versões em um único arquivo.
-
 ## Mescla o arquivo sea_paises
 #####
 sea_paises <- array(data = NA, dim = c(length(lista_versoes),
@@ -46,14 +106,26 @@ sea_paises <- array(data = NA, dim = c(length(lista_versoes),
                                     lista_variaveis_sea,
                                     lista_paises))
 
-sea_paises["WIOD13",
-           match(names(sea_paises_13[,1,1]), lista_anos),
-           match(names(sea_paises_13[1,,1]), lista_variaveis_sea),
-           match(names(sea_paises_13[1,1,]), lista_paises)] <- sea_paises_13[,,]
-sea_paises["WIOD16",
-           match(names(sea_paises_16[,1,1]), lista_anos),
-           match(names(sea_paises_16[1,,1]), lista_variaveis_sea),
-           match(names(sea_paises_16[1,1,]), lista_paises)] <- sea_paises_16[,,]
+for (x in lista_versoes){
+  sea_paises[x,
+             match(names(sea_countries[[x]][,1,1]), lista_anos),
+             match(names(sea_countries[[x]][1,,1]), lista_variaveis_sea),
+             match(names(sea_countries[[x]][1,1,]), lista_paises)] <- sea_countries[[x]]
+}
+
+# Salvar
+
+saveRDS(sea_paises, file = "dados/sea_paises.rds")
+saveRDS(sea_sectors, file = "dados/sea_sectors.rds")
+
+#### Salvar arquivos xlsx
+
+
+
+############
+############ DAQUI PARA BAIXO NÃO TEM RELEVÂNCIA
+############ É NECESSÁRIO, PRIMEIRO, DEFINIR COMO VAI FICAR O TREEMAP
+############
 
 ### Seleciona os dados das matrizes insumo-produtos
 ## m_io_13

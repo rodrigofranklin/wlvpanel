@@ -17,12 +17,7 @@ sea_paises <- readRDS(file = "dados/sea_paises.rds")
 m_paises_13 <- readRDS(file = "dados/m_paises_13.rds")
 m_paises_16 <- readRDS(file = "dados/m_paises_16.rds")
 
-sea_setores_13 <- readRDS(file = "dados/sea_setores_13.rds")
-sea_setores_16 <- readRDS(file = "dados/sea_setores_16.rds")
-sea_sectors <- NULL
-sea_sectors[["WIOD13"]] <- sea_setores_13
-sea_sectors[["WIOD16"]] <- sea_setores_16
-
+sea_sectors <- readRDS("dados/sea_sectors.rds")
 
 m_io_13 <- readRDS(file = "dados/m_io_13.rds")
 m_io_16 <- readRDS(file = "dados/m_io_16.rds")
@@ -30,14 +25,16 @@ m_io_16 <- readRDS(file = "dados/m_io_16.rds")
 
 varst <- read_csv2("dados/vars.csv")
 setorest <- read_csv2("dados/setores_t.csv")
-perfil_sumario <- c("taxa_exploracao","produto_total_pm","produto_total_valores","valor_forca_trabalho_total","lucro","taxa_exploracao_ocupados")
+
 var_groups <- read.csv2("dados/var_groups.csv")
 meta_var <- read.csv2("dados/meta_var.csv")
+perfil_sumario <- meta_var[!is.na(meta_var$order),]
+perfil_sumario <- perfil_sumario[order(perfil_sumario$order),1]
 
 ## Cria demais variáveis
 
 lista_anos <- names(sea_paises[1,,1,1])
-default_indicator <- "taxa_exploracao"
+default_indicator <- "surplus_value.empe.r.pc"
 
 
 countries_polygons <- 
@@ -45,15 +42,13 @@ countries_polygons <-
 countries_polygons <- 
   countries_polygons[countries_polygons$ISO3 %in% paises$Legenda,]
 
-lista_paises <- paises[,3]
-names(lista_paises) <- paises[match(paises[,3], lista_paises),1]
+lista_paises <- paises[,2]
+names(lista_paises) <- rownames(paises)
 lista_paises <- c("",lista_paises)
 names(lista_paises)[1] <- "Search a country..."
 
 lista_variaveis_sea <- names(sea_paises[1,1,,1])
 names(lista_variaveis_sea) <- (tibble(var=lista_variaveis_sea)%>%left_join(varst, by = "var")%>%select(pt))[[1]]
-# lista_variaveis_sea <- c("",lista_variaveis_sea)
-# names(lista_variaveis_sea)[1] <- "Search an indicator..."
 
 ano_min <- as.numeric(lista_anos[1])
 ano_max <- as.numeric(last(lista_anos))
@@ -152,8 +147,8 @@ coords2country = function(points)
 }
 
 # source("country_tp_panel.R", local = TRUE)
-source("metautils/formata.R")
 source("panel_setup.R", local = TRUE)
+source("metautils/formata.R")
 source("panel_country_all_data.R", local = TRUE)
 source("panel_indicators.R", local = TRUE)
 
