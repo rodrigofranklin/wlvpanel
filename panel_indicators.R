@@ -747,7 +747,7 @@ panel_indicators_server <- function (IP, OP, RV) {
     for (x in RV$bases()) {
       indicator_link <- tagList(
         indicator_link,
-        tags$a(x, href = paste0("download/", x, "/indicator/", IP$indicadorind, ".xlsx")),
+        tags$a(x, href = paste0("download/IND.",IP$indicadorind,".", x, ".xlsx")),
         "|")
     }
     indicator_link[1:(length(indicator_link)-1)]

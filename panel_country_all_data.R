@@ -595,7 +595,7 @@ panel_country_server <- function(input, output, RV) {
     for (x in RV$bases()) {
       country_link <- tagList(
         country_link,
-        tags$a(x, href = paste0("download/", x, "/country/", input$pais, ".xlsx")),
+        tags$a(x, href = paste0("download/COUNTRY.",input$pais,".", x, ".xlsx")),
         "|")
     }
     country_link[1:(length(country_link)-1)]
@@ -606,7 +606,7 @@ panel_country_server <- function(input, output, RV) {
     for (x in RV$bases()) {
       sector_data_link <- tagList(
         sector_data_link,
-        tags$a(x, href = paste0("download/", x, "/sectors/", input$pais, ".xlsx")),
+        tags$a(x, href = paste0("download/SECTORS.",input$pais,".", x, ".xlsx")),
         "|")
     }
     sector_data_link[1:(length(sector_data_link)-1)]
