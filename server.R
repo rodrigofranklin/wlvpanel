@@ -372,7 +372,7 @@ server <- function(input, output, session) {
       left_join(paisl, by = c("pais_d" = "Legenda"))%>%
       left_join(setorest,by = c("sect_d" = "Code"))%>%
       transmute(pais_d = nome_pais,sect_d = pt, valor,
-                ettm = paste(sect_d,milhares(round(valor)),sep=" "))%>%
+                ettm = paste(abrevia(sect_d),milhares(round(valor)),sep=" "))%>%
       mutate(across(-valor,as.factor))%>%
       ungroup()
     

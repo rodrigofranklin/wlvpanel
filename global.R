@@ -79,6 +79,17 @@ encontrar_pais <- function(matriz, pais, fun) {
 
 
 ## Funções a reutilizar
+abrevia <- function(frase, tmax = 17) {
+  escmax <- function(frase,minim = tmax) {
+    f <- substr(frase,start = 1, stop = min(nchar(frase),minim))
+    f
+  }
+  f <- escmax(frase)
+  f <- unlist(strsplit(f,' ',fixed = T))
+  f <- c(f,"...")
+  f <- paste(sapply(f,escmax,minim=4),collapse =". ")
+  f
+}
 plotaserie <- function(dados,perc=F) {
   ##produz data.frame com cada versão para juntar
   
