@@ -219,7 +219,7 @@ country_panel <- conditionalPanel(
             max = ano_max, 
             value = 2009, 
             ticks = F, 
-            animate=F, 
+            animate=T, 
             sep = "")
         )
       )
