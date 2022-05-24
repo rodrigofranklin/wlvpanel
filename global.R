@@ -8,26 +8,36 @@
 ## Carrega pacotes
 source("requ.R")
 
+# ##Registra um cluster
+# if(.Platform$OS.type == "unix") {
+#   my.cluster <-  makeCluster(detectCores() - 1,type="FORK",outfile="dados/dados/logs/parallelworkers.log",
+#                              envir=globalenv())
+# } else {
+#   assign("my.cluster",parallel::makeCluster(
+#     parallel::detectCores() - 1, 
+#     type = "PSOCK"), envir=globalenv())
+# }
+
 ## Carrega os dados
 ######
-paises <- read.csv2(file = "dados/paises.csv", row.names = 1, check.names = F)
+paises <- read.csv2(file = "dados/dados/paises.csv", row.names = 1, check.names = F)
 num_paises <- dim(paises)[1]
 
-sea_paises <- readRDS(file = "dados/sea_paises.rds")
-m_paises_13 <- readRDS(file = "dados/m_paises_13.rds")
-m_paises_16 <- readRDS(file = "dados/m_paises_16.rds")
+sea_paises <- readRDS(file = "dados/dados/sea_paises.rds")
+m_paises_13 <- readRDS(file = "dados/dados/m_paises_13.rds")
+m_paises_16 <- readRDS(file = "dados/dados/m_paises_16.rds")
 
-sea_sectors <- readRDS("dados/sea_sectors.rds")
+sea_sectors <- readRDS("dados/dados/sea_sectors.rds")
 
-m_io_13 <- readRDS(file = "dados/m_io_13.rds")
-m_io_16 <- readRDS(file = "dados/m_io_16.rds")
+m_io_13 <- readRDS(file = "dados/dados/m_io_13.rds")
+m_io_16 <- readRDS(file = "dados/dados/m_io_16.rds")
 
 
-varst <- read_csv2("dados/vars.csv")
-setorest <- read_csv2("dados/setores_t.csv")
+varst <- read_csv2("dados/dados/vars.csv")
+setorest <- read_csv2("dados/dados/setores_t.csv")
 
-var_groups <- read.csv2("dados/var_groups.csv")
-meta_var <- read.csv2("dados/meta_var.csv")
+var_groups <- read.csv2("dados/dados/var_groups.csv")
+meta_var <- read.csv2("dados/dados/meta_var.csv")
 perfil_sumario <- meta_var[!is.na(meta_var$order),]
 perfil_sumario <- perfil_sumario[order(perfil_sumario$order),1]
 
@@ -74,21 +84,19 @@ plotaserie <- function(dados,perc=F) {
   
   if(length(dim(dados))>2){
     dados <- as.data.table(dados)
-    print(head(dados))
     ifelse(ncol(dados)==5,
            names(dados) <- c("bd","ano","indicador","pais","valor"),
            names(dados) <- c("bd","ano","pais","valor")
     )
-    print(dados$ano)
-    dados <- dados %>% mutate(ano = as.Date(paste0("1/1/",ano),
-                                            tryFormats="%d/%m/%Y"),
+    dados <- dados %>% mutate(ano = as.Date(paste0(ano,"/01/01"),
+                                            tryFormats="%Y/%m/%d"),
                               across(c(-ano,-valor),as.factor))
   }else{
     bds <- names(dados[,1])
     anos <- names(dados[1,])
     dados <- as.data.table(t(dados))
-    dados$ano <- as.Date(paste0("01/01/",anos),
-                         tryFormats="%d/%m/%Y")
+    dados$ano <- as.Date(paste0(anos,"/01/01"),
+                         tryFormats="%Y/%m/%d")
     dados <- dados%>%pivot_longer(-ano,names_to = "bd",values_to="valor")%>%
       mutate(bd=as.factor(bd))
   }
