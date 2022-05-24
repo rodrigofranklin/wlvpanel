@@ -41,7 +41,7 @@ server <- function(input, output, session) {
       options = leafletOptions(
         zoomControl = FALSE,
         worldCopyJump = TRUE,
-        minZoom = 2,
+        minZoom = 2
       )) %>%
       addProviderTiles(providers$CartoDB.Positron) %>%
       setView(lat = 0, lng = 0, zoom = 2)
@@ -55,7 +55,7 @@ server <- function(input, output, session) {
     selectInput(
       "pais",
       label = NULL,
-      choices = country_list,
+      choices = country_list
     )
   })
   
@@ -159,7 +159,7 @@ server <- function(input, output, session) {
   })
   
   linhas_13 <- reactive({
-    encontrar_pais(m_io_13, input$pais, rownames)
+    encontrar_pais(m_io_13, input$paistrade, rownames)
   })
   
   colunas_13 <- reactive({
@@ -175,20 +175,32 @@ server <- function(input, output, session) {
   })
 
 
-  comerciantes_p <-  function(bd=13,pais = input$paistrade,ano = input$anotrade, elemento = "exportacoes_pm",qtde = 15) {
+  comerciantes_p <-  function(bd=13,
+                              pais = input$paistrade,
+                              ano = input$anotrade, 
+                              elem = "exportacoes_pm",
+                              qtde = 15) {
+      bd <- ifelse(grepl("13",bd),13,16)
+      
       mat <- get(paste0("m_paises_",bd))
-      mat <- mat[as.character(ano),elemento,pais,]
+      mat <- mat[as.character(ano),elem,match(pais,dimnames(mat)[[3]]),]
+      mat <- sapply(mat,abs)
+   
       paises <- names(sort(mat,T)[2:(qtde+1)])
+      rm(mat)
+
+      paises
+     
     }
 
   
 
   fazer_selecao <- reactive({
     switch(paste0(input$transacoes_versao,input$transacoes_agregacao),
-           "WIOD13Aggr." = 1,
-           "WIOD13Sector" = 2,
-           "WIOD16Aggr." = 3,
-           "WIOD16Sector" = 4
+           "WIOD13Agregado" = 1,
+           "WIOD13Por setor de origem" = 2,
+           "WIOD16Agregado" = 3,
+           "WIOD16Por setor de origem" = 4
     )
   })
 
@@ -203,7 +215,7 @@ server <- function(input, output, session) {
     paste(input$pais)
   })
   
-  output$pais <- renderDataTable(
+  output$listapais <- renderDataTable(
     
     tabmil(t(sea_paises[,as.character(input$ano),,input$pais]))%>%
       filter(var %in% c(input$indicador,perfil_sumario))%>%
@@ -321,7 +333,7 @@ server <- function(input, output, session) {
 
 
 
-  ### sobre esses outputs que se seguem: é preciso melhorar. Seria possível ter
+  ### sobre esses outputs que se seguem: é preciso Hormel. Seria possível ter
   ### uma única função que fosse chamada conforme a seleção de (exportação,
   ### importação e saldo), e chamada 3 vezes (monetária, valor e transferência)?
   # Problema: os dados de exportacoes, importacoes e saldo são distintos.
@@ -334,28 +346,36 @@ server <- function(input, output, session) {
                            pais = input$paistrade,
                            ano = input$anotrade,
                            agr = input$transacoes_agregacao,
-                           el = "exportacoes_pm",
+                           elem = "exportacoes_pm",
                            qcorte = T,
                            qtde = 9,
                            agru = agrupamento,
                            pod = 1) {
     bd <- ifelse(grepl("13",bd),13,16)
-    p <- comerciantes_p(bd,pais,ano,el,9)
-    dados <- get(paste0("m_io_",bd)) %>%
-      agregado(ano, el, get(paste0("linhas_",bd))()) %>%
+    p <- comerciantes_p(bd,pais,ano,elem,9)
+    
+    paisl <- data.frame(nome_pais = names(lista_paises), 
+                        Legenda = lista_paises) 
+    dados <- get(paste0("m_io_",bd)) 
+        dados <- dados %>%
+      agregado(ano, elem, get(paste0("linhas_",bd))())%>%
       as.data.table(keep.rownames = "paisect")%>%
       separate(paisect,c("pais_origen","sector_origen"),sep="\\.")%>%
       select(-pais_origen)%>%
       pivot_longer(-c(sector_origen),names_to="paisect_d",values_to="valor")%>%
       separate(paisect_d,c("pais_d","sect_d"),sep="\\.")%>%
-      mutate(pais_d = ifelse(pais_d %in% p,pais_d,"ROW"))%>%
-      dplyr::group_by(across(all_of(agru)))%>%
-      summarize(valor=sum(valor,na.rm=T))%>%
-      left_join(paises, by = c("pais_d" = "Legenda"))%>%
-      left_join(setorest,by = c("sect_d" = "Code"))%>%
-      transmute(pais_d = `Países`,sect_d = pt, valor)%>%
-      mutate(across(-valor,as.factor))%>% ungroup()
+      mutate(pais_d = ifelse(pais_d %in% p,pais_d,"ROW")) %>%
+      dplyr::group_by_at(agru) %>%
+       summarize(valor=sum(valor,na.rm=T))
 
+    dados <- dados %>%
+      left_join(paisl, by = c("pais_d" = "Legenda"))%>%
+      left_join(setorest,by = c("sect_d" = "Code"))%>%
+      transmute(pais_d = nome_pais,sect_d = pt, valor,
+                ettm = paste(sect_d,milhares(round(valor)),sep=" "))%>%
+      mutate(across(-valor,as.factor))%>%
+      ungroup()
+    
         dados
   }
   
@@ -371,71 +391,95 @@ server <- function(input, output, session) {
     agrupamento <- unlist(agrupamento)
     dados <- prep_treemap(agru = agrupamento)%>%filter(pais_d != "Resto do mundo")
 
+    sumpaisd <- dados%>%group_by(pais_d)%>%summarize(paisds = round(sum(valor)))
+    
+    dados <- dados %>% left_join(sumpaisd) %>%mutate(pais_d = paste(pais_d,milhares(paisds),sep = " "),
+                                                     sect_d = ettm)
+    
     d3tree3(treemap(dados, index = agrupamento, vSize = "valor",
                     type = "index", palette = "Set1",
-                    title.legend = "valor"
-                    ),
-            "Monetary Exports")
+                    fontsize.labels = c(16,12,8),
+                    fontsize.legend = 12,
+                    overlap.labels = 0.1,
+                    lowerbound.cex.labels = 1,
+                    inflate.labels = T,
+                    align.labels = c("center","center"),
+                    force.print.labels = F),
+            rootname = "Monetary Exports")
   })
-  #
-#
-#
-   output$exportacoes_valores <- renderD3tree3({
-     selecao <- fazer_selecao()
+   
+  output$exportacoes_valores <- renderD3tree3({
+    selecao <- fazer_selecao()
+    
+    agrupamento <- case_when(
+      selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
+      selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
+    )
+    
+    agrupamento <- unlist(agrupamento)
+    dados <- prep_treemap(agru = agrupamento,
+                          elem = "exportacoes_valores")%>%
+      filter(pais_d != "Resto do mundo")
 
-     agrupamento <- case_when(
-       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
-       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
-     )
-
-     agrupamento <- unlist(agrupamento)
-     dados <- prep_treemap(agru = agrupamento,el = "exportacoes_valores")%>%filter(pais_d != "Resto do mundo")
-
-     d3tree3(treemap(dados,  index = agrupamento, vSize = "valor",
-                     type = "index", palette = "Set1",
-                     title.legend = "valor"),
-             rootname = "Exports in Value Terms")
-     })
+    sumpaisd <- dados%>%group_by(pais_d)%>%summarize(paisds = round(sum(valor)))
+    
+    dados <- dados %>% left_join(sumpaisd) %>%mutate(pais_d = paste(pais_d,milhares(paisds),sep = " "),
+                                                     sect_d = ettm)
+    
+    d3tree3(treemap(dados, index = agrupamento, vSize = "valor",
+                    type = "index", palette = "Set1",
+                    fontsize.labels = c(16,12,8),
+                    fontsize.legend = 12,
+                    lowerbound.cex.labels = 1,
+                    fontsize.labels = 10,
+                    inflate.labels = F,
+                    align.labels = c("center","center"),
+                    force.print.labels = F
+    ),
+    rootname = "Exports in Value Terms")
+  })
  
    output$exportacoes_transferencias <- renderD3tree3({
      selecao <- fazer_selecao()
-     print(selecao)
+
      agrupamento <- case_when(
        selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
        selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
      )
      
      agrupamento <- unlist(agrupamento)
+      print(agrupamento)
      dados <- prep_treemap(agru = agrupamento,
-                           el="transferencias_valores")%>%
+                           elem="transferencias_valores")
+     print(agrupamento)
+     dados <- dados%>%
        filter(pais_d != "Resto do mundo")%>%
-       mutate(sinal = !(valor <0), 
-              valor = abs(valor),
-              pais_d=as.factor(pais_d),
-              colorido=-(sinal)*as.numeric(cut(valor,20,labels=F),
-              posit = case_when(!(valor < 0) ~ "transfer",
-                       valor<0 ~ "rec.")))
-     
-     print(class(dados$colorido))
-     print(head(dados$colorido))
-     
+       mutate(sinal = !(valor <0),
+              sinal = ifelse(sinal == 0,-1,sinal),
+              posit = case_when(valor<0 ~ "appropriations",
+                                !(valor < 0) ~ "transfers"),
+              valor = abs(valor))
    
-   d3tree3(treemap(dados, index = c(posit,agrupamento), 
-                   vSize = "valor",
-                   vColor="colorido",
-                   algorithm = "pivotSize",
-                   type = "value", 
-                   palette = "Set1",
-                   title.legend = "Valores transferidos",
-                   inflate.labels = T),
-           rootname = "Value Transfers(Unequal Exchange)"
-   )
+     sumposit <- dados%>%group_by(posit)%>%summarize(posits = round(sum(valor)))
+     sumpaisd <- dados%>%group_by(posit,pais_d)%>%summarize(paisds = round(sum(valor)))
+     
+     dados <- dados %>% left_join(sumpaisd) %>%mutate(pais_d = paste(pais_d,milhares(paisds),sep = " "))
+     
+     dados <- dados %>% left_join(sumposit) %>%mutate(posit = paste(posit,milhares(posits),sep = " "))
+     
 
-     # d3tree3(treemap(dados,  index=agrupamento,vSize = "tam", vColor="colorido",
-     #                 type = "index", algorithm = "pivotSize",
-     #                 sortId = "color", palette = "Set1"),
-     # 
-     #         rootname = "Value Transfers(Unequal Exchange)")
+     dados <- treemap(dados, index = c("posit","pais_d","ettm"), 
+                      vSize = "valor",
+                      align.labels = c("center","center"),
+                      algorithm = "pivotSize",
+                      type = "value", 
+                      palette = "Set1",
+                      title = "Transferred Values",
+                      fontsize.labels = 10,
+                      inflate.labels = F,
+                      overlap.labels = 0,
+                      force.print.labels = F)
+     d3tree3(dados, rootname = "Value Transfers")
      
  }
  )
