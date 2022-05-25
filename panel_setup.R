@@ -3,11 +3,11 @@
 ## GLOBAL ----------------
 
 # Carregando lista de idiomas e rótulos
-languages <- read.csv2("dados/languages.csv")
+languages <- read.csv2("dados/languages.csv", encoding = "UTF-8")
 
 language_file <- read.csv2(languages$file[1])
 for (x in 1:length(languages$language)) {
-  l_temp <- read.csv2(languages$file[x])
+  l_temp <- read.csv2(languages$file[x], encoding = "UTF-8")
   names(l_temp)[2] <- languages$language[x]
   language_file <- full_join(language_file, l_temp, by = "cod_label")
 }

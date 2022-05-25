@@ -23,13 +23,33 @@ plotaserie_country_all <- function(dados, anos, perc=F) {
                         tryFormats="%d/%m/%Y")
   dados <- dados%>%pivot_longer(-year,names_to = "base",values_to="value")%>%
     mutate(base=as.factor(base))
+
+  if((length(anos) %% 2) != 0) {
+    metade <- (length(anos)+1)/2
+    break_years <- c(as.Date(paste0(min(anos),"-01-01")),
+                     as.Date(paste0(anos[metade],"-01-01")),
+                     as.Date(paste0(max(anos),"-01-01")))
+    labels_years <- c(as.character(min(anos)),
+                      as.character(anos[metade]),
+                      as.character(max(anos)))
+  } else {
+    metade <- (length(anos))/2
+    break_years <- c(as.Date(paste0(min(anos),"-01-01")),
+                     as.Date(paste0(anos[metade-1],"-01-01")),
+                     as.Date(paste0(anos[metade+2],"-01-01")),
+                     as.Date(paste0(max(anos),"-01-01")))
+    labels_years <- c(as.character(min(anos)),
+                      as.character(anos[metade-1]),
+                      as.character(anos[metade+2]),
+                      as.character(max(anos)))
+  }
   
   p <- ggplot(dados,aes(x=year,y=value,col=base))
   
-  p <- p+
+  p <- p +
     geom_line( size = 0.5)  +
     geom_line(size = 0.5)  +
-    # geom_point(col = "white", pch = 21, size = 1.5) +
+    scale_x_date(breaks = break_years, labels = labels_years) +
     theme_classic() +
     theme(axis.title = element_blank(),
           axis.line = element_blank(),
@@ -38,9 +58,13 @@ plotaserie_country_all <- function(dados, anos, perc=F) {
           legend.position='bottom',
           legend.title = element_blank())
   
+  if (min(dados$value, na.rm = TRUE)<0 & max(dados$value, na.rm = TRUE)>0) {
+    p <- p +
+      geom_hline(yintercept=0, size = 0.1, color = "grey80")
+  }
   
-  ggplotly(p, tooltip = c("value", "base")) %>% 
-    plotly::layout(legend = list(title = "", orientation = "h"))
+  ggplotly(p, tooltip = c("value", "base")) %>%
+    plotly::layout(legend = list(title = "", orientation = "h", y="-0.1"))
   
 }
 
