@@ -162,15 +162,8 @@ ui <- navbarPage(
 
       uiOutput("select.indicator"),
 
-      sliderInput(
-        "ano",
-        label = NULL,
-        min = ano_min, 
-        max = ano_max, 
-        value = 2009, 
-        ticks = F, 
-        animate=T, 
-        sep = ""),
+      uiOutput("select.year"),
+        
       
       uiOutput("select.base") %>% div(style = "text-align: right")
     # ) %>%  jqui_draggable(options = list(containment = "parent")),

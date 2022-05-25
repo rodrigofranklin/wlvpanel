@@ -20,24 +20,31 @@ source("requ.R")
 
 ## Carrega os dados
 ######
-paises <- read.csv2(file = "dados/dados/paises.csv", row.names = 1, check.names = F)
+
+paises <- read.csv2(
+  file = "dados/paises.csv", 
+  row.names = 1, 
+  check.names = F, 
+  encoding = "UTF-8")
+
 num_paises <- dim(paises)[1]
 
-sea_paises <- readRDS(file = "dados/dados/sea_paises.rds")
-m_paises_13 <- readRDS(file = "dados/dados/m_paises_13.rds")
-m_paises_16 <- readRDS(file = "dados/dados/m_paises_16.rds")
+sea_paises <- readRDS(file = "dados/sea_paises.rds")
 
-sea_sectors <- readRDS("dados/dados/sea_sectors.rds")
+m_paises_13 <- readRDS(file = "dados/m_paises_13.rds")
+m_paises_16 <- readRDS(file = "dados/m_paises_16.rds")
 
-m_io_13 <- readRDS(file = "dados/dados/m_io_13.rds")
-m_io_16 <- readRDS(file = "dados/dados/m_io_16.rds")
+sea_sectors <- readRDS("dados/sea_sectors.rds")
 
+m_io_13 <- readRDS(file = "dados/m_io_13.rds")
+m_io_16 <- readRDS(file = "dados/m_io_16.rds")
 
-varst <- read_csv2("dados/dados/vars.csv")
-setorest <- read_csv2("dados/dados/setores_t.csv")
+varst <- read.csv2("dados/vars.csv", encoding = "UTF-8")
+setorest <- read.csv2("dados/setores_t.csv", encoding = "UTF-8")
 
-var_groups <- read.csv2("dados/dados/var_groups.csv")
-meta_var <- read.csv2("dados/dados/meta_var.csv")
+var_groups <- read.csv2("dados/var_groups.csv", encoding = "UTF-8")
+meta_var <- read.csv2("dados/meta_var.csv", encoding = "UTF-8")
+
 perfil_sumario <- meta_var[!is.na(meta_var$order),]
 perfil_sumario <- perfil_sumario[order(perfil_sumario$order),1]
 

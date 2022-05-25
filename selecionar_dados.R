@@ -176,6 +176,7 @@ for (method_code in names(sea_paises[,1,1,1])) {
     mydata <- NULL
     
     if (country_code %in% names(sea_sectors[[method_code]][1,1,1,])){
+      sectors_data <- sea_sectors[[method_code]][,,,country_code]
       for (var_code in names(sectors_data[1,,1])){
         var_name <- meta_var[meta_var$cod_var==var_code,"name"]
         sector_data <- t(sectors_data[,var_code,])

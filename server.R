@@ -23,8 +23,28 @@ server <- function(input, output, session) {
       input$indicator
     }
   )
-
   
+  RV$anomax <- reactive({
+    if (length(RV$bases())==1) {
+      margen <- 1
+    } else {
+      margen <- 2
+    }
+    temp_data <- sea_paises[RV$bases(),,,] %>% apply(margen, sum, na.rm = TRUE)
+    max(as.numeric(names(temp_data[temp_data!=0])))
+  })
+  
+  RV$anomin <- reactive({
+    if (length(RV$bases())==1) {
+      margen <- 1
+    } else {
+      margen <- 2
+    }
+    temp_data <- apply(sea_paises[RV$bases(),,,],margen,sum, na.rm = TRUE)
+    min(as.numeric(names(temp_data[temp_data!=0])))
+  })
+  
+
   ## Panel: all_data_country ----------
   ## Painel com detalhamento completo dos países.
   # Tabela de resumo, distribuição setorial e gráficos de todas as variáveis
@@ -76,6 +96,18 @@ server <- function(input, output, session) {
       choices = RV$bases(), 
       label = NULL)
   })
+
+  output$select.year <- renderUI({
+    sliderInput(
+      "ano",
+      label = NULL,
+      min = RV$anomin(), 
+      max = RV$anomax(), 
+      value = 2009, 
+      ticks = F, 
+      animate = F, 
+      sep = "")
+    })
 
   ####
   ##Reactive values to use in more than one place (titles, popups)
@@ -237,6 +269,7 @@ server <- function(input, output, session) {
       lengthChange = FALSE
     )
   )
+
   
   output$serie_pais <- renderPlotly({
     dados <- sea_paises[,,input$indicador,input$pais]

@@ -13,11 +13,11 @@ country_graphs <- NULL # tagList com todos os gráficos e títulos de grupos
 
 
 ## Funções a reutilizar
-plotaserie_country_all <- function(dados,perc=F) {
+plotaserie_country_all <- function(dados, anos, perc=F) {
   ##produz data.frame com cada versão para juntar
   
-  base <- base <- names(dados[rowSums(!is.na(dados[,]))!=0,1])
-  anos <- names(dados[1,colSums(!is.na(dados[,]))!=0])
+  base <- names(dados[,1])
+  # names(dados[1,colSums(!is.na(dados[,]))!=0])
   dados <- as.data.table(t(dados[base,anos]))
   dados$year <- as.Date(paste0("01/01/",anos),
                         tryFormats="%d/%m/%Y")
@@ -211,16 +211,9 @@ country_panel <- conditionalPanel(
         tags$td(
           width = "50%",
           style = "padding-left: 20px; padding-right: 20px;",
-          sliderInput(
-            "ano_detalhado",
-            label = NULL,
-            width = "100%",
-            min = ano_min, 
-            max = ano_max, 
-            value = 2009, 
-            ticks = F, 
-            animate=T, 
-            sep = "")
+          
+          uiOutput("select.year.panel_country")
+          
         )
       )
     ),
@@ -479,7 +472,8 @@ panel_country_server <- function(input, output, RV) {
   lapply(varst$var, function(i) {
     output[[paste0(i,"_plot")]] <- renderPlotly({
       dados <- sea_paises[RV$bases(),,i,input$pais]
-      plotaserie_country_all(dados)
+      anos <- as.character(RV$anomin():RV$anomax())
+      plotaserie_country_all(dados, anos)
     })
     outputOptions(output,paste0(i,"_plot"), suspendWhenHidden = FALSE)
     
@@ -527,6 +521,18 @@ panel_country_server <- function(input, output, RV) {
   
   output$ano1 = output$ano2 <- renderText(input$ano)
 
+  output$select.year.panel_country <- renderUI({
+    sliderInput(
+      "ano_detalhado",
+      label = NULL,
+      width = "100%",
+      min = RV$anomin(),
+      max = RV$anomax(),
+      value = 2009,
+      ticks = F,
+      animate = F,
+      sep = "")
+  })
   
   output$indicador <- renderText(varst$pt[varst$var==RV$indicator()])
   
