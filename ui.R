@@ -269,7 +269,7 @@ ui <- navbarPage(
   tabPanel(
     l("Trade"),
     conditionalPanel(
-      "!output.exportacoes_monetarias",
+      "!output.exportacoes_monetarias.isArray()",
       p("Tenha Nervo/Be patient!",  style = "
                 position: fixed;
                 top: calc(50vh - 45px);
