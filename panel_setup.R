@@ -3,11 +3,11 @@
 ## GLOBAL ----------------
 
 # Carregando lista de idiomas e rótulos
-languages <- read.csv2("dados/languages.csv")
+languages <- read.csv2("dados/languages.csv", encoding = "UTF-8")
 
 language_file <- read.csv2(languages$file[1])
 for (x in 1:length(languages$language)) {
-  l_temp <- read.csv2(languages$file[x])
+  l_temp <- read.csv2(languages$file[x], encoding = "UTF-8")
   names(l_temp)[2] <- languages$language[x]
   language_file <- full_join(language_file, l_temp, by = "cod_label")
 }
@@ -26,11 +26,15 @@ l <- function(lab_code) {
 
 # Lista de bases
 lista_versoes <- names(sea_paises[,1,1,1])
-base1 <- lista_versoes[1]
-base2 <- lista_versoes[2]
-base3 <- lista_versoes[1]
-base4 <- lista_versoes[2]
+base1 <- "WIOD13"
+base2 <- "WIOD16"
+base3 <- "EXI382"
+base4 <- "WIOD13"
 
+# base1 <- lista_versoes[1]
+# base2 <- lista_versoes[2]
+# base3 <- lista_versoes[1]
+# base4 <- lista_versoes[1]
 
 
 ## UI --------------------

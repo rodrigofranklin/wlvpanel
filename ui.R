@@ -162,15 +162,8 @@ ui <- navbarPage(
 
       uiOutput("select.indicator"),
 
-      sliderInput(
-        "ano",
-        label = NULL,
-        min = ano_min, 
-        max = ano_max, 
-        value = 2009, 
-        ticks = F, 
-        animate=T, 
-        sep = ""),
+      uiOutput("select.year"),
+        
       
       uiOutput("select.base") %>% div(style = "text-align: right")
     # ) %>%  jqui_draggable(options = list(containment = "parent")),
@@ -276,7 +269,7 @@ ui <- navbarPage(
   tabPanel(
     l("Trade"),
     conditionalPanel(
-      "is.null(output$exportacoes_monetarias)",
+      "!output.exportacoes_monetarias",
       p("Tenha Nervo/Be patient!",  style = "
                 position: fixed;
                 top: calc(50vh - 45px);
@@ -305,9 +298,10 @@ ui <- navbarPage(
         border-radius: 2px;
         font-size: 10px",
       selectInput("paistrade","Country",lista_paises, selected="BRA"),
-      radioButtons(inputId = "transacoes_agregacao", choices = c("Agregado", "Por setor de origem"), selected = "Agregado", label = ""),
+      radioButtons(inputId = "transacoes_agregacao", choices = lista_agr, selected = "Agregado", label = ""),
       radioButtons(inputId = "transacoes_versao", choices = c("WIOD13", "WIOD16"), selected = "WIOD13", label = "Base de dados:"),
-      sliderInput("anotrade","YEAR",min = 1995, max = 2021, value = 2009, ticks = F, animate=F)
+      sliderInput("anotrade","YEAR",min = 1995, max = 2021, value = 2009, ticks = F, animate=F),
+      actionButton("fill", "Fill Cache")
     ),
     absolutePanel(
       width="30%",
@@ -322,7 +316,7 @@ ui <- navbarPage(
       height="30%",
       left="33.5%",
       d3tree3Output("exportacoes_valores")
-    ),
+      ),
     absolutePanel(
       width="30%",
       bottom=50,
@@ -330,15 +324,40 @@ ui <- navbarPage(
       left="1.5%",
       d3tree3Output("exportacoes_transferencias")
     )
+    
   ),
-  
   tabPanel(
     l("Download"),
     br(),br(),
     a("WLVD Portable / BDMVT portátil",href = "https://cloud.worldlabourvalues.org/s/5oDfapMJJdDMnSn",
-      )
-  )
+    )
+  ),
 
 )  
+# tabPanel(
+#   "Trade",
+#   absolutePanel(
+#      id= "tradecontrols",
+#      top = 50,
+#      right = "1.5%",
+#      width = "22%",
+#      height = "68%",
+#      class = "panel panel-default",
+#      style =
+#        "background-color: rgba(255,255,255,0.2);
+#         z-index: 504;
+#         padding: 0;
+#         box-shadow: 0 0 10px rgba(0,0,0,0.2);
+#         border-radius: 2px;
+#         font-size: 10px",
+#      selectInput("paistrade","Country",lista_paises, selected="BRA"),
+#      radioButtons(inputId = "transacoes_ind", choices = c("exports","imports","balance","unequal exchange"),selected="exports",label="Variable"),
+#      radioButtons(inputId = "transacoes_agregacao", choices = c("Aggr.", "Sector"), selected = "Aggr.", label = "Type"),
+#      radioButtons(inputId = "transacoes_versao", choices = c("WIOD13", "WIOD16"), selected = "WIOD13", label = "Base de dados:"),
+#      sliderInput("anotrade","YEAR",min = 1995, max = 2021, value = 2009, ticks = F, animate=T)
+#   ),
+
+  
+
 
 
