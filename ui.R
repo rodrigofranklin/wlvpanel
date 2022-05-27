@@ -1,5 +1,5 @@
 ui <- navbarPage(
-  theme = shinytheme("yeti"),
+  theme = bs_theme(version = 4, bootswatch = "minty"),
   collapsible = TRUE,
   windowTitle = "World Labour Value Database",
   title = "WLVD",
