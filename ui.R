@@ -269,7 +269,7 @@ ui <- navbarPage(
   tabPanel(
     l("Trade"),
     conditionalPanel(
-      "is.null(output$exportacoes_monetarias)",
+      "!output.exportacoes_monetarias",
       p("Tenha Nervo/Be patient!",  style = "
                 position: fixed;
                 top: calc(50vh - 45px);
@@ -298,11 +298,33 @@ ui <- navbarPage(
         border-radius: 2px;
         font-size: 10px",
       selectInput("paistrade","Country",lista_paises, selected="BRA"),
-      radioButtons(inputId = "transacoes_agregacao", choices = c("Agregado", "Por setor de origem"), selected = "Agregado", label = ""),
+      radioButtons(inputId = "transacoes_agregacao", choices = lista_agr, selected = "Agregado", label = ""),
       radioButtons(inputId = "transacoes_versao", choices = c("WIOD13", "WIOD16"), selected = "WIOD13", label = "Base de dados:"),
-      sliderInput("anotrade","YEAR",min = 1995, max = 2021, value = 2009, ticks = F, animate=F)
+      sliderInput("anotrade","YEAR",min = 1995, max = 2021, value = 2009, ticks = F, animate=F),
+      actionButton("fill", "Fill Cache")
     ),
-   
+    absolutePanel(
+      width="30%",
+      top=50,
+      height="30%",
+      left="1.5%",
+      d3tree3Output("exportacoes_monetarias")
+    ),
+    absolutePanel(
+      width="30%",
+      top=50,
+      height="30%",
+      left="33.5%",
+      d3tree3Output("exportacoes_valores")
+      ),
+    absolutePanel(
+      width="30%",
+      bottom=50,
+      height="30%",
+      left="1.5%",
+      d3tree3Output("exportacoes_transferencias")
+    )
+    
   ),
   tabPanel(
     l("Download"),
@@ -310,27 +332,6 @@ ui <- navbarPage(
     a("WLVD Portable / BDMVT portátil",href = "https://cloud.worldlabourvalues.org/s/5oDfapMJJdDMnSn",
     )
   ),
-  # absolutePanel(
-  #   width="30%",
-  #   top=50,
-  #   height="30%",
-  #   left="1.5%",
-  #   d3tree3Output("exportacoes_monetarias")
-  # ),
-  # absolutePanel(
-  #   width="30%",
-  #   top=50,
-  #   height="30%",
-  #   left="33.5%",
-  #   d3tree3Output("exportacoes_valores")
-  #   ),
-  absolutePanel(
-    width="30%",
-    bottom=50,
-    height="30%",
-    left="1.5%",
-    d3tree3Output("exportacoes_transferencias")
-  )
 
 )  
 # tabPanel(

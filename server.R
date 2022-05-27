@@ -274,7 +274,8 @@ server <- function(input, output, session) {
   output$serie_pais <- renderPlotly({
     dados <- sea_paises[,,input$indicador,input$pais]
     plotaserie(dados)
-  })
+  })%>% bindCache(input$indicador,input$pais)
+
   
   
   output$setores_pais_13 <- renderDataTable(
@@ -292,7 +293,8 @@ server <- function(input, output, session) {
       info = FALSE,
       lengthChange = FALSE
     )
-  )
+  ) 
+
   
   output$setores_pais_16 <- renderDataTable(
     tabmil(sea_setores_16[as.character(input$ano),
@@ -310,6 +312,7 @@ server <- function(input, output, session) {
       lengthChange = FALSE
     )
   )
+
   
   
   output$titulo_detalhamento_pais <-
@@ -356,6 +359,7 @@ server <- function(input, output, session) {
                   lengthChange = FALSE
                 ))
 })
+
 
   ### sobre esses outputs que se seguem: é preciso melhorar. Seria possível ter
   ### uma única função que fosse chamada conforme a seleção de (exportação,
@@ -415,7 +419,7 @@ server <- function(input, output, session) {
   
   output$exportacoes_monetarias <- renderD3tree3({
     selecao <- fazer_selecao()
-
+    ele <- "exportacoes_pm" 
     agrupamento <- case_when(
       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
@@ -428,7 +432,7 @@ server <- function(input, output, session) {
     
     dados <- dados %>% left_join(sumpaisd) %>%mutate(pais_d = paste(pais_d,milhares(paisds),sep = " "),
                                                      sect_d = ettm)
-    
+ 
     d3tree3(treemap(dados, index = agrupamento, vSize = "valor",
                     type = "index", palette = "Set1",
                     fontsize.labels = c(16,12,8),
@@ -439,11 +443,13 @@ server <- function(input, output, session) {
                     align.labels = c("center","center"),
                     force.print.labels = F),
             rootname = "Monetary Exports")
-  })
+  })%>% bindCache("exportacoes_pm",input$paistrade,input$anotrade,
+                  input$transacoes_versao,input$transacoes_agregacao)
+
    
   output$exportacoes_valores <- renderD3tree3({
     selecao <- fazer_selecao()
-    
+    ele <- "exportacoes_valores"
     agrupamento <- case_when(
       selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
       selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
@@ -451,7 +457,7 @@ server <- function(input, output, session) {
     
     agrupamento <- unlist(agrupamento)
     dados <- prep_treemap(agru = agrupamento,
-                          elem = "exportacoes_valores")%>%
+                          elem = ele)%>%
       filter(pais_d != "Resto do mundo")
 
     sumpaisd <- dados%>%group_by(pais_d)%>%summarize(paisds = round(sum(valor)))
@@ -464,27 +470,27 @@ server <- function(input, output, session) {
                     fontsize.labels = c(16,12,8),
                     fontsize.legend = 12,
                     lowerbound.cex.labels = 1,
-                    fontsize.labels = 10,
                     inflate.labels = F,
                     align.labels = c("center","center"),
                     force.print.labels = F
     ),
     rootname = "Exports in Value Terms")
-  })
+  }) %>% bindCache("exportacoes_valores",input$paistrade,input$anotrade,
+                  input$transacoes_versao,input$transacoes_agregacao)
  
    output$exportacoes_transferencias <- renderD3tree3({
      selecao <- fazer_selecao()
-
+     ele <- "transferencias_valores"
      agrupamento <- case_when(
        selecao %% 2 == 1 ~  list(c("pais_d","sect_d")),
        selecao %% 2 == 0 ~ list(c("sector_origen","pais_d","sect_d"))
      )
      
      agrupamento <- unlist(agrupamento)
-      print(agrupamento)
+    
      dados <- prep_treemap(agru = agrupamento,
-                           elem="transferencias_valores")
-     print(agrupamento)
+                           elem = ele)
+    
      dados <- dados%>%
        filter(pais_d != "Resto do mundo")%>%
        mutate(sinal = !(valor <0),
@@ -505,7 +511,7 @@ server <- function(input, output, session) {
                       vSize = "valor",
                       align.labels = c("center","center"),
                       algorithm = "pivotSize",
-                      type = "value", 
+                      type = "index", 
                       palette = "Set1",
                       title = "Transferred Values",
                       fontsize.labels = 10,
@@ -515,11 +521,51 @@ server <- function(input, output, session) {
      d3tree3(dados, rootname = "Value Transfers")
      
  }
- )
+ ) %>% bindCache("transferencias_valores",input$paistrade,input$anotrade,
+                 input$transacoes_versao,input$transacoes_agregacao)
   output$loading <- renderText("")
   outputOptions(output, 'loading', suspendWhenHidden=FALSE)
   
+  idpaistrade <- idele <- idanotrade <- idtver <- 1
 
+
+  observe({ 
+    req(input$fill) 
+    if (idpaistrade != (length(lista_paises)-1)|| idanotrade != length(lista_anos) || 
+        idtver != length(lista_versoes)||idele != length(lista_versoes)) { 
+      ## need the invalidateLater approach 
+      ## to allow shiny reacting on the change 
+      ## not sure whether we cannot trip over race conditions 
+      ## recommendation: do it once by hand (it's persistent anyways ;) 
+      invalidateLater(30000, session) 
+      if (idpaistrade == (length(lista_paises)-1)) {
+        if(idanotrade == length(lista_anos)) {
+          if(idele == length(lista_agr)) {
+            message("Atualizando versao do bd:", idtver) 
+            idpaistrade<<- 1
+            idanotrade <<- 1
+            idele <<- 1
+            idtver <<- idtver + 1 
+            updateRadioButtons(session, "transacoes_versao", selected = lista_versoes[[idtver]])
+          } else {
+          message("Atualizando agregação:", idele) 
+          idpaistrade<<- 1
+          idanotrade <<- 1
+          idele <<- idele + 1 
+          updateRadioButtons(session, "transacoes_agregacao", selected = lista_agr[[idele]])
+        } }  else {
+        message("Atualizando anotrade:", idanotrade) 
+        idpaistrade <<- 1 
+        idanotrade <<- idanotrade + 1 
+        updateSliderInput(session, "anotrade", value = lista_anos[[idanotrade]])
+        }} else { 
+          message("atualizando pais",idpaistrade) 
+          updateSelectInput(session, "paistrade", selected = lista_paises[[idpaistrade+1]]) 
+          idpaistrade <<- idpaistrade + 1 } 
+        } 
+      
+    })
+  
 }
 
 

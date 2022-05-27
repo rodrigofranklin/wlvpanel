@@ -4,13 +4,14 @@
 ## - Leitura dos dados
 ## - Preparação das variáveis para exibição
 #####
+shinyOptions(cache = cachem::cache_disk("dados/labourvaluesdatapanel-cache/")) 
 
 ## Carrega pacotes
 source("requ.R")
 
 # ##Registra um cluster
 # if(.Platform$OS.type == "unix") {
-#   my.cluster <-  makeCluster(detectCores() - 1,type="FORK",outfile="dados/dados/logs/parallelworkers.log",
+#   my.cluster <-  makeCluster(detectCores() - 1,type="FORK",outfile="dados/logs/parallelworkers.log",
 #                              envir=globalenv())
 # } else {
 #   assign("my.cluster",parallel::makeCluster(
@@ -84,6 +85,7 @@ encontrar_pais <- function(matriz, pais, fun) {
     str_which(pais)
 }
 
+lista_agr <- c("Agregado", "Por setor de origem")
 
 ## Funções a reutilizar
 abrevia <- function(frase, tmax = 17) {
