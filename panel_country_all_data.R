@@ -108,6 +108,7 @@ graphPanel <- function (indicator) {
       div(class = "panel-heading",
           style = "background-image:none;
                   background: white;
+                  border: none;
                   padding: 3px 5px;
                   "),
     plotlyOutput(paste0(indicator,"_plot"), height = 220, width = "32vw") %>%
