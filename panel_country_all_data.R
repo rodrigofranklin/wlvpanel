@@ -13,32 +13,58 @@ country_graphs <- NULL # tagList com todos os gráficos e títulos de grupos
 
 
 ## Funções a reutilizar
-plotaserie_country_all <- function(dados,perc=F) {
+plotaserie_country_all <- function(dados, anos, perc=F) {
   ##produz data.frame com cada versão para juntar
   
   base <- names(dados[,1])
-  anos <- names(dados[1,])
-  dados <- as.data.table(t(dados))
+  # names(dados[1,colSums(!is.na(dados[,]))!=0])
+  dados <- as.data.table(t(dados[base,anos]))
   dados$year <- as.Date(paste0("01/01/",anos),
                         tryFormats="%d/%m/%Y")
   dados <- dados%>%pivot_longer(-year,names_to = "base",values_to="value")%>%
     mutate(base=as.factor(base))
+
+  if((length(anos) %% 2) != 0) {
+    metade <- (length(anos)+1)/2
+    break_years <- c(as.Date(paste0(min(anos),"-01-01")),
+                     as.Date(paste0(anos[metade],"-01-01")),
+                     as.Date(paste0(max(anos),"-01-01")))
+    labels_years <- c(as.character(min(anos)),
+                      as.character(anos[metade]),
+                      as.character(max(anos)))
+  } else {
+    metade <- (length(anos))/2
+    break_years <- c(as.Date(paste0(min(anos),"-01-01")),
+                     as.Date(paste0(anos[metade-1],"-01-01")),
+                     as.Date(paste0(anos[metade+2],"-01-01")),
+                     as.Date(paste0(max(anos),"-01-01")))
+    labels_years <- c(as.character(min(anos)),
+                      as.character(anos[metade-1]),
+                      as.character(anos[metade+2]),
+                      as.character(max(anos)))
+  }
   
   p <- ggplot(dados,aes(x=year,y=value,col=base))
   
-  p <- p+
+  p <- p +
     geom_line( size = 0.5)  +
     geom_line(size = 0.5)  +
-    geom_point(col = "white", pch = 21, size = 1.5) +
+    scale_x_date(breaks = break_years, labels = labels_years) +
     theme_classic() +
     theme(axis.title = element_blank(),
           axis.line = element_blank(),
           axis.ticks = element_blank(),
           axis.text = element_text(size = 8, colour = "grey60"),
-          legend.position='bottom')
+          legend.position='bottom',
+          legend.title = element_blank())
   
+  if (min(dados$value, na.rm = TRUE)<0 & max(dados$value, na.rm = TRUE)>0) {
+    p <- p +
+      geom_hline(yintercept=0, size = 0.1, color = "grey80")
+  }
   
-  ggplotly(p, tooltip = c("value", "base")) %>% plotly::layout(legend = list(orientation = "h", x = 0.1, y = -0.1))
+  ggplotly(p, tooltip = c("value", "base")) %>%
+    plotly::layout(legend = list(title = "", orientation = "h", y="-0.1"))
   
 }
 
@@ -209,16 +235,9 @@ country_panel <- conditionalPanel(
         tags$td(
           width = "50%",
           style = "padding-left: 20px; padding-right: 20px;",
-          sliderInput(
-            "ano_detalhado",
-            label = NULL,
-            width = "100%",
-            min = ano_min, 
-            max = ano_max, 
-            value = 2009, 
-            ticks = F, 
-            animate=F, 
-            sep = "")
+          
+          uiOutput("select.year.panel_country")
+          
         )
       )
     ),
@@ -477,7 +496,8 @@ panel_country_server <- function(input, output, RV) {
   lapply(varst$var, function(i) {
     output[[paste0(i,"_plot")]] <- renderPlotly({
       dados <- sea_paises[RV$bases(),,i,input$pais]
-      plotaserie_country_all(dados)
+      anos <- as.character(RV$anomin():RV$anomax())
+      plotaserie_country_all(dados, anos)
     })
     outputOptions(output,paste0(i,"_plot"), suspendWhenHidden = FALSE)
     
@@ -525,6 +545,18 @@ panel_country_server <- function(input, output, RV) {
   
   output$ano1 = output$ano2 <- renderText(input$ano)
 
+  output$select.year.panel_country <- renderUI({
+    sliderInput(
+      "ano_detalhado",
+      label = NULL,
+      width = "100%",
+      min = RV$anomin(),
+      max = RV$anomax(),
+      value = 2009,
+      ticks = F,
+      animate = F,
+      sep = "")
+  })
   
   output$indicador <- renderText(varst$pt[varst$var==RV$indicator()])
   
@@ -593,7 +625,7 @@ panel_country_server <- function(input, output, RV) {
     for (x in RV$bases()) {
       country_link <- tagList(
         country_link,
-        tags$a(x, href = paste0("download/", x, "/country/", input$pais, ".xlsx")),
+        tags$a(x, href = paste0("download/COUNTRY.",input$pais,".", x, ".xlsx")),
         "|")
     }
     country_link[1:(length(country_link)-1)]
@@ -604,7 +636,7 @@ panel_country_server <- function(input, output, RV) {
     for (x in RV$bases()) {
       sector_data_link <- tagList(
         sector_data_link,
-        tags$a(x, href = paste0("download/", x, "/sectors/", input$pais, ".xlsx")),
+        tags$a(x, href = paste0("download/SECTORS.",input$pais,".", x, ".xlsx")),
         "|")
     }
     sector_data_link[1:(length(sector_data_link)-1)]

@@ -27,20 +27,21 @@ plotaserie2 <- function(dados,perc=F) {
   ##produz data.frame com cada versão para juntar
   
   if(length(dim(dados))>2){
-    dados <- as.data.table(dados)
-    print(head(dados))
+    dados <- as.data.table(dados, na.rm = TRUE)
+    
     ifelse(ncol(dados)==5,
            names(dados) <- c("bd","ano","indicador","pais","valor"),
            names(dados) <- c("bd","ano","pais","valor")
     )
-    print(dados$ano)
+
     dados <- dados %>% mutate(ano = as.Date(paste0("1/1/",ano),
                                             tryFormats="%d/%m/%Y"),
                               across(c(-ano,-valor),as.factor))
   }else{
     bds <- names(dados[,1])
-    anos <- names(dados[1,])
-    dados <- as.data.table(t(dados))
+    anos <- names(dados[1,colSums(!is.na(dados[,]))!=0])
+    dados <- as.data.table(t(dados[,colSums(!is.na(dados[,]))!=0]), na.rm = TRUE)
+
     dados$ano <- as.Date(paste0("01/01/",anos),
                          tryFormats="%d/%m/%Y")
     dados <- dados%>%pivot_longer(-ano,names_to = "bd",values_to="valor")%>%
@@ -50,17 +51,19 @@ plotaserie2 <- function(dados,perc=F) {
   ifelse(ncol(dados)==3,
          p <- ggplot(dados,aes(x=ano,y=valor,col=bd)),
          p <- ggplot(dados,aes(x=ano,y=valor,col=pais,linetype=bd)))
+
   p <- p+geom_line(size = 1)  +
     geom_line(size = 1) +
-    geom_point(colour = "white", pch = 21, size = 1.5)+
+    # geom_point(colour = "white", pch = 21, size = 1.5)+
     theme_classic() +
     theme(axis.title = element_blank(),
           axis.line = element_blank(),
           axis.ticks = element_blank(),
           axis.text = element_text(size = 8, colour = "grey60"),
-          legend.position='none')
+          legend.position='bottom')
   
-  ps <- ggplotly(p)
+  ggplotly(p) %>% 
+    plotly::layout(legend = list(title = "", orientation = "h"))
   
 }
 
@@ -467,17 +470,17 @@ panel_indicators_server <- function (IP, OP, RV) {
                                         second_link)
           
         }
-        # indica a posição do próximo gráfico
+        # indica a posição do próximo link
         link_position <- link_position * -1
       }
-      # se o último gráfico foi da coluna direita, inclui fim da linha  
+      # se o último link foi da coluna direita, inclui fim da linha  
       if (link_position != 1) {
         indicators_links <-  tagList( indicators_links,
                                       first_link %>% tags$tr())
       }
       indicators_links <-  tagList( indicators_links,
                                     tags$td(tags$br(),tags$br()) %>% tags$tr())
-    } # FIM da criação dos gráficos do país
+    } # FIM da criação dos links dos indicadores
     
     indicators_links %>% tags$table(width = "100%")
   })
@@ -547,7 +550,7 @@ panel_indicators_server <- function (IP, OP, RV) {
     dados <- sea_paises[IP$versao,,
                         IP$indicadorind,
                         IP$paises]
-    plotaserie(dados)
+    plotaserie2(dados)
   })
   
   outputOptions(OP, "serie", suspendWhenHidden = FALSE)
@@ -633,7 +636,8 @@ panel_indicators_server <- function (IP, OP, RV) {
   OP$ind_all_countries <- renderDT({
     dados <- t(rbind(
       language_file[names(sea_paises[1,1,1,]),IP$l],
-      sea_paises[,as.character(IP$anoind),IP$indicadorind,]))
+      sea_paises[RV$bases(),as.character(IP$anoind),IP$indicadorind,]))
+    dados <- dados[rowSums(!is.na(dados[,-1]))!=0,]
     
     sketch = withTags(table(
       thead(
@@ -654,7 +658,7 @@ panel_indicators_server <- function (IP, OP, RV) {
   OP$ind_selected_countries <- renderDT({
     dados <- t(rbind(
       language_file[names(sea_paises[1,1,1,IP$paises]),IP$l],
-      sea_paises[,as.character(IP$anoind),IP$indicadorind,IP$paises]))
+      sea_paises[RV$bases(),as.character(IP$anoind),IP$indicadorind,IP$paises]))
     
     sketch = withTags(table(
       thead(
@@ -743,7 +747,7 @@ panel_indicators_server <- function (IP, OP, RV) {
     for (x in RV$bases()) {
       indicator_link <- tagList(
         indicator_link,
-        tags$a(x, href = paste0("download/", x, "/indicator/", IP$indicadorind, ".xlsx")),
+        tags$a(x, href = paste0("download/IND.",IP$indicadorind,".", x, ".xlsx")),
         "|")
     }
     indicator_link[1:(length(indicator_link)-1)]
