@@ -237,7 +237,6 @@ server <- function(input, output, session) {
   })
 
 
-
   dados <- reactive({
     paste0(input$transacoes_versao)
   })
@@ -362,15 +361,6 @@ server <- function(input, output, session) {
 
 
   ### sobre esses outputs que se seguem: é preciso melhorar. Seria possível ter
-  ### uma única função que fosse chamada conforme a seleção de (exportação,
-  ### importação e saldo), e chamada 3 vezes (monetária, valor e transferência)?
-  # Problema: os dados de exportacoes, importacoes e saldo são distintos.
-  # Mas são os mesmos dados conforme o tipo de variável (monetário, valor transf)
-  # No entanto, os gráficos conforme tipo de variábel são concomitantes.
-
-
-
-  ### sobre esses outputs que se seguem: é preciso Hormel. Seria possível ter
   ### uma única função que fosse chamada conforme a seleção de (exportação,
   ### importação e saldo), e chamada 3 vezes (monetária, valor e transferência)?
   # Problema: os dados de exportacoes, importacoes e saldo são distintos.
@@ -519,10 +509,10 @@ server <- function(input, output, session) {
                       overlap.labels = 0,
                       force.print.labels = F)
      d3tree3(dados, rootname = "Value Transfers")
-     
- }
- ) %>% bindCache("transferencias_valores",input$paistrade,input$anotrade,
+     }) %>% 
+     bindCache("transferencias_valores",input$paistrade,input$anotrade,
                  input$transacoes_versao,input$transacoes_agregacao)
+
   output$loading <- renderText("")
   outputOptions(output, 'loading', suspendWhenHidden=FALSE)
   
