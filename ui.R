@@ -269,22 +269,6 @@ ui <- navbarPage(
   
   tabPanel(
     l("Trade"),
-    conditionalPanel(
-      "!output.exportacoes_monetarias.isArray()",
-      p("Tenha Nervo/Be patient!",  style = "
-                position: fixed;
-                top: calc(50vh - 45px);
-                left: calc(50vw - 85px);
-                z-index: 50;"),
-      img(src = "hug.gif",
-          height = "50px",
-          style = "
-                position: fixed;
-                top: calc(50vh - 25px);
-                left: calc(50vw - 25px);
-                z-index: 50;
-          ") 
-    ),
     absolutePanel(
       top = 100,
       right = "1.5%",
@@ -305,24 +289,27 @@ ui <- navbarPage(
       actionButton("fill", "Fill Cache")
     ),
     absolutePanel(
-      width="30%",
+      width="75%",
       top=50,
-      height="30%",
+      height="88%",
       left="1.5%",
-      d3tree3Output("exportacoes_monetarias")
+      style = "z-index: 100",
+      shinycssloaders::withSpinner(d3tree3Output("exportacoes_monetarias"))
     ),
     absolutePanel(
-      width="30%",
-      top=50,
-      height="30%",
-      left="33.5%",
+      width="75%",
+      top="53%",
+      height="88%",
+      left="1.5%",
+      style = "z-index: 100;",
       d3tree3Output("exportacoes_valores")
       ),
     absolutePanel(
-      width="30%",
-      bottom=50,
-      height="30%",
+      width="75%",
+      top = "105%",
+      height="88%",
       left="1.5%",
+      style = "z-index: 100;",
       d3tree3Output("exportacoes_transferencias")
     )
     
@@ -335,28 +322,6 @@ ui <- navbarPage(
   ),
 
 )  
-# tabPanel(
-#   "Trade",
-#   absolutePanel(
-#      id= "tradecontrols",
-#      top = 50,
-#      right = "1.5%",
-#      width = "22%",
-#      height = "68%",
-#      class = "panel panel-default",
-#      style =
-#        "background-color: rgba(255,255,255,0.2);
-#         z-index: 504;
-#         padding: 0;
-#         box-shadow: 0 0 10px rgba(0,0,0,0.2);
-#         border-radius: 2px;
-#         font-size: 10px",
-#      selectInput("paistrade","Country",lista_paises, selected="BRA"),
-#      radioButtons(inputId = "transacoes_ind", choices = c("exports","imports","balance","unequal exchange"),selected="exports",label="Variable"),
-#      radioButtons(inputId = "transacoes_agregacao", choices = c("Aggr.", "Sector"), selected = "Aggr.", label = "Type"),
-#      radioButtons(inputId = "transacoes_versao", choices = c("WIOD13", "WIOD16"), selected = "WIOD13", label = "Base de dados:"),
-#      sliderInput("anotrade","YEAR",min = 1995, max = 2021, value = 2009, ticks = F, animate=T)
-#   ),
 
   
 

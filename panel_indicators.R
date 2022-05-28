@@ -34,16 +34,16 @@ plotaserie2 <- function(dados,perc=F) {
            names(dados) <- c("bd","ano","pais","valor")
     )
 
-    dados <- dados %>% mutate(ano = as.Date(paste0("1/1/",ano),
-                                            tryFormats="%d/%m/%Y"),
+    dados <- dados %>% mutate(ano = as.Date(paste0(ano,"/01/01"),
+                                            tryFormats="%Y/%m/%d"),
                               across(c(-ano,-valor),as.factor))
   }else{
     bds <- names(dados[,1])
     anos <- names(dados[1,colSums(!is.na(dados[,]))!=0])
     dados <- as.data.table(t(dados[,colSums(!is.na(dados[,]))!=0]), na.rm = TRUE)
 
-    dados$ano <- as.Date(paste0("01/01/",anos),
-                         tryFormats="%d/%m/%Y")
+    dados$ano <- as.Date(paste0(anos,"/01/01/"),
+                         tryFormats="%Y/%m/%d")
     dados <- dados%>%pivot_longer(-ano,names_to = "bd",values_to="valor")%>%
       mutate(bd=as.factor(bd))
   }

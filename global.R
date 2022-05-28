@@ -42,7 +42,7 @@ m_io_16 <- readRDS(file = "dados/m_io_16.rds")
 
 varst <- read.csv2("dados/vars.csv", encoding = "UTF-8")
 setorest <- read.csv2("dados/setores_t.csv", encoding = "UTF-8")
-
+setolang <- read.csv2("dados/setolang.csv")
 var_groups <- read.csv2("dados/var_groups.csv", encoding = "UTF-8")
 meta_var <- read.csv2("dados/meta_var.csv", encoding = "UTF-8")
 

@@ -23,7 +23,10 @@ l <- function(lab_code) {
   return(textOutput(paste0("label.",lab_code), inline = TRUE))
 }
 
-
+lb <- function(lab_code,lang){
+  
+  language_file[lab_code,lang]
+}
 # Lista de bases
 lista_versoes <- names(sea_paises[,1,1,1])
 base1 <- "WIOD13"

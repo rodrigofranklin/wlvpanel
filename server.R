@@ -129,7 +129,8 @@ server <- function(input, output, session) {
     camadas
   })
   
-  labels <- reactive(
+  labels <- reactive({
+    
     sprintf(
       "<p style='
       text-align: center;
@@ -138,11 +139,11 @@ server <- function(input, output, session) {
       font-weight: bold'>
       %s</p>%s : %g %s",
       camada_base1()$ADMIN,
-      RV$indicator(),
+      lb(RV$indicator(),input$l),
       camada_base1()$value,
       varst[varst$var == RV$indicator(),"type"]) %>%
       lapply(htmltools::HTML)
-  )
+  })
   
   fill_group <- reactiveVal(0)
   
@@ -205,8 +206,10 @@ server <- function(input, output, session) {
   colunas_16 <- reactive({
     encontrar_pais(m_io_16, input$pais_transacoes, colnames)
   })
-
-
+  
+    
+    
+  
   comerciantes_p <-  function(bd=13,
                               pais = input$paistrade,
                               ano = input$anotrade, 
@@ -381,6 +384,9 @@ server <- function(input, output, session) {
     bd <- ifelse(grepl("13",bd),13,16)
     p <- comerciantes_p(bd,pais,ano,elem,9)
     
+    sct <- setorest[,c("Code",setolang[setolang$language==input$l,1])]
+    names(sct)[2] <- "nset"
+    sct$nset <- sapply(sct$nset,abrevia)
     paisl <- data.frame(nome_pais = names(lista_paises), 
                         Legenda = lista_paises) 
     dados <- get(paste0("m_io_",bd)) 
@@ -397,9 +403,12 @@ server <- function(input, output, session) {
 
     dados <- dados %>%
       left_join(paisl, by = c("pais_d" = "Legenda"))%>%
-      left_join(setorest,by = c("sect_d" = "Code"))%>%
-      transmute(pais_d = nome_pais,sect_d = pt, valor,
-                ettm = paste(abrevia(sect_d),milhares(round(valor)),sep=" "))%>%
+      left_join(sct,by = c("sect_d" = "Code"))
+    
+    
+    dados <- dados%>%
+      transmute(pais_d = nome_pais,sect_d = nset, valor,
+                ettm = paste(sect_d,milhares(round(valor)),sep=" "))%>%
       mutate(across(-valor,as.factor))%>%
       ungroup()
     
@@ -433,7 +442,7 @@ server <- function(input, output, session) {
                     align.labels = c("center","center"),
                     force.print.labels = F),
             rootname = "Monetary Exports")
-  })%>% bindCache("exportacoes_pm",input$paistrade,input$anotrade,
+  })%>% bindCache("exportacoes_pm",input$l,input$paistrade,input$anotrade,
                   input$transacoes_versao,input$transacoes_agregacao)
 
    
@@ -465,7 +474,7 @@ server <- function(input, output, session) {
                     force.print.labels = F
     ),
     rootname = "Exports in Value Terms")
-  }) %>% bindCache("exportacoes_valores",input$paistrade,input$anotrade,
+  }) %>% bindCache("exportacoes_valores",input$l,input$paistrade,input$anotrade,
                   input$transacoes_versao,input$transacoes_agregacao)
  
    output$exportacoes_transferencias <- renderD3tree3({
@@ -508,13 +517,17 @@ server <- function(input, output, session) {
                       inflate.labels = F,
                       overlap.labels = 0,
                       force.print.labels = F)
+     
+     
      d3tree3(dados, rootname = "Value Transfers")
      }) %>% 
-     bindCache("transferencias_valores",input$paistrade,input$anotrade,
+     bindCache("transferencias_valores",input$l, input$paistrade,input$anotrade,
                  input$transacoes_versao,input$transacoes_agregacao)
 
   output$loading <- renderText("")
   outputOptions(output, 'loading', suspendWhenHidden=FALSE)
+  
+  
   
   idpaistrade <- idele <- idanotrade <- idtver <- 1
 
