@@ -632,7 +632,7 @@ server <- function(input, output, session) {
       ## to allow shiny reacting on the change 
       ## not sure whether we cannot trip over race conditions 
       ## recommendation: do it once by hand (it's persistent anyways ;) 
-      invalidateLater(7000, session) 
+      invalidateLater(14000, session) 
       if (idpais_det == (length(lista_paises)-1)) {
         if(idano_det == length(lista_anos)) {
           if(idpais_ind == length(nrow(varst$var))) {

@@ -582,7 +582,7 @@ panel_country_server <- function(input, output, RV) {
   )
   
   
-  output$profile <- renderDataTable(server = F,{
+  output$profile <- renderDataTable(expr = {
     if (length(RV$bases()) == 1) {
       profile_table <- 
         data.frame(
@@ -601,7 +601,9 @@ panel_country_server <- function(input, output, RV) {
                        input$pais]))
       rownames(profile_table) <- language_file[rownames(profile_table),input$l]
     }
-    profile_table},
+    profile_table
+    },
+    server = F,
     rownames = TRUE,
     class = "profile_table",
     options = list(
@@ -686,7 +688,7 @@ panel_country_server <- function(input, output, RV) {
 
   lapply(lista_versoes, function(i) {
     name_i <- paste0("setores_pais_",i)
-    output[[name_i]] <- renderDataTable(server = F,{
+    output[[name_i]] <- renderDataTable({
       sector_table <- sea_sectors[[i]][as.character(input$ano),
                                        RV$indicator(),,
                                        input$pais]
@@ -700,6 +702,7 @@ panel_country_server <- function(input, output, RV) {
       sector_table <- data.frame(sector_table)
       colnames(sector_table) <- input$ano
       sector_table},
+      server = F,
       rownames = TRUE,
       options = list(
         ordering = TRUE,

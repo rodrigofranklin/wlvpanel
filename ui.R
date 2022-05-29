@@ -317,9 +317,8 @@ ui <- navbarPage(
   tabPanel(
     l("Download"),
     br(),br(),
-    a("WLVD Portable / BDMVT portátil",href = "https://cloud.worldlabourvalues.org/s/5oDfapMJJdDMnSn",
-    )
-  ),
+    a("WLVD Portable / BDMVT portátil",href = "https://cloud.worldlabourvalues.org/s/5oDfapMJJdDMnSn")
+  )
 
 )  
 
