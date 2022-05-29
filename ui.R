@@ -282,10 +282,10 @@ ui <- navbarPage(
         box-shadow: 0 0 10px rgba(0,0,0,0.2);
         border-radius: 2px;
         font-size: 10px",
-      selectInput("paistrade","Country",lista_paises, selected="BRA"),
-      radioButtons(inputId = "transacoes_agregacao", choices = lista_agr, selected = "Agregado", label = ""),
-      radioButtons(inputId = "transacoes_versao", choices = c("WIOD13", "WIOD16"), selected = "WIOD13", label = "Base de dados:"),
-      sliderInput("anotrade","YEAR",min = 1995, max = 2021, value = 2009, ticks = F, animate=F),
+      uiOutput("select.countrytrade"),
+      radioButtons(inputId = "transacoes_agregacao", choices = "trade_aggregation_country", label = ""),
+      uiOutput("select.basetrade"),
+      sliderInput("anotrade","YEAR",min = 1995, max = 2014, value = 2009, ticks = F, animate=F),
       actionButton("fill", "Fill Cache")
     ),
     absolutePanel(

@@ -27,6 +27,7 @@ lb <- function(lab_code,lang){
   
   language_file[lab_code,lang]
 }
+
 # Lista de bases
 lista_versoes <- names(sea_paises[,1,1,1])
 base1 <- "WIOD13"
@@ -97,7 +98,7 @@ config_panel <- tagList(
       top = 120,
       left = 25,
       style = "z-index: 5001;",
-      width = "30%",
+      width = "40%",
       # height = 300,
       class="panel panel-default",
       div(

@@ -196,6 +196,19 @@ country_panel <- conditionalPanel(
             background-color: rgba(127,127,127,1);
           "
   ),
+  actionButton(inputId = "fillpais", label = "Fill Cache",
+               style ="
+            border-radius: 50%;
+            border-color: transparent;
+            color: white;
+            font-size: 12px;
+            position: absolute;
+            top: 58px;
+            left: calc(50vw - 145px);
+            z-index: 501;
+            background-color: rgba(127,50,50,0.3);
+          "
+  ),
   
   absolutePanel(
     top = 75,
@@ -499,12 +512,13 @@ panel_country_server <- function(input, output, RV) {
       dados <- sea_paises[RV$bases(),,i,input$pais]
       anos <- as.character(RV$anomin():RV$anomax())
       plotaserie_country_all(dados, anos)
-    })
+    })%>%bindCache(i,input$pais,RV$bases())
     outputOptions(output,paste0(i,"_plot"), suspendWhenHidden = FALSE)
     
     observeEvent(input[[paste0(i,"_info")]],{
-      show_info_panel(1)
       info_indicator(i)
+      show_info_panel(1)
+      
     })
     
     observeEvent(input[[paste0(i,"_title")]], ignoreInit = TRUE, {
@@ -568,7 +582,7 @@ panel_country_server <- function(input, output, RV) {
   )
   
   
-  output$profile <- renderDataTable({
+  output$profile <- renderDataTable(server = F,{
     if (length(RV$bases()) == 1) {
       profile_table <- 
         data.frame(
@@ -597,7 +611,7 @@ panel_country_server <- function(input, output, RV) {
       info = FALSE,
       lengthChange = FALSE
     )
-  )
+  ) %>%bindCache(RV$bases(),input$ano,input$pais,input$l)
   
   # output$profile <- renderDataTable(
   #   tabmil(t(sea_paises[unique(c(input$base1,
@@ -672,7 +686,7 @@ panel_country_server <- function(input, output, RV) {
 
   lapply(lista_versoes, function(i) {
     name_i <- paste0("setores_pais_",i)
-    output[[name_i]] <- renderDataTable({
+    output[[name_i]] <- renderDataTable(server = F,{
       sector_table <- sea_sectors[[i]][as.character(input$ano),
                                        RV$indicator(),,
                                        input$pais]
@@ -695,7 +709,7 @@ panel_country_server <- function(input, output, RV) {
         info = FALSE,
         lengthChange = FALSE
       )
-    )
+    )%>%bindCache(input$ano,RV$indicator(),input$pais,input$l)
   }) #FIM da distribuição setorial
   
 

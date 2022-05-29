@@ -109,6 +109,25 @@ server <- function(input, output, session) {
       sep = "")
     })
 
+  output$select.countrytrade <- renderUI({
+    country_list <- names(sea_paises[1,1,1,])
+    names(country_list) <- language_file[country_list,input$l]
+    country_list <- c("",country_list)
+    names(country_list)[1] <- language_file["Search a country...",input$l]
+    selectInput(
+      "paistrade",
+      label = NULL,
+      choices = country_list,
+      selected = "MEX"
+    )
+  })
+  
+  output$select.basetrade <- renderUI({
+    radioButtons(
+      inputId = "transacoes_versao", 
+      choices = RV$bases()[1:2],
+      label = NULL)
+  })
   ####
   ##Reactive values to use in more than one place (titles, popups)
 
@@ -190,7 +209,20 @@ server <- function(input, output, session) {
                       selected = piso3)
     }
   })
-  
+
+  lista_agr <- reactive({
+    req(input$l)
+    a <- language_file[grepl("trade_agg",rownames(language_file)),input$l]
+    b <- rownames(language_file[grepl("trade_agg",rownames(language_file)),])
+    lala <- b
+    names(lala) <- a
+    lala
+    })
+    
+  observeEvent(lista_agr(), {
+    updateRadioButtons(session, inputId = "transacoes_agregacao", 
+                      choices = lista_agr())
+  })
   linhas_13 <- reactive({
     encontrar_pais(m_io_13, input$paistrade, rownames)
   })
@@ -200,15 +232,14 @@ server <- function(input, output, session) {
   })
   
   linhas_16 <- reactive({
-    encontrar_pais(m_io_16, input$pais_transacoes, rownames)
+    encontrar_pais(m_io_16, input$paistrade, rownames)
   })
   
   colunas_16 <- reactive({
-    encontrar_pais(m_io_16, input$pais_transacoes, colnames)
+    encontrar_pais(m_io_16, input$trade, colnames)
   })
   
-    
-    
+
   
   comerciantes_p <-  function(bd=13,
                               pais = input$paistrade,
@@ -223,7 +254,6 @@ server <- function(input, output, session) {
    
       paises <- names(sort(mat,T)[2:(qtde+1)])
       rm(mat)
-
       paises
      
     }
@@ -232,10 +262,10 @@ server <- function(input, output, session) {
 
   fazer_selecao <- reactive({
     switch(paste0(input$transacoes_versao,input$transacoes_agregacao),
-           "WIOD13Agregado" = 1,
-           "WIOD13Por setor de origem" = 2,
-           "WIOD16Agregado" = 3,
-           "WIOD16Por setor de origem" = 4
+           "WIOD13trade_aggregation_country" = 1,
+           "WIOD13trade_aggregation_sector" = 2,
+           "WIOD16trade_aggregation_country" = 3,
+           "WIOD16trade_aggregation_sector" = 4
     )
   })
 
@@ -249,28 +279,30 @@ server <- function(input, output, session) {
     paste(input$pais)
   })
   
-  output$listapais <- renderDataTable(
+  output$listapais <- renderDataTable( {
     
     tabmil(t(sea_paises[,as.character(input$ano),,input$pais]))%>%
       filter(var %in% c(input$indicador,perfil_sumario))%>%
       arrange(match(var,c(input$indicador,perfil_sumario)))%>%
       left_join(varst)%>%
-      select(var = pt, 2:3),
+      select(var = pt, 2:3)
+    },
     # rownames = TRUE,
     #    spacing = "xs",
     #    striped = TRUE,
     #    hover = TRUE,
     #    width = "100%",
+    server = F,
     options = list(
-      ordering = FALSE,
-      searching = FALSE,
-      paging = FALSE,
+    ordering = FALSE,
+    searching = FALSE,
+    paging = FALSE,
       #      scrollY = "200",
       # pageLength = 10,
-      info = FALSE,
-      lengthChange = FALSE
+    info = FALSE,
+    lengthChange = FALSE
     )
-  )
+  )%>%bindCache(input$ano, input$pais,input$indicador)
 
   
   output$serie_pais <- renderPlotly({
@@ -286,6 +318,7 @@ server <- function(input, output, session) {
                           input$pais])%>%
       left_join(setorest,by=c("var" = "Code"))%>%
       select(sector=pt,value=x),
+    server = F,
     options = list(
       ordering = TRUE,
       searching = FALSE,
@@ -295,7 +328,7 @@ server <- function(input, output, session) {
       info = FALSE,
       lengthChange = FALSE
     )
-  ) 
+  )
 
   
   output$setores_pais_16 <- renderDataTable(
@@ -381,19 +414,21 @@ server <- function(input, output, session) {
                            qtde = 9,
                            agru = agrupamento,
                            pod = 1) {
+    
     bd <- ifelse(grepl("13",bd),13,16)
-    p <- comerciantes_p(bd,pais,ano,elem,9)
+    p <- comerciantes_p(bd,pais,ano,elem,qtde)
     
     sct <- setorest[,c("Code",setolang[setolang$language==input$l,1])]
     names(sct)[2] <- "nset"
     sct$nset <- sapply(sct$nset,abrevia)
-    paisl <- data.frame(nome_pais = names(lista_paises), 
+    paisl <- data.frame(nome_pais = language_file[lista_paises,input$l], 
                         Legenda = lista_paises) 
-    dados <- get(paste0("m_io_",bd)) 
-        dados <- dados %>%
+    dados <- get(paste0("m_io_",bd))%>%
       agregado(ano, elem, get(paste0("linhas_",bd))())%>%
-      as.data.table(keep.rownames = "paisect")%>%
-      separate(paisect,c("pais_origen","sector_origen"),sep="\\.")%>%
+      as.data.table(keep.rownames = "paisect") %>%
+      separate(paisect,c("pais_origen","sector_origen"),sep="\\.")
+
+    dados <- dados%>%
       select(-pais_origen)%>%
       pivot_longer(-c(sector_origen),names_to="paisect_d",values_to="valor")%>%
       separate(paisect_d,c("pais_d","sect_d"),sep="\\.")%>%
@@ -425,7 +460,9 @@ server <- function(input, output, session) {
     )
 
     agrupamento <- unlist(agrupamento)
+    
     dados <- prep_treemap(agru = agrupamento)%>%filter(pais_d != "Resto do mundo")
+    print(names(dados))
 
     sumpaisd <- dados%>%group_by(pais_d)%>%summarize(paisds = round(sum(valor)))
     
@@ -529,13 +566,13 @@ server <- function(input, output, session) {
   
   
   
-  idpaistrade <- idele <- idanotrade <- idtver <- 1
+  idl <- idpaistrade <- idele <- idanotrade <- idtver <- 1
 
 
   observe({ 
     req(input$fill) 
     if (idpaistrade != (length(lista_paises)-1)|| idanotrade != length(lista_anos) || 
-        idtver != length(lista_versoes)||idele != length(lista_versoes)) { 
+        idtver != length(lista_versoes)||idele != length(lista_versoes) || idl != nrow(languages)) { 
       ## need the invalidateLater approach 
       ## to allow shiny reacting on the change 
       ## not sure whether we cannot trip over race conditions 
@@ -544,19 +581,27 @@ server <- function(input, output, session) {
       if (idpaistrade == (length(lista_paises)-1)) {
         if(idanotrade == length(lista_anos)) {
           if(idele == length(lista_agr)) {
-            message("Atualizando versao do bd:", idtver) 
+            if(idl == nrow(languages)){
+              message("Atualizando versao do bd:", idtver) 
+              idpaistrade<<- 1
+              idanotrade <<- 1
+              idele <<- 1
+              idl <<- 1
+              idtver <<- idtver + 1 
+              updateRadioButtons(session, "transacoes_versao", selected = lista_versoes[[idtver]])
+          } else {
+            message("Atualizando idioma:", idl) 
             idpaistrade<<- 1
             idanotrade <<- 1
             idele <<- 1
-            idtver <<- idtver + 1 
-            updateRadioButtons(session, "transacoes_versao", selected = lista_versoes[[idtver]])
-          } else {
-          message("Atualizando agregação:", idele) 
+            idl <<- idl + 1 
+            updateSelectInput(session,"l",languages[idl,1])
+            }} else { message("Atualizando agregação: ", idele) 
           idpaistrade<<- 1
           idanotrade <<- 1
           idele <<- idele + 1 
           updateRadioButtons(session, "transacoes_agregacao", selected = lista_agr[[idele]])
-        } }  else {
+        }}  else {
         message("Atualizando anotrade:", idanotrade) 
         idpaistrade <<- 1 
         idanotrade <<- idanotrade + 1 
@@ -568,7 +613,65 @@ server <- function(input, output, session) {
         } 
       
     })
+
+  ##Completar auto cache de painel país
+  ##Caches em função de:
+  #RV$bases(),input$ano,input$pais,input$l
+  #(i,input$ano,RV$indicator(),input$pais,input$l)
+  #i,input$pais,RV$bases())
+  
+  idll <- idi <- idpais_det <- idpais_ind <- idano_det <- idpais_bases <- 1
+  
+  #idl <- idpaistrade <- idele <- idanotrade <- idtver <- 1
+  
+  observe({ 
+    req(input$fillpais) 
+    if (idpais_det != (length(lista_paises)-1)|| idano_det != length(lista_anos) || 
+        idpais_bases != length(RV$bases()) ||idpais_ind != nrow(varst$var) || idll != nrow(languages)) { 
+      ## need the invalidateLater approach 
+      ## to allow shiny reacting on the change 
+      ## not sure whether we cannot trip over race conditions 
+      ## recommendation: do it once by hand (it's persistent anyways ;) 
+      invalidateLater(7000, session) 
+      if (idpais_det == (length(lista_paises)-1)) {
+        if(idano_det == length(lista_anos)) {
+          if(idpais_ind == length(nrow(varst$var))) {
+            if(idll == nrow(languages)){
+              message("A implementar atualizar bases escolhidas:", idpais_bases) 
+              ### IDEIA - fazer outer das distintas combinações de 4 dentro do total
+              # idpais_det<<- 1
+              # idano_det <<- 1
+              # idpais_ind <<- 1
+              # idll <<- 1
+              # idpais_bases <<- idpais_bases + 1 
+              # RV$bases(RV$bases)
+            } else {
+              message("Atualizando idioma:", idll) 
+              idpais_det<<- 1
+              idano_det <<- 1
+              idpais_ind <<- 1
+              idll <<- idll + 1 
+              updateSelectInput(session,"l",languages[idll,1])
+            }} else { message("Atualizando indicador a detalhar setorialmente: ", idpais_ind) 
+              idpais_det<<- 1
+              idano_det <<- 1
+              idpais_ind <<- idpais_ind + 1 
+              #updateRadioButtons(session, "transacoes_agregacao", selected = lista_agr[[idpais_ind]])
+              RV$indicator(varst$var[idpais_ind])
+            }}  else {
+              message("Atualizando ano_det:", idano_det) 
+              idpais_det <<- 1 
+              idano_det <<- idano_det + 1 
+              updateSliderInput(session, "ano_detalhado", value = lista_anos[[idano_det]])
+            }} else { 
+              message("atualizando pais",idpais_det) 
+              updateSelectInput(session, "pais_detalhado", selected = lista_paises[[idpais_det+1]]) 
+              idpais_det <<- idpais_det + 1 } 
+    } 
+    
+  })
   
 }
+
 
 

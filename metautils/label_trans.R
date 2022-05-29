@@ -1,4 +1,4 @@
-#traducao automática dos elementos
+1#traducao automática dos elementos
 ##Translated  var /colnames  Dictionary
 library(magrittr)
 library(googlesheets4)
@@ -7,7 +7,8 @@ library(tidyverse)
 #1) Abre a base - portugues
 base <- read_csv2("dados/label_pt-br.csv")
 
-#Lista de idiomas
+nomplan <- paste0(Sys.Date(),"-labvalpanel")
+#Lista de id  iomas
 idiomas <- c("en","es","fr","zh-CN")
 
 coltrad <- function(xaxa) {
@@ -23,9 +24,9 @@ base <- bind_cols(base,lapply( idiomas,coltrad))
 
 base %<>% mutate(across(contains("label_"),gs4_formula))
 
-gs4_create("labvalpanel",sheets = base)
+gs4_create(nomplan,sheets = base)
 
-trad <- gs4_get(gs4_find("labvalpanel")) %>% read_sheet()
+trad <- gs4_get(gs4_find(nomplan)) %>% read_sheet()
 #4) Separa nos arquivos correspondentes
 
 subsave <- function(idiom,x) {

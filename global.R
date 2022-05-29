@@ -85,10 +85,8 @@ encontrar_pais <- function(matriz, pais, fun) {
     str_which(pais)
 }
 
-lista_agr <- c("Agregado", "Por setor de origem")
-
 ## Funções a reutilizar
-abrevia <- function(frase, tmax = 17) {
+abrevia <- function(frase, tmax = 22) {
   escmax <- function(frase,minim = tmax) {
     f <- substr(frase,start = 1, stop = min(nchar(frase),minim))
     f
