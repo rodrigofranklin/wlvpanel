@@ -582,7 +582,7 @@ panel_country_server <- function(input, output, RV) {
   )
   
   
-  output$profile <- renderDataTable(expr = {
+  output$profile <- renderDataTable({
     if (length(RV$bases()) == 1) {
       profile_table <- 
         data.frame(
@@ -601,6 +601,7 @@ panel_country_server <- function(input, output, RV) {
                        input$pais]))
       rownames(profile_table) <- language_file[rownames(profile_table),input$l]
     }
+    print(str(profile_table))
     profile_table
     },
     server = F,
@@ -701,6 +702,7 @@ panel_country_server <- function(input, output, RV) {
         )
       sector_table <- data.frame(sector_table)
       colnames(sector_table) <- input$ano
+      print(str(sector_table))
       sector_table},
       server = F,
       rownames = TRUE,
