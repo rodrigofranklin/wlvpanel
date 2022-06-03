@@ -33,7 +33,7 @@ lista_versoes <- names(sea_paises[,1,1,1])
 base1 <- "WIOD13"
 base2 <- "WIOD16"
 base3 <- "EXI382"
-base4 <- "WIOD13"
+base4 <- "Eora26"
 
 # base1 <- lista_versoes[1]
 # base2 <- lista_versoes[2]

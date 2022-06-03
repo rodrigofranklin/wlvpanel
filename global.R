@@ -21,7 +21,7 @@ source("requ.R")
 
 ## Carrega os dados
 ######
-
+bascomind <- "WIOD13"
 paises <- read.csv2(
   file = "dados/paises.csv", 
   row.names = 1, 

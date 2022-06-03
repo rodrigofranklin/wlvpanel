@@ -411,16 +411,18 @@ server <- function(input, output, session) {
                            agr = input$transacoes_agregacao,
                            elem = "exportacoes_pm",
                            qcorte = T,
-                           qtde = 9,
+                           qtde = 15,
                            agru = agrupamento,
                            pod = 1) {
     
+    sctc <- dimnames(sea_sectors[[bd]])[[3]]
     bd <- ifelse(grepl("13",bd),13,16)
     p <- comerciantes_p(bd,pais,ano,elem,qtde)
     
-    sct <- setorest[,c("Code",setolang[setolang$language==input$l,1])]
-    names(sct)[2] <- "nset"
-    sct$nset <- sapply(sct$nset,abrevia)
+    
+    sctnames <- sapply(sctc,function(i) {abrevia(language_file[paste0("SEC.CODE.",i),input$l])})
+    sct <- data.frame(Code=sctc,nsect=sctnames)
+#    sct$nset <- sapply(sct$nset,abrevia)
     paisl <- data.frame(nome_pais = language_file[lista_paises,input$l], 
                         Legenda = lista_paises) 
     dados <- get(paste0("m_io_",bd))%>%
@@ -435,19 +437,23 @@ server <- function(input, output, session) {
       mutate(pais_d = ifelse(pais_d %in% p,pais_d,"ROW")) %>%
       dplyr::group_by_at(agru) %>%
        summarize(valor=sum(valor,na.rm=T))
-
+    
     dados <- dados %>%
       left_join(paisl, by = c("pais_d" = "Legenda"))%>%
       left_join(sct,by = c("sect_d" = "Code"))
-    
+
+    print(unique(dados$sect_d[is.na(dados$nsect)]))
     
     dados <- dados%>%
-      transmute(pais_d = nome_pais,sect_d = nset, valor,
+      transmute(pais_d = nome_pais,sect_d = nsect, valor,
                 ettm = paste(sect_d,milhares(round(valor)),sep=" "))%>%
       mutate(across(-valor,as.factor))%>%
       ungroup()
     
-        dados
+
+    dados <- dados[!(is.na(dados$sect_d)),]
+    
+    dados
   }
   
   
@@ -461,14 +467,16 @@ server <- function(input, output, session) {
 
     agrupamento <- unlist(agrupamento)
     
-    dados <- prep_treemap(agru = agrupamento)%>%filter(pais_d != "Resto do mundo")
-    print(names(dados))
+    dados <- prep_treemap(agru = agrupamento)
 
-    sumpaisd <- dados%>%group_by(pais_d)%>%summarize(paisds = round(sum(valor)))
+    dados <- dados[dados$pais_d != "Resto do mundo",]
+
     
+    sumpaisd <- dados%>%group_by(pais_d)%>%summarize(paisds = round(sum(valor)))
+
     dados <- dados %>% left_join(sumpaisd) %>%mutate(pais_d = paste(pais_d,milhares(paisds),sep = " "),
                                                      sect_d = ettm)
- 
+    
     d3tree3(treemap(dados, index = agrupamento, vSize = "valor",
                     type = "index", palette = "Set1",
                     fontsize.labels = c(16,12,8),
@@ -493,8 +501,8 @@ server <- function(input, output, session) {
     
     agrupamento <- unlist(agrupamento)
     dados <- prep_treemap(agru = agrupamento,
-                          elem = ele)%>%
-      filter(pais_d != "Resto do mundo")
+                          elem = ele)
+    dados <- dados[dados$pais_d != "Resto do mundo",]
 
     sumpaisd <- dados%>%group_by(pais_d)%>%summarize(paisds = round(sum(valor)))
     
@@ -527,12 +535,11 @@ server <- function(input, output, session) {
      dados <- prep_treemap(agru = agrupamento,
                            elem = ele)
     
-     dados <- dados%>%
-       filter(pais_d != "Resto do mundo")%>%
+     dados <- dados[dados$pais_d != "Resto do mundo",] %>%
        mutate(sinal = !(valor <0),
               sinal = ifelse(sinal == 0,-1,sinal),
-              posit = case_when(valor<0 ~ "appropriations",
-                                !(valor < 0) ~ "transfers"),
+              posit = case_when(sinal == -1 ~ "losses",
+                                sinal == 1 ~ "wins/gains"),
               valor = abs(valor))
    
      sumposit <- dados%>%group_by(posit)%>%summarize(posits = round(sum(valor)))
@@ -621,7 +628,7 @@ server <- function(input, output, session) {
   #i,input$pais,RV$bases())
   
   idll <- idi <- idpais_det <- idpais_ind <- idano_det <- idpais_bases <- 1
-  
+  idano_det <- 14
   #idl <- idpaistrade <- idele <- idanotrade <- idtver <- 1
   
   observe({ 
@@ -632,7 +639,7 @@ server <- function(input, output, session) {
       ## to allow shiny reacting on the change 
       ## not sure whether we cannot trip over race conditions 
       ## recommendation: do it once by hand (it's persistent anyways ;) 
-      invalidateLater(14000, session) 
+      invalidateLater(10000, session) 
       if (idpais_det == (length(lista_paises)-1)) {
         if(idano_det == length(lista_anos)) {
           if(idpais_ind == length(nrow(varst$var))) {
@@ -648,13 +655,13 @@ server <- function(input, output, session) {
             } else {
               message("Atualizando idioma:", idll) 
               idpais_det<<- 1
-              idano_det <<- 1
+              idano_det <<- 14
               idpais_ind <<- 1
               idll <<- idll + 1 
               updateSelectInput(session,"l",languages[idll,1])
             }} else { message("Atualizando indicador a detalhar setorialmente: ", idpais_ind) 
               idpais_det<<- 1
-              idano_det <<- 1
+              idano_det <<- 14
               idpais_ind <<- idpais_ind + 1 
               #updateRadioButtons(session, "transacoes_agregacao", selected = lista_agr[[idpais_ind]])
               RV$indicator(varst$var[idpais_ind])

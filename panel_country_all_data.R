@@ -665,18 +665,13 @@ panel_country_server <- function(input, output, RV) {
   output$tabs_setorial_data <- renderUI({
     tabs_setorial_data <- lapply(
       if (length(RV$bases()) != 1){
-        names(
-        sea_paises[RV$bases(),
-                   as.character(input$ano),
-                   RV$indicator(),
-                   input$pais][
-                     !is.na(
-                       sea_paises[RV$bases(),
-                                  as.character(input$ano),
-                                  RV$indicator(),
-                                  input$pais]
-                       )
-                   ])}
+        bascdad <- sea_paises[RV$bases(),
+                              as.character(input$ano),
+                              RV$indicator(),
+                              input$pais]
+        assign(bascomind,names(bascdad[!is.na(bascdad)]),
+               envir=.GlobalEnv, inherits = T)
+        names(bascdad[!is.na(bascdad)])}
       else {
         RV$bases()
       }, 
@@ -714,7 +709,7 @@ panel_country_server <- function(input, output, RV) {
         info = FALSE,
         lengthChange = FALSE
       )
-    )%>%bindCache(input$ano,RV$indicator(),input$pais,input$l)
+    )%>%bindCache(name_i,input$ano_detalhado,RV$indicator(),input$pais_detalhado,input$l)
   }) #FIM da distribuição setorial
   
 
