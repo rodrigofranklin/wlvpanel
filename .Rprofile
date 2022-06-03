@@ -1,3 +1,4 @@
+Sys.umask("002")
 library(utils)
 #automatizado baseado em requ.R
 pacotes <-  gsub(")","",read.delim("requ.R",sep = "(", header = F)[[2]])
