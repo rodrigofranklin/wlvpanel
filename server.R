@@ -110,7 +110,7 @@ server <- function(input, output, session) {
     })
 
   output$select.countrytrade <- renderUI({
-    country_list <- names(sea_paises[1,1,1,])
+    country_list <- unique(substr(names(m_io_16[1,1,1,]),1,3))
     names(country_list) <- language_file[country_list,input$l]
     country_list <- c("",country_list)
     names(country_list)[1] <- language_file["Search a country...",input$l]
