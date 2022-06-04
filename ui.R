@@ -318,7 +318,14 @@ ui <- navbarPage(
     l("Download"),
     br(),br(),
     a("WLVD Portable / BDMVT portátil",href = "https://cloud.worldlabourvalues.org/s/5oDfapMJJdDMnSn")
+  ),
+  tabPanel(
+    l("como.citar"),
+    br(),br(),
+    p(l("DESC.como.citar")),
+    p("FRANKLIN, R.;BORGES, R,; SÁNCHEZ, C.; MONTIBELER, E. Skilled labour and the reduction problem: questioning the exploitation rate equalization hypoyhesis. World Review of Political Economy (in press), 2022.")
   )
+  
 
 )  
 
