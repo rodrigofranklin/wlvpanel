@@ -428,7 +428,7 @@ server <- function(input, output, session) {
     dados <- get(paste0("m_io_",bd))%>%
       agregado(ano, elem, get(paste0("linhas_",bd))())%>%
       as.data.table(keep.rownames = "paisect") %>%
-      filter(grepl(paste0("^",pais),paisect))%>%
+      filter(substr(paisect,1,3) == pais)%>%
       separate(paisect,c("pais_origen","sector_origen"),sep="\\.")
 
     dados <- dados%>%
