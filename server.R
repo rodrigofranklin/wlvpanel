@@ -428,6 +428,7 @@ server <- function(input, output, session) {
     dados <- get(paste0("m_io_",bd))%>%
       agregado(ano, elem, get(paste0("linhas_",bd))())%>%
       as.data.table(keep.rownames = "paisect") %>%
+      filter(grepl(paste0("^",pais),paisect))%>%
       separate(paisect,c("pais_origen","sector_origen"),sep="\\.")
 
     dados <- dados%>%
@@ -438,6 +439,7 @@ server <- function(input, output, session) {
       dplyr::group_by_at(agru) %>%
        summarize(valor=sum(valor,na.rm=T))
     
+    dados <- dados%>%filter(pais_d != "ROW")
     dados <- dados %>%
       left_join(paisl, by = c("pais_d" = "Legenda"))%>%
       left_join(sct,by = c("sect_d" = "Code"))
@@ -578,14 +580,14 @@ server <- function(input, output, session) {
 
   observe({ 
     req(input$fill) 
-    if (idpaistrade != (length(lista_paises)-1)|| idanotrade != length(lista_anos) || 
+    if (idpaistrade != (unique(substr(names(m_io_16[1,1,1,]),1,3))-1)|| idanotrade != length(lista_anos) || 
         idtver != length(lista_versoes)||idele != length(lista_versoes) || idl != nrow(languages)) { 
       ## need the invalidateLater approach 
       ## to allow shiny reacting on the change 
       ## not sure whether we cannot trip over race conditions 
       ## recommendation: do it once by hand (it's persistent anyways ;) 
       invalidateLater(30000, session) 
-      if (idpaistrade == (length(lista_paises)-1)) {
+      if (idpaistrade == (length(unique(substr(names(m_io_16[1,1,1,]),1,3)))-1)) {
         if(idanotrade == length(lista_anos)) {
           if(idele == length(lista_agr)) {
             if(idl == nrow(languages)){
@@ -628,7 +630,7 @@ server <- function(input, output, session) {
   #i,input$pais,RV$bases())
   
   idll <- idi <- idpais_det <- idpais_ind <- idano_det <- idpais_bases <- 1
-  idano_det <- 14
+  idano_det <- 1
   #idl <- idpaistrade <- idele <- idanotrade <- idtver <- 1
   
   observe({ 
@@ -655,13 +657,13 @@ server <- function(input, output, session) {
             } else {
               message("Atualizando idioma:", idll) 
               idpais_det<<- 1
-              idano_det <<- 14
+              idano_det <<- 1
               idpais_ind <<- 1
               idll <<- idll + 1 
               updateSelectInput(session,"l",languages[idll,1])
             }} else { message("Atualizando indicador a detalhar setorialmente: ", idpais_ind) 
               idpais_det<<- 1
-              idano_det <<- 14
+              idano_det <<- 1
               idpais_ind <<- idpais_ind + 1 
               #updateRadioButtons(session, "transacoes_agregacao", selected = lista_agr[[idpais_ind]])
               RV$indicator(varst$var[idpais_ind])
