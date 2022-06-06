@@ -579,7 +579,7 @@ server <- function(input, output, session) {
 
   observe({ 
     req(input$fill) 
-    if (idpaistrade != (unique(substr(names(m_io_16[1,1,1,]),1,3))-1)|| idanotrade != length(lista_anos) || 
+    if (idpaistrade != (length(unique(substr(names(m_io_16[1,1,1,]),1,3)))-1)|| idanotrade != length(lista_anos) || 
         idtver != length(lista_versoes)||idele != length(lista_versoes) || idl != nrow(languages)) { 
       ## need the invalidateLater approach 
       ## to allow shiny reacting on the change 
