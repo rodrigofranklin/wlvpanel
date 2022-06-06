@@ -285,8 +285,7 @@ ui <- navbarPage(
       uiOutput("select.countrytrade"),
       radioButtons(inputId = "transacoes_agregacao", choices = "trade_aggregation_country", label = ""),
       uiOutput("select.basetrade"),
-      sliderInput("anotrade","YEAR",min = 1995, max = 2014, value = 2009, ticks = F, animate=F),
-      actionButton("fill", "Fill Cache")
+      sliderInput("anotrade","YEAR",min = 1995, max = 2014, value = 2009, ticks = F, animate=F)
     ),
     absolutePanel(
       width="75%",

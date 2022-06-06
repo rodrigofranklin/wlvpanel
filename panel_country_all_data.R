@@ -196,19 +196,6 @@ country_panel <- conditionalPanel(
             background-color: rgba(127,127,127,1);
           "
   ),
-  actionButton(inputId = "fillpais", label = "Fill Cache",
-               style ="
-            border-radius: 50%;
-            border-color: transparent;
-            color: white;
-            font-size: 12px;
-            position: absolute;
-            top: 58px;
-            left: calc(50vw - 145px);
-            z-index: 501;
-            background-color: rgba(127,50,50,0.3);
-          "
-  ),
   
   absolutePanel(
     top = 75,
