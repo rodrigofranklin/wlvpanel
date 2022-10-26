@@ -3,7 +3,7 @@ do.call("navbarPage", c(
   collapsible = TRUE,
   windowTitle = "World Labour Values Database",
   title = "WLVD",
-  
+
   # Common features
   header = tagList(setup_panel),
   

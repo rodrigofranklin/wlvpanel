@@ -4,10 +4,6 @@
 
 # list_methods
 list_methods <- meta_methods$code
-base1 <- "WIOD13"
-base2 <- "WIOD16"
-base3 <- "WIOD13"
-base4 <- "WIOD16"
 
 ## UI ##############
 
@@ -20,7 +16,7 @@ setup_panel <- tagList(
       left = 0,
       right = 0,
       bottom = 0,
-      style = "background-color: rgba(220, 222, 225, 1);
+      style = "background-color: rgba(252, 252, 252, 1);
         text-align: center;
         z-index: 100000;",
       img(
@@ -70,8 +66,8 @@ setup_panel <- tagList(
         label = NULL,
         style = "
           position: absolute;
-          top: 0px;
-          right: 5px;
+          top: 5px;
+          right: 10px;
           z-index: 5000;
           padding: 0px;
           color:black;
@@ -240,11 +236,15 @@ SERVER <- function(IP, OP, RV, SESSION) {
     show_setup_panel(0)
     show_bases_info_panel(1)
   })
-  # onclick(id = "setup_background", {
-  #   show_setup_panel(0)
-  #   show_bases_info_panel(1)
-  #   })
   
+  # Bases selection
+  RV$bases <- reactive({
+    IP$setup_close_button
+    unique(c(IP$base1 |> isolate(),
+             IP$base2 |> isolate(),
+             IP$base3 |> isolate(),
+             IP$base4 |> isolate()))})
+
   # Open/close system for bases_info_panel
   show_bases_info_panel <- reactiveVal(1)
   OP$show_bases_info_panel <- renderText(show_bases_info_panel())
@@ -269,35 +269,26 @@ SERVER <- function(IP, OP, RV, SESSION) {
                 width = "50%",
                 lb("ps.base_source", IP$l) |> strong(),
                 meta_methods$source[z]
-              )
-            ),
+            )),
             tr(
               td(
                 colspan = 2,
                 lb("ps.base_name", IP$l) |> strong(),
                 meta_methods$name[z]
-              )
-            ),
+            )),
             tr(
               td(
                 colspan = 2,
                 style = "text-align: justifY;",
                 lb("ps.description", IP$l) |> strong(),
-                l(paste0("DESC.",meta_methods$code[z]))
-              )
-            ),
+                lb(paste0("DESC.",meta_methods$code[z]), IP$l)
+            )),
             tr(
               td(
                 colspan = 2,
                 style = "padding: 0px 0px; height: 5",
                 hr(style="margin: 5px !important")
-              )
-            )
-          )
-        )
-      })
-    )
-  })
+  ))))}))})
   
   # Deactives loading panel
   OP$loading <- renderText("")
