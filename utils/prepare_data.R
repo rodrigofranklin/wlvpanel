@@ -4,6 +4,7 @@
 library(dplyr)
 library(magrittr)
 library(MazamaSpatialUtils)
+library(rworldmap)
 
 # Creating language_file ####
 # Here, we also need to merge language files of country names, variable names, etc
@@ -120,3 +121,31 @@ sea_countries_merge |> saveRDS("data/sea_countries.RDS")
 sea_sectors |> saveRDS("data/sea_sectors.RDS")
 meta_methods |> saveRDS("data/meta_methods.RDS")
 
+sea_countries <- sea_countries_merge
+
+# Prepare geospatial data
+countries_polygons <- 
+  getMap()
+
+sp_data <- countries_polygons@data[,c("ISO3","NAME")]
+sp_data$layerId <- NA
+sp_data$data <- NA
+
+countries_polygons@data <- sp_data
+
+countries_sp <- NULL
+countries_sp[list_methods] <- 
+  lapply(
+    list_methods,
+    function(i) {
+      # Select all countries that has any data for the first indicator
+      has_data <- sea_countries[i,,1,] |> colSums(na.rm = TRUE)
+      has_data <- has_data[has_data !=0 ]
+      mydata <- countries_polygons[countries_polygons@data$ISO3 %in%
+                                    names(has_data),]
+      mydata@data$layerId <- 
+        paste0(i,".",names(has_data[names(has_data) %in% mydata@data$ISO3]))
+      mydata
+    })
+
+countries_sp |> saveRDS("data/countries_sp.RDS")

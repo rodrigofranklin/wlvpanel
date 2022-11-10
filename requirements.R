@@ -1,2 +1,5 @@
 library(shiny)
 library(shinythemes)
+library(shinyjqui)
+library(leaflet)
+library(magrittr)
