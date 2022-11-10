@@ -89,4 +89,5 @@ modules_server <- NULL
 modules_ui <- NULL
 source("modules/panel_setup/main.R")
 source("modules/countries/main.R")
+source("modules/trade/main.R")
 source("modules/how_to_quote/main.R")
