@@ -6,7 +6,7 @@
 
 ### UI ####
 
-tab_how_to_quote <- tabPanel(
+TABPANEL <- tabPanel(
   l("tab_name.how_to_quote"),
   absolutePanel(
     top = 45,
@@ -33,14 +33,12 @@ tab_how_to_quote <- tabPanel(
                  10.13169/worlrevipoliecon.13.3.0362<BR>"),
         a(href = "http://doi.org/10.13169/worlrevipoliecon.13.3.0362",
           target="_blank",
-          "[LINK]")
-    )),
-    br(),br(),
-    
-    textOutput("debug")
+          "[LINK]"),
+        textOutput("debug")
+    ))
 ))
 
-modules_ui[modules_ui |> length() +1] <- "tab_how_to_quote"
+modules_ui[[modules_ui |> length() +1]] <- TABPANEL
 
 ### Server ####
 
@@ -48,4 +46,4 @@ SERVER <- function(IP, OP, RV, SESSION) {
 
 }
 
-modules_server$how_to_quote <- SERVER
+modules_server[[modules_server |> length() +1]] <- SERVER

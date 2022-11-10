@@ -1,5 +1,5 @@
 do.call("navbarPage", c(
-  theme = shinytheme("yeti"),
+  theme = shinytheme(theme),
   collapsible = TRUE,
   windowTitle = "World Labour Values Database",
   title = "WLVD",
@@ -27,7 +27,7 @@ do.call("navbarPage", c(
         )
       ),
       td(
-        style = "font-size: 10px;",
+        style = "font-size: 11px; font-family: Arial, Helvetica, sans-serif;",
         "World Labour Values Task Force | ",
         span("©", style = "display: inline-block;
                         text-align: right;
@@ -43,6 +43,6 @@ do.call("navbarPage", c(
   )))))),
   
   # Call tabPanels of all modules
-  lapply(modules_ui, \(i) get(i))
+  lapply(modules_ui, \(i) i)
 
 ))

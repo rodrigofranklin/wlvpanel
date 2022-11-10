@@ -4,6 +4,7 @@
 
 # list_methods
 list_methods <- meta_methods$code
+languages <- colnames(language_file)
 
 ## UI ##############
 
@@ -12,7 +13,7 @@ setup_panel <- tagList(
   conditionalPanel(
     "output.loading!=''",
     absolutePanel(
-      top = 45,
+      top = bar_height,
       left = 0,
       right = 0,
       bottom = 0,
@@ -30,13 +31,12 @@ setup_panel <- tagList(
   actionLink(
     "setup_button",
     label = NULL,
-    style = "
-      position: fixed;
-      top: 10px;
+    style = paste0("position: fixed;
+      top:", (bar_height-28)/2,"px;
       right: 10px;
       font-size: 20px;
-      color: white;
-      z-index: 5000;",
+      color:", item_color,";
+      z-index: 5000;"),
     icon = icon("cog")
   ),
   
@@ -49,17 +49,18 @@ setup_panel <- tagList(
       left = 0,
       right = 0,
       bottom = 0,
-      style = "
-        background-color: rgba(0, 0, 0, 0.7);
+      style = paste0("background-color: ", bg_color, ";
+        opacity: 0.7;
         text-align: center;
-        z-index: 5000;"
+        z-index: 5000;")
     ),
     # Setup Panel
     absolutePanel(
       top = 120,
       left = 25,
-      style = "z-index: 5001;",
-      width = "40%",
+      # draggable = TRUE,
+      style = "z-index: 5001; border-radius:10px;",
+      width = 350,
       class="panel panel-default",
       actionLink(
         "setup_close_button",
@@ -77,10 +78,10 @@ setup_panel <- tagList(
       div(
         l("ps.title.setup_panel"),
         class = "panel-heading",
-        style = "text-align: left;"),
+        style = "text-align: left; border-radius:10px 10px 0px 0px"),
       div(
         class = "panel-body",
-        style = "text-align: center;",
+        style = "text-align: center; padding-bottom: 0px;",
         withTags(
           table(
             width = "100%",
@@ -101,7 +102,7 @@ setup_panel <- tagList(
                   inputId = "l",
                   label = NULL,
                   selected = default_language,
-                  choices = languages[,1],
+                  choices = languages,
                   width = "100%")
               ),
               tr(
@@ -116,24 +117,19 @@ setup_panel <- tagList(
                   colspan = 2,
                   table( 
                     width = "100%",
-                    height = "100%",
                     tr(
                       td(
-                        width = "20%",
-                        actionButton("info_bases", label = l("ps.bases_info"))
-                      ),
-                      td(
                         width = "80%",
-                        style = "padding-left: 20px;",
-                        table( 
+                        table(
                           width = "100%",
                           tr(
                             td(
+                              style = "padding-bottom: 15px;",
                               width = "20%",
-                              l("ps.base_1")
+                              l("ps.base_1") |> div(style = "vertical-align:middle;")
                             ),
                             td(
-                              style = "padding-left: 20px;",
+                              style = "padding: 0px 20px 0px 20px;",
                               width = "80%",
                               selectInput(
                                 "base1",
@@ -141,64 +137,76 @@ setup_panel <- tagList(
                                 width = "100%",
                                 choices = list_methods,
                                 selected = base1
-                              )
-                            )
-                          ),
+                          ))),
                           tr(
                             td(
-                              l("ps.base_2")
+                              style = "padding-bottom: 15px;",
+                              width = "20%",
+                              l("ps.base_2") |> div(style = "vertical-align:middle;")
                             ),
                             td(
-                              style = "padding-left: 20px;",
+                              style = "padding: 0px 20px 0px 20px;",
+                              width = "80%",
                               selectInput(
                                 "base2",
                                 label = NULL,
                                 width = "100%",
                                 choices = list_methods,
                                 selected = base2
-                              )
-                            )
-                          ),
+                              ))),
                           tr(
                             td(
-                              l("ps.base_3")
+                              style = "padding-bottom: 15px;",
+                              width = "20%",
+                              l("ps.base_3") |> div(style = "vertical-align:middle;")
                             ),
                             td(
-                              style = "padding-left: 20px;",
+                              style = "padding: 0px 20px 0px 20px;",
+                              width = "80%",
                               selectInput(
                                 "base3",
                                 label = NULL,
                                 width = "100%",
                                 choices = list_methods,
                                 selected = base3
-                              )
-                            )
-                          ),
+                              ))),
                           tr(
                             td(
-                              l("ps.base_4")
+                              style = "padding-bottom: 15px;",
+                              width = "20%",
+                              l("ps.base_4") |> div(style = "vertical-align:middle;")
                             ),
                             td(
-                              style = "padding-left: 20px;",
+                              style = "padding: 0px 20px 0px 20px;",
+                              width = "80%",
                               selectInput(
                                 "base4",
                                 label = NULL,
                                 width = "100%",
                                 choices = list_methods,
                                 selected = base4
-  ))))))))))))))),
+  ))))),
+  td(
+    width = "20%",
+    actionButton("info_bases", label = l("ps.bases_info")))
+))))))))) |> 
+  # jqui_draggable are required to solve problem with selectize input within 
+  # a draggable panel
+  jqui_draggable(options = list(cancel = ".selectize-control"))),
   
   # Bases_info_panel
   conditionalPanel(
     "output.show_bases_info_panel !=1",
     
     absolutePanel(
-      top = 60,
-      right = 10,
-      width = "40vw",
+      top = 120,
+      left = 400,
+      width = 400,
+      draggable = TRUE,
       class="panel panel-default",
-      style = "z-index: 5000;",
+      style = "z-index: 5000; border-radius:10px 10px 0px 0px;",
       div(class = "panel-heading",
+          style = "border-radius:10px 10px 0px 0px;",
           l("ps.title.bases_info"),
           actionLink(
             "bases_info_close_button",
@@ -211,15 +219,14 @@ setup_panel <- tagList(
               right: 10px;
               padding: 0px;
               font-size: 14px;
-              color: gray;",
+              color: black;",
             icon = icon("times")
           )
       ),
       
       div(class = "panel-body",
           uiOutput("bases_info_text"),
-          style =  "
-            overflow-y:scroll;
+          style =  "overflow-y:scroll;
             height: 60vh;"
 ))))
 
@@ -290,9 +297,9 @@ SERVER <- function(IP, OP, RV, SESSION) {
                 hr(style="margin: 5px !important")
   ))))}))})
   
-  # Deactives loading panel
+  # Deactive loading panel
   OP$loading <- renderText("")
   outputOptions(OP, 'loading', suspendWhenHidden=FALSE)
 }
 
-modules_server$panel_setup <- SERVER
+modules_server[[modules_server |> length() +1]] <- SERVER
