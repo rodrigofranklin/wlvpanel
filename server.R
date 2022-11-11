@@ -15,8 +15,9 @@ function(input, output, session) {
   })
   
   # Debug area. Shown in "How to quote" tab
+  RV$debug <- reactiveVal(NA)
   output$debug <- renderText({
-    # Put debug code here
-    input$co_select_indicator
+    if (RV$debug() |> is.na()) return()
+    RV$debug()
   })
 }

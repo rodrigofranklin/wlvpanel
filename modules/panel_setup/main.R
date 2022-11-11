@@ -297,8 +297,8 @@ SERVER <- function(IP, OP, RV, SESSION) {
                 hr(style="margin: 5px !important")
   ))))}))})
   
-  # Deactive loading panel
-  OP$loading <- renderText("")
+  # De-active loading panel when OP$loading is set to ""
+  OP$loading <- renderText("x")
   outputOptions(OP, 'loading', suspendWhenHidden=FALSE)
 }
 

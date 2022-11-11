@@ -22,3 +22,7 @@ ps.description;Description:
 text.quote;When using the data or code in papers, analysis, rehearsals or other publications, we ask to cite as:
 tab_name.countries;Countries
 tab_name.trade;Trade
+co_select_country.placeholder;Search a country...
+big.mark;,
+decimal.mark;.
+hours;hours

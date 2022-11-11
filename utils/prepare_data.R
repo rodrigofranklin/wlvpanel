@@ -9,6 +9,7 @@ library(rworldmap)
 # Creating language_file ####
 # Here, we also need to merge language files of country names, variable names, etc
 languages <- read.csv2("data/config/languages.csv")
+countries <- read.csv2("data/config/countries.csv")
 
 language_file <- read.csv2(paste0("data/config/",languages$file[1]))
 for (x in 1:length(languages$language)) {
@@ -19,6 +20,10 @@ for (x in 1:length(languages$language)) {
 
 rownames(language_file) <- language_file[,1]
 language_file <- language_file[,-c(1,2)]
+
+# Merge countries names
+rownames(countries) <- countries[,1]
+language_file <- rbind(language_file,countries[,languages$language])
 
 language_file |> saveRDS("data/language_file.RDS")
 
@@ -144,8 +149,23 @@ countries_sp[list_methods] <-
       mydata <- countries_polygons[countries_polygons@data$ISO3 %in%
                                     names(has_data),]
       mydata@data$layerId <- 
-        paste0(i,".",names(has_data[names(has_data) %in% mydata@data$ISO3]))
+        paste0(i,".",mydata@data$ISO3)
       mydata
     })
 
 countries_sp |> saveRDS("data/countries_sp.RDS")
+
+
+# Meta indicators
+# We need to get this information directly from methods. But, for now,
+# we are going to get this from a .csv
+
+meta_indicators <- read.csv2("data/config/meta_indicators.csv")
+meta_indicators |> saveRDS("data/meta_indicators.RDS")
+
+groups <- unique(meta_indicators$cod_group)
+lists_indicators <- lapply(groups, \(g,i = meta_indicators) {
+  setNames(i$cod_var[i$cod_group == g], i$name[i$cod_group == g])
+})
+names(lists_indicators) <- groups
+lists_indicators |> saveRDS("data/lists_indicators.RDS")
