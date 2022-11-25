@@ -1,59 +1,59 @@
-cod_var;cod_group;type;Reverted;name;description
-basket_price.r.pc;Others;index;FALSE;Basket price index (in national currency);Índice de preços da cesta de consumo dos trabalhadores em moeda nacional (ano base = 2000)
-basket_value.r.pc;Others;index;FALSE;Basket value index;Índice de horas de trabalho necessárias para a produção da cesta de consumo dos trabalhadores (ano base = 2000)
-capital_depreciation.s.us;Capital;usd;FALSE;Capital depreciation (USD);Depreciação do capital em USD
-capital_stock.s.cu;Capital;usd;FALSE;Capital stock (constant USD);"Estoque de capital em dólares constantes (ano base: WIODr13 = 1995; WIODr16 = 2000)"
-capital_stock.s.us;Capital;usd;FALSE;Capital stock (USD);Estoque de capital em USD
-compensation.empe.s.us;Wages and value of labour force;usd;FALSE;Compensation of employees (USD);Soma dos salários pagos aos trabalhadores assalariados em USD
-complex_labour_multiplier.emp.r.un;Others;index;FALSE;Complex labour multiplier;Multiplicador do trabalho complexo
-complex_labour_multiplier.empe.r.un;Others;index;FALSE;Complex labour multiplier (employee only);Multiplicador do trabalho complexo dos trabalhadores assalariados
-exchange.r.us;Others;usd;FALSE;Exchange rate (USD);Taxa de câmbio (moeda nacional/USD)
-exchange.r.id;Others;index;FALSE;Exchange rate index;Índice de variação da taxa de câmbio (ano base = 2000)
-gdp.s.du;Product;usd;FALSE;Gross Domestic Product (direct prices - USD);Produto Interno Bruto em preços diretos - USD (preços que expressam os valores)
-gdp.s.mv;Product;value;FALSE;Gross Domestic Product (magnitude of value);Produto Interno Bruto em magnitude de valor
-gdp.s.us;Product;usd;FALSE;Gross Domestic Product (USD);Produto Interno Bruto em USD corrente
-gdp.p.s.us;Product;usd;FALSE;Gross Domestic Product of productive sectors (USD);Produto Interno Bruto dos setores produtivos em USD
-gross_output.s.du;Product;usd;FALSE;Gross output (direct prices - USD);Valor-produto total em preços diretos - USD (preços que expressam os valores)
-gross_output.s.mv;Product;value;FALSE;Gross output (magnitude of value);Valor-produto total
-gross_output.s.us;Product;usd;FALSE;Gross output (USD);Valor-produto total em USD
-go_price.r.id;Others;index;FALSE;Gross output price index;"Índice de preços do Produto Total (ano base: WIODr13 = 1995; WIODr16 = 2000)"
-abstract_labour.emp.s.mv;Labour and employment;hours;FALSE;Hours of abstract labour;Horas de trabalho realizado pela população ocupada considerando-se a redução do trabalho complexo em simples
-abstract_labour.empe.s.mv;Labour and employment;hours;FALSE;Hours of abstract labour (employee only);Horas de trabalho realizado por assalariado considerando-se a redução do trabalho complexo em simples
-compensation.emp.s.us;Wages and value of labour force;usd;FALSE;Labour compensation (USD);Soma da remuneração paga às população ocupadas em USD
-labour_force_value.m.mv;Wages and value of labour force;value;FALSE;Labour force value (mean);Valor médio da força de trabalho em magnitude de valor - tempo de trabalho dispendido para a produção de cesta de consumo que cada trabalhador assalariado consome em média durante um ano
-empe.s.un;Labour and employment;integer;FALSE;Number of employee;Número de trabalhadores assalariados
-emp.s.un;Labour and employment;integer;FALSE;Number of persons engaged;Número de população ocupadas
-appropriated_profit.r.pc;Capital;percent;FALSE;Rate of profit;Taxa de lucro líquido (lucro menos depreciação sobre capital fixo)
-surplus_value.empe.r.pc;Rate of surplus value;percent;TRUE;Rate of surplus value;Taxa de exploração dos trabalhadores assalariados: (horas de trabalho realizado - valor da força de trabalho) / valor da força de trabalho
-surplus_value.empe_hs.r.pc;Rate of surplus value;percent;TRUE;Rate of surplus value of high-skilled employee;Taxa de exploração dos trabalhadores de alta qualificação
-surplus_value.empe_ls.r.pc;Rate of surplus value;percent;TRUE;Rate of surplus value of low-skilled employee;Taxa de exploração dos trabalhadores de baixa qualificação
-surplus_value.empe_ms.r.pc;Rate of surplus value;percent;TRUE;Rate of surplus value of medium-skilled employee;Taxa de exploração dos trabalhadores de média qualificação
-surplus_value.emp.r.pc;Rate of surplus value;percent;TRUE;Rate of surplus value of persons enganged in production;"Equivalente à taxa de ""exploração"" da população ocupada"
-surplus_value.emp_p.r.pc;Rate of surplus value;percent;TRUE;Rate of surplus value of persons enganged in production (productive sectors only);"Equivalente à taxa de ""exploração"" da população ocupada (apenas setores produtivos)"
-labour_force_value.emp.s.mv;Wages and value of labour force;value;FALSE;Reproduction value of persons engaged in production;Total do valor de reprodução da população ocupada - tempo de trabalho dispendido para a produção de cesta de consumo que  toda a população ocupada consome durante um ano
-labour_force_value.emp.m.mv;Wages and value of labour force;value;FALSE;Reproduction value of persons engaged in production (mean);Valor de reprodução da população ocupada - tempo de trabalho dispendido para a produção de cesta de consumo que  cada pessoa ocupada consome em média durante um ano
-compensation.empe_hs.r.pc;Wages and value of labour force;percent;FALSE;Share of high-skilled labour compensation;Parcela da remuneração dos trabalhadores assalariados de alta qualificação (% do total da remuneração)
-hours_worked.empe_hs.r.pc;Labour and employment;percent;FALSE;Share of hours worked by high-skilled persons engaged;Parcela das horas trabalhadas por trabalhadores assalariados de alta qualificação (% do total de horas trabalhadas)
-hours_worked.empe_ls.r.pc;Labour and employment;percent;FALSE;Share of hours worked by low-skilled persons engaged;Parcela das horas trabalhadas por trabalhadores assalariados de baixa qualificação (% do total de horas trabalhadas)
-hours_worked.empe_ms.r.pc;Labour and employment;percent;FALSE;Share of hours worked by medium-skilled persons engaged;Parcela das horas trabalhadas por trabalhadores assalariados de média qualificação (% do total de horas trabalhadas)
-compensation.empe_ls.r.pc;Wages and value of labour force;percent;FALSE;Share of low-skilled labour compensation;Parcela da remuneração dos trabalhadores assalariados de baixa qualificação (% do total da remuneração)
-compensation.empe_ms.r.pc;Wages and value of labour force;percent;FALSE;Share of medium-skilled labour compensation;Parcela da remuneração dos trabalhadores assalariados de média qualificação (% do total da remuneração)
-exports.s.mv;International trade;value;FALSE;Total exports (magnitude of value);Exportações totais em magnitude de valor
-exports.s.us;International trade;usd;FALSE;Total exports (USD);Exportações totais em USD
-hours_worked.empe.s.hr;Labour and employment;hours;FALSE;Total hours worked by employees;Total de horas trabalhadas por trabalhadores assalariados
-hours_worked.emp.s.hr;Labour and employment;hours;FALSE;Total hours worked by persons engaged;Total de horas trabalhadas pela população ocupada
-imports.s.mv;International trade;value;FALSE;Total imports (magnitude of value);Importações totais em magnitude de valor
-imports.s.us;International trade;usd;FALSE;Total imports (USD);Importações totais em USD
-labour_force_value.s.mv;Wages and value of labour force;value;FALSE;Total labour force value (total);Valor total da força de trabalho em magnitude de valor - tempo de trabalho dispendido para a produção de cesta de consumo que todos os trabalhadores assalariados consomem durante um ano
-profit.s.us;Capital;usd;FALSE;Total profit (USD);Lucros totais em USD
-compensation.empe.s.cu;Wages and value of labour force;usd;FALSE;Total real compensation of labour (constant USD);Soma dos salários pagos aos trabalhadores assalariados em USD constantes (ano base = 2000)
-compensation.emp.s.cu;Wages and value of labour force;usd;FALSE;Total real wage (constant USD);Soma da remuneração paga às população ocupadas em USD constantes (ano base = 2000)
-trade_balance.s.mv;International trade;value;FALSE;Trade balance (magnitude of value);Saldo da balança comercial em magnitude de valor
-trade_balance.s.us;International trade;usd;FALSE;Trade balance (USD);Saldo da balança comercial em USD
-value.m.mv;Product;value;FALSE;Value per output;Tempo de trabalho me média dispendido para a produção de cada USD 1,00 do produto total
-trade_transfers.s.mv;International trade;value;FALSE;Value transfer through trade;Transferência de valor via trocas internacionais - horas de trabalho transferidas sem equivalente
-trade_transfers.p.s.mv;International trade;value;FALSE;Value transfer through trade of productive sectors;Transferência de valor via trocas internacionais dos setores produtivos - horas de trabalho transferidas sem equivalente
-trade_transfers.p.m.pc;International trade;percent;FALSE;Value transfer through trade of productive sectors (%);Transferência de valor via trocas internacionais dos setores produtivos (% do produto de valor do trabalho anual total)
-trade_transfers.u.s.mv;International trade;value;FALSE;Value transfer through trade of unproductive sectors;Transferência de valor via trocas internacionais dos setores improdutivos - horas de trabalho transferidas sem equivalente
-abstract_labour.empe.m.mv;Labour and employment;value;FALSE;Working day of employee per year (magnitude of value);"Magnitude of value ""created"" by employee in each year. Includes productive and unproductive workers."
-abstract_labour.emp.m.mv;Labour and employment;value;FALSE;Working day of persons engaged per year (magnitude of value);Magnitude of value created by persons engaged in each year. Includes productive and unproductive workers.
+value;groups;type;reverted
+basket_price.r.pc;Others;index;FALSE
+basket_value.r.pc;Others;index;FALSE
+capital_depreciation.s.us;Capital;usd;FALSE
+capital_stock.s.cu;Capital;usd;FALSE
+capital_stock.s.us;Capital;usd;FALSE
+compensation.empe.s.us;Wages and value of labour force;usd;FALSE
+complex_labour_multiplier.emp.r.un;Others;index;FALSE
+complex_labour_multiplier.empe.r.un;Others;index;FALSE
+exchange.r.us;Others;usd;FALSE
+exchange.r.id;Others;index;FALSE
+gdp.s.du;Product;usd;FALSE
+gdp.s.mv;Product;value;FALSE
+gdp.s.us;Product;usd;FALSE
+gdp.p.s.us;Product;usd;FALSE
+gross_output.s.du;Product;usd;FALSE
+gross_output.s.mv;Product;value;FALSE
+gross_output.s.us;Product;usd;FALSE
+go_price.r.id;Others;index;FALSE
+abstract_labour.emp.s.mv;Labour and employment;hours;FALSE
+abstract_labour.empe.s.mv;Labour and employment;hours;FALSE
+compensation.emp.s.us;Wages and value of labour force;usd;FALSE
+labour_force_value.m.mv;Wages and value of labour force;value;FALSE
+empe.s.un;Labour and employment;integer;FALSE
+emp.s.un;Labour and employment;integer;FALSE
+appropriated_profit.r.pc;Capital;percent;FALSE
+surplus_value.empe.r.pc;Rate of surplus value;percent;TRUE
+surplus_value.empe_hs.r.pc;Rate of surplus value;percent;TRUE
+surplus_value.empe_ls.r.pc;Rate of surplus value;percent;TRUE
+surplus_value.empe_ms.r.pc;Rate of surplus value;percent;TRUE
+surplus_value.emp.r.pc;Rate of surplus value;percent;TRUE
+surplus_value.emp_p.r.pc;Rate of surplus value;percent;TRUE
+labour_force_value.emp.s.mv;Wages and value of labour force;value;FALSE
+labour_force_value.emp.m.mv;Wages and value of labour force;value;FALSE
+compensation.empe_hs.r.pc;Wages and value of labour force;percent;FALSE
+hours_worked.empe_hs.r.pc;Labour and employment;percent;FALSE
+hours_worked.empe_ls.r.pc;Labour and employment;percent;FALSE
+hours_worked.empe_ms.r.pc;Labour and employment;percent;FALSE
+compensation.empe_ls.r.pc;Wages and value of labour force;percent;FALSE
+compensation.empe_ms.r.pc;Wages and value of labour force;percent;FALSE
+exports.s.mv;International trade;value;FALSE
+exports.s.us;International trade;usd;FALSE
+hours_worked.empe.s.hr;Labour and employment;hours;FALSE
+hours_worked.emp.s.hr;Labour and employment;hours;FALSE
+imports.s.mv;International trade;value;FALSE
+imports.s.us;International trade;usd;FALSE
+labour_force_value.s.mv;Wages and value of labour force;value;FALSE
+profit.s.us;Capital;usd;FALSE
+compensation.empe.s.cu;Wages and value of labour force;usd;FALSE
+compensation.emp.s.cu;Wages and value of labour force;usd;FALSE
+trade_balance.s.mv;International trade;value;FALSE
+trade_balance.s.us;International trade;usd;FALSE
+value.m.mv;Product;value;FALSE
+trade_transfers.s.mv;International trade;value;FALSE
+trade_transfers.p.s.mv;International trade;value;FALSE
+trade_transfers.p.m.pc;International trade;percent;FALSE
+trade_transfers.u.s.mv;International trade;value;FALSE
+abstract_labour.empe.m.mv;Labour and employment;value;FALSE
+abstract_labour.emp.m.mv;Labour and employment;value;FALSE

@@ -10,10 +10,13 @@ library(rworldmap)
 # Here, we also need to merge language files of country names, variable names, etc
 languages <- read.csv2("data/config/languages.csv")
 countries <- read.csv2("data/config/countries.csv")
+sectors_wiod13 <- read.csv2("data/config/sectors_wiodr13.csv")
+sectors_wiod16 <- read.csv2("data/config/sectors_wiodr16.csv")
 
-language_file <- read.csv2(paste0("data/config/",languages$file[1]))
+# label files
+language_file <- read.csv2(paste0("data/config/label_",languages$file[1],".csv"))
 for (x in 1:length(languages$language)) {
-  l_temp <-  read.csv2(paste0("data/config/",languages$file[x]))
+  l_temp <-  read.csv2(paste0("data/config/label_",languages$file[x],".csv"))
   names(l_temp)[2] <- languages$language[x]
   language_file <- full_join(language_file, l_temp, by = "cod_label")
 }
@@ -24,6 +27,24 @@ language_file <- language_file[,-c(1,2)]
 # Merge countries names
 rownames(countries) <- countries[,1]
 language_file <- rbind(language_file,countries[,languages$language])
+
+# Merge sectors names
+rownames(sectors_wiod13) <- sectors_wiod13[,1]
+language_file <- rbind(language_file,sectors_wiod13[,languages$language])
+rownames(sectors_wiod16) <- sectors_wiod16[,1]
+language_file <- rbind(language_file,sectors_wiod16[,languages$language])
+
+# Indicators names and description
+indicator_file <- read.csv2(paste0("data/config/indicators_",languages$file[1],".csv"))
+for (x in 1:length(languages$language)) {
+  I_temp <-  read.csv2(paste0("data/config/indicators_",languages$file[1],".csv"))
+  names(I_temp)[2] <- languages$language[x]
+  indicator_file <- full_join(indicator_file, I_temp, by = "cod_label")
+}
+
+rownames(indicator_file) <- indicator_file[,1]
+indicator_file <- indicator_file[,-c(1,2)]
+language_file <- rbind(language_file,indicator_file)
 
 language_file |> saveRDS("data/language_file.RDS")
 
@@ -155,17 +176,10 @@ countries_sp[list_methods] <-
 
 countries_sp |> saveRDS("data/countries_sp.RDS")
 
-
 # Meta indicators
 # We need to get this information directly from methods. But, for now,
 # we are going to get this from a .csv
 
 meta_indicators <- read.csv2("data/config/meta_indicators.csv")
+meta_indicators <- meta_indicators[order(meta_indicators$groups),]
 meta_indicators |> saveRDS("data/meta_indicators.RDS")
-
-groups <- unique(meta_indicators$cod_group)
-lists_indicators <- lapply(groups, \(g,i = meta_indicators) {
-  setNames(i$cod_var[i$cod_group == g], i$name[i$cod_group == g])
-})
-names(lists_indicators) <- groups
-lists_indicators |> saveRDS("data/lists_indicators.RDS")

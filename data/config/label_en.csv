@@ -25,4 +25,7 @@ tab_name.trade;Trade
 co_select_country.placeholder;Search a country...
 big.mark;,
 decimal.mark;.
-hours;hours
+hours;h
+co_panel_download_country;Download country data
+co_panel_download_sector;Download sector data
+co_panel_sector_title;Sector data
