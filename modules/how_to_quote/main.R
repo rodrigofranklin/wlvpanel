@@ -9,13 +9,13 @@
 TABPANEL <- tabPanel(
   l("tab_name.how_to_quote"),
   absolutePanel(
-    top = 45,
+    top = bar_height,
     left = 0,
     right = 0,
-    height = "calc(100vh - 45px)",
-    style = "margin:0px !important;
-      padding: 10px;
-      background-color: rgba(252,252,252,1);",
+    style = paste0("margin:0px !important;",
+                   "height: calc(100vh - ",bar_height,"px);",
+                   "padding: 10px;",
+                   "background-color: ",panel_bgcolor,";"),
     
     absolutePanel(
       width = "calc(100vw - 20px)",

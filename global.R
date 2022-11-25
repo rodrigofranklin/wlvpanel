@@ -11,8 +11,7 @@ sea_countries <- readRDS("data/sea_countries.RDS")
 sea_sectors <- readRDS("data/sea_sectors.RDS")
 meta_methods <- readRDS("data/meta_methods.RDS")
 meta_indicators <- readRDS("data/meta_indicators.RDS")
-lists_indicators <- readRDS("data/lists_indicators.RDS")
-
+groups <- meta_indicators$groups |> unique()
 countries_sp  <- readRDS("data/countries_sp.RDS")
 
 ## Theme definition ####
@@ -26,9 +25,16 @@ theme <- "simplex"
 bar_height <- 41
 item_color <- "darkgrey"
 bg_color <- "white"
+panel_bgcolor <- "rgba(252,252,252,1)"
 
 ## Initial setup ####
+default_indicator <- "surplus_value.empe.r.pc"
 default_language <- colnames(language_file)[2]
+profile_indicators <- c("surplus_value.empe.r.pc",
+                        "gdp.s.mv",
+                        "gdp.s.us",
+                        "labour_force_value.m.mv",
+                        "abstract_labour.empe.m.mv")
 base1 <- "WIOD13"
 base2 <- "WIOD16"
 base3 <- "WIOD13"
@@ -52,33 +58,39 @@ f2s <-  function (x, ind = NULL, type = NULL, lang = "English") {
     x
   } else {
     # reduce order of magnitude
+    x.abs <-  x |> abs()
     suffix <- ""
-    if (x >= 1000000000000) {
+    if (x.abs >= 1000000000000) {
       x <- x/1000000000000
-      suffix <- " T"
-    } else if (x >= 1000000000) {
+      suffix <- "T"
+    } else if (x.abs >= 1000000000) {
       x <- x/1000000000
-      suffix <- " G"
-    } else if (x >= 1000000) {
+      suffix <- "G"
+    } else if (x.abs >= 1000000) {
       x <- x/1000000
-      suffix <- " M"
-    } else if (x >= 1000) {
+      suffix <- "M"
+    } else if (x.abs >= 1000) {
       x <- x/1000
-      suffix <- " K"
+      suffix <- "K"
     }
     
+    # Get indicator type
+    type <- meta_indicators$type[meta_indicators$value == ind]
+    if (type == "percent") {x <- x * 100}
+
     # defines nsmall
-    if (x >=100) {
+    x.abs <-  x |> abs()
+    if (x.abs >=100) {
       x <- round(x, 0)
       ns <- 0
-    } else if (x >= 10) {
+    } else if (x.abs >= 10) {
       x <- round(x, 1)
       ns <- 1
     } else {
       x <- round(x, 2)
       ns <- 2
     }
-    
+
     # Format number
     x <- format(x, 
                 big.mark = lb("big.mark", lang), 
@@ -86,12 +98,11 @@ f2s <-  function (x, ind = NULL, type = NULL, lang = "English") {
                 nsmall = ns)
 
     # add suffix and prefix
-    type <- meta_indicators$type[meta_indicators$cod_var == ind]
     switch (type,
             "index" = paste0(x, suffix),
             "usd" = paste0("US$ ", x, suffix),
             "value" = paste0(x, suffix, " mv"),
-            "hours" = paste0(x, suffix, " ", lb("hours", lang)),
+            "hours" = paste0(x, suffix, lb("hours", lang)),
             "integer" = paste0(x, suffix),
             "percent" = paste0(x, suffix, "%"))
   }

@@ -17,14 +17,14 @@ setup_panel <- tagList(
       left = 0,
       right = 0,
       bottom = 0,
-      style = "background-color: rgba(252, 252, 252, 1);
-        text-align: center;
-        z-index: 100000;",
+      style = paste0("background-color: ", panel_bgcolor,";",
+                     "text-align: center;",
+                     "z-index: 100000;"),
       img(
         src = "spinner.gif",
-        style = "position: fixed;
-          top: calc(50vh - 5px);
-          left: calc(50vw - 8px);"
+        style = paste0("position: fixed;",
+                       "top: calc(50vh - 5px);",
+                       "left: calc(50vw - 8px);")
   ))),
   
   # setup Button
