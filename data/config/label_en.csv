@@ -29,3 +29,6 @@ hours;h
 co_panel_download_country;Download country data
 co_panel_download_sector;Download sector data
 co_panel_sector_title;Sector data
+co_info_Code;Code:
+co_info_Description;Description:
+co_info_Observations;Observations:
