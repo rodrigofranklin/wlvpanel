@@ -1,10 +1,20 @@
 ### Global ####
 
-# Format labels numbers for legend
-axis_f2s <- function(ind, lng) {
-  function(cuts) {
-    list_f2s(cuts, ind, NA, lng)
-  }
+mycolors <- c('#E41A1C',
+              '#377EB8',
+              '#4DAF4A',
+              '#984EA3',
+              '#FF7F00',
+              '#FFFF33',
+              '#A65628',
+              '#F781BF' )
+
+tickf2s <- function(ind) {
+  type <- meta_indicators$type[meta_indicators$value == ind]
+  if (type == "percent")
+    "~%"
+  else
+    ".3s"
 }
 
 # Panel for graphics and "loading..."
@@ -234,29 +244,25 @@ country_panel <- conditionalPanel(
                     style = "padding-right: 10px;",
                     div(
                       style ="position: sticky; top: 0px;",
-                      p(
-                        l("co_panel_sector_title"),
-                        " - ", 
-                        textOutput("co_panel_year", inline = TRUE),
-                        style = paste0("text-align: center;",
-                                       "font-weight: bold;",
-                                       "font-size: 24px"),
-                        
-                        div(
-                          class = "panel panel-default",
-                          textOutput("co_panel_sector_indicator") |>
-                            div(class = "panel-heading",
-                                style = paste0("background-image:none;",
-                                               "background: white;",
-                                               "font-size:16px;",
-                                               "font-weight: bold;",
-                                               "padding: 3px 5px;")),
-                          uiOutput("co_sector_panel",
-                                   inline = TRUE) |>
-                            div(
-                                   class = "panel-body",
-                                   style = "padding: 0px; width:400px;")
-                        )
+                      div(
+                        class = "panel panel-default",
+                        span(
+                          l("co_panel_sector_title"),"-",
+                          textOutput("co_panel_sector_indicator", inline = TRUE),
+                          "-", 
+                          textOutput("co_panel_year", inline = TRUE)) |>
+                          div(class = "panel-heading",
+                              style = paste0("text-align: center;",
+                                             "background: white;",
+                                             "font-size:16px;",
+                                             "font-weight: bold;",
+                                             "padding: 3px 5px;")),
+                        uiOutput("co_sector_panel",
+                                 inline = FALSE,
+                                 container = div,
+                                 class = "panel-body",
+                                 style = paste0("padding: 0px;",
+                                                "height: calc(100vh - 220px);"))
                       )
                     )
                   )
@@ -270,15 +276,68 @@ country_panel <- conditionalPanel(
   )
 )
 
+## Indicator_info_panel ####
+co_info_panel <- conditionalPanel(
+  "output.show_info_panel !=0",
+  
+  absolutePanel(
+    id = "info_background",
+    style = paste0("position: fixed !important;",
+                   "top: ", bar_height,"px;",
+                   "left: 0px;",
+                   "right: 0px;",
+                   "bottom: 0px;",
+                   "background-color: ", bg_color, ";",
+                   "opacity: 0.7;",
+                   "text-align: center;",
+                   "z-index: 1000;")),
+  
+  absolutePanel(
+    top = "calc(50vh - 30vh)",
+    left = "calc(50vw - 30vw)",
+    width = "60vw",
+    class="panel panel-default",
+    style = "z-index: 1000;",
+    div(class = "panel-heading",
+        textOutput("co_info_indicator") |> tags$strong(),
+        actionLink(
+          "info_close_button",
+          label = NULL,
+          top = 5,
+          right = 5,
+          style = "
+              position: absolute;
+              top: 5px;
+              right: 10px;
+              padding: 0px;
+              font-size: 14px;
+              color: gray;
+            ",
+          icon = icon("times")
+        )
+    ),
+    
+    div(class = "panel-body",
+        uiOutput("co_info_text"))
+  ) 
+)
+
 ### Server ####
 
 country_panel_server <-  function(IP, OP, RV, SESSION) {
   
   ## Open/close system for country_panel ####
   show_country_panel <- reactiveVal("")
+  co_panel_sector_indicator <- reactiveVal("")
+  co_panel_year <- reactiveVal("")
   OP$show_country_panel <- renderText(show_country_panel())
   outputOptions(OP,"show_country_panel", suspendWhenHidden = FALSE)
-  observeEvent(IP$co_select_country, show_country_panel(IP$co_select_country))
+  observeEvent(IP$co_select_country,{
+    show_country_panel(IP$co_select_country)
+    co_panel_sector_indicator(IP$co_select_indicator)
+    co_panel_year(IP$co_select_year)
+  })
+
   observeEvent(IP$close_country_panel, 
                updateSelectizeInput(inputId = "co_select_country", selected = ""))
   
@@ -286,7 +345,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
   observe({
     year_max <- RV$yearmax()
     year_min <- RV$yearmin()
-    year <- NULL
+    year <- co_panel_year()
     if (IP$co_panel_year |> isolate() > year_max) {
       year <- year_max
     } else if (IP$co_panel_year |> isolate() < year_min) {
@@ -310,68 +369,54 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
       lng <- IP$l |> isolate()
       country <- IP$co_select_country
       graph_width <- 375
-      
+
       # loading...
       graph <- div(
         style = "height: 220px; text-align: center; padding: 80px;",
         img(src = "/spinner.gif"))
       if (country == "") 
         return(graph_panel(graph, graph_width, indicator))
-
+      
+      # get data
       years <- year_min:year_max
       data <- sea_countries[methods,years |> as.character(),indicator,country]
-      if (data |> sum(na.rm = TRUE) == 0) return() # NULL if has no data
       
-      # prepare data.frame for ggplot
-      data <- data |> t() |> as.data.frame()
-      data$year <- years
-      data <- data |> 
-        pivot_longer(-year, 
-                     names_to = "method", 
-                     values_to = "value")
+      # NULL if has no data
+      if (data |> sum(na.rm = TRUE) == 0) return()
       
       # labels for axis x
       if((length(years) %% 2) != 0) {
         half <- (length(years)+1)/2
-        break_years <- c(years |> min(),
+        break_years <- c(year_min,
                          years[half],
-                         years |> max())
+                         year_max)
       } else {
         half <- (length(years))/2
-        break_years <- c(years |> min(),
+        break_years <- c(year_min,
                          years[half-1],
                          years[half+2],
-                         years |> max())
+                         year_max)
       }
       
-      # include horizontal line
-      if (min(data$value, na.rm = TRUE)<0 & max(data$value, na.rm = TRUE)>0) {
-        hline <- geom_hline(yintercept=0, size = 0.1, color = "grey80")
-      } else {
-        hline <- NULL
-      }
-      
-      # data for tooltips
-      data$data <- list_f2s(data$value,indicator,NA,lng)
-      
-      # the graph, properly
-      graph <- (data |>
-                  ggplot(aes(x=year,y=value,col=method, text=data)) +
-                  geom_line(size = 0.5, na.rm = TRUE)  +
-                  geom_point(aes(fill=method), colour = "white", size = 1, stroke = 0.5)+
-                  hline +
-                  scale_x_continuous(breaks = break_years) +
-                  scale_y_continuous(labels = axis_f2s(indicator, lng))+
-                  theme_classic() +
-                  theme(plot.margin = unit(c(0,0,0,0), "cm"),
-                        panel.spacing = unit(0, "mm"),
-                        axis.title = element_blank(),
-                        axis.line = element_blank(),
-                        axis.ticks = element_blank(),
-                        axis.text = element_text(size = 8, 
-                                                 colour = "grey60"))) |>
-        ggplotly(tooltip = c("year","data"), width = graph_width, height = 220) |>
+      # Initialize graph area
+      graph <- plot_ly(
+        type = "scatter",
+        mode = "lines+markers",
+        marker = list(size = 5, line = list(color = "white", width = 2.5)),
+        hoverinfo = "text",
+        width = graph_width-10, height = 220) |>
         layout(hovermode = "x",
+               separators = paste0(lb("big.mark", lng),lb("decimal.mark", lng)),
+               xaxis = list(title = "",
+                            showgrid = FALSE,
+                            range = c(year_min, year_max),
+                            tickvals = break_years),
+               yaxis = list(title = "",
+                            showgrid = FALSE,
+                            zeroline = TRUE,
+                            zerolinecolor = "#E6E6E6",
+                            zerolinewidth = 1,
+                            tickformat = tickf2s(indicator)),
                legend = list(title = "", 
                              orientation = "h", 
                              y="-0.1", 
@@ -381,20 +426,33 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
         config(displaylogo = FALSE,
                displayModeBar = FALSE)
       
+      # add methods trace
+      for (x in 1:length(methods)) {
+        text_data <- data[x,]
+        if (text_data |> sum(na.rm = TRUE) != 0) {
+          text_data <- text_data[text_data |> is.na() |> not()]
+          text_data <-  list_f2s(text_data, indicator, lng = lng)
+          graph <- graph |>
+            add_trace(
+              x = years,
+              y = data[x,],
+              text = text_data,
+              name = methods[x],
+              color = I(mycolors[x]))
+        }
+      }
+
       # Indicator Graph Panel
       graph_panel(graph, graph_width, indicator)
-
     })
   
-    # outputOptions(OP,paste0(indicator,"_plot"), suspendWhenHidden = FALSE)
-    
     observeEvent(IP[[paste0(indicator,"_info")]],{
-      info_indicator(indicator)
+      co_info_indicator(indicator)
       show_info_panel(1)
     })
     
     observeEvent(IP[[paste0(indicator,"_title")]], ignoreInit = TRUE, {
-      updateSelectInput(inputId = "indicator", selected = indicator)
+      co_panel_sector_indicator(indicator)
     })
   })  
   
@@ -404,12 +462,27 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
   OP$show_info_panel <- renderText(show_info_panel())
   outputOptions(OP,"show_info_panel", suspendWhenHidden = FALSE)
   observeEvent(IP$info_close_button, show_info_panel(0))
-  # onclick(id = "info_background", show_info_panel(0))
-  
+
   # Select indicator
-  info_indicator <- reactiveVal("")
-  OP$info_indicator <- renderText({
-    
+  co_info_indicator <- reactiveVal("")
+  OP$co_info_indicator <- renderText({
+    lng <- IP$l
+    indicator <- co_info_indicator()
+    lb(indicator,lng)})
+  
+  # Indicator informations
+  OP$co_info_text <- renderUI({
+    tagList(
+      p(strong(l("co_info_Code")),
+        co_info_indicator(),
+        style = "text-align: justifY;"),
+      p(strong(l("co_info_Description")),
+        l(paste0("desc.",co_info_indicator())),
+        style = "text-align: justifY;"),
+      p(strong(l("co_info_Observations")),
+        l(paste0("obs.",co_info_indicator())),
+        style = "text-align: justifY;")
+    )
   })
   
   ## Profile Panel ####
@@ -438,21 +511,20 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
     profile_table <- profile_table[,-1] |> t()
     rownames(profile_table) <- lb(profile_indicators, lng)
     
-    profile_table
-  },
-  server = F,
-  rownames = TRUE,
-  class = "profile_table",
-  options = list(
-    ordering = FALSE,
-    searching = FALSE,
-    paging = FALSE,
-    columnDefs = list(list(className = 'dt-left', targets = 0),
-                      list(className = 'dt-right', targets = "_all")),
-    paging = FALSE,
-    info = FALSE,
-    lengthChange = FALSE)
-  )
+    profile_table |> datatable(
+      rownames = TRUE,
+      class = "profile_table",
+      options = list(
+        ordering = FALSE,
+        searching = FALSE,
+        paging = FALSE,
+        columnDefs = list(
+          list(className = 'dt-right', targets = c(1:length(methods))),
+          list(className = 'dt-left', targets = 0)),
+        paging = FALSE,
+        info = FALSE,
+        lengthChange = FALSE))
+  }, server = FALSE)
   outputOptions(OP,"co_panel_profile", suspendWhenHidden = FALSE)
   
   ## Download links ####
@@ -490,71 +562,62 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
   })
   outputOptions(OP,"sector_data_link", suspendWhenHidden = FALSE)
   
-  ## Sectoral tabel ####
+  ## Sector table ####
+  OP$co_panel_sector_indicator <- renderText({
+    lng <- IP$l
+    indicator <- co_panel_sector_indicator()
+    lb(indicator,lng)})
+  outputOptions(OP, "co_panel_sector_indicator", suspendWhenHidden = FALSE)
   OP$co_panel_year <- renderText(IP$co_panel_year)
-  OP$co_panel_sector_indicator <- renderText("TESTE")
 
-  
+  # TabsetPanel
   OP$co_sector_panel <- renderUI({
-    lng <- IP$l |> isolate()
-    year <- IP$co_panel_year |> as.character()
+    methods <- RV$bases()
     country <- IP$co_select_country
-    indicator <- "surplus_value.empe.r.pc"
-    methods <- RV$bases() |> isolate()
-    method <- methods[1]
-    
-    # do.call("tabsetPanel", c(
-    #   lapply(methods, \(method){
-    #     tabPanel(method,{
-    #       data <- sea_sectors[[method]][year,indicator,,country]
-    #       mydt <- data |> list_f2s(indicator, NULL, lng) |> unlist()
-    #       names(mydt) <- 
-    #         lb(paste0(meta_methods$source[meta_methods$code==method],
-    #                   ".",names(data)), lng)
-    #       
-    #       mydt |> as.data.frame() |> datatable(
-    #         rownames = TRUE,
-    #         colnames = c(""),
-    #         height = "calc(100vw - 850px)",
-    #         fillContainer = FALSE,
-    #         options = list(
-    #           ordering = TRUE,
-    #           class = "compact",
-    #           searching = FALSE,
-    #           paging = FALSE,
-    #           scrollY= "calc(100vh - 280px)",
-    #           info = FALSE,
-    #           lengthChange = FALSE))
-    #     })
-    #   })
-    # ))
-    
-    RV$debug(method)
-    
-    tabsetPanel(
-      tabPanel(
-        methods[1],{
-          data <- sea_sectors[[method]][year,indicator,,country]
-          mydt <- data |> list_f2s(indicator, NULL, lng) |> unlist()
-          names(mydt) <-
-            lb(paste0(meta_methods$source[meta_methods$code==method],
-                      ".",names(data)), lng)
-          
-          mydt |> as.data.frame() |> datatable(
-            rownames = TRUE,
-            colnames = c(""),
-            height = "calc(100vw - 850px)",
-            fillContainer = FALSE,
-            options = list(
-              ordering = TRUE,
-              class = "compact",
-              searching = FALSE,
-              paging = FALSE,
-              scrollY= "calc(100vh - 280px)",
-              info = FALSE,
-              lengthChange = FALSE))
-        }
-      )
-    )
+    if (country == "") 
+      return(div(style = "height: 220px; text-align: center; padding: 80px;",
+        img(src = "/spinner.gif")))
+    do.call("tabsetPanel", lapply(methods, \(method){
+      tabPanel(method,dataTableOutput(paste0("co_panel_sector_",method)))
+    }))
   })
+
+  # Each TabPanel
+  lapply(meta_methods$code, function(method){
+    OP[[paste0("co_panel_sector_",method)]] <- renderDataTable({
+        lng <- IP$l
+        year <- IP$co_panel_year |> as.character()
+        country <- IP$co_select_country
+        indicator <- co_panel_sector_indicator()
+        
+        temp_sectors <- sea_sectors[[method]]
+        if (year %in% names(temp_sectors[,1,1,1]) &
+            country %in% names(temp_sectors[1,1,1,]) &
+            indicator %in% names(temp_sectors[1,,1,1])) {
+          mydt <- temp_sectors[year,indicator,,country]
+          mydt <- mydt |> list_f2s(indicator, NULL, lng) |> unlist()
+        } else {
+          mydt <- rep("-", times = temp_sectors[1,1,,1] |> length())
+        }
+        names(mydt) <-
+          lb(paste0(meta_methods$source[meta_methods$code==method],
+                    ".",names(temp_sectors[1,1,,1])), lng)
+        
+        mydt |> as.data.frame() |> datatable(
+          rownames = TRUE,
+          colnames = c(""),
+          width = "calc(100vw - 850px)",
+          fillContainer = FALSE,
+          options = list(
+            ordering = TRUE,
+            class = "compact",
+            searching = FALSE,
+            paging = FALSE,
+            scrollY= "calc(100vh - 280px)",
+            info = FALSE,
+            columnDefs = list(list(className = 'text-nowrap', targets = 1)),
+            lengthChange = FALSE))
+    }, server = FALSE)
+  })
+
 }

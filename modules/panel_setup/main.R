@@ -49,10 +49,10 @@ setup_panel <- tagList(
       left = 0,
       right = 0,
       bottom = 0,
-      style = paste0("background-color: ", bg_color, ";
-        opacity: 0.7;
-        text-align: center;
-        z-index: 5000;")
+      style = paste0("background-color: ", bg_color, ";",
+                     "opacity: 0.7;",
+                     "text-align: center;",
+                     "z-index: 5000;")
     ),
     # Setup Panel
     absolutePanel(

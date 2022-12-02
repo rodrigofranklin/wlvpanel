@@ -101,7 +101,7 @@ f2s <-  function (x, ind = NULL, type = NULL, lang = "English") {
     switch (type,
             "index" = paste0(x, suffix),
             "usd" = paste0("US$ ", x, suffix),
-            "value" = paste0(x, suffix, " mv"),
+            "value" = paste0(x, suffix, "mv"),
             "hours" = paste0(x, suffix, lb("hours", lang)),
             "integer" = paste0(x, suffix),
             "percent" = paste0(x, suffix, "%"))

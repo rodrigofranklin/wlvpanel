@@ -16,7 +16,9 @@ TABPANEL <- tabPanel(
   
   panel_of_inputs,
   
-  country_panel
+  country_panel,
+  
+  co_info_panel
 
 )
 
