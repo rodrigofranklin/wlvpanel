@@ -35,11 +35,7 @@ profile_indicators <- c("surplus_value.empe.r.pc",
                         "gdp.s.us",
                         "labour_force_value.m.mv",
                         "abstract_labour.empe.m.mv")
-base1 <- "WIOD13"
-base2 <- "WIOD16"
-base3 <- "WIOD13"
-base4 <- "WIOD16"
-
+init_bases <- c("WIOD13", "WIOD16")
 
 ## functions ####
 # Label function to be used on UI side: create textOutput for labels calls

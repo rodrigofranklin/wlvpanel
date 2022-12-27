@@ -124,21 +124,35 @@ map_server <- function(IP, OP, RV, SESSION){
   ## Change input controls accordingly bases selected in setup panel ####
   observe({
     methods <- RV$bases()
+    indicator <- IP$co_select_indicator |> isolate()
     lng <- IP$l
     
     temp_data <- sea_countries[methods,,,]
     
-    # Update indicators list
-    indicators <- temp_data[1,1,,1] |> names()
-    indicators <- indicators[temp_data[,1,,1] |> colSums(na.rm = TRUE) !=0]
-    
-    if (IP$co_select_indicator |> isolate() == "" | 
-        IP$co_select_indicator |> isolate() %in% indicators |> not()) {
-      selected_indicator <- default_indicator
+    if (methods |> length() > 1) {
+      years <- temp_data[1,,1,1] |> names()
+      years <- years[temp_data[,,1,1] |> colSums(na.rm = TRUE) !=0]
+      indicators <- temp_data[1,1,,1] |> names()
+      indicators <- indicators[temp_data[,1,,1] |> colSums(na.rm = TRUE) !=0]
+      countries <- temp_data[1,1,1,] |> names()
+      countries <- countries[temp_data[,1,1,] |> colSums(na.rm = TRUE) !=0]
     } else {
-      selected_indicator <- IP$co_select_indicator |> isolate()
+      years <- temp_data[,1,1] |> names()
+      years <- years[temp_data[,1,1] |> is.na() |> not()]
+      indicators <- temp_data[years,,1] |> colnames()
+      indicators <- indicators[temp_data[years,,1] |> colSums(na.rm = TRUE) !=0]
+      countries <- temp_data[years,1,] |> colnames()
+      countries <- countries[temp_data[years,1,] |> colSums(na.rm = TRUE) !=0]
     }
     
+    if (indicator == "" | 
+        indicator %in% indicators |> not()) {
+      selected_indicator <- default_indicator
+    } else {
+      selected_indicator <- indicator
+    }
+    
+    # Update indicators list
     indicators <- meta_indicators[
       meta_indicators$value %in% indicators,
       c("value","groups")]
@@ -150,11 +164,10 @@ map_server <- function(IP, OP, RV, SESSION){
       inputId = "co_select_indicator",
       choices = indicators,
       selected = selected_indicator,
-      server = TRUE)
+      server = TRUE,
+      options = list(placeholder = lb("co_select_indicator.placeholder", lng)))
     
     # Update countries list
-    countries <- temp_data[1,1,1,] |> names()
-    countries <- countries[temp_data[,1,1,] |> colSums(na.rm = TRUE) !=0]
     names(countries) <- lb(paste0("ISO3.",countries), lng)
     updateSelectizeInput(
       inputId = "co_select_country",
@@ -166,8 +179,6 @@ map_server <- function(IP, OP, RV, SESSION){
       ))
     
     # Update years
-    years <- temp_data[1,,1,1] |> names()
-    years <- years[temp_data[,,1,1] |> colSums(na.rm = TRUE) !=0]
     year <- NULL
     year_max <- years |> max()
     year_min <- years |> min()
@@ -227,7 +238,9 @@ map_server <- function(IP, OP, RV, SESSION){
   ## Change layers #####
   # 1) Change layers control after setup selection
   # 2) Hide unchosed layers
+  # 3) If has no basegroup selected, select the first one
   observe({
+    method <- IP$map_groups |> isolate()
     methods <- RV$bases()
     proxy <- leafletProxy("map")
     
@@ -240,6 +253,11 @@ map_server <- function(IP, OP, RV, SESSION){
     lapply(
       list_methods[(list_methods %in% methods) |> not()],
       \(i) proxy |> hideGroup(i))
+    
+    req(method)
+    if (method %in% methods |> not()) {
+      proxy |> showGroup(methods[1])
+    }
   })
   
   ## Change data ####
@@ -315,7 +333,7 @@ map_server <- function(IP, OP, RV, SESSION){
     pallet <- pallet()
     labels <- labels()
     proxy <- leafletProxy("map")
-    
+
     lapply(methods,
            function(method) {
              layer_data <- map_data[[method]]
@@ -342,27 +360,31 @@ map_server <- function(IP, OP, RV, SESSION){
   # Change legend with layer
   observe({
     method <- IP$map_groups
-    methods <- RV$bases()
+    methods <- RV$bases() |> isolate()
     map_data <- map_data()
     pallet <- pallet()
     indicator <- IP$co_select_indicator
     lng <- IP$l
-    
+
     req(method)
     req(map_data)
     req(indicator)
-    
+
     proxy <- leafletProxy("map")
-    proxy |> 
+    proxy |>
       clearControls()
     if (method %in% methods |> not()) return()
-    if (map_data[[method]]@data$data |> sum(na.rm = TRUE) != 0)
+    if (map_data[[method]]@data$data |> sum(na.rm = TRUE) != 0) {
       proxy |>
-      addLegend("bottomright",
-                values = map_data[[method]]@data$data,
-                pal = pallet[[method]],
-                labFormat = label_f2s(indicator, lng))
-    
+        addLegend("bottomright",
+                  # informing values as an interval to solve a bug when there 
+                  # is only one number
+                  values = c(map_data[[method]]@data$data |> min() *0.99999999,
+                             map_data[[method]]@data$data |> max() *1.00000001),
+                  pal = pallet[[method]],
+                  labFormat = label_f2s(indicator, lng))
+    }
+
     # De-active loading panel
     OP$loading <- renderText("")
   })
