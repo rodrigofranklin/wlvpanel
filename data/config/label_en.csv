@@ -1,12 +1,9 @@
 cod_label;label
 ps.title.setup_panel;Setup panel
 tab_name.how_to_quote;How to Quote
-ps.language;Language
+ps.language;Language:
 ps.bases_info;Bases Info
-ps.base_1;Base 1
-ps.base_2;Base 2
-ps.base_3;Base 3
-ps.base_4;Base 4
+ps.bases_label;Select bases:
 ps.title.bases_info;Bases Info
 DESC.rpA1;
 DESC.rpA2;
@@ -23,6 +20,7 @@ text.quote;When using the data or code in papers, analysis, rehearsals or other 
 tab_name.countries;Countries
 tab_name.trade;Trade
 co_select_country.placeholder;Search a country...
+co_select_indicator.placeholder;Select na indicator...
 big.mark;,
 decimal.mark;.
 hours;h

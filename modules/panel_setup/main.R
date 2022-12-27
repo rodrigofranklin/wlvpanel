@@ -2,8 +2,6 @@
 
 ## GLOBAL ###########
 
-# list_methods
-list_methods <- meta_methods$code
 languages <- colnames(language_file)
 
 ## UI ##############
@@ -89,10 +87,10 @@ setup_panel <- tagList(
               td(
                 width = "30%",
                 height = "25px",
-                style = "
-                  padding-bottom: 15px !important; 
-                  vertical-align:middle; 
-                  font-weight: bold",
+                style = paste0("padding-bottom: 15px !important;", 
+                               "text-align: left;", 
+                               "vertical-align: middle;", 
+                               "font-weight: bold"),
                 l("ps.language")
               ),
               td(
@@ -120,79 +118,46 @@ setup_panel <- tagList(
                     tr(
                       td(
                         width = "80%",
-                        table(
+                        style = paste0("text-align:left;", 
+                                       "font-weight: bold"),
+                        l("ps.bases_label")
+                        ),
+                      td(
+                        width = "20%",
+                        actionButton("info_bases", label = l("ps.bases_info")))
+                    ),
+                    tr(
+                      td(
+                        colspan = 2,
+                        style = paste0("padding: 5px 0px 5px 0px"),
+                        selectizeInput(
+                          "bases",
+                          label = NULL,
+                          choices = meta_methods[,c("code", "source")],
+                          selected = init_bases,
                           width = "100%",
-                          tr(
-                            td(
-                              style = "padding-bottom: 15px;",
-                              width = "20%",
-                              l("ps.base_1") |> div(style = "vertical-align:middle;")
-                            ),
-                            td(
-                              style = "padding: 0px 20px 0px 20px;",
-                              width = "80%",
-                              selectInput(
-                                "base1",
-                                label = NULL,
-                                width = "100%",
-                                choices = list_methods,
-                                selected = base1
-                          ))),
-                          tr(
-                            td(
-                              style = "padding-bottom: 15px;",
-                              width = "20%",
-                              l("ps.base_2") |> div(style = "vertical-align:middle;")
-                            ),
-                            td(
-                              style = "padding: 0px 20px 0px 20px;",
-                              width = "80%",
-                              selectInput(
-                                "base2",
-                                label = NULL,
-                                width = "100%",
-                                choices = list_methods,
-                                selected = base2
-                              ))),
-                          tr(
-                            td(
-                              style = "padding-bottom: 15px;",
-                              width = "20%",
-                              l("ps.base_3") |> div(style = "vertical-align:middle;")
-                            ),
-                            td(
-                              style = "padding: 0px 20px 0px 20px;",
-                              width = "80%",
-                              selectInput(
-                                "base3",
-                                label = NULL,
-                                width = "100%",
-                                choices = list_methods,
-                                selected = base3
-                              ))),
-                          tr(
-                            td(
-                              style = "padding-bottom: 15px;",
-                              width = "20%",
-                              l("ps.base_4") |> div(style = "vertical-align:middle;")
-                            ),
-                            td(
-                              style = "padding: 0px 20px 0px 20px;",
-                              width = "80%",
-                              selectInput(
-                                "base4",
-                                label = NULL,
-                                width = "100%",
-                                choices = list_methods,
-                                selected = base4
-  ))))),
-  td(
-    width = "20%",
-    actionButton("info_bases", label = l("ps.bases_info")))
-))))))))) |> 
-  # jqui_draggable are required to solve problem with selectize input within 
-  # a draggable panel
-  jqui_draggable(options = list(cancel = ".selectize-control"))),
+                          multiple = TRUE,
+                          options = list(
+                            valueField = "code",
+                            labelField = "code",
+                            render = 
+                              I("{option: function(item, escape) {
+ return '<table width = 100% style=\"text-align: left; margin-left:5px;\">'+
+          '<tr><td width = 50%>' +
+            '<strong>method: </strong>' + escape(item.code) + 
+          '</td><td width = 50%>' +
+            '<strong>source: </strong>' + item.source + 
+        '</td></tr></table>';
+                              }}"),
+                            maxItems = 5
+                          )
+                        )
+                      )
+                    )
+                    )))))))) |> 
+      # jqui_draggable are required to solve problem with selectize input within 
+      # a draggable panel
+      jqui_draggable(options = list(cancel = ".selectize-control"))),
   
   # Bases_info_panel
   conditionalPanel(
@@ -247,10 +212,21 @@ SERVER <- function(IP, OP, RV, SESSION) {
   # Bases selection
   RV$bases <- reactive({
     IP$setup_close_button
-    unique(c(IP$base1 |> isolate(),
-             IP$base2 |> isolate(),
-             IP$base3 |> isolate(),
-             IP$base4 |> isolate()))})
+    IP$bases |> isolate()
+    # temp_bases <- unique(c(IP$base1 |> isolate(),
+    #                        IP$base2 |> isolate(),
+    #                        IP$base3 |> isolate(),
+    #                        IP$base4 |> isolate(),
+    #                        IP$base5 |> isolate()))
+    # temp_bases[temp_bases != ""]
+  })
+  
+  updateSelectizeInput(
+    inputId = "bases",
+    choices = meta_methods[,c("code", "source")],
+    selected = init_bases,
+    server = TRUE
+  )
 
   # Open/close system for bases_info_panel
   show_bases_info_panel <- reactiveVal(1)

@@ -1,5 +1,6 @@
 ### Global ####
 
+# Colors for graphics lines
 mycolors <- c('#E41A1C',
               '#377EB8',
               '#4DAF4A',
@@ -9,6 +10,7 @@ mycolors <- c('#E41A1C',
               '#A65628',
               '#F781BF' )
 
+# Format for yaxis in graphics
 tickf2s <- function(ind) {
   type <- meta_indicators$type[meta_indicators$value == ind]
   if (type == "percent")
@@ -148,8 +150,7 @@ country_panel <- conditionalPanel(
                       dataTableOutput("co_panel_profile") |>
                         div(
                           class = "panel-body",
-                          style = paste0("background-image:none;",
-                                         "background: white;",
+                          style = paste0("background: white;",
                                          "padding: 0px;")))
                   ),
                   td(
@@ -179,8 +180,7 @@ country_panel <- conditionalPanel(
                         )
                       ) |> 
                         div(class = "panel-heading",
-                            style = paste0("background-image:none;",
-                                           "background: white;",
+                            style = paste0("background: white;",
                                            "font-size: 16px;",
                                            "padding: 5px 15px !important;")),
                       tags$table(
@@ -203,8 +203,7 @@ country_panel <- conditionalPanel(
                             style = "text-align: center;font-size: 12px"))
                       )|>
                         div(class = "panel-heading",
-                            style = paste0("background-image:none;",
-                                           "background: white;",
+                            style = paste0("background: white;",
                                            "font-size: 16px;",
                                            "padding: 5px 15px !important;"))
                     ) 
@@ -403,7 +402,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
         type = "scatter",
         mode = "lines+markers",
         marker = list(size = 5, line = list(color = "white", width = 2.5)),
-        hoverinfo = "text",
+        hoverinfo = "text+x",
         width = graph_width-10, height = 220) |>
         layout(hovermode = "x",
                separators = paste0(lb("big.mark", lng),lb("decimal.mark", lng)),
@@ -427,6 +426,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
                displayModeBar = FALSE)
       
       # add methods trace
+      data <- rbind(data, data) # to avoid "incorret number of dimensios" error
       for (x in 1:length(methods)) {
         text_data <- data[x,]
         if (text_data |> sum(na.rm = TRUE) != 0) {
