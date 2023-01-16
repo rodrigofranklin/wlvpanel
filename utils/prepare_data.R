@@ -78,6 +78,7 @@ method_list <- method_list[file.exists(method_parameters)]
 ## and create lists of arrays dimensions
 sea_countries <- NULL
 sea_sectors <- NULL
+m_countries <- NULL
 list_years <- NULL
 list_sea_variables <- NULL
 list_countries <- NULL
@@ -90,6 +91,7 @@ for (x in method_list) {
   
   sea_countries$temp <- read_fst_array(file = paste0("results/",x,"/sea_countries.fst"))
   sea_sectors$temp <- read_fst_array(file = paste0("results/",x,"/sea_sectors.fst"))
+  m_countries$temp <- read_fst_array(file = paste0("results/",x,"/m_countries.fst"))
   
   # Convert ISO-2 to ISO-3
   temp_iso <- dimnames(sea_countries$temp)[[3]]
@@ -103,7 +105,16 @@ for (x in method_list) {
     iso2ToIso3(temp_iso[nchar(temp_iso) <3])
   dimnames(sea_sectors$temp)[[4]][temp_iso |> is.na() |> not()] <- 
     temp_iso[temp_iso |> is.na() |> not()]
+
+  temp_iso <- dimnames(m_countries$temp)[[3]]
+  temp_iso[nchar(temp_iso) <3] <- 
+    iso2ToIso3(temp_iso[nchar(temp_iso) <3])
+  dimnames(m_countries$temp)[[3]][temp_iso |> is.na() |> not()] <- 
+    temp_iso[temp_iso |> is.na() |> not()]
+  dimnames(m_countries$temp)[[4]][temp_iso |> is.na() |> not()] <- 
+    temp_iso[temp_iso |> is.na() |> not()]
   
+    
   # fill lists
   list_years <- 
     unique(c(list_years, rownames(sea_countries$temp[,1,])))
@@ -117,6 +128,7 @@ for (x in method_list) {
   # Rename method
   names(sea_countries)[names(sea_countries) == "temp"] <- parameters$code
   names(sea_sectors)[names(sea_sectors) == "temp"] <- parameters$code
+  names(m_countries)[names(m_countries) == "temp"] <- parameters$code
   
   # Save methods parameters
   meta_methods <- rbind(meta_methods,parameters)
@@ -145,6 +157,7 @@ for (x in list_methods){
 # write data
 sea_countries_merge |> saveRDS("data/sea_countries.RDS")
 sea_sectors |> saveRDS("data/sea_sectors.RDS")
+m_countries |> saveRDS("data/m_countries.RDS")
 meta_methods |> saveRDS("data/meta_methods.RDS")
 
 sea_countries <- sea_countries_merge

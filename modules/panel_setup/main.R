@@ -213,12 +213,6 @@ SERVER <- function(IP, OP, RV, SESSION) {
   RV$bases <- reactive({
     IP$setup_close_button
     IP$bases |> isolate()
-    # temp_bases <- unique(c(IP$base1 |> isolate(),
-    #                        IP$base2 |> isolate(),
-    #                        IP$base3 |> isolate(),
-    #                        IP$base4 |> isolate(),
-    #                        IP$base5 |> isolate()))
-    # temp_bases[temp_bases != ""]
   })
   
   updateSelectizeInput(
