@@ -121,6 +121,7 @@ TABPANEL <- tabPanel(
                   conditionalPanel(
                     "input.dl_indicator != '' |
                    input.dl_country != ''",
+                    style(HTML("#dl_sector + div>.selectize-dropdown{width: 500px !important;}")),
                     selectizeInput(
                       "dl_sector",
                       label = NULL,
@@ -362,6 +363,10 @@ SERVER <- function(IP, OP, RV, SESSION) {
   observeEvent(IP$dl_method,{
     method <- IP$dl_method
     lng <- IP$l
+    selected_country <- IP$dl_country |> isolate()
+    selected_indicator <- IP$dl_indicator |> isolate()
+    selected_sector <- IP$dl_sector |> isolate()
+    
     
     req(method)
 
@@ -369,15 +374,18 @@ SERVER <- function(IP, OP, RV, SESSION) {
 
     countries <- temp_data[,1,] |> colnames()
     countries <- countries[temp_data[,1,] |> colSums(na.rm = TRUE) !=0]
+    
     indicators <- temp_data[,,1] |> colnames()
     indicators <- indicators[temp_data[,,1] |> colSums(na.rm = TRUE) !=0]
 
     names(countries) <- lb(paste0("ISO3.",countries), lng)
+    countries <- countries[order(names(countries))]
     
     updateSelectizeInput(
       inputId = "dl_country",
       choices = countries,
       server = FALSE, # needed for placeholder to work...
+      selected = selected_country,
       options = list(
         placeholder = lb("dl_select_country.placeholder", lng),
         onInitialize = I('function() { this.setValue(""); }')
@@ -393,7 +401,7 @@ SERVER <- function(IP, OP, RV, SESSION) {
       inputId = "dl_indicator",
       choices = indicators,
       server = TRUE,
-      selected = "",
+      selected = selected_indicator,
       options = list(
         placeholder = lb("co_select_indicator.placeholder", lng)))
     
@@ -405,6 +413,7 @@ SERVER <- function(IP, OP, RV, SESSION) {
       inputId = "dl_sector",
       choices = sectors,
       server = FALSE,
+      selected = selected_sector,
       options = list(
         placeholder = lb("dl_select_sector.placeholder", lng),
         onInitialize = I('function() { this.setValue(""); }')
@@ -457,16 +466,20 @@ SERVER <- function(IP, OP, RV, SESSION) {
     method <- IP$dl_ml_method
     lng <- IP$l
     choices <- choices_ml_ind
+    selected_country <- IP$dl_ml_country |> isolate()
+    selected_partner <- IP$dl_ml_partner |> isolate()
     
     req(method)
     
     countries <- sea_sectors[[method]][1,1,1,] |> names()
     names(countries) <- lb(paste0("ISO3.",countries), lng)
+    countries <- countries[order(names(countries))]
     
     updateSelectizeInput(
       inputId = "dl_ml_country",
       choices = countries,
       server = FALSE, # needed for placeholder to work...
+      selected = selected_country,
       options = list(
         placeholder = lb("dl_select_country.placeholder", lng),
         onInitialize = I('function() { this.setValue(""); }')
@@ -476,6 +489,7 @@ SERVER <- function(IP, OP, RV, SESSION) {
       inputId = "dl_ml_partner",
       choices = countries,
       server = FALSE,
+      selected = selected_partner,
       options = list(
         placeholder = lb("dl_select_country.placeholder", lng),
         onInitialize = I('function() { this.setValue(""); }')
@@ -491,6 +505,7 @@ SERVER <- function(IP, OP, RV, SESSION) {
     
     partners <- sea_sectors[[method]][1,1,1,] |> names()
     names(partners) <- lb(paste0("ISO3.",partners), lng)
+    partners <- partners[order(names(partners))]
     partners <- partners[partners!=country]
     
     updateSelectizeInput(
