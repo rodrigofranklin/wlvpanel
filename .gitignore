@@ -4,6 +4,9 @@
 .RDataTmp
 .RDataTmp1
 .Ruserdata
+data/*.RDS
+data/download
+antigo
 dados
 dados_nuvem
 results
