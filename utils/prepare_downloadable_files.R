@@ -89,6 +89,8 @@ for (method_code in meta_methods$code) {
   
   # select only countries and indicators with data
   temp_data <- sea_countries[method_code,,,]
+  years <- temp_data[,1,1] |> names()
+  years <- years[temp_data[,1,1] |> is.na() |> not()]
   countries <- temp_data[,1,] |> colnames()
   countries <- countries[temp_data[,1,] |> colSums(na.rm = TRUE) !=0]
   indicators <- temp_data[,,1] |> colnames()
@@ -126,7 +128,7 @@ for (method_code in meta_methods$code) {
     ### Aggregated data
     country_data <- 
       t(sea_countries[method_code,
-                      order(names(sea_countries[1,,1,1])),
+                      years,
                       indicators,
                       country_code])
     country_name <- language_file[paste0("ISO3.",country_code),"English"]
@@ -221,7 +223,7 @@ for (method_code in meta_methods$code) {
   #### Indicator files ####
   for (indicator_code in indicators) {
     indicator_data <- t(sea_countries[method_code,
-                                      order(names(sea_countries[1,,1,1])),
+                                      years,
                                       indicator_code,
                                       countries])
     
