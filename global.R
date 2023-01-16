@@ -13,6 +13,7 @@ meta_methods <- readRDS("data/meta_methods.RDS")
 meta_indicators <- readRDS("data/meta_indicators.RDS")
 groups <- meta_indicators$groups |> unique()
 countries_sp  <- readRDS("data/countries_sp.RDS")
+list_methods <- meta_methods$code
 
 ## Theme definition ####
 
@@ -119,4 +120,5 @@ modules_ui <- NULL
 source("modules/panel_setup/main.R")
 source("modules/countries/main.R")
 source("modules/trade/main.R")
+source("modules/download/main.R")
 source("modules/how_to_quote/main.R")

@@ -404,7 +404,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
         marker = list(size = 5, line = list(color = "white", width = 2.5)),
         hoverinfo = "text+x",
         width = graph_width-10, height = 220) |>
-        layout(hovermode = "x",
+        plotly::layout(hovermode = "x",
                separators = paste0(lb("big.mark", lng),lb("decimal.mark", lng)),
                xaxis = list(title = "",
                             showgrid = FALSE,
@@ -472,17 +472,29 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
   
   # Indicator informations
   OP$co_info_text <- renderUI({
+    lng <- IP$l
+    indicator <- co_info_indicator()
+    methods <- RV$bases()
+    
+    # merge observations from all methods
+    observations <- NULL
+    for (method in methods) {
+      temp_obs <- lb(paste0("obs.",method,".",co_info_indicator()), lng)
+      if (temp_obs |> is.na() |> not()) {
+        observations <- paste(observations, temp_obs)
+      }
+    }
+
     tagList(
-      p(strong(l("co_info_Code")),
-        co_info_indicator(),
+      p(strong(lb("co_info_Code", lng)),
+        indicator,
         style = "text-align: justifY;"),
-      p(strong(l("co_info_Description")),
-        l(paste0("desc.",co_info_indicator())),
+      p(strong(lb("co_info_Description", lng)),
+        lb(paste0("desc.",indicator), lng),
         style = "text-align: justifY;"),
-      p(strong(l("co_info_Observations")),
-        l(paste0("obs.",co_info_indicator())),
-        style = "text-align: justifY;")
-    )
+      p(strong(lb("co_info_Observations", lng)),
+        observations,
+        style = "text-align: justifY;"))
   })
   
   ## Profile Panel ####
@@ -538,7 +550,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
       if (sea_countries[method,,,country] |> sum(na.rm = TRUE) >0)
         country_link <- tagList(
           country_link,
-          tags$a(method, href = paste0("download/COUNTRY.",country,".", method, ".xlsx")),
+          tags$a(method, href = paste0("download/",country,".", method, ".xlsx")),
           "|")
     }
     country_link[1:(length(country_link)-1)]
@@ -548,15 +560,18 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
   OP$sector_data_link <- renderUI({
     methods <- RV$bases()
     country <- IP$co_select_country
+    indicator <- co_panel_sector_indicator()
     sector_data_link <- NULL
     if (country =="") return()
     
     for (method in methods) {
-      if (sea_countries[method,,,country] |> sum(na.rm = TRUE) >0)
+      if ((country %in% names(sea_sectors[[method]][1,1,1,])) &
+          (indicator %in% names(sea_sectors[[method]][1,,1,1]))) {
         sector_data_link <- tagList(
           sector_data_link,
-          tags$a(method, href = paste0("download/SECTORS.",country,".", method, ".xlsx")),
+          tags$a(method, href = paste0("download/",country,".",indicator,".", method, ".xlsx")),
           "|")
+      }
     }
     sector_data_link[1:(length(sector_data_link)-1)]
   })

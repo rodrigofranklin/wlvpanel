@@ -205,6 +205,8 @@ map_server <- function(IP, OP, RV, SESSION){
         zoomControl = FALSE,
         boxZoom = TRUE,
         doubleClickZoom = FALSE,
+        zoomSnap = 0,
+        zoomDelta = 0.25,
         maxZoom = 10,
         minZoom = 2,
         maxBoundsViscosity = 1,
