@@ -1,17 +1,10 @@
 cod_label;label
 ps.title.setup_panel;Setup panel
-tab_name.how_to_quote;How to Quote
+tab_name.how_to_quote;How to Cite
 ps.language;Language:
 ps.bases_info;Bases Info
 ps.bases_label;Select bases:
 ps.title.bases_info;Bases Info
-DESC.rpA1;
-DESC.rpA2;
-DESC.Eora26;
-DESC.Exiobase;
-DESC.EXI37;
-DESC.norow_w13;
-DESC.rpO1;
 ps.base_code;Base code:
 ps.base_source;Source:
 ps.base_name;Name:

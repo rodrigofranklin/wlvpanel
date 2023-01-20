@@ -124,7 +124,7 @@ country_panel <- conditionalPanel(
               label = NULL,
               min = 1995, 
               max = 2016, 
-              value = 2009, 
+              value = default_year, 
               ticks = F, 
               animate = F, 
               sep = "")
@@ -304,21 +304,19 @@ co_info_panel <- conditionalPanel(
           label = NULL,
           top = 5,
           right = 5,
-          style = "
-              position: absolute;
-              top: 5px;
-              right: 10px;
-              padding: 0px;
-              font-size: 14px;
-              color: gray;
-            ",
+          style = paste0("position: absolute;",
+                         "top: 5px;",
+                         "right: 10px;",
+                         "padding: 0px;",
+                         "font-size: 14px;",
+                         "color: gray;"),
           icon = icon("times")
         )
     ),
     
     div(class = "panel-body",
         uiOutput("co_info_text"))
-  ) 
+  )
 )
 
 ### Server ####
@@ -477,14 +475,14 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
     methods <- RV$bases()
     
     # merge observations from all methods
-    observations <- NULL
-    for (method in methods) {
-      temp_obs <- lb(paste0("obs.",method,".",co_info_indicator()), lng)
-      if (temp_obs |> is.na() |> not()) {
-        observations <- paste(observations, temp_obs)
-      }
+    temp_obs <- lb(paste0("obs.",methods,".",indicator), lng)
+    temp_obs[temp_obs |> is.na()] <- ""
+    if (temp_obs |> unique() |> length() == 1){
+      observations <- temp_obs[1]
+    } else {
+      observations <- paste0(methods,": ", temp_obs, collapse = "; ")
     }
-
+    
     tagList(
       p(strong(lb("co_info_Code", lng)),
         indicator,

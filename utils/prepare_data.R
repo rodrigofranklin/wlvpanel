@@ -35,9 +35,9 @@ rownames(sectors_wiod16) <- sectors_wiod16[,1]
 language_file <- rbind(language_file,sectors_wiod16[,languages$language])
 
 # Indicators names and description
-indicator_file <- read.csv2(paste0("data/config/indicators_",languages$file[1],".csv"))
+indicator_file <- read.csv2(paste0("results/indicators_",languages$file[1],".csv"))
 for (x in 1:length(languages$language)) {
-  I_temp <-  read.csv2(paste0("data/config/indicators_",languages$file[1],".csv"))
+  I_temp <-  read.csv2(paste0("results/indicators_",languages$file[1],".csv"))
   names(I_temp)[2] <- languages$language[x]
   indicator_file <- full_join(indicator_file, I_temp, by = "cod_label")
 }
@@ -154,6 +154,11 @@ for (x in list_methods){
     sea_countries[[x]]
 }
 
+# Eliminates data from years 2008 and 2009 of WIOD13 for lack of capital stock data
+sea_countries_merge["WIOD13",c("2008","2009"),,] <- NA
+sea_sectors[["WIOD13"]][c("2008","2009"),,,] <- NA
+m_countries[["WIOD13"]][c("2008","2009"),,,] <- NA
+
 # write data
 sea_countries_merge |> saveRDS("data/sea_countries.RDS")
 sea_sectors |> saveRDS("data/sea_sectors.RDS")
@@ -193,6 +198,16 @@ countries_sp |> saveRDS("data/countries_sp.RDS")
 # We need to get this information directly from methods. But, for now,
 # we are going to get this from a .csv
 
-meta_indicators <- read.csv2("data/config/meta_indicators.csv")
+meta_indicators <- read.csv2("results/meta_indicators.csv")
 meta_indicators <- meta_indicators[order(meta_indicators$groups),]
 meta_indicators |> saveRDS("data/meta_indicators.RDS")
+
+method_description <- NULL
+method_description$first <- meta_methods$description
+method_description$second <- meta_methods$description
+method_description <- method_description |> as.data.frame()
+rownames(method_description) <- paste0("DESC.",meta_methods$code)
+colnames(method_description) <- colnames(language_file)
+
+language_file <- rbind(language_file, method_description)
+language_file |> saveRDS("data/language_file.RDS")
