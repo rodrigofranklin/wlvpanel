@@ -108,7 +108,7 @@ panel_of_inputs <- tagList(
       label = NULL,
       min = 1995, 
       max = 2016, 
-      value = 2009, 
+      value = default_year, 
       ticks = F, 
       animate = F, 
       sep = "")
@@ -132,10 +132,10 @@ map_server <- function(IP, OP, RV, SESSION){
     if (methods |> length() > 1) {
       years <- temp_data[1,,1,1] |> names()
       years <- years[temp_data[,,1,1] |> colSums(na.rm = TRUE) !=0]
-      indicators <- temp_data[1,1,,1] |> names()
-      indicators <- indicators[temp_data[,1,,1] |> colSums(na.rm = TRUE) !=0]
-      countries <- temp_data[1,1,1,] |> names()
-      countries <- countries[temp_data[,1,1,] |> colSums(na.rm = TRUE) !=0]
+      indicators <- temp_data[1,years[1],,1] |> names()
+      indicators <- indicators[temp_data[,years[1],,1] |> colSums(na.rm = TRUE) !=0]
+      countries <- temp_data[1,years[1],1,] |> names()
+      countries <- countries[temp_data[,years[1],1,] |> colSums(na.rm = TRUE) !=0]
     } else {
       years <- temp_data[,1,1] |> names()
       years <- years[temp_data[,1,1] |> is.na() |> not()]

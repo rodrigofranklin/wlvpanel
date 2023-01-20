@@ -166,34 +166,37 @@ setup_panel <- tagList(
     absolutePanel(
       top = 120,
       left = 400,
-      width = 400,
+      # width = 400,
+      height = "calc(60vh)",
       draggable = TRUE,
       class="panel panel-default",
       style = "z-index: 5000; border-radius:10px 10px 0px 0px;",
-      div(class = "panel-heading",
-          style = "border-radius:10px 10px 0px 0px;",
-          l("ps.title.bases_info"),
-          actionLink(
-            "bases_info_close_button",
-            label = NULL,
-            top = 5,
-            right = 5,
-            style = "
-              position: absolute;
-              top: 5px;
-              right: 10px;
-              padding: 0px;
-              font-size: 14px;
-              color: black;",
-            icon = icon("times")
-          )
+      div(
+        class = "panel-heading",
+        style = "border-radius:10px 10px 0px 0px;",
+        l("ps.title.bases_info"),
+        actionLink(
+          "bases_info_close_button",
+          label = NULL,
+          top = 5,
+          right = 5,
+          style = paste0("position: absolute;",
+                         "top: 5px;",
+                         "right: 10px;",
+                         "padding: 0px;",
+                         "font-size: 14px;",
+                         "color: black;"),
+          icon = icon("times")
+        )
       ),
       
       div(class = "panel-body",
           uiOutput("bases_info_text"),
-          style =  "overflow-y:scroll;
-            height: 60vh;"
-))))
+          style =  paste0("overflow-y:scroll; height: calc(100% - 50px);")
+      ) 
+    ) |> jqui_resizable()
+  )
+)
 
 ## SERVER ############
 
