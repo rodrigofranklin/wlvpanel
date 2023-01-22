@@ -1,0 +1,21 @@
+cod_label;label
+ps.title.setup_panel;Painel de configurações
+tab_name.how_to_quote;Como citar
+ps.language;Idioma
+ps.bases_info;Info Bases
+ps.base_1;Base 1
+ps.base_2;Base 2
+ps.base_3;Base 3
+ps.base_4;Base 4
+ps.title.bases_info;Informações das bases
+ps.base_code;Código:
+ps.base_source;Fonte:
+ps.base_name;Nome:
+ps.description;Descrição:
+text.quote;Ao utilizar os dados ou o código em trabalhos, análises, ensaios ou outras publicações, solicitamos que se faça referência ao seguinte trabalho:
+tab_name.countries;Países
+tab_name.trade;Comércio
+co_select_country.placeholder;Escolha um país...
+big.mark;.
+decimal.mark;,
+hours;horas

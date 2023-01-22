@@ -1,0 +1,60 @@
+cod_label;label
+ps.title.setup_panel;Setup panel
+tab_name.how_to_quote;How to Cite
+ps.language;Language:
+ps.bases_info;Bases Info
+ps.bases_label;Select bases:
+ps.title.bases_info;Bases Info
+ps.base_code;Base code:
+ps.base_source;Source:
+ps.base_name;Name:
+ps.description;Description:
+text.quote;When using the data or code in papers, analysis, rehearsals or other publications, we ask to cite as:
+tab_name.countries;Countries
+tab_name.trade;Trade
+co_select_country.placeholder;Search a country...
+co_select_indicator.placeholder;Select an indicator...
+big.mark;,
+decimal.mark;.
+hours;h
+co_panel_download_country;Download country data
+co_panel_download_sector;Download sector data
+co_panel_sector_title;Sector data
+co_info_Code;Code:
+co_info_Description;Description:
+co_info_Observations;Observations:
+tab_name.download;Download
+dl_select_country.placeholder;Select a country...
+dl_select_method.placeholder;Select a method...
+dl_select_sector.placeholder;Select a sector...
+dl_select_method.label;Method:
+dl_select_country.label;Country:
+dl_select_indicator.label;Indicator:
+dl_select_sector_indicator.label; or Sector:
+dl_select_andor;and/or
+dl_select_sector_country.label;and (optionally) Sector:
+dl_ml_select_method.label;Method:
+dl_ml_select_country.label;Country:
+dl_ml_select_indicator.label;Indicator:
+dl_ml_select_partner.label;Partner:
+dl_ml_select_and;Select a partner or an indicator:
+dl_ml_ind_cat_placeholder;Type...
+dl_ml_ind_scope_placeholder;Sectors...
+dl_ml_ind_un_placeholder;Mesured by...
+dl_ml_ind_CX;Total Exports
+dl_ml_ind_CM;Total Imports
+dl_ml_ind_CN;Net Trade
+dl_ml_ind_TS;Value Transfers from Exports
+dl_ml_ind_TR;Value Transfers from Imports
+dl_ml_ind_TT;Net Value Transfers
+dl_ml_ind_T;All sectors
+dl_ml_ind_P;Productive sectors
+dl_ml_ind_U;Unproductive sectors
+dl_ml_ind_MP;Market Prices (USD)
+dl_ml_ind_DP;Direct Prices (USD)
+dl_ml_ind_MV;Magnitude of value
+dl_ml_title;Download multilateral data
+dl_agg_title;Download aggregated data
+dl_source_title;Download source code
+dl_source_portable_msg;A portable version of the code used to compute data for the reduction problem paper (cf. how to quote), can be obtained here:
+dl_source_code_msg;The code repository used to compute all data presented in this site can be accessed here:

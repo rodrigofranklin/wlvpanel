@@ -1,0 +1,8 @@
+library(shiny)
+library(shinythemes)
+library(shinyjqui)
+library(leaflet)
+library(magrittr)
+library(tidyr)
+library(plotly)
+library(DT)
