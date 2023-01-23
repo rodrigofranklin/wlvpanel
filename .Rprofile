@@ -1,7 +1,7 @@
 Sys.umask("002")
 library(utils)
 #automatizado baseado em requ.R
-pacotes <-  gsub(")","",read.delim("requ.R",sep = "(", header = F)[[2]])
+pacotes <-  gsub(")","",read.delim("requirements.R",sep = "(", header = F)[[2]])
 
 pacotesnovos <- pacotes[ !( pacotes %in% utils::installed.packages()[ , "Package" ] ) ]
 if( length( pacotesnovos ) ) utils::install.packages( pacotesnovos )
