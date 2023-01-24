@@ -31,7 +31,7 @@ panel_bgcolor <- "rgba(252,252,252,1)"
 ## Initial setup ####
 default_year <- 2007
 default_indicator <- "surplus_value.empe_p.r.pc"
-default_language <- colnames(language_file)[2]
+default_language <- "English"
 profile_indicators <- c("surplus_value.empe_p.r.pc",
                         "gdp.s.mv",
                         "gdp.s.us",
