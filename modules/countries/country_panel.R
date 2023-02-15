@@ -442,7 +442,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
 
       # Indicator Graph Panel
       graph_panel(graph, graph_width, indicator)
-    })
+    }) %>%bindCache(indicator,RV$bases(),IP$l,IP$co_select_country)
   
     observeEvent(IP[[paste0(indicator,"_info")]],{
       co_info_indicator(indicator)
