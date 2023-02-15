@@ -110,7 +110,8 @@ panel_of_inputs <- tagList(
       max = 2016, 
       value = default_year, 
       ticks = F, 
-      animate = F, 
+      animate = T, 
+      loop = F,
       sep = "")
   )
 )
