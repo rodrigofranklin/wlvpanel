@@ -12,13 +12,13 @@ mypallet <- function(data, indicator) {
   qtt <- data |> length()
   
   if (meta_indicators$reverted[meta_indicators$value==indicator]) {
-    negative <- colorRampPalette(colors = c("#0000C8", "#F7FBFF"))(qtt)
-    positive <- colorRampPalette(colors = c("#FFF5F0", "#C80000"))(qtt)
+    negative <- colorRampPalette(colors = c("#0000FF", "#C8C8FF"))(qtt)
+    positive <- colorRampPalette(colors = c("#FFC8C8", "#FF0000"))(qtt)
   } else {
-    negative <- colorRampPalette(colors = c("#C80000", "#FFF5F0"))(qtt)
-    positive <- colorRampPalette(colors = c("#F7FBFF", "#0000C8"))(qtt)
+    negative <- colorRampPalette(colors = c("#FF0000", "#FFC8C8"))(qtt)
+    positive <- colorRampPalette(colors = c("#C8C8FF", "#0000FF"))(qtt)
   }
-  onlypositive <- colorRampPalette(colors = c("#FFF5F0", "#C80000"))(qtt)
+  onlypositive <- colorRampPalette(colors = c("#FFC8C8", "#FF0000"))(qtt)
   
   
   suppressWarnings({
@@ -348,8 +348,8 @@ map_server <- function(IP, OP, RV, SESSION){
                  label = labels,
                  fillOpacity = 0.6,
                  group = method,
-                 color = "#D4DADC",
-                 weight = 1,
+                 color = "black",
+                 weight = 0.5,
                  options = pathOptions(pane = "polygons"),
                  highlightOptions = highlightOptions(
                    color = "red",
