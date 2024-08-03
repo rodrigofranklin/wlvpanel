@@ -437,8 +437,8 @@ server <- function(input, output, session) {
       mutate(pais_d = ifelse(pais_d %in% p,pais_d,"ROW")) %>%
       dplyr::group_by_at(agru) %>%
        summarize(valor=sum(valor,na.rm=T))
-    
-    dados <- dados%>%filter(pais_d != "ROW")
+    library(dplyr)
+    dados <- dados%>%dplyr::filter(pais_d != "ROW")
     dados <- dados %>%
       left_join(paisl, by = c("pais_d" = "Legenda"))%>%
       left_join(sct,by = c("sect_d" = "Code"))
