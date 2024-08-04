@@ -234,7 +234,8 @@ map_server <- function(IP, OP, RV, SESSION){
       fitBounds(-180,-57,180,84)
     
     
-  })
+  })|>bindCache("static")
+  
   outputOptions(OP, "map", suspendWhenHidden = FALSE) 
   
   ## Change layers #####
@@ -286,7 +287,7 @@ map_server <- function(IP, OP, RV, SESSION){
     })
     names(temp_all_data) <- methods
     temp_all_data
-  })
+  }) |>bindCache(RV$bases(),IP$co_select_indicator,IP$co_select_year)
   
   ## Change colour pallets ####
   # Creates colour pallets for each layer considering:
@@ -303,7 +304,7 @@ map_server <- function(IP, OP, RV, SESSION){
     })
     names(temp_all_pallet) <- methods
     temp_all_pallet
-  })
+  }) |>bindCache(RV$bases(),IP$co_select_indicator,IP$co_select_year)
   
   ## Labels for mouse hover ####
   labels <- reactive({
@@ -325,7 +326,7 @@ map_server <- function(IP, OP, RV, SESSION){
       lb(indicator,lng),
       list_f2s(map_data$data, indicator, lng = lng)) |>
       lapply(htmltools::HTML)
-  })
+  }) |>bindCache(RV$bases(),IP$co_select_indicator,IP$co_select_year,IP$l)
   
   ## Plot polygons ####
   # Plot polygons for each layer, based on map_data and pallet

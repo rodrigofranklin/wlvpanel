@@ -442,7 +442,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
 
       # Indicator Graph Panel
       graph_panel(graph, graph_width, indicator)
-    }) %>%bindCache(indicator,RV$bases(),IP$l,IP$co_select_country)
+    }) |>bindCache(indicator,RV$bases(),IP$l,IP$co_select_country)
   
     observeEvent(IP[[paste0(indicator,"_info")]],{
       co_info_indicator(indicator)
@@ -466,13 +466,13 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
   OP$co_info_indicator <- renderText({
     lng <- IP$l
     indicator <- co_info_indicator()
-    lb(indicator,lng)})
+    lb(indicator,lng)}) |>bindCache(co_info_indicator(),IP$l)
   
   # Indicator informations
   OP$co_info_text <- renderUI({
     lng <- IP$l
     indicator <- co_info_indicator()
-    methods <- RV$bases()
+    methods <- RV$bases() 
     
     # merge observations from all methods
     temp_obs <- lb(paste0("obs.",methods,".",indicator), lng)
@@ -493,7 +493,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
       p(strong(lb("co_info_Observations", lng)),
         observations,
         style = "text-align: justifY;"))
-  })
+  }) |>bindCache(RV$bases(),co_info_indicator(),IP$l)
   
   ## Profile Panel ####
   
@@ -579,7 +579,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
   OP$co_panel_sector_indicator <- renderText({
     lng <- IP$l
     indicator <- co_panel_sector_indicator()
-    lb(indicator,lng)})
+    lb(indicator,lng)})|>bindCache(co_panel_sector_indicator(),IP$l)
   outputOptions(OP, "co_panel_sector_indicator", suspendWhenHidden = FALSE)
   OP$co_panel_year <- renderText(IP$co_panel_year)
 
@@ -593,7 +593,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
     do.call("tabsetPanel", lapply(methods, \(method){
       tabPanel(method,dataTableOutput(paste0("co_panel_sector_",method)))
     }))
-  })
+  })|>bindCache(RV$bases(),IP$co_select_country,IP$co_panel_year,IP$l)
 
   # Each TabPanel
   lapply(meta_methods$code, function(method){
@@ -630,7 +630,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
             info = FALSE,
             columnDefs = list(list(className = 'text-nowrap', targets = 1)),
             lengthChange = FALSE))
-    }, server = FALSE)
+    }, server = FALSE) |>bindCache(IP$co_select_country,co_panel_sector_indicator(),IP$co_panel_year,IP$l)
   })
 
 }
