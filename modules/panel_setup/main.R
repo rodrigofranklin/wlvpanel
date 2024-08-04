@@ -253,8 +253,8 @@ SERVER <- function(IP, OP, RV, SESSION) {
             tr(
               td(
                 colspan = 2,
-                lb("ps.base_name", IP$l) |> strong(),
-                meta_methods$name[z]
+                lb("ps.base_name", IP$l) |> strong()
+                #meta_methods$name[z]
             )),
             tr(
               td(
