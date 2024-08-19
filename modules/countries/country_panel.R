@@ -358,7 +358,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
   ## Graph panel ####
   # create uiOutput with graphs for all indicators
   lapply(meta_indicators$value, \(indicator) {
-    OP[[paste0(indicator,"_plot")]] <- renderUI({
+    OP[[paste0(indicator,"_plot")]]  <- renderUI({
       # reactive data
       methods <- RV$bases() |> isolate()
       year_max <- RV$yearmax() |> isolate()
@@ -442,8 +442,11 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
 
       # Indicator Graph Panel
       graph_panel(graph, graph_width, indicator)
-    }) |>bindCache(indicator,RV$bases(),IP$l,IP$co_select_country)
-  
+    })|>bindCache(indicator,RV$bases(),IP$l,IP$co_select_country,
+                  RV$yearmin(),
+                  RV$yearmax())
+    
+    
     observeEvent(IP[[paste0(indicator,"_info")]],{
       co_info_indicator(indicator)
       show_info_panel(1)
@@ -534,7 +537,8 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
         paging = FALSE,
         info = FALSE,
         lengthChange = FALSE))
-  }, server = FALSE)
+  }, server = FALSE)|>
+    bindCache(IP$l,IP$co_select_country,RV$bases(),IP$co_panel_year)
   outputOptions(OP,"co_panel_profile", suspendWhenHidden = FALSE)
   
   ## Download links ####
@@ -552,7 +556,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
           "|")
     }
     country_link[1:(length(country_link)-1)]
-  })
+  })|>bindCache(RV$bases(),IP$co_panel_year,IP$co_select_country)
   outputOptions(OP,"country_link", suspendWhenHidden = FALSE)
   
   OP$sector_data_link <- renderUI({
@@ -572,14 +576,16 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
       }
     }
     sector_data_link[1:(length(sector_data_link)-1)]
-  })
+  })|>
+    bindCache(RV$bases(),IP$co_panel_year,IP$co_select_country,co_panel_sector_indicator())
+  
   outputOptions(OP,"sector_data_link", suspendWhenHidden = FALSE)
   
   ## Sector table ####
   OP$co_panel_sector_indicator <- renderText({
     lng <- IP$l
     indicator <- co_panel_sector_indicator()
-    lb(indicator,lng)})|>bindCache(co_panel_sector_indicator(),IP$l)
+    lb(indicator,lng)})|>bindCache(RV$bases(),co_panel_sector_indicator(),IP$l,IP$co_panel_year)
   outputOptions(OP, "co_panel_sector_indicator", suspendWhenHidden = FALSE)
   OP$co_panel_year <- renderText(IP$co_panel_year)
 
@@ -596,7 +602,9 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
   })|>bindCache(RV$bases(),IP$co_select_country,IP$co_panel_year,IP$l)
 
   # Each TabPanel
+
   lapply(meta_methods$code, function(method){
+  
     OP[[paste0("co_panel_sector_",method)]] <- renderDataTable({
         lng <- IP$l
         year <- IP$co_panel_year |> as.character()
@@ -630,7 +638,9 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
             info = FALSE,
             columnDefs = list(list(className = 'text-nowrap', targets = 1)),
             lengthChange = FALSE))
-    }, server = FALSE) |>bindCache(IP$co_select_country,co_panel_sector_indicator(),IP$co_panel_year,IP$l)
-  })
+    }, server = FALSE) |>
+      bindCache(IP$l,IP$co_select_country,co_panel_sector_indicator(),
+                IP$co_panel_year,method)
+ })
 
 }
