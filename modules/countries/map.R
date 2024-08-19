@@ -110,7 +110,7 @@ panel_of_inputs <- tagList(
       max = 2016, 
       value = default_year, 
       ticks = F, 
-      animate = animationOptions(interval = 500, loop = FALSE), 
+      animate = animationOptions(interval = 3500, loop = FALSE), 
       sep = "")
   )
 )
@@ -164,7 +164,7 @@ map_server <- function(IP, OP, RV, SESSION){
       inputId = "co_select_indicator",
       choices = indicators,
       selected = selected_indicator,
-      server = TRUE,
+      server = T,
       options = list(placeholder = lb("co_select_indicator.placeholder", lng)))
     
     # Update countries list
