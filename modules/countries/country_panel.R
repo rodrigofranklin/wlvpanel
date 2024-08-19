@@ -444,7 +444,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
       graph_panel(graph, graph_width, indicator)
     })|>bindCache(indicator,RV$bases(),IP$l,IP$co_select_country,
                   RV$yearmin(),
-                  RV$yearmax())
+                  RV$yearmax(),IP$l)
     
     
     observeEvent(IP[[paste0(indicator,"_info")]],{
@@ -556,7 +556,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
           "|")
     }
     country_link[1:(length(country_link)-1)]
-  })|>bindCache(RV$bases(),IP$co_panel_year,IP$co_select_country)
+  })|>bindCache(RV$bases(),IP$co_panel_year,IP$co_select_country,IP$l)
   outputOptions(OP,"country_link", suspendWhenHidden = FALSE)
   
   OP$sector_data_link <- renderUI({
@@ -577,7 +577,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
     }
     sector_data_link[1:(length(sector_data_link)-1)]
   })|>
-    bindCache(RV$bases(),IP$co_panel_year,IP$co_select_country,co_panel_sector_indicator())
+    bindCache(RV$bases(),IP$co_panel_year,IP$co_select_country,co_panel_sector_indicator(),IP$l)
   
   outputOptions(OP,"sector_data_link", suspendWhenHidden = FALSE)
   
@@ -585,7 +585,8 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
   OP$co_panel_sector_indicator <- renderText({
     lng <- IP$l
     indicator <- co_panel_sector_indicator()
-    lb(indicator,lng)})|>bindCache(RV$bases(),co_panel_sector_indicator(),IP$l,IP$co_panel_year)
+    lb(indicator,lng)})|>
+    bindCache(RV$bases(),co_panel_sector_indicator(),IP$l,IP$co_panel_year)
   outputOptions(OP, "co_panel_sector_indicator", suspendWhenHidden = FALSE)
   OP$co_panel_year <- renderText(IP$co_panel_year)
 
@@ -599,7 +600,8 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
     do.call("tabsetPanel", lapply(methods, \(method){
       tabPanel(method,dataTableOutput(paste0("co_panel_sector_",method)))
     }))
-  })|>bindCache(RV$bases(),IP$co_select_country,IP$co_panel_year,IP$l)
+  })|>
+    bindCache(RV$bases(),IP$co_select_country,IP$co_panel_year,IP$l)
 
   # Each TabPanel
 
