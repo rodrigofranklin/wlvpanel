@@ -247,7 +247,7 @@ map_server <- function(IP, OP, RV, SESSION){
     methods <- RV$bases()
     proxy <- leafletProxy("map")
     
-    future({proxy |>
+    proxy |>
       addLayersControl(
         baseGroups = c(methods),
         position = c("topleft"),
@@ -262,7 +262,7 @@ map_server <- function(IP, OP, RV, SESSION){
       proxy |> showGroup(methods[1])
     }
     })
-  })
+
   
   ## Change data ####
   # Select data for each layer considering:

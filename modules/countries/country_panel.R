@@ -357,7 +357,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
   
   ## Graph panel ####
   # create uiOutput with graphs for all indicators
-  promises::future_promise({lapply(meta_indicators$value, \(indicator) {
+  lapply(meta_indicators$value, \(indicator) {
     OP[[paste0(indicator,"_plot")]]  <- renderUI({
       # reactive data
       methods <- RV$bases() |> isolate()
@@ -449,7 +449,8 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
     })|>bindCache(indicator,RV$bases(),IP$l,IP$co_select_country,
                   RV$yearmin(),
                   RV$yearmax(),IP$l)
-    observeEvent(IP[[paste0(indicator,"_info")]],{
+
+      observeEvent(IP[[paste0(indicator,"_info")]],{
       co_info_indicator(indicator)
       show_info_panel(1)
     })
@@ -457,11 +458,8 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
     observeEvent(IP[[paste0(indicator,"_title")]], ignoreInit = TRUE, {
       co_panel_sector_indicator(indicator)
     })
-  })
 })
- 
   
-
   ## Info Panel ####
   # Open/close system for info_panel
   show_info_panel <- reactiveVal(0)
@@ -610,7 +608,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
 
   # Each TabPanel
 
-  promises::future_promise({ lapply(meta_methods$code, function(method){
+ lapply(meta_methods$code, function(method){
   
     OP[[paste0("co_panel_sector_",method)]] <- renderDataTable({
         lng <- IP$l
@@ -648,6 +646,6 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
     }, server = FALSE) |>
       bindCache(IP$l,IP$co_select_country,co_panel_sector_indicator(),
                 IP$co_panel_year,method)
- })
+ 
 })
 }

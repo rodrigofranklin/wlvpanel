@@ -8,7 +8,7 @@ source("requirements.R")
 ## Define disk caching
 shinyOptions(cache = cachem::cache_disk("data/labourvaluesdatapanel-cache/")) 
 
-plan(multicore,workers = 4)
+
 
 ## load data ####
 language_file <- readRDS("data/language_file.RDS")
