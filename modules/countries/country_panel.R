@@ -357,7 +357,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
   
   ## Graph panel ####
   # create uiOutput with graphs for all indicators
-  lapply(meta_indicators$value, \(indicator) {
+  promises::future_promise({lapply(meta_indicators$value, \(indicator) {
     OP[[paste0(indicator,"_plot")]]  <- renderUI({
       # reactive data
       methods <- RV$bases() |> isolate()
@@ -423,9 +423,10 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
         config(displaylogo = FALSE,
                displayModeBar = FALSE)
       
+      
       # add methods trace
       data <- rbind(data, data) # to avoid "incorret number of dimensios" error
-      for (x in 1:length(methods)) {
+       for (x in 1:length(methods)) {
         text_data <- data[x,]
         if (text_data |> sum(na.rm = TRUE) != 0) {
           text_data <- text_data[text_data |> is.na() |> not()]
@@ -437,16 +438,17 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
               text = text_data,
               name = methods[x],
               color = I(mycolors[x]))
+          
         }
       }
+      
 
       # Indicator Graph Panel
       graph_panel(graph, graph_width, indicator)
+
     })|>bindCache(indicator,RV$bases(),IP$l,IP$co_select_country,
                   RV$yearmin(),
                   RV$yearmax(),IP$l)
-    
-    
     observeEvent(IP[[paste0(indicator,"_info")]],{
       co_info_indicator(indicator)
       show_info_panel(1)
@@ -455,8 +457,11 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
     observeEvent(IP[[paste0(indicator,"_title")]], ignoreInit = TRUE, {
       co_panel_sector_indicator(indicator)
     })
-  })  
+  })
+})
+ 
   
+
   ## Info Panel ####
   # Open/close system for info_panel
   show_info_panel <- reactiveVal(0)
@@ -605,7 +610,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
 
   # Each TabPanel
 
-  lapply(meta_methods$code, function(method){
+  promises::future_promise({ lapply(meta_methods$code, function(method){
   
     OP[[paste0("co_panel_sector_",method)]] <- renderDataTable({
         lng <- IP$l
@@ -644,5 +649,5 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
       bindCache(IP$l,IP$co_select_country,co_panel_sector_indicator(),
                 IP$co_panel_year,method)
  })
-
+})
 }
