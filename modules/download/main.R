@@ -370,13 +370,10 @@ SERVER <- function(IP, OP, RV, SESSION) {
     
     req(method)
 
-    temp_data <- sea_countries[method,,,]
+    temp_data <- sea_countries[method,,,, drop = FALSE]
 
-    countries <- temp_data[,1,] |> colnames()
-    countries <- countries[temp_data[,1,] |> colSums(na.rm = TRUE) !=0]
-    
-    indicators <- temp_data[,,1] |> colnames()
-    indicators <- indicators[temp_data[,,1] |> colSums(na.rm = TRUE) !=0]
+    countries <- wlv_observed_axis_labels(temp_data, 4L)
+    indicators <- wlv_observed_axis_labels(temp_data, 3L)
 
     names(countries) <- lb(paste0("ISO3.",countries), lng)
     countries <- countries[order(names(countries))]

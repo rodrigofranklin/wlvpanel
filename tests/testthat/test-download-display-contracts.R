@@ -216,6 +216,55 @@ testthat::test_that("modern neutral units stay neutral in XLSX", {
   ) %in% names(metadata)))
 })
 
+testthat::test_that("XLSX inputs preserve cancellation and valid zeros", {
+  export <- load_download_export_functions()
+  indicators <- c("cancel", "zero")
+  contracts <- method_contract(
+    "METHOD", indicators, rep("ratio", 2L), rep(1, 2L)
+  )
+  country_a <- matrix(
+    c(-1, 1, 0, 0),
+    nrow = 2L,
+    byrow = TRUE,
+    dimnames = list(indicators, c("2000", "2001"))
+  )
+  cancel_by_country <- matrix(
+    c(-1, 1, 3, 4),
+    nrow = 2L,
+    byrow = TRUE,
+    dimnames = list(c("A", "B"), c("2000", "2001"))
+  )
+
+  country_payload <- export$wlv_prepare_xlsx_display(
+    country_a,
+    "METHOD",
+    indicators,
+    contracts
+  )
+  indicator_payload <- export$wlv_prepare_xlsx_display(
+    cancel_by_country,
+    "METHOD",
+    "cancel",
+    contracts
+  )
+
+  testthat::expect_identical(country_payload$data, country_a)
+  testthat::expect_identical(indicator_payload$data, cancel_by_country)
+  testthat::expect_true(export$wlv_has_observations(country_a["zero", ]))
+  testthat::expect_identical(
+    export$wlv_observed_axis_labels(
+      array(
+        country_a,
+        dim = c(1L, 2L, 2L),
+        dimnames = list(method = "METHOD", indicator = indicators,
+          year = c("2000", "2001"))
+      ),
+      2L
+    ),
+    indicators
+  )
+})
+
 testthat::test_that("generated XLSX stores display percent with a literal format", {
   testthat::skip_if_not_installed("openxlsx")
   export <- load_download_export_functions()
@@ -360,4 +409,51 @@ testthat::test_that("generated legacy XLSX retains fraction and percent numFmt",
     stored[[1L]] / published_metadata$display_multiplier,
     0.125
   )
+})
+
+testthat::test_that("legacy type overrides a misleading percent suffix", {
+  testthat::skip_if_not_installed("openxlsx")
+  export <- load_download_export_functions()
+  indicator <- "basket_price.r.pc"
+  legacy_metadata <- data.frame(
+    value = indicator,
+    type = "index",
+    stringsAsFactors = FALSE
+  )
+  contracts <- export$wlv_legacy_display_contract(
+    method_dir = "LEGACY",
+    method = "LEGACY",
+    indicators = indicator,
+    legacy_metadata = legacy_metadata,
+    warn = FALSE
+  )
+  file <- tempfile(fileext = ".xlsx")
+  export$save_my_xlsx(
+    file_name = file,
+    header = matrix(c("Indicator:", "Basket price"), nrow = 1L),
+    row_names = "Basket price",
+    my_data = matrix(1, nrow = 1L, dimnames = list(NULL, "2000")),
+    metadata = data.frame(Code = indicator),
+    specs = data.frame(code = "LEGACY"),
+    rows_style_list = list(7L),
+    styles_list = list("PERCENTAGE"),
+    width_c1 = 20,
+    width_c2 = 10,
+    method_code = "LEGACY",
+    indicator_codes = indicator,
+    display_contracts = contracts,
+    legacy_metadata = legacy_metadata
+  )
+
+  stored <- openxlsx::read.xlsx(
+    file, sheet = "data", rows = 7L, cols = 3L, colNames = FALSE
+  )
+  workbook <- openxlsx::loadWorkbook(file)
+  style <- xlsx_style_for_cell(workbook, "data", 7L, 3L)
+  published_metadata <- openxlsx::read.xlsx(file, sheet = "metadata")
+
+  testthat::expect_identical(stored[[1L]], 1)
+  testthat::expect_identical(style$numFmt$formatCode, "#,##0.00")
+  testthat::expect_identical(published_metadata$legacy_type, "index")
+  testthat::expect_identical(published_metadata$display_multiplier, 1)
 })

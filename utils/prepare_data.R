@@ -226,11 +226,11 @@ countries_sp[list_methods] <-
   lapply(
     list_methods,
     function(i) {
-      # Select all countries that has any data for the first indicator
-      has_data <- sea_countries[i,,1,] |> colSums(na.rm = TRUE)
-      has_data <- has_data[has_data !=0 ]
+      # Select countries with at least one observation in any year/indicator.
+      method_data <- sea_countries[i,,,, drop = FALSE]
+      has_data <- wlv_observed_axis_labels(method_data, 4L)
       mydata <- countries_polygons[countries_polygons@data$ISO3 %in%
-                                    names(has_data),]
+                                    has_data,]
       mydata@data$layerId <- 
         paste0(i,".",mydata@data$ISO3)
       mydata

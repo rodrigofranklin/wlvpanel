@@ -422,6 +422,42 @@ test_that("structural availability filters method-specific indicators", {
   expect_match(conditionMessage(condition), "WIOD16/w13_only", fixed = TRUE)
 })
 
+test_that("observation axes preserve cancellation, zeros and later slices", {
+  values <- array(
+    NA_real_,
+    dim = c(1L, 2L, 2L, 2L),
+    dimnames = list(
+      method = "METHOD",
+      year = c("2000", "2001"),
+      indicator = c("cancel", "zero"),
+      country = c("A", "B")
+    )
+  )
+  values["METHOD", , "cancel", "A"] <- c(-1, 1)
+  values["METHOD", , "zero", "A"] <- c(0, 0)
+  values["METHOD", , "cancel", "B"] <- c(3, 4)
+
+  expect_identical(sum(values["METHOD", , , "A"], na.rm = TRUE), 0)
+  expect_identical(
+    wlv_observed_axis_labels(values, 2L),
+    c("2000", "2001")
+  )
+  expect_identical(
+    wlv_observed_axis_labels(values, 3L),
+    c("cancel", "zero")
+  )
+  expect_identical(wlv_observed_axis_labels(values, 4L), c("A", "B"))
+  expect_true(wlv_has_observations(
+    values["METHOD", , , "A", drop = FALSE]
+  ))
+  expect_true(wlv_has_observations(
+    values["METHOD", , "zero", "A", drop = FALSE]
+  ))
+  expect_false(wlv_has_observations(
+    values["METHOD", , "zero", "B", drop = FALSE]
+  ))
+})
+
 test_that("method directory mapping is one-to-one", {
   legacy <- wlvpanel_legacy_metadata()
   path <- wlvpanel_write_metadata(wlvpanel_method_metadata())
@@ -517,4 +553,47 @@ test_that("multi-method comparisons reject incompatible display units", {
     ),
     "percent"
   )
+})
+
+test_that("display contract cache versions cover all semantic fields", {
+  legacy <- wlvpanel_legacy_metadata()
+  path <- wlvpanel_write_metadata(wlvpanel_method_metadata())
+  on.exit(unlink(path), add = TRUE)
+  contracts <- wlv_read_method_display_contract(
+    path, "source", "METHOD", legacy$value, legacy
+  )
+  version <- wlv_display_contract_version(contracts)
+
+  expect_identical(
+    wlv_display_contract_version(contracts[nrow(contracts):1L, ]),
+    version
+  )
+
+  mutations <- list(
+    method_dir = transform(contracts, method_dir = "other-source"),
+    method = transform(contracts, method = "OTHER-METHOD"),
+    indicator = within(contracts, indicator[[3L]] <- "other-output"),
+    canonical_unit = within(
+      contracts,
+      canonical_unit[[2L]] <- "future_ratio"
+    ),
+    display_unit = within(contracts, display_unit[[3L]] <- "future_unit"),
+    display_multiplier = within(contracts, display_multiplier[[2L]] <- 50),
+    index_base_year = within(contracts, index_base_year[[1L]] <- "1995"),
+    index_storage_base = within(contracts, index_storage_base[[1L]] <- 100)
+  )
+  for (changed in mutations) {
+    expect_false(identical(wlv_display_contract_version(changed), version))
+  }
+
+  fallback <- wlv_legacy_display_contract(
+    "legacy", "LEGACY", legacy$value, legacy, warn = FALSE
+  )
+  fallback_version <- wlv_display_contract_version(fallback)
+  fallback$legacy_type[[1L]] <- "future_type"
+  expect_false(identical(
+    wlv_display_contract_version(fallback),
+    fallback_version
+  ))
+  expect_false(identical(fallback_version, version))
 })

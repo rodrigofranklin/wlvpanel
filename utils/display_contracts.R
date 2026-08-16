@@ -487,6 +487,36 @@ wlv_display_array <- function(
   sweep(value, as.integer(indicator_axis), multipliers, "*")
 }
 
+wlv_has_observations <- function(value) {
+  if (!is.numeric(value)) {
+    stop("Observation checks require numeric values.", call. = FALSE)
+  }
+  any(!is.na(value))
+}
+
+wlv_observed_axis_labels <- function(value, axis) {
+  if (
+    !is.numeric(value) || is.null(dim(value)) || is.null(dimnames(value)) ||
+      !is.numeric(axis) || length(axis) != 1L || is.na(axis) ||
+      axis %% 1 != 0 || axis < 1L || axis > length(dim(value))
+  ) {
+    stop(
+      "Observed-axis selection requires a labelled numeric array and one axis.",
+      call. = FALSE
+    )
+  }
+  axis <- as.integer(axis)
+  labels <- dimnames(value)[[axis]]
+  if (
+    is.null(labels) || !length(labels) || anyNA(labels) ||
+      any(!nzchar(labels)) || anyDuplicated(labels)
+  ) {
+    stop("Observed axes must have unique non-empty labels.", call. = FALSE)
+  }
+  observed <- apply(value, axis, wlv_has_observations)
+  labels[as.logical(observed)]
+}
+
 wlv_validate_method_indicator_availability <- function(value) {
   if (
     !is.data.frame(value) || !nrow(value) ||
@@ -675,14 +705,34 @@ wlv_excel_num_format <- function(
 
 wlv_display_contract_version <- function(contracts) {
   wlv_validate_display_contracts(contracts)
-  ordered <- contracts[order(contracts$method, contracts$indicator), ]
-  paste(
-    ordered$method,
-    ordered$indicator,
-    ordered$display_unit,
-    format(ordered$display_multiplier, scientific = FALSE, trim = TRUE),
-    ordered$metadata_source,
-    sep = ":",
-    collapse = "|"
+  columns <- c(
+    "method_dir", "method", "indicator", wlv_display_metadata_columns(),
+    "metadata_source", "legacy_type"
+  )
+  ordered <- contracts[
+    order(
+      contracts$method_dir,
+      contracts$method,
+      contracts$indicator,
+      method = "radix"
+    ),
+    columns,
+    drop = FALSE
+  ]
+  character_columns <- c(
+    "method_dir", "method", "indicator", "canonical_unit", "display_unit",
+    "index_base_year", "metadata_source", "legacy_type"
+  )
+  ordered[character_columns] <- lapply(
+    ordered[character_columns],
+    as.character
+  )
+  ordered$display_multiplier <- as.double(ordered$display_multiplier)
+  ordered$index_storage_base <- as.double(ordered$index_storage_base)
+  row.names(ordered) <- NULL
+  payload <- serialize(ordered, connection = NULL, ascii = TRUE, version = 2L)
+  paste0(
+    "wlv-display-contract-v2:",
+    paste(sprintf("%02x", as.integer(payload)), collapse = "")
   )
 }

@@ -634,7 +634,10 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
     if (country =="") return()
 
     for (method in methods) {
-      if (sea_countries[method,,,country] |> sum(na.rm = TRUE) >0)
+      method_country_data <- sea_countries[
+        method, , , country, drop = FALSE
+      ]
+      if (wlv_has_observations(method_country_data))
         country_link <- tagList(
           country_link,
           tags$a(method, href = paste0("download/",country,".", method, ".xlsx")),

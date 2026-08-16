@@ -11,7 +11,19 @@ ind_type <- function(x){
 }
 
 wlv_legacy_xlsx_num_format <- function(indicator, legacy_type = NULL) {
-  if (identical(legacy_type, "percent")) return("PERCENTAGE")
+  if (!is.null(legacy_type)) {
+    if (
+      !is.character(legacy_type) || length(legacy_type) != 1L ||
+        is.na(legacy_type) || !nzchar(legacy_type)
+    ) {
+      stop("Legacy XLSX presentation types must be non-empty strings.",
+        call. = FALSE
+      )
+    }
+    if (identical(legacy_type, "percent")) return("PERCENTAGE")
+    if (identical(legacy_type, "integer")) return("#,##0")
+    return("#,##0.00")
+  }
   type <- ind_type(indicator)
   if (identical(type, "pc")) {
     "PERCENTAGE"
@@ -259,13 +271,10 @@ for (method_code in meta_methods$code) {
                         c("name","code","source","description")]
   
   # select only countries and indicators with data
-  temp_data <- sea_countries[method_code,,,]
-  years <- temp_data[,1,1] |> names()
-  years <- years[temp_data[,1,1] |> is.na() |> not()]
-  countries <- temp_data[,1,] |> colnames()
-  countries <- countries[temp_data[,1,] |> colSums(na.rm = TRUE) !=0]
-  indicators <- temp_data[,,1] |> colnames()
-  indicators <- indicators[temp_data[,,1] |> colSums(na.rm = TRUE) !=0]
+  temp_data <- sea_countries[method_code,,,, drop = FALSE]
+  years <- wlv_observed_axis_labels(temp_data, 2L)
+  indicators <- wlv_observed_axis_labels(temp_data, 3L)
+  countries <- wlv_observed_axis_labels(temp_data, 4L)
   indicators <- indicators[order(indicators)]
   sectors <- names(sea_sectors[[method_code]][1,1,,1])
   countries_sectors <- names(sea_sectors[[method_code]][1,1,1,])
