@@ -4,14 +4,125 @@
 
 library(openxlsx)
 library(magrittr)
+source("utils/display_contracts.R")
 
 ind_type <- function(x){
   substr(x, nchar(x)-1, nchar(x))
 }
 
+wlv_legacy_xlsx_num_format <- function(indicator) {
+  type <- ind_type(indicator)
+  if (identical(type, "pc")) {
+    "PERCENTAGE"
+  } else if (type %in% c("us", "cu", "du", "mv", "hr", "id")) {
+    "#,##0.00"
+  } else {
+    "#,##0"
+  }
+}
+
+wlv_prepare_xlsx_display <- function(
+    my_data,
+    method_code,
+    indicator_codes,
+    display_contracts,
+    legacy_metadata = NULL) {
+  data <- as.matrix(my_data)
+  if (!is.numeric(data) || length(dim(data)) != 2L) {
+    stop("XLSX display conversion requires a numeric matrix.", call. = FALSE)
+  }
+  if (
+    !is.character(method_code) || length(method_code) != 1L ||
+      is.na(method_code) || !nzchar(method_code)
+  ) {
+    stop("XLSX display conversion requires one method code.", call. = FALSE)
+  }
+  if (
+    !is.character(indicator_codes) || !length(indicator_codes) ||
+      anyNA(indicator_codes) || any(!nzchar(indicator_codes))
+  ) {
+    stop("XLSX display conversion requires indicator codes.", call. = FALSE)
+  }
+  if (length(indicator_codes) == 1L) {
+    row_indicators <- rep(indicator_codes, nrow(data))
+  } else if (length(indicator_codes) == nrow(data)) {
+    row_indicators <- indicator_codes
+  } else {
+    stop(
+      "XLSX indicator codes must identify one indicator or every data row.",
+      call. = FALSE
+    )
+  }
+
+  display_data <- data
+  row_formats <- character(nrow(data))
+  for (indicator in unique(row_indicators)) {
+    rows <- which(row_indicators == indicator)
+    contract <- wlv_display_contract_row(
+      display_contracts,
+      method_code,
+      indicator
+    )
+    if (identical(contract$metadata_source[[1L]], "method_metadata")) {
+      display_data[rows, ] <- wlv_display_values(
+        data[rows, , drop = FALSE],
+        method_code,
+        indicator,
+        display_contracts,
+        legacy_metadata
+      )
+      row_formats[rows] <- wlv_excel_num_format(
+        method_code,
+        indicator,
+        display_contracts,
+        legacy_metadata
+      )
+    } else {
+      # Legacy workbooks stored fractions and delegated percent scaling to Excel.
+      row_formats[rows] <- wlv_legacy_xlsx_num_format(indicator)
+    }
+  }
+
+  formats <- unique(row_formats)
+  list(
+    data = display_data,
+    rows_style_list = lapply(
+      formats,
+      function(format) which(row_formats == format) + 6L
+    ),
+    styles_list = as.list(formats)
+  )
+}
+
 # Function to save data to a xlsx file
 save_my_xlsx <- function(file_name, header, row_names, my_data, metadata, specs,
-                         rows_style_list, styles_list, width_c1, width_c2) {
+                         rows_style_list, styles_list, width_c1, width_c2,
+                         method_code = NULL, indicator_codes = NULL,
+                         display_contracts = NULL, legacy_metadata = NULL) {
+
+  display_args <- c(
+    !is.null(method_code),
+    !is.null(indicator_codes),
+    !is.null(display_contracts)
+  )
+  if (any(display_args) && !all(display_args)) {
+    stop(
+      "Method, indicator and contracts must be supplied together for XLSX display.",
+      call. = FALSE
+    )
+  }
+  if (all(display_args)) {
+    display <- wlv_prepare_xlsx_display(
+      my_data,
+      method_code,
+      indicator_codes,
+      display_contracts,
+      legacy_metadata
+    )
+    my_data <- display$data
+    rows_style_list <- display$rows_style_list
+    styles_list <- display$styles_list
+  }
 
   ## create and format xlsx file
   wb <- createWorkbook()
@@ -48,7 +159,7 @@ save_my_xlsx <- function(file_name, header, row_names, my_data, metadata, specs,
            style = createStyle(halign = "center", textDecoration = "bold"))
   
   # format lines
-  for (i in 1:length(styles_list)) {
+  for (i in seq_along(styles_list)) {
     addStyle(wb, "data", gridExpand = TRUE,
              rows = rows_style_list[i] |> unlist(),
              cols = 3:cols,
@@ -74,6 +185,8 @@ save_my_xlsx <- function(file_name, header, row_names, my_data, metadata, specs,
 
 ## Read data
 meta_methods <- readRDS("data/meta_methods.RDS")
+meta_indicator_contracts <- readRDS("data/meta_indicator_contracts.RDS")
+wlv_validate_display_contracts(meta_indicator_contracts)
 indicator_en <- read.csv2("data/config/indicators_en.csv")
 sea_countries <- readRDS("data/sea_countries.RDS")
 sea_sectors <- readRDS("data/sea_sectors.RDS")
@@ -144,8 +257,13 @@ for (method_code in meta_methods$code) {
                     NA, NA,
                     c("indicator", "code"))
 
-    save_my_xlsx(file_name, header, indicators_names, country_data, 
-                 meta_indicators, specs, rows_list, styles_list, 35, 35)
+    save_my_xlsx(
+      file_name, header, indicators_names, country_data,
+      meta_indicators, specs, rows_list, styles_list, 35, 35,
+      method_code = method_code,
+      indicator_codes = indicators,
+      display_contracts = meta_indicator_contracts
+    )
 
     if (country_code %in% countries_sectors |> not()) {
       next
@@ -178,8 +296,13 @@ for (method_code in meta_methods$code) {
                       NA,
                       c("indicator", "code"))
       
-      save_my_xlsx(file_name, header, indicators_sectors_names, sector_data, 
-                   meta_indicators, specs, rows_list, styles_list, 35, 35)
+      save_my_xlsx(
+        file_name, header, indicators_sectors_names, sector_data,
+        meta_indicators, specs, rows_list, styles_list, 35, 35,
+        method_code = method_code,
+        indicator_codes = indicators_sectors,
+        display_contracts = meta_indicator_contracts
+      )
     }
 
     ### Country and indicator files (sectorial data) ####
@@ -214,9 +337,14 @@ for (method_code in meta_methods$code) {
       rows <- NULL
       rows$list <- 1:nrow(sector_data)+6
       
-      save_my_xlsx(file_name, header, sectors_names, sector_data, 
-                   meta_indicators[meta_indicators$Code == indicator_code,],
-                   specs, rows, id_style, 35, 8)
+      save_my_xlsx(
+        file_name, header, sectors_names, sector_data,
+        meta_indicators[meta_indicators$Code == indicator_code, ],
+        specs, rows, id_style, 35, 8,
+        method_code = method_code,
+        indicator_codes = indicator_code,
+        display_contracts = meta_indicator_contracts
+      )
     }
   }
   
@@ -252,9 +380,14 @@ for (method_code in meta_methods$code) {
     rows <- NULL
     rows$list <- 1:nrow(sector_data)+6
     
-    save_my_xlsx(file_name, header, countries_names, indicator_data, 
-                 meta_indicators[meta_indicators$Code == indicator_code,],
-                 specs, rows, id_style, "auto", 6)
+    save_my_xlsx(
+      file_name, header, countries_names, indicator_data,
+      meta_indicators[meta_indicators$Code == indicator_code, ],
+      specs, rows, id_style, "auto", 6,
+      method_code = method_code,
+      indicator_codes = indicator_code,
+      display_contracts = meta_indicator_contracts
+    )
 
     ### Sectorial data
     sectors_data <- 
@@ -292,9 +425,14 @@ for (method_code in meta_methods$code) {
       rows <- NULL
       rows$list <- 1:nrow(sector_data)+6
       
-      save_my_xlsx(file_name, header, countries_names, sector_data, 
-                   meta_indicators[meta_indicators$Code == indicator_code,],
-                   specs, rows, id_style, "auto", 6)
+      save_my_xlsx(
+        file_name, header, countries_names, sector_data,
+        meta_indicators[meta_indicators$Code == indicator_code, ],
+        specs, rows, id_style, "auto", 6,
+        method_code = method_code,
+        indicator_codes = indicator_code,
+        display_contracts = meta_indicator_contracts
+      )
     }
   }
 }
