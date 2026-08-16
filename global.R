@@ -4,6 +4,7 @@
 
 ## load required packages ####
 source("requirements.R")
+source("utils/display_contracts.R")
 
 ## Define disk caching
 shinyOptions(cache = cachem::cache_disk("data/labourvaluesdatapanel-cache/")) 
@@ -17,6 +18,26 @@ meta_indicators <- readRDS("data/meta_indicators.RDS")
 groups <- meta_indicators$groups |> unique()
 countries_sp  <- readRDS("data/countries_sp.RDS")
 list_methods <- meta_methods$code
+if (file.exists("data/meta_indicator_contracts.RDS")) {
+  meta_indicator_contracts <- readRDS("data/meta_indicator_contracts.RDS")
+  wlv_validate_display_contracts(meta_indicator_contracts)
+} else {
+  meta_indicator_contracts <- wlv_bind_display_contracts(lapply(
+    list_methods,
+    function(method) {
+      wlv_legacy_display_contract(
+        method_dir = method,
+        method = method,
+        indicators = as.character(meta_indicators$value),
+        legacy_metadata = meta_indicators,
+        warn = TRUE
+      )
+    }
+  ))
+}
+display_contract_version <- wlv_display_contract_version(
+  meta_indicator_contracts
+)
 
 ## Theme definition ####
 
@@ -53,9 +74,12 @@ lb <- function(lab_code,lang = default_language){
   language_file[lab_code,lang]
 }
 
-# Format numbers accordingly indicators meta-data (format to show)
-f2s <-  function (x, ind = NULL, type = NULL, lang = "English") {
-  if (x |> is.na()) {
+# Format a value that has already been converted to its display unit.
+display_f2s <- function(x, ind, method, lang = "English") {
+  if (!is.numeric(x) || length(x) != 1L) {
+    stop("`display_f2s` requires one numeric value.", call. = FALSE)
+  }
+  if (is.na(x)) {
     x
   } else {
     # reduce order of magnitude
@@ -75,9 +99,12 @@ f2s <-  function (x, ind = NULL, type = NULL, lang = "English") {
       suffix <- "K"
     }
     
-    # Get indicator type
-    type <- meta_indicators$type[meta_indicators$value == ind]
-    if (type == "percent") {x <- x * 100}
+    # Method-specific display units are authoritative when available.
+    type <- wlv_display_format_type(
+      meta_indicator_contracts,
+      method,
+      ind
+    )
 
     # defines nsmall
     x.abs <-  x |> abs()
@@ -99,21 +126,49 @@ f2s <-  function (x, ind = NULL, type = NULL, lang = "English") {
                 nsmall = ns)
 
     # add suffix and prefix
-    switch (type,
-            "index" = paste0(x, suffix),
-            "usd" = paste0("US$ ", x, suffix),
-            "value" = paste0(x, suffix, "mv"),
-            "hours" = paste0(x, suffix, lb("hours", lang)),
-            "integer" = paste0(x, suffix),
-            "percent" = paste0(x, suffix, "%"))
+    switch(
+      type,
+      "index" = paste0(x, suffix),
+      "usd" = paste0("US$ ", x, suffix),
+      "value" = paste0(x, suffix, "mv"),
+      "hours" = paste0(x, suffix, lb("hours", lang)),
+      "integer" = paste0(x, suffix),
+      "percent" = paste0(x, suffix, "%"),
+      paste0(x, suffix)
+    )
   }
 }
 
-list_f2s <- function(z, ind, type = NULL, lng) {
+# Canonical values cross the presentation boundary exactly once here.
+f2s <- function(x, ind, method, lang = "English") {
+  display_f2s(
+    wlv_display_values(
+      x,
+      method,
+      ind,
+      meta_indicator_contracts,
+      meta_indicators
+    ),
+    ind,
+    method,
+    lang
+  )
+}
+
+list_f2s <- function(z, ind, method, lng) {
   lapply(
-    1:length(z), 
-    function(i, w = z, name = ind){
-      f2s(w[i], name, lang = lng)
+    seq_along(z),
+    function(i, w = z, name = ind) {
+      f2s(w[i], name, method, lang = lng)
+    }
+  )
+}
+
+list_display_f2s <- function(z, ind, method, lng) {
+  lapply(
+    seq_along(z),
+    function(i, w = z, name = ind) {
+      display_f2s(w[i], name, method, lang = lng)
     }
   )
 }

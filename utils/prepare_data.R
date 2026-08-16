@@ -5,6 +5,13 @@ library(dplyr)
 library(magrittr)
 library(MazamaSpatialUtils)
 library(rworldmap)
+source("utils/display_contracts.R")
+
+# The shared CSV remains the legacy presentation catalog. Method-specific
+# storage/display semantics are loaded separately below.
+meta_indicators <- read.csv2("results/meta_indicators.csv")
+meta_indicators <- meta_indicators[order(meta_indicators$groups), ]
+wlv_validate_legacy_indicator_metadata(meta_indicators)
 
 # Creating language_file ####
 # Here, we also need to merge language files of country names, variable names, etc
@@ -83,6 +90,7 @@ list_years <- NULL
 list_sea_variables <- NULL
 list_countries <- NULL
 meta_methods <- NULL
+meta_indicator_contract_parts <- list()
 
 for (x in method_list) {
 
@@ -92,6 +100,33 @@ for (x in method_list) {
   sea_countries$temp <- read_fst_array(file = paste0("results/",x,"/sea_countries.fst"))
   sea_sectors$temp <- read_fst_array(file = paste0("results/",x,"/sea_sectors.fst"))
   m_countries$temp <- read_fst_array(file = paste0("results/",x,"/m_countries.fst"))
+
+  country_indicators <- dimnames(sea_countries$temp)[[2]]
+  sector_indicators <- dimnames(sea_sectors$temp)[[2]]
+  if (!identical(country_indicators, sector_indicators)) {
+    stop(
+      sprintf(
+        "Method `%s` has different country and sector indicator axes.",
+        x
+      ),
+      call. = FALSE
+    )
+  }
+  method_code <- as.character(parameters$code[[1]])
+  if (!nzchar(method_code)) {
+    stop(sprintf("Method directory `%s` has no display method code.", x),
+      call. = FALSE
+    )
+  }
+  meta_indicator_contract_parts[[length(meta_indicator_contract_parts) + 1L]] <-
+    wlv_read_method_display_contract(
+      path = file.path("results", x, "meta_indicators.RDS"),
+      method_dir = x,
+      method = method_code,
+      indicators = country_indicators,
+      legacy_metadata = meta_indicators,
+      warn_legacy = TRUE
+    )
   
   # Convert ISO-2 to ISO-3
   temp_iso <- dimnames(sea_countries$temp)[[3]]
@@ -164,6 +199,10 @@ sea_countries_merge |> saveRDS("data/sea_countries.RDS")
 sea_sectors |> saveRDS("data/sea_sectors.RDS")
 m_countries |> saveRDS("data/m_countries.RDS")
 meta_methods |> saveRDS("data/meta_methods.RDS")
+meta_indicator_contracts <- wlv_bind_display_contracts(
+  meta_indicator_contract_parts
+)
+meta_indicator_contracts |> saveRDS("data/meta_indicator_contracts.RDS")
 
 sea_countries <- sea_countries_merge
 
@@ -174,6 +213,7 @@ countries_polygons <-
 sp_data <- countries_polygons@data[,c("ISO3","NAME")]
 sp_data$layerId <- NA
 sp_data$data <- NA
+sp_data$raw_data <- NA
 
 countries_polygons@data <- sp_data
 
@@ -194,12 +234,8 @@ countries_sp[list_methods] <-
 
 countries_sp |> saveRDS("data/countries_sp.RDS")
 
-# Meta indicators
-# We need to get this information directly from methods. But, for now,
-# we are going to get this from a .csv
-
-meta_indicators <- read.csv2("results/meta_indicators.csv")
-meta_indicators <- meta_indicators[order(meta_indicators$groups),]
+# The global metadata remains legacy for labels, grouping and colour direction.
+# Unit and display fields live in `meta_indicator_contracts`, keyed by method.
 meta_indicators |> saveRDS("data/meta_indicators.RDS")
 
 method_description <- NULL
