@@ -10,13 +10,21 @@ mycolors <- c('#E41A1C',
               '#A65628',
               '#F781BF' )
 
-# Format for yaxis in graphics
-tickf2s <- function(ind) {
-  type <- meta_indicators$type[meta_indicators$value == ind]
-  if (type == "percent")
-    "~%"
-  else
-    ".3s"
+# Format for y-axis in graphics. Values have already been converted to their
+# display unit, so percent ticks receive only a suffix (not another x100).
+tickf2s <- function(ind, method, lng) {
+  type <- wlv_display_format_type(meta_indicator_contracts, method, ind)
+  list(
+    tickformat = if (identical(type, "percent")) ".3~f" else ".3s",
+    tickprefix = if (identical(type, "usd")) "US$ " else "",
+    ticksuffix = switch(
+      type,
+      percent = "%",
+      value = "mv",
+      hours = lb("hours", lng),
+      ""
+    )
+  )
 }
 
 # Panel for graphics and "loading..."
@@ -376,10 +384,53 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
       
       # get data
       years <- year_min:year_max
-      data <- sea_countries[methods,years |> as.character(),indicator,country]
-      
+      canonical_data <- sea_countries[
+        methods,
+        years |> as.character(),
+        indicator,
+        country,
+        drop = FALSE
+      ]
+
+      comparable_unit <- tryCatch(
+        wlv_assert_comparable_display_units(
+          methods,
+          indicator,
+          meta_indicator_contracts
+        ),
+        wlv_incompatible_display_units = identity
+      )
+      if (inherits(comparable_unit, "wlv_incompatible_display_units")) {
+        graph <- div(
+          class = "alert alert-warning",
+          style = paste0(
+            "height: 220px; margin: 0px; padding: 55px 15px;",
+            "text-align: center;"
+          ),
+          tags$strong("Incompatible display units"),
+          tags$br(),
+          conditionMessage(comparable_unit)
+        )
+        return(graph_panel(graph, graph_width, indicator))
+      }
+
+      data <- matrix(
+        NA_real_,
+        nrow = length(methods),
+        ncol = length(years),
+        dimnames = list(methods, as.character(years))
+      )
+      for (x in seq_along(methods)) {
+        data[x, ] <- wlv_display_values(
+          as.numeric(canonical_data[methods[x], , indicator, country]),
+          methods[x],
+          indicator,
+          meta_indicator_contracts
+        )
+      }
+
       # NULL if has no data
-      if (data |> sum(na.rm = TRUE) == 0) return()
+      if (!any(!is.na(data) & data != 0)) return()
       
       # labels for axis x
       if((length(years) %% 2) != 0) {
@@ -396,6 +447,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
       }
       
       # Initialize graph area
+      axis_format <- tickf2s(indicator, methods[[1L]], lng)
       graph <- plot_ly(
         type = "scatter",
         mode = "lines+markers",
@@ -408,12 +460,14 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
                             showgrid = FALSE,
                             range = c(year_min, year_max),
                             tickvals = break_years),
-               yaxis = list(title = "",
+               yaxis = list(title = comparable_unit,
                             showgrid = FALSE,
                             zeroline = TRUE,
                             zerolinecolor = "#E6E6E6",
                             zerolinewidth = 1,
-                            tickformat = tickf2s(indicator)),
+                            tickformat = axis_format$tickformat,
+                            tickprefix = axis_format$tickprefix,
+                            ticksuffix = axis_format$ticksuffix),
                legend = list(title = "", 
                              orientation = "h", 
                              y="-0.1", 
@@ -424,12 +478,15 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
                displayModeBar = FALSE)
       
       # add methods trace
-      data <- rbind(data, data) # to avoid "incorret number of dimensios" error
-      for (x in 1:length(methods)) {
+      for (x in seq_along(methods)) {
         text_data <- data[x,]
-        if (text_data |> sum(na.rm = TRUE) != 0) {
-          text_data <- text_data[text_data |> is.na() |> not()]
-          text_data <-  list_f2s(text_data, indicator, lng = lng)
+        if (any(!is.na(text_data) & text_data != 0)) {
+          text_data <- list_display_f2s(
+            text_data,
+            indicator,
+            methods[x],
+            lng
+          )
           graph <- graph |>
             add_trace(
               x = years,
@@ -442,7 +499,13 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
 
       # Indicator Graph Panel
       graph_panel(graph, graph_width, indicator)
-    }) %>%bindCache(indicator,RV$bases(),IP$l,IP$co_select_country)
+    }) %>%bindCache(
+      indicator,
+      RV$bases(),
+      IP$l,
+      IP$co_select_country,
+      display_contract_version
+    )
   
     observeEvent(IP[[paste0(indicator,"_info")]],{
       co_info_indicator(indicator)
@@ -514,9 +577,19 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
     # create table with profile data
     profile_table <- methods |> as.data.frame(row.names = methods)
     for (i in profile_indicators) {
-      profile_table[[i]] <- sea_countries[methods, year, i, country] |>
-        list_f2s(i,lng = lng) |>
-        unlist()
+      canonical_values <- sea_countries[methods, year, i, country]
+      profile_table[[i]] <- vapply(
+        seq_along(methods),
+        function(method_index) {
+          as.character(f2s(
+            canonical_values[[method_index]],
+            i,
+            methods[[method_index]],
+            lng
+          ))
+        },
+        character(1L)
+      )
     }
     profile_table <- profile_table[,-1] |> t()
     rownames(profile_table) <- lb(profile_indicators, lng)
@@ -607,8 +680,14 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
         if (year %in% names(temp_sectors[,1,1,1]) &
             country %in% names(temp_sectors[1,1,1,]) &
             indicator %in% names(temp_sectors[1,,1,1])) {
-          mydt <- temp_sectors[year,indicator,,country]
-          mydt <- mydt |> list_f2s(indicator, NULL, lng) |> unlist()
+          canonical_sectors <- temp_sectors[year, indicator, , country]
+          mydt <- vapply(
+            canonical_sectors,
+            function(value) {
+              as.character(f2s(value, indicator, method, lng))
+            },
+            character(1L)
+          )
         } else {
           mydt <- rep("-", times = temp_sectors[1,1,,1] |> length())
         }

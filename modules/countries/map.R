@@ -52,9 +52,9 @@ mypallet <- function(data, indicator) {
 }
 
 # Format labels numbers for legend
-label_f2s <- function(ind, lng) {
+label_f2s <- function(ind, method, lng) {
   function(type, cuts, ...) {
-    list_f2s(cuts, ind, type, lng)
+    list_display_f2s(cuts, ind, method, lng)
   }
 }
 
@@ -277,11 +277,18 @@ map_server <- function(IP, OP, RV, SESSION){
     
     temp_all_data <- lapply(methods, function(i){
       temp_data <- countries_sp[[i]]
-      temp_data@data$data <-
-        sea_countries[i,
-                      year |> as.character(),
-                      indicator,
-                      temp_data@data$ISO3 |> as.character()]
+      canonical_values <- sea_countries[
+        i,
+        year |> as.character(),
+        indicator,
+        temp_data@data$ISO3 |> as.character()
+      ]
+      temp_data@data$data <- wlv_display_values(
+        canonical_values,
+        i,
+        indicator,
+        meta_indicator_contracts
+      )
       temp_data
     })
     names(temp_all_data) <- methods
@@ -307,24 +314,37 @@ map_server <- function(IP, OP, RV, SESSION){
   
   ## Labels for mouse hover ####
   labels <- reactive({
-    method <- IP$map_groups
-    req(method)
-    if (method %in% RV$bases() |> not()) return()
-    map_data <- map_data()[[method]]@data
+    methods <- RV$bases()
+    map_data <- map_data()
     lng <- IP$l
     indicator <- IP$co_select_indicator
-    
-    sprintf(
-      "<p style='
-      text-align: center;
-      border-style: none none solid;
-      border-width: 1px;
-      font-weight: bold'>
-      %s</p>%s : %s",
-      lb(paste0("ISO3.",map_data$ISO3),lng),
-      lb(indicator,lng),
-      list_f2s(map_data$data, indicator, lng = lng)) |>
-      lapply(htmltools::HTML)
+
+    method_labels <- lapply(methods, function(method) {
+      method_data <- map_data[[method]]@data
+      unit <- wlv_display_unit(meta_indicator_contracts, method, indicator)
+
+      sprintf(
+        "<p style='
+        text-align: center;
+        border-style: none none solid;
+        border-width: 1px;
+        font-weight: bold'>
+        %s</p><strong>%s</strong><br>%s (%s): %s",
+        lb(paste0("ISO3.", method_data$ISO3), lng),
+        method,
+        lb(indicator, lng),
+        unit,
+        list_display_f2s(
+          method_data$data,
+          indicator,
+          method,
+          lng
+        ) |> unlist(use.names = FALSE)
+      ) |>
+        lapply(htmltools::HTML)
+    })
+    names(method_labels) <- methods
+    method_labels
   })
   
   ## Plot polygons ####
@@ -345,7 +365,7 @@ map_server <- function(IP, OP, RV, SESSION){
                  data = layer_data,
                  layerId = layer_data@data$layerId,
                  fillColor = ~pallet[[method]](layer_data@data$data),
-                 label = labels,
+                 label = labels[[method]],
                  fillOpacity = 0.6,
                  group = method,
                  color = "black",
@@ -377,14 +397,17 @@ map_server <- function(IP, OP, RV, SESSION){
       clearControls()
     if (method %in% methods |> not()) return()
     if (map_data[[method]]@data$data |> sum(na.rm = TRUE) != 0) {
+      unit <- wlv_display_unit(meta_indicator_contracts, method, indicator)
+      legend_range <- range(map_data[[method]]@data$data, na.rm = TRUE)
       proxy |>
         addLegend("bottomright",
                   # informing values as an interval to solve a bug when there 
                   # is only one number
-                  values = c(map_data[[method]]@data$data |> min() *0.99999999,
-                             map_data[[method]]@data$data |> max() *1.00000001),
+                  values = c(legend_range[[1L]] * 0.99999999,
+                             legend_range[[2L]] * 1.00000001),
                   pal = pallet[[method]],
-                  labFormat = label_f2s(indicator, lng))
+                  title = paste0(method, "<br>", lb(indicator, lng), " (", unit, ")"),
+                  labFormat = label_f2s(indicator, method, lng))
     }
 
     # De-active loading panel
