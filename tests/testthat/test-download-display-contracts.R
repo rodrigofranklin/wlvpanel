@@ -20,6 +20,7 @@ load_download_export_functions <- function() {
   functions <- c(
     "ind_type",
     "wlv_legacy_xlsx_num_format",
+    "wlv_xlsx_export_matrix",
     "wlv_prepare_xlsx_display",
     "wlv_xlsx_contract_metadata",
     "save_my_xlsx"
@@ -262,6 +263,89 @@ testthat::test_that("XLSX inputs preserve cancellation and valid zeros", {
       2L
     ),
     indicators
+  )
+})
+
+testthat::test_that("XLSX export matrices preserve singleton axes", {
+  export <- load_download_export_functions()
+  indicators <- c("first", "second")
+  countries <- c("A", "B")
+  values <- array(
+    c(11, 22, 33, 44),
+    dim = c(1L, 1L, 2L, 2L),
+    dimnames = list(
+      method = "METHOD",
+      year = "2000",
+      indicator = indicators,
+      country = countries
+    )
+  )
+  contracts <- method_contract(
+    "METHOD", indicators, rep("ratio", 2L), rep(1, 2L)
+  )
+
+  country_data <- export$wlv_xlsx_export_matrix(
+    values["METHOD", "2000", indicators, "A", drop = FALSE],
+    row_axis = 3L,
+    column_axis = 2L
+  )
+  indicator_data <- export$wlv_xlsx_export_matrix(
+    values["METHOD", "2000", "first", countries, drop = FALSE],
+    row_axis = 4L,
+    column_axis = 2L
+  )
+  singleton <- export$wlv_xlsx_export_matrix(
+    values["METHOD", "2000", "second", "B", drop = FALSE],
+    row_axis = 3L,
+    column_axis = 2L
+  )
+  two_years <- array(
+    c(51, 52),
+    dim = c(1L, 2L, 1L, 1L),
+    dimnames = list(
+      method = "METHOD",
+      year = c("2000", "2001"),
+      indicator = "first",
+      country = "A"
+    )
+  )
+  single_row <- export$wlv_xlsx_export_matrix(
+    two_years,
+    row_axis = 3L,
+    column_axis = 2L
+  )
+
+  testthat::expect_identical(
+    country_data,
+    matrix(c(11, 22), nrow = 2L,
+      dimnames = list(indicator = indicators, year = "2000"))
+  )
+  testthat::expect_identical(
+    indicator_data,
+    matrix(c(11, 33), nrow = 2L,
+      dimnames = list(country = countries, year = "2000"))
+  )
+  testthat::expect_identical(
+    singleton,
+    matrix(44, nrow = 1L,
+      dimnames = list(indicator = "second", year = "2000"))
+  )
+  testthat::expect_identical(
+    single_row,
+    matrix(c(51, 52), nrow = 1L,
+      dimnames = list(indicator = "first", year = c("2000", "2001")))
+  )
+  testthat::expect_identical(
+    export$wlv_prepare_xlsx_display(
+      country_data, "METHOD", indicators, contracts
+    )$data,
+    country_data
+  )
+  testthat::expect_identical(
+    export$wlv_prepare_xlsx_display(
+      indicator_data, "METHOD", "first", contracts
+    )$data,
+    indicator_data
   )
 })
 

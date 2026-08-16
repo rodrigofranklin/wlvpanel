@@ -34,6 +34,55 @@ wlv_legacy_xlsx_num_format <- function(indicator, legacy_type = NULL) {
   }
 }
 
+wlv_xlsx_export_matrix <- function(value, row_axis, column_axis) {
+  supplied_axes <- list(row_axis, column_axis)
+  if (
+    !is.numeric(value) || is.null(dim(value)) || is.null(dimnames(value)) ||
+      any(!vapply(
+        supplied_axes,
+        function(axis) {
+          is.numeric(axis) && length(axis) == 1L && !is.na(axis) &&
+            axis %% 1 == 0
+        },
+        logical(1L)
+      ))
+  ) {
+    stop(
+      "XLSX export reshaping requires a labelled numeric array and two axes.",
+      call. = FALSE
+    )
+  }
+  axes <- as.integer(unlist(supplied_axes, use.names = FALSE))
+  if (
+    any(axes < 1L) || any(axes > length(dim(value))) ||
+      anyDuplicated(axes)
+  ) {
+    stop("XLSX export axes are invalid or duplicated.", call. = FALSE)
+  }
+  fixed_axes <- setdiff(seq_along(dim(value)), axes)
+  if (length(fixed_axes) && any(dim(value)[fixed_axes] != 1L)) {
+    stop("Every non-export XLSX axis must select exactly one value.",
+      call. = FALSE
+    )
+  }
+  labels <- dimnames(value)[axes]
+  if (any(vapply(labels, is.null, logical(1L))) ||
+      any(vapply(labels, anyNA, logical(1L))) ||
+      any(vapply(labels, function(value) any(!nzchar(value)), logical(1L))) ||
+      any(vapply(labels, anyDuplicated, integer(1L)) != 0L)) {
+    stop("XLSX export axes must have unique non-missing labels.",
+      call. = FALSE
+    )
+  }
+  permuted <- aperm(value, c(axes, fixed_axes))
+  matrix(
+    as.numeric(permuted),
+    nrow = dim(value)[axes[[1L]]],
+    ncol = dim(value)[axes[[2L]]],
+    dimnames = labels
+  )
+}
+
 wlv_prepare_xlsx_display <- function(
     my_data,
     method_code,
@@ -315,11 +364,13 @@ for (method_code in meta_methods$code) {
   ##### Country files (aggregated and sectors) ####
   for (country_code in countries) {
     ### Aggregated data
-    country_data <- 
-      t(sea_countries[method_code,
-                      years,
-                      indicators,
-                      country_code])
+    country_data <- wlv_xlsx_export_matrix(
+      sea_countries[
+        method_code, years, indicators, country_code, drop = FALSE
+      ],
+      row_axis = 3L,
+      column_axis = 2L
+    )
     country_name <- language_file[paste0("ISO3.",country_code),"English"]
     
     file_name <-  paste0(
@@ -427,10 +478,13 @@ for (method_code in meta_methods$code) {
   
   #### Indicator files ####
   for (indicator_code in indicators) {
-    indicator_data <- t(sea_countries[method_code,
-                                      years,
-                                      indicator_code,
-                                      countries])
+    indicator_data <- wlv_xlsx_export_matrix(
+      sea_countries[
+        method_code, years, indicator_code, countries, drop = FALSE
+      ],
+      row_axis = 4L,
+      column_axis = 2L
+    )
     
     indicator_name <- language_file[indicator_code,"English"]
     
