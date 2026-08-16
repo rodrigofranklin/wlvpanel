@@ -25,6 +25,11 @@ mypallet <- function(data, indicator) {
     maximum <- max(data, na.rm = TRUE) *1.1
     minimum <- min(data, na.rm = TRUE) *1.1
   })
+  if (is.finite(minimum) && is.finite(maximum) &&
+      minimum == 0 && maximum == 0) {
+    minimum <- -1e-12
+    maximum <- 1e-12
+  }
   
   if (minimum < 0 & maximum >0) {
     if (maximum > abs(minimum)) {
@@ -127,27 +132,24 @@ map_server <- function(IP, OP, RV, SESSION){
     indicator <- IP$co_select_indicator |> isolate()
     lng <- IP$l
     
-    temp_data <- sea_countries[methods,,,]
-    
-    if (methods |> length() > 1) {
-      years <- temp_data[1,,1,1] |> names()
-      years <- years[temp_data[,,1,1] |> colSums(na.rm = TRUE) !=0]
-      indicators <- temp_data[1,years[1],,1] |> names()
-      indicators <- indicators[temp_data[,years[1],,1] |> colSums(na.rm = TRUE) !=0]
-      countries <- temp_data[1,years[1],1,] |> names()
-      countries <- countries[temp_data[,years[1],1,] |> colSums(na.rm = TRUE) !=0]
-    } else {
-      years <- temp_data[,1,1] |> names()
-      years <- years[temp_data[,1,1] |> is.na() |> not()]
-      indicators <- temp_data[years,,1] |> colnames()
-      indicators <- indicators[temp_data[years,,1] |> colSums(na.rm = TRUE) !=0]
-      countries <- temp_data[years,1,] |> colnames()
-      countries <- countries[temp_data[years,1,] |> colSums(na.rm = TRUE) !=0]
-    }
-    
-    if (indicator == "" | 
-        indicator %in% indicators |> not()) {
-      selected_indicator <- default_indicator
+    temp_data <- sea_countries[methods, , , , drop = FALSE]
+    years <- dimnames(temp_data)[[2L]]
+    years <- years[apply(temp_data, 2L, function(value) any(!is.na(value)))]
+    countries <- dimnames(temp_data)[[4L]]
+    countries <- countries[
+      apply(temp_data, 4L, function(value) any(!is.na(value)))
+    ]
+    indicators <- unique(method_indicator_availability$indicator[
+      method_indicator_availability$method %in% methods
+    ])
+
+    if (is.null(indicator) || !length(indicator) || indicator == "" ||
+        !indicator %in% indicators) {
+      selected_indicator <- if (default_indicator %in% indicators) {
+        default_indicator
+      } else {
+        indicators[[1L]]
+      }
     } else {
       selected_indicator <- indicator
     }
@@ -236,6 +238,16 @@ map_server <- function(IP, OP, RV, SESSION){
     
   })
   outputOptions(OP, "map", suspendWhenHidden = FALSE) 
+
+  indicator_methods <- reactive({
+    indicator <- IP$co_select_indicator
+    req(indicator)
+    wlv_methods_with_indicator(
+      method_indicator_availability,
+      RV$bases(),
+      indicator
+    )
+  })
   
   ## Change layers #####
   # 1) Change layers control after setup selection
@@ -243,7 +255,8 @@ map_server <- function(IP, OP, RV, SESSION){
   # 3) If has no basegroup selected, select the first one
   observe({
     method <- IP$map_groups |> isolate()
-    methods <- RV$bases()
+    methods <- indicator_methods()
+    req(length(methods))
     proxy <- leafletProxy("map")
     
     proxy |>
@@ -268,10 +281,11 @@ map_server <- function(IP, OP, RV, SESSION){
   # 2) indicator
   # 3) year
   map_data <- reactive({
-    methods <- RV$bases()
+    methods <- indicator_methods()
     indicator <- IP$co_select_indicator
     year <- IP$co_select_year
     
+    req(length(methods))
     req(indicator)
     req(year)
     
@@ -300,9 +314,9 @@ map_server <- function(IP, OP, RV, SESSION){
   # 1) methods selected in setup
   # 2) map_data
   pallet <- reactive({
-    methods <- RV$bases()
     indicator <- IP$co_select_indicator
     map_data <- map_data()
+    methods <- names(map_data)
     
     temp_all_pallet <- lapply(methods, function(i){
       temp_pallet <- mypallet(map_data[[i]]@data$data, indicator)
@@ -314,8 +328,8 @@ map_server <- function(IP, OP, RV, SESSION){
   
   ## Labels for mouse hover ####
   labels <- reactive({
-    methods <- RV$bases()
     map_data <- map_data()
+    methods <- names(map_data)
     lng <- IP$l
     indicator <- IP$co_select_indicator
 
@@ -350,8 +364,8 @@ map_server <- function(IP, OP, RV, SESSION){
   ## Plot polygons ####
   # Plot polygons for each layer, based on map_data and pallet
   observe({
-    methods <- RV$bases()
     map_data <- map_data()
+    methods <- names(map_data)
     pallet <- pallet()
     labels <- labels()
     proxy <- leafletProxy("map")
@@ -382,8 +396,8 @@ map_server <- function(IP, OP, RV, SESSION){
   # Change legend with layer
   observe({
     method <- IP$map_groups
-    methods <- RV$bases() |> isolate()
     map_data <- map_data()
+    methods <- names(map_data)
     pallet <- pallet()
     indicator <- IP$co_select_indicator
     lng <- IP$l
@@ -396,9 +410,13 @@ map_server <- function(IP, OP, RV, SESSION){
     proxy |>
       clearControls()
     if (method %in% methods |> not()) return()
-    if (map_data[[method]]@data$data |> sum(na.rm = TRUE) != 0) {
+    if (any(!is.na(map_data[[method]]@data$data))) {
       unit <- wlv_display_unit(meta_indicator_contracts, method, indicator)
       legend_range <- range(map_data[[method]]@data$data, na.rm = TRUE)
+      if (legend_range[[1L]] == legend_range[[2L]]) {
+        spread <- max(abs(legend_range[[1L]]) * 1e-8, 1e-12)
+        legend_range <- legend_range + c(-spread, spread)
+      }
       proxy |>
         addLegend("bottomright",
                   # informing values as an interval to solve a bug when there 

@@ -21,6 +21,7 @@ load_download_export_functions <- function() {
     "ind_type",
     "wlv_legacy_xlsx_num_format",
     "wlv_prepare_xlsx_display",
+    "wlv_xlsx_contract_metadata",
     "save_my_xlsx"
   )
   for (expression in expressions) {
@@ -35,7 +36,7 @@ load_download_export_functions <- function() {
   environment
 }
 
-method_contract <- function(method, indicators, units, multipliers, types) {
+method_contract <- function(method, indicators, units, multipliers, types = NULL) {
   data.frame(
     method_dir = rep(method, length(indicators)),
     method = rep(method, length(indicators)),
@@ -46,7 +47,7 @@ method_contract <- function(method, indicators, units, multipliers, types) {
     index_base_year = rep(NA_character_, length(indicators)),
     index_storage_base = rep(NA_real_, length(indicators)),
     metadata_source = rep("method_metadata", length(indicators)),
-    legacy_type = types,
+    legacy_type = rep(NA_character_, length(indicators)),
     stringsAsFactors = FALSE,
     check.names = FALSE
   )
@@ -139,6 +140,80 @@ testthat::test_that("legacy fallback preserves stored values and Excel scaling",
   testthat::expect_identical(payload$data, canonical)
   testthat::expect_identical(format_for_row(payload, 7L), "PERCENTAGE")
   testthat::expect_identical(format_for_row(payload, 8L), "#,##0.00")
+
+  metadata <- export$wlv_xlsx_contract_metadata(
+    data.frame(Code = legacy_metadata$value),
+    "LEGACY",
+    legacy_metadata$value,
+    contracts
+  )
+  testthat::expect_identical(metadata$method, rep("LEGACY", 2L))
+  testthat::expect_true(all(is.na(metadata$canonical_unit)))
+  testthat::expect_identical(metadata$display_multiplier, c(1, 1))
+  testthat::expect_identical(
+    metadata$metadata_source,
+    rep("legacy_fallback", 2L)
+  )
+  testthat::expect_identical(metadata$legacy_type, legacy_metadata$type)
+
+  no_suffix_legacy <- data.frame(
+    value = "ratio_without_suffix",
+    type = "percent",
+    stringsAsFactors = FALSE
+  )
+  no_suffix_contract <- export$wlv_legacy_display_contract(
+    "legacy", "LEGACY-NO-SUFFIX", no_suffix_legacy$value,
+    no_suffix_legacy, warn = FALSE
+  )
+  no_suffix_payload <- export$wlv_prepare_xlsx_display(
+    matrix(0.125, nrow = 1L),
+    "LEGACY-NO-SUFFIX",
+    no_suffix_legacy$value,
+    no_suffix_contract
+  )
+  testthat::expect_identical(no_suffix_payload$styles_list, list("PERCENTAGE"))
+})
+
+testthat::test_that("modern neutral units stay neutral in XLSX", {
+  export <- load_download_export_functions()
+  indicators <- c("ratio.r.pc", "exchange.r.us", "future.s.un")
+  contracts <- method_contract(
+    "NEW",
+    indicators,
+    c("ratio", "local_currency_per_usd", "future_unit"),
+    c(1, 1, 1)
+  )
+  canonical <- matrix(
+    c(0.125, 0.25, 5.2, 5.4, 7.25, 8.5),
+    nrow = 3L,
+    byrow = TRUE,
+    dimnames = list(indicators, c("2000", "2001"))
+  )
+  payload <- export$wlv_prepare_xlsx_display(
+    canonical,
+    "NEW",
+    indicators,
+    contracts
+  )
+
+  testthat::expect_identical(payload$data, canonical)
+  testthat::expect_identical(payload$styles_list, list("#,##0.00"))
+  testthat::expect_identical(payload$rows_style_list[[1L]], 7:9)
+
+  metadata <- export$wlv_xlsx_contract_metadata(
+    data.frame(Code = indicators),
+    "NEW",
+    indicators,
+    contracts
+  )
+  testthat::expect_identical(metadata$canonical_unit, contracts$canonical_unit)
+  testthat::expect_identical(metadata$display_unit, contracts$display_unit)
+  testthat::expect_identical(metadata$display_multiplier, c(1, 1, 1))
+  testthat::expect_true(all(c(
+    "method", "canonical_unit", "display_unit", "display_multiplier",
+    "index_base_year", "index_storage_base", "metadata_source",
+    "legacy_type"
+  ) %in% names(metadata)))
 })
 
 testthat::test_that("generated XLSX stores display percent with a literal format", {
@@ -169,11 +244,65 @@ testthat::test_that("generated XLSX stores display percent with a literal format
   )
   workbook <- openxlsx::loadWorkbook(file)
   style <- xlsx_style_for_cell(workbook, "data", 7L, 3L)
+  published_metadata <- openxlsx::read.xlsx(file, sheet = "metadata")
 
   testthat::expect_identical(stored[[1L]], 12.5)
   testthat::expect_identical(
     style$numFmt$formatCode,
     "0.00&quot;%&quot;"
+  )
+  testthat::expect_identical(published_metadata$method, "NEW")
+  testthat::expect_identical(published_metadata$display_unit, "percent")
+  testthat::expect_identical(published_metadata$display_multiplier, 100)
+  testthat::expect_identical(
+    published_metadata$metadata_source,
+    "method_metadata"
+  )
+  testthat::expect_identical(
+    stored[[1L]] / published_metadata$display_multiplier,
+    0.125
+  )
+})
+
+testthat::test_that("generated index XLSX publishes storage and display bases", {
+  testthat::skip_if_not_installed("openxlsx")
+  export <- load_download_export_functions()
+  contracts <- method_contract(
+    "WIOD16", "price.r.id", "index", 100
+  )
+  contracts$display_unit <- "index_point"
+  contracts$index_base_year <- "2000"
+  contracts$index_storage_base <- 1
+  file <- tempfile(fileext = ".xlsx")
+  export$save_my_xlsx(
+    file_name = file,
+    header = matrix(c("Indicator:", "Price"), nrow = 1L),
+    row_names = "Price",
+    my_data = matrix(1, nrow = 1L, dimnames = list(NULL, "2000")),
+    metadata = data.frame(Code = "price.r.id"),
+    specs = data.frame(code = "WIOD16"),
+    rows_style_list = list(7L),
+    styles_list = list("#,##0.00"),
+    width_c1 = 20,
+    width_c2 = 10,
+    method_code = "WIOD16",
+    indicator_codes = "price.r.id",
+    display_contracts = contracts
+  )
+
+  stored <- openxlsx::read.xlsx(
+    file, sheet = "data", rows = 7L, cols = 3L, colNames = FALSE
+  )
+  published_metadata <- openxlsx::read.xlsx(file, sheet = "metadata")
+  testthat::expect_identical(stored[[1L]], 100)
+  testthat::expect_identical(published_metadata$canonical_unit, "index")
+  testthat::expect_identical(published_metadata$display_unit, "index_point")
+  testthat::expect_identical(published_metadata$display_multiplier, 100)
+  testthat::expect_identical(published_metadata$index_base_year, "2000")
+  testthat::expect_identical(published_metadata$index_storage_base, 1)
+  testthat::expect_identical(
+    stored[[1L]] / published_metadata$display_multiplier,
+    published_metadata$index_storage_base
   )
 })
 
@@ -215,8 +344,20 @@ testthat::test_that("generated legacy XLSX retains fraction and percent numFmt",
   )
   workbook <- openxlsx::loadWorkbook(file)
   style <- xlsx_style_for_cell(workbook, "data", 7L, 3L)
+  published_metadata <- openxlsx::read.xlsx(file, sheet = "metadata")
 
   testthat::expect_identical(stored[[1L]], 0.125)
   testthat::expect_identical(as.numeric(style$numFmt$numFmtId), 10)
   testthat::expect_null(style$numFmt$formatCode)
+  testthat::expect_identical(published_metadata$method, "LEGACY")
+  testthat::expect_identical(published_metadata$display_multiplier, 1)
+  testthat::expect_identical(
+    published_metadata$metadata_source,
+    "legacy_fallback"
+  )
+  testthat::expect_identical(published_metadata$legacy_type, "percent")
+  testthat::expect_identical(
+    stored[[1L]] / published_metadata$display_multiplier,
+    0.125
+  )
 })

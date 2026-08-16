@@ -368,7 +368,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
   lapply(meta_indicators$value, \(indicator) {
     OP[[paste0(indicator,"_plot")]] <- renderUI({
       # reactive data
-      methods <- RV$bases() |> isolate()
+      selected_methods <- RV$bases() |> isolate()
       year_max <- RV$yearmax() |> isolate()
       year_min <- RV$yearmin() |> isolate()
       lng <- IP$l |> isolate()
@@ -381,6 +381,13 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
         img(src = "/spinner.gif"))
       if (country == "") 
         return(graph_panel(graph, graph_width, indicator))
+
+      methods <- wlv_methods_with_indicator(
+        method_indicator_availability,
+        selected_methods,
+        indicator
+      )
+      if (!length(methods)) return()
       
       # get data
       years <- year_min:year_max
@@ -430,7 +437,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
       }
 
       # NULL if has no data
-      if (!any(!is.na(data) & data != 0)) return()
+      if (!any(!is.na(data))) return()
       
       # labels for axis x
       if((length(years) %% 2) != 0) {
@@ -480,7 +487,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
       # add methods trace
       for (x in seq_along(methods)) {
         text_data <- data[x,]
-        if (any(!is.na(text_data) & text_data != 0)) {
+        if (any(!is.na(text_data))) {
           text_data <- list_display_f2s(
             text_data,
             indicator,
@@ -493,7 +500,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
               y = data[x,],
               text = text_data,
               name = methods[x],
-              color = I(mycolors[x]))
+              color = I(mycolors[match(methods[x], selected_methods)]))
         }
       }
 
@@ -578,13 +585,22 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
     profile_table <- methods |> as.data.frame(row.names = methods)
     for (i in profile_indicators) {
       canonical_values <- sea_countries[methods, year, i, country]
+      indicator_methods <- wlv_methods_with_indicator(
+        method_indicator_availability,
+        methods,
+        i
+      )
       profile_table[[i]] <- vapply(
         seq_along(methods),
         function(method_index) {
+          method <- methods[[method_index]]
+          if (!method %in% indicator_methods) {
+            return("-")
+          }
           as.character(f2s(
             canonical_values[[method_index]],
             i,
-            methods[[method_index]],
+            method,
             lng
           ))
         },

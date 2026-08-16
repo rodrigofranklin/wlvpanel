@@ -202,6 +202,10 @@ meta_methods |> saveRDS("data/meta_methods.RDS")
 meta_indicator_contracts <- wlv_bind_display_contracts(
   meta_indicator_contract_parts
 )
+wlv_validate_display_contract_coverage(
+  meta_indicator_contracts,
+  wlv_method_indicator_availability(sea_sectors, indicator_axis = 2L)
+)
 meta_indicator_contracts |> saveRDS("data/meta_indicator_contracts.RDS")
 
 sea_countries <- sea_countries_merge

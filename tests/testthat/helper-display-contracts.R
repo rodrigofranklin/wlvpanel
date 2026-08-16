@@ -44,6 +44,21 @@ wlvpanel_method_metadata <- function(
   )
 }
 
+wlvpanel_legacy_method_metadata <- function(
+    codes = wlvpanel_legacy_metadata()$value) {
+  data.frame(
+    code = codes,
+    name = paste("Name", codes),
+    description = paste("Description", codes),
+    observation = rep("", length(codes)),
+    group = rep("test", length(codes)),
+    type = rep("usd", length(codes)),
+    reverted = rep(FALSE, length(codes)),
+    stringsAsFactors = FALSE,
+    check.names = FALSE
+  )
+}
+
 wlvpanel_write_metadata <- function(value) {
   path <- tempfile("wlvpanel-method-metadata-", fileext = ".RDS")
   saveRDS(value, path)

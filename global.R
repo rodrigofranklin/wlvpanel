@@ -15,25 +15,40 @@ sea_countries <- readRDS("data/sea_countries.RDS")
 sea_sectors <- readRDS("data/sea_sectors.RDS")
 meta_methods <- readRDS("data/meta_methods.RDS")
 meta_indicators <- readRDS("data/meta_indicators.RDS")
+wlv_validate_legacy_indicator_metadata(meta_indicators)
 groups <- meta_indicators$groups |> unique()
 countries_sp  <- readRDS("data/countries_sp.RDS")
-list_methods <- meta_methods$code
+list_methods <- as.character(meta_methods$code)
+method_indicator_availability <- wlv_method_indicator_availability(
+  sea_sectors,
+  indicator_axis = 2L
+)
 if (file.exists("data/meta_indicator_contracts.RDS")) {
   meta_indicator_contracts <- readRDS("data/meta_indicator_contracts.RDS")
-  wlv_validate_display_contracts(meta_indicator_contracts)
+  wlv_validate_display_contract_coverage(
+    meta_indicator_contracts,
+    method_indicator_availability
+  )
 } else {
   meta_indicator_contracts <- wlv_bind_display_contracts(lapply(
     list_methods,
     function(method) {
+      indicators <- method_indicator_availability$indicator[
+        method_indicator_availability$method == method
+      ]
       wlv_legacy_display_contract(
         method_dir = method,
         method = method,
-        indicators = as.character(meta_indicators$value),
+        indicators = indicators,
         legacy_metadata = meta_indicators,
         warn = TRUE
       )
     }
   ))
+  wlv_validate_display_contract_coverage(
+    meta_indicator_contracts,
+    method_indicator_availability
+  )
 }
 display_contract_version <- wlv_display_contract_version(
   meta_indicator_contracts

@@ -81,6 +81,89 @@ test_that("a wholly absent sidecar uses the warned legacy fallback", {
   )
 })
 
+test_that("complete historical metadata falls back but ambiguous schemas fail", {
+  legacy <- wlvpanel_legacy_metadata()
+  historical <- wlvpanel_legacy_method_metadata()
+  historical_path <- wlvpanel_write_metadata(historical)
+  on.exit(unlink(historical_path), add = TRUE)
+  expect_warning(
+    contract <- wlv_read_method_display_contract(
+      historical_path, "historical", "HISTORICAL", legacy$value, legacy
+    ),
+    "legacy method metadata",
+    fixed = TRUE
+  )
+  expect_true(all(contract$metadata_source == "legacy_fallback"))
+  expect_true(all(contract$display_multiplier == 1))
+  expect_identical(contract$legacy_type, legacy$type)
+
+  incomplete <- historical
+  incomplete$observation <- NULL
+  incomplete_path <- wlvpanel_write_metadata(incomplete)
+  on.exit(unlink(incomplete_path), add = TRUE)
+  expect_error(
+    wlv_read_method_display_contract(
+      incomplete_path, "historical", "HISTORICAL", legacy$value, legacy
+    ),
+    "incomplete schema",
+    fixed = TRUE
+  )
+
+  modern_defaults <- list(
+    canonical_unit = rep(NA_character_, nrow(historical)),
+    display_unit = rep(NA_character_, nrow(historical)),
+    display_multiplier = rep(1, nrow(historical)),
+    index_base_year = rep(NA_character_, nrow(historical)),
+    index_storage_base = rep(NA_real_, nrow(historical))
+  )
+  for (column in names(modern_defaults)) {
+    partial <- historical
+    partial[[column]] <- modern_defaults[[column]]
+    partial_path <- wlvpanel_write_metadata(partial)
+    on.exit(unlink(partial_path), add = TRUE)
+    expect_error(
+      wlv_read_method_display_contract(
+        partial_path, "historical", "HISTORICAL", legacy$value, legacy
+      ),
+      "partial modern schema",
+      fixed = TRUE
+    )
+  }
+
+  padded <- historical
+  for (column in names(modern_defaults)) {
+    padded[[column]] <- modern_defaults[[column]]
+  }
+  padded_path <- wlvpanel_write_metadata(padded)
+  on.exit(unlink(padded_path), add = TRUE)
+  expect_error(
+    wlv_read_method_display_contract(
+      padded_path, "historical", "HISTORICAL", legacy$value, legacy
+    ),
+    "invalid units or multipliers",
+    fixed = TRUE
+  )
+
+  for (corrupt in list(
+    rbind(historical, historical[1L, , drop = FALSE]),
+    historical[-1L, , drop = FALSE],
+    rbind(
+      historical,
+      transform(historical[1L, , drop = FALSE], code = "unexpected")
+    )
+  )) {
+    corrupt_path <- wlvpanel_write_metadata(corrupt)
+    on.exit(unlink(corrupt_path), add = TRUE)
+    expect_error(
+      wlv_read_method_display_contract(
+        corrupt_path, "historical", "HISTORICAL", legacy$value, legacy
+      ),
+      "invalid or non-exact coverage",
+      fixed = TRUE
+    )
+  }
+})
+
 test_that("present metadata fails closed on schema, duplicates and coverage", {
   legacy <- wlvpanel_legacy_metadata()
   incomplete <- wlvpanel_method_metadata()
@@ -91,7 +174,7 @@ test_that("present metadata fails closed on schema, duplicates and coverage", {
     wlv_read_method_display_contract(
       path, "demo", "DEMO", legacy$value, legacy
     ),
-    "incomplete schema",
+    "partial modern schema",
     fixed = TRUE
   )
 
@@ -146,6 +229,197 @@ test_that("present metadata fails closed on schema, duplicates and coverage", {
     "invalid index bases",
     fixed = TRUE
   )
+})
+
+test_that("modern display units never inherit legacy presentation types", {
+  codes <- c(
+    "ratio.r.pc", "exchange.r.us", "future.s.un",
+    "percent.r.pc", "persons.s.un"
+  )
+  legacy <- data.frame(
+    value = codes,
+    type = c("percent", "usd", "integer", "percent", "integer"),
+    stringsAsFactors = FALSE
+  )
+  metadata <- data.frame(
+    code = codes,
+    canonical_unit = c(
+      "ratio", "local_currency_per_usd", "ratio", "ratio", "person"
+    ),
+    display_unit = c(
+      "ratio", "local_currency_per_usd", "future_unit", "percent", "person"
+    ),
+    display_multiplier = c(1, 1, 1, 100, 1),
+    index_base_year = rep(NA_character_, length(codes)),
+    index_storage_base = rep(NA_real_, length(codes)),
+    stringsAsFactors = FALSE
+  )
+  path <- wlvpanel_write_metadata(metadata)
+  on.exit(unlink(path), add = TRUE)
+  contracts <- wlv_read_method_display_contract(
+    path, "modern", "MODERN", codes, legacy
+  )
+
+  expect_true(all(is.na(contracts$legacy_type)))
+  expect_identical(
+    vapply(
+      codes,
+      function(indicator) {
+        wlv_display_format_type(contracts, "MODERN", indicator)
+      },
+      character(1L),
+      USE.NAMES = FALSE
+    ),
+    c("neutral", "neutral", "neutral", "percent", "integer")
+  )
+  expect_identical(
+    vapply(
+      codes,
+      function(indicator) {
+        wlv_excel_num_format("MODERN", indicator, contracts)
+      },
+      character(1L),
+      USE.NAMES = FALSE
+    ),
+    c("#,##0.00", "#,##0.00", "#,##0.00", '0.00"%"', "#,##0")
+  )
+  expect_identical(
+    wlv_display_values(0.125, "MODERN", "ratio.r.pc", contracts),
+    0.125
+  )
+
+  corrupted <- contracts
+  corrupted$legacy_type[[1L]] <- "percent"
+  expect_error(
+    wlv_validate_display_contracts(corrupted),
+    "must not carry legacy presentation types",
+    fixed = TRUE
+  )
+})
+
+test_that("consolidated contracts reject mixed sources and inconsistent units", {
+  legacy <- wlvpanel_legacy_metadata()
+  path <- wlvpanel_write_metadata(wlvpanel_method_metadata())
+  on.exit(unlink(path), add = TRUE)
+  contracts <- wlv_read_method_display_contract(
+    path, "modern", "MODERN", legacy$value, legacy
+  )
+
+  mixed <- contracts
+  mixed$metadata_source[[1L]] <- "legacy_fallback"
+  mixed$legacy_type[[1L]] <- "index"
+  mixed$canonical_unit[[1L]] <- NA_character_
+  mixed$display_unit[[1L]] <- NA_character_
+  mixed$index_base_year[[1L]] <- NA_character_
+  mixed$index_storage_base[[1L]] <- NA_real_
+  expect_error(
+    wlv_validate_display_contracts(mixed),
+    "exactly one display metadata source",
+    fixed = TRUE
+  )
+
+  missing_unit <- contracts
+  missing_unit$display_unit[[2L]] <- NA_character_
+  expect_error(
+    wlv_validate_display_contracts(missing_unit),
+    "inconsistent unit metadata",
+    fixed = TRUE
+  )
+
+  fallback <- wlv_legacy_display_contract(
+    "legacy", "LEGACY", legacy$value, legacy, warn = FALSE
+  )
+  expect_silent(wlv_bind_display_contracts(list(contracts, fallback)))
+  fallback$canonical_unit[[1L]] <- "ratio"
+  expect_error(
+    wlv_validate_display_contracts(fallback),
+    "inconsistent unit metadata",
+    fixed = TRUE
+  )
+})
+
+test_that("structural availability filters method-specific indicators", {
+  method_array <- function(indicators) {
+    array(
+      NA_real_,
+      dim = c(2L, length(indicators), 1L, 1L),
+      dimnames = list(
+        year = c("2000", "2001"),
+        indicator = indicators,
+        sector = "S1",
+        country = "A"
+      )
+    )
+  }
+  arrays <- list(
+    WIOD13 = method_array(c("common", "w13_only", "zero_only")),
+    WIOD16 = method_array(c("common", "w16_only"))
+  )
+  arrays$WIOD13[, "zero_only", , ] <- 0
+  availability <- wlv_method_indicator_availability(arrays, 2L)
+  selected <- c("WIOD13", "WIOD16")
+
+  expect_identical(
+    wlv_methods_with_indicator(availability, selected, "w13_only"),
+    "WIOD13"
+  )
+  expect_identical(
+    wlv_methods_with_indicator(availability, selected, "w16_only"),
+    "WIOD16"
+  )
+  expect_identical(
+    wlv_methods_with_indicator(availability, selected, "common"),
+    selected
+  )
+  expect_identical(
+    wlv_methods_with_indicator(availability, selected, "zero_only"),
+    "WIOD13"
+  )
+
+  contracts <- data.frame(
+    method_dir = availability$method,
+    method = availability$method,
+    indicator = availability$indicator,
+    canonical_unit = "ratio",
+    display_unit = "ratio",
+    display_multiplier = 1,
+    index_base_year = NA_character_,
+    index_storage_base = NA_real_,
+    metadata_source = "method_metadata",
+    legacy_type = NA_character_,
+    stringsAsFactors = FALSE
+  )
+  expect_invisible(
+    wlv_validate_display_contract_coverage(contracts, availability)
+  )
+
+  missing <- contracts[
+    !(contracts$method == "WIOD13" & contracts$indicator == "w13_only"),
+    ,
+    drop = FALSE
+  ]
+  condition <- tryCatch(
+    wlv_validate_display_contract_coverage(missing, availability),
+    error = identity
+  )
+  expect_s3_class(condition, "wlv_display_contract_coverage_error")
+  expect_match(conditionMessage(condition), "WIOD13/w13_only", fixed = TRUE)
+
+  unexpected <- rbind(
+    contracts,
+    transform(
+      contracts[1L, , drop = FALSE],
+      method_dir = "WIOD16",
+      method = "WIOD16",
+      indicator = "w13_only"
+    )
+  )
+  condition <- tryCatch(
+    wlv_validate_display_contract_coverage(unexpected, availability),
+    error = identity
+  )
+  expect_s3_class(condition, "wlv_display_contract_coverage_error")
+  expect_match(conditionMessage(condition), "WIOD16/w13_only", fixed = TRUE)
 })
 
 test_that("method directory mapping is one-to-one", {

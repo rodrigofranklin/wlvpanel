@@ -7,6 +7,13 @@ wlv_display_metadata_columns <- function() {
   )
 }
 
+wlv_legacy_method_metadata_columns <- function() {
+  c(
+    "code", "name", "description", "observation",
+    "group", "type", "reverted"
+  )
+}
+
 wlv_validate_legacy_indicator_metadata <- function(metadata) {
   if (
     !is.data.frame(metadata) ||
@@ -119,11 +126,67 @@ wlv_read_method_display_contract <- function(
       )
     }
   )
-  required <- c("code", wlv_display_metadata_columns())
-  if (!is.data.frame(metadata) || any(!required %in% names(metadata))) {
+  if (!is.data.frame(metadata)) {
     stop(
       sprintf(
         "Method-specific display metadata `%s` has an incomplete schema.",
+        path
+      ),
+      call. = FALSE
+    )
+  }
+  display_columns <- wlv_display_metadata_columns()
+  present_display_columns <- intersect(display_columns, names(metadata))
+  if (!length(present_display_columns)) {
+    legacy_columns <- wlv_legacy_method_metadata_columns()
+    if (any(!legacy_columns %in% names(metadata))) {
+      stop(
+        sprintf(
+          "Method-specific display metadata `%s` has an incomplete schema.",
+          path
+        ),
+        call. = FALSE
+      )
+    }
+    legacy_codes <- as.character(metadata$code)
+    if (
+      length(legacy_codes) != nrow(metadata) || anyNA(legacy_codes) ||
+        any(!nzchar(legacy_codes)) || anyDuplicated(legacy_codes) ||
+        !setequal(legacy_codes, indicators)
+    ) {
+      stop(
+        sprintf(
+          "Legacy method metadata `%s` has invalid or non-exact coverage.",
+          path
+        ),
+        call. = FALSE
+      )
+    }
+    if (isTRUE(warn_legacy)) {
+      warning(
+        sprintf(
+          paste0(
+            "Method `%s` has legacy method metadata without display fields; ",
+            "using display_multiplier = 1 and legacy percent presentation rules."
+          ),
+          method_dir
+        ),
+        call. = FALSE
+      )
+    }
+    return(wlv_legacy_display_contract(
+      method_dir,
+      method,
+      indicators,
+      legacy_metadata,
+      warn = FALSE
+    ))
+  }
+  required <- c("code", display_columns)
+  if (any(!required %in% names(metadata))) {
+    stop(
+      sprintf(
+        "Method-specific display metadata `%s` has a partial modern schema.",
         path
       ),
       call. = FALSE
@@ -200,6 +263,9 @@ wlv_read_method_display_contract <- function(
       call. = FALSE
     )
   }
+  # The shared legacy catalog remains authoritative for labels/grouping only.
+  # Requiring coverage here does not import its presentation type.
+  invisible(wlv_legacy_indicator_types(legacy_metadata, indicators))
 
   data.frame(
     method_dir = rep(method_dir, length(indicators)),
@@ -211,7 +277,7 @@ wlv_read_method_display_contract <- function(
     index_base_year = base_year,
     index_storage_base = storage_base,
     metadata_source = rep("method_metadata", length(indicators)),
-    legacy_type = wlv_legacy_indicator_types(legacy_metadata, indicators),
+    legacy_type = rep(NA_character_, length(indicators)),
     stringsAsFactors = FALSE,
     check.names = FALSE
   )
@@ -226,18 +292,25 @@ wlv_validate_display_contracts <- function(contracts) {
       any(!required %in% names(contracts))) {
     stop("Display contracts have an incomplete schema.", call. = FALSE)
   }
-  if (!is.numeric(contracts$display_multiplier)) {
-    stop("Display contracts contain an invalid multiplier field.",
+  character_columns <- c(
+    "method_dir", "method", "indicator", "canonical_unit", "display_unit",
+    "index_base_year", "metadata_source", "legacy_type"
+  )
+  if (
+    any(!vapply(contracts[character_columns], is.character, logical(1L))) ||
+      !is.numeric(contracts$display_multiplier) ||
+      !is.numeric(contracts$index_storage_base)
+  ) {
+    stop("Display contracts contain invalid field types.",
       call. = FALSE
     )
   }
   keys <- paste(contracts$method, contracts$indicator, sep = "\034")
   if (
-    anyNA(contracts[c("method_dir", "method", "indicator", "metadata_source", "legacy_type")]) ||
+    anyNA(contracts[c("method_dir", "method", "indicator", "metadata_source")]) ||
       any(!nzchar(as.character(contracts$method))) ||
       any(!nzchar(as.character(contracts$method_dir))) ||
       any(!nzchar(as.character(contracts$indicator))) ||
-      any(!nzchar(as.character(contracts$legacy_type))) ||
       anyDuplicated(keys) ||
       any(!contracts$metadata_source %in% c("method_metadata", "legacy_fallback")) ||
       anyNA(contracts$display_multiplier) ||
@@ -247,8 +320,67 @@ wlv_validate_display_contracts <- function(contracts) {
     stop("Display contracts contain invalid or duplicate rows.", call. = FALSE)
   }
   fallback <- contracts$metadata_source == "legacy_fallback"
+  method_sources <- tapply(
+    contracts$metadata_source,
+    contracts$method,
+    function(value) length(unique(value))
+  )
+  if (any(method_sources != 1L)) {
+    stop("Each method must use exactly one display metadata source.",
+      call. = FALSE
+    )
+  }
+  invalid_fallback_type <- fallback & (
+    is.na(contracts$legacy_type) |
+      !nzchar(as.character(contracts$legacy_type))
+  )
+  if (any(invalid_fallback_type)) {
+    stop("Legacy display fallback requires an explicit presentation type.",
+      call. = FALSE
+    )
+  }
+  if (any(!fallback & !is.na(contracts$legacy_type))) {
+    stop("Modern display contracts must not carry legacy presentation types.",
+      call. = FALSE
+    )
+  }
   if (any(fallback & contracts$display_multiplier != 1)) {
     stop("Legacy display fallback must keep display_multiplier = 1.",
+      call. = FALSE
+    )
+  }
+  modern <- !fallback
+  invalid_modern_units <- modern & (
+    is.na(contracts$canonical_unit) |
+      !nzchar(contracts$canonical_unit) |
+      is.na(contracts$display_unit) |
+      !nzchar(contracts$display_unit)
+  )
+  is_index <- modern & !is.na(contracts$canonical_unit) &
+    contracts$canonical_unit == "index"
+  invalid_modern_index <- is_index & (
+    is.na(contracts$index_base_year) |
+      !grepl("^[0-9]{4}$", contracts$index_base_year) |
+      is.na(contracts$index_storage_base) |
+      !is.finite(contracts$index_storage_base) |
+      contracts$index_storage_base <= 0 |
+      !contracts$display_unit %in% c("index", "index_point")
+  )
+  invalid_modern_non_index <- modern & !is_index & (
+    !is.na(contracts$index_base_year) |
+      !is.na(contracts$index_storage_base)
+  )
+  invalid_fallback_units <- fallback & (
+    !is.na(contracts$canonical_unit) |
+      !is.na(contracts$display_unit) |
+      !is.na(contracts$index_base_year) |
+      !is.na(contracts$index_storage_base)
+  )
+  if (
+    any(invalid_modern_units) || any(invalid_modern_index) ||
+      any(invalid_modern_non_index) || any(invalid_fallback_units)
+  ) {
+    stop("Display contracts contain inconsistent unit metadata.",
       call. = FALSE
     )
   }
@@ -355,6 +487,126 @@ wlv_display_array <- function(
   sweep(value, as.integer(indicator_axis), multipliers, "*")
 }
 
+wlv_validate_method_indicator_availability <- function(value) {
+  if (
+    !is.data.frame(value) || !nrow(value) ||
+      any(!c("method", "indicator") %in% names(value)) ||
+      anyNA(value[c("method", "indicator")]) ||
+      any(!nzchar(as.character(value$method))) ||
+      any(!nzchar(as.character(value$indicator))) ||
+      anyDuplicated(paste(value$method, value$indicator, sep = "\034"))
+  ) {
+    stop("Method indicator availability is invalid or duplicated.",
+      call. = FALSE
+    )
+  }
+  invisible(value)
+}
+
+wlv_method_indicator_availability <- function(values, indicator_axis = 2L) {
+  if (
+    !is.list(values) || !length(values) || is.null(names(values)) ||
+      anyNA(names(values)) || any(!nzchar(names(values))) ||
+      anyDuplicated(names(values)) || !is.numeric(indicator_axis) ||
+      length(indicator_axis) != 1L || is.na(indicator_axis) ||
+      indicator_axis %% 1 != 0
+  ) {
+    stop("Method arrays and the indicator axis are invalid.", call. = FALSE)
+  }
+  indicator_axis <- as.integer(indicator_axis)
+  parts <- lapply(seq_along(values), function(index) {
+    array <- values[[index]]
+    if (
+      !is.numeric(array) || is.null(dim(array)) || is.null(dimnames(array)) ||
+        indicator_axis < 1L || indicator_axis > length(dim(array))
+    ) {
+      stop("Method availability requires labelled numeric arrays.",
+        call. = FALSE
+      )
+    }
+    indicators <- dimnames(array)[[indicator_axis]]
+    if (
+      is.null(indicators) || !length(indicators) || anyNA(indicators) ||
+        any(!nzchar(indicators)) || anyDuplicated(indicators)
+    ) {
+      stop("Method indicator axes must have unique labels.", call. = FALSE)
+    }
+    data.frame(
+      method = rep(names(values)[[index]], length(indicators)),
+      indicator = indicators,
+      stringsAsFactors = FALSE
+    )
+  })
+  availability <- do.call(rbind, parts)
+  row.names(availability) <- NULL
+  wlv_validate_method_indicator_availability(availability)
+  availability
+}
+
+wlv_validate_display_contract_coverage <- function(contracts, availability) {
+  wlv_validate_display_contracts(contracts)
+  wlv_validate_method_indicator_availability(availability)
+  resolved <- paste(contracts$method, contracts$indicator, sep = "\034")
+  expected <- paste(availability$method, availability$indicator, sep = "\034")
+  missing <- setdiff(expected, resolved)
+  unexpected <- setdiff(resolved, expected)
+  if (length(missing) || length(unexpected)) {
+    printable <- function(keys) gsub("\034", "/", keys, fixed = TRUE)
+    details <- c(
+      if (length(missing)) {
+        paste0("missing: ", paste(printable(missing), collapse = ", "))
+      },
+      if (length(unexpected)) {
+        paste0("unexpected: ", paste(printable(unexpected), collapse = ", "))
+      }
+    )
+    condition <- structure(
+      list(
+        message = sprintf(
+          "Display contract coverage differs from method indicators (%s).",
+          paste(details, collapse = "; ")
+        ),
+        call = NULL,
+        missing = missing,
+        unexpected = unexpected
+      ),
+      class = c(
+        "wlv_display_contract_coverage_error",
+        "error",
+        "condition"
+      )
+    )
+    stop(condition)
+  }
+  invisible(contracts)
+}
+
+wlv_methods_with_indicator <- function(availability, methods, indicator) {
+  wlv_validate_method_indicator_availability(availability)
+  if (
+    !is.character(methods) || anyNA(methods) || any(!nzchar(methods)) ||
+      anyDuplicated(methods) || !is.character(indicator) ||
+      length(indicator) != 1L || is.na(indicator) || !nzchar(indicator)
+  ) {
+    stop("Methods and indicator must be unique non-empty identifiers.",
+      call. = FALSE
+    )
+  }
+  unknown_methods <- setdiff(methods, availability$method)
+  if (length(unknown_methods)) {
+    stop(
+      sprintf(
+        "Unknown data method(s): %s.",
+        paste(unknown_methods, collapse = ", ")
+      ),
+      call. = FALSE
+    )
+  }
+  methods[methods %in% availability$method[
+    availability$indicator == indicator
+  ]]
+}
+
 wlv_display_unit <- function(contracts, method, indicator) {
   row <- wlv_display_contract_row(contracts, method, indicator)
   if (identical(row$metadata_source[[1L]], "method_metadata")) {
@@ -368,14 +620,17 @@ wlv_display_unit <- function(contracts, method, indicator) {
 
 wlv_display_format_type <- function(contracts, method, indicator) {
   row <- wlv_display_contract_row(contracts, method, indicator)
-  unit <- wlv_display_unit(contracts, method, indicator)
+  if (identical(row$metadata_source[[1L]], "legacy_fallback")) {
+    return(as.character(row$legacy_type[[1L]]))
+  }
+  unit <- as.character(row$display_unit[[1L]])
   if (identical(unit, "percent")) return("percent")
   if (identical(unit, "usd")) return("usd")
   if (identical(unit, "person")) return("integer")
   if (identical(unit, "hour")) return("hours")
   if (unit %in% c("index", "index_point")) return("index")
   if (startsWith(unit, "abstract_labour_hour")) return("value")
-  as.character(row$legacy_type[[1L]])
+  "neutral"
 }
 
 wlv_assert_comparable_display_units <- function(

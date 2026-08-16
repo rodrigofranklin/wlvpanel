@@ -10,7 +10,8 @@ ind_type <- function(x){
   substr(x, nchar(x)-1, nchar(x))
 }
 
-wlv_legacy_xlsx_num_format <- function(indicator) {
+wlv_legacy_xlsx_num_format <- function(indicator, legacy_type = NULL) {
+  if (identical(legacy_type, "percent")) return("PERCENTAGE")
   type <- ind_type(indicator)
   if (identical(type, "pc")) {
     "PERCENTAGE"
@@ -79,7 +80,10 @@ wlv_prepare_xlsx_display <- function(
       )
     } else {
       # Legacy workbooks stored fractions and delegated percent scaling to Excel.
-      row_formats[rows] <- wlv_legacy_xlsx_num_format(indicator)
+      row_formats[rows] <- wlv_legacy_xlsx_num_format(
+        indicator,
+        contract$legacy_type[[1L]]
+      )
     }
   }
 
@@ -92,6 +96,50 @@ wlv_prepare_xlsx_display <- function(
     ),
     styles_list = as.list(formats)
   )
+}
+
+wlv_xlsx_contract_metadata <- function(
+    metadata,
+    method_code,
+    indicator_codes,
+    display_contracts) {
+  if (
+    !is.data.frame(metadata) || !"Code" %in% names(metadata) ||
+      !is.character(method_code) || length(method_code) != 1L ||
+      is.na(method_code) || !nzchar(method_code) ||
+      !is.character(indicator_codes) || !length(indicator_codes) ||
+      anyNA(indicator_codes) || any(!nzchar(indicator_codes))
+  ) {
+    stop("XLSX contract metadata inputs are invalid.", call. = FALSE)
+  }
+  codes <- unique(indicator_codes)
+  metadata_codes <- as.character(metadata$Code)
+  if (
+    anyNA(metadata_codes) || any(!nzchar(metadata_codes)) ||
+      anyDuplicated(metadata_codes) || !setequal(metadata_codes, codes)
+  ) {
+    stop(
+      "XLSX metadata must cover the exported indicators exactly once.",
+      call. = FALSE
+    )
+  }
+  resolved <- do.call(rbind, lapply(metadata_codes, function(indicator) {
+    wlv_display_contract_row(
+      display_contracts,
+      method_code,
+      indicator
+    )
+  }))
+  row.names(resolved) <- NULL
+  metadata$method <- rep(method_code, nrow(metadata))
+  for (column in c(
+    wlv_display_metadata_columns(),
+    "metadata_source",
+    "legacy_type"
+  )) {
+    metadata[[column]] <- resolved[[column]]
+  }
+  metadata
 }
 
 # Function to save data to a xlsx file
@@ -122,6 +170,12 @@ save_my_xlsx <- function(file_name, header, row_names, my_data, metadata, specs,
     my_data <- display$data
     rows_style_list <- display$rows_style_list
     styles_list <- display$styles_list
+    metadata <- wlv_xlsx_contract_metadata(
+      metadata,
+      method_code,
+      indicator_codes,
+      display_contracts
+    )
   }
 
   ## create and format xlsx file
@@ -192,6 +246,10 @@ sea_countries <- readRDS("data/sea_countries.RDS")
 sea_sectors <- readRDS("data/sea_sectors.RDS")
 language_file <- readRDS("data/language_file.RDS")
 m_countries <- readRDS("data/m_countries.RDS")
+wlv_validate_display_contract_coverage(
+  meta_indicator_contracts,
+  wlv_method_indicator_availability(sea_sectors, indicator_axis = 2L)
+)
 
 ### create files for each method ####
 for (method_code in meta_methods$code) {
@@ -213,14 +271,23 @@ for (method_code in meta_methods$code) {
   countries_sectors <- names(sea_sectors[[method_code]][1,1,1,])
   
   # meta_indicators
-  indicators_names <- language_file[indicators,"English"]
-  indicators_descriptions <- language_file[paste0("desc.",indicators),"English"]
-  indicators_observations <- language_file[paste0("obs.",method_code,".",indicators),"English"]
-  meta_indicators <- cbind(indicators,
-                           indicators_names,
-                           indicators_descriptions,
-                           indicators_observations) |> data.frame()
-  colnames(meta_indicators) <- c("Code", "Name", "Description", "Observations")
+  indicator_metadata <- function(codes) {
+    value <- data.frame(
+      Code = codes,
+      Name = language_file[codes, "English"],
+      Description = language_file[paste0("desc.", codes), "English"],
+      Observations = language_file[
+        paste0("obs.", method_code, ".", codes),
+        "English"
+      ],
+      stringsAsFactors = FALSE,
+      check.names = FALSE
+    )
+    row.names(value) <- NULL
+    value
+  }
+  meta_indicators <- indicator_metadata(indicators)
+  indicators_names <- meta_indicators$Name
   types <- indicators |> ind_type()
   rows_list <- NULL
   rows_list$percentage <- which(types=="pc")+6
@@ -276,6 +343,7 @@ for (method_code in meta_methods$code) {
     
     indicators_sectors <- colnames(sectors_data)
     indicators_sectors_names <- language_file[indicators_sectors,"English"]
+    meta_indicators_sectors <- indicator_metadata(indicators_sectors)
     
     ### Data by sectors 
     for (sector_code in sectors) {
@@ -298,7 +366,7 @@ for (method_code in meta_methods$code) {
       
       save_my_xlsx(
         file_name, header, indicators_sectors_names, sector_data,
-        meta_indicators, specs, rows_list, styles_list, 35, 35,
+        meta_indicators_sectors, specs, rows_list, styles_list, 35, 35,
         method_code = method_code,
         indicator_codes = indicators_sectors,
         display_contracts = meta_indicator_contracts
@@ -339,7 +407,7 @@ for (method_code in meta_methods$code) {
       
       save_my_xlsx(
         file_name, header, sectors_names, sector_data,
-        meta_indicators[meta_indicators$Code == indicator_code, ],
+        indicator_metadata(indicator_code),
         specs, rows, id_style, 35, 8,
         method_code = method_code,
         indicator_codes = indicator_code,
@@ -382,7 +450,7 @@ for (method_code in meta_methods$code) {
     
     save_my_xlsx(
       file_name, header, countries_names, indicator_data,
-      meta_indicators[meta_indicators$Code == indicator_code, ],
+      indicator_metadata(indicator_code),
       specs, rows, id_style, "auto", 6,
       method_code = method_code,
       indicator_codes = indicator_code,
@@ -427,7 +495,7 @@ for (method_code in meta_methods$code) {
       
       save_my_xlsx(
         file_name, header, countries_names, sector_data,
-        meta_indicators[meta_indicators$Code == indicator_code, ],
+        indicator_metadata(indicator_code),
         specs, rows, id_style, "auto", 6,
         method_code = method_code,
         indicator_codes = indicator_code,
