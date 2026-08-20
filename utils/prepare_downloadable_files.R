@@ -4,14 +4,284 @@
 
 library(openxlsx)
 library(magrittr)
+source("utils/display_contracts.R")
+
+download_directory <- file.path("data", "download")
+if (!dir.exists(download_directory) &&
+    !dir.create(download_directory, recursive = TRUE)) {
+  stop("Cannot create the panel download directory.", call. = FALSE)
+}
 
 ind_type <- function(x){
   substr(x, nchar(x)-1, nchar(x))
 }
 
+wlv_country_axis_names <- function(codes, language_file, language = "English") {
+  if (
+    !is.character(codes) || !length(codes) || anyNA(codes) ||
+      any(!nzchar(codes)) || anyDuplicated(codes) ||
+      !(is.data.frame(language_file) || is.matrix(language_file)) ||
+      is.null(rownames(language_file)) || !language %in% colnames(language_file)
+  ) {
+    stop("Country display labels require a valid country axis and language table.",
+      call. = FALSE
+    )
+  }
+  keys <- paste0("ISO3.", codes)
+  missing <- setdiff(keys, rownames(language_file))
+  if (length(missing)) {
+    stop(
+      sprintf("Country display labels are missing: %s.", paste(missing, collapse = ", ")),
+      call. = FALSE
+    )
+  }
+  labels <- as.character(language_file[keys, language, drop = TRUE])
+  if (length(labels) != length(codes) || anyNA(labels) || any(!nzchar(labels))) {
+    stop("Country display labels must be complete and non-empty.", call. = FALSE)
+  }
+  unname(labels)
+}
+
+wlv_legacy_xlsx_num_format <- function(indicator, legacy_type = NULL) {
+  if (!is.null(legacy_type)) {
+    if (
+      !is.character(legacy_type) || length(legacy_type) != 1L ||
+        is.na(legacy_type) || !nzchar(legacy_type)
+    ) {
+      stop("Legacy XLSX presentation types must be non-empty strings.",
+        call. = FALSE
+      )
+    }
+    if (identical(legacy_type, "percent")) return("PERCENTAGE")
+    if (identical(legacy_type, "integer")) return("#,##0")
+    return("#,##0.00")
+  }
+  type <- ind_type(indicator)
+  if (identical(type, "pc")) {
+    "PERCENTAGE"
+  } else if (type %in% c("us", "cu", "du", "mv", "hr", "id")) {
+    "#,##0.00"
+  } else {
+    "#,##0"
+  }
+}
+
+wlv_xlsx_export_matrix <- function(value, row_axis, column_axis) {
+  supplied_axes <- list(row_axis, column_axis)
+  if (
+    !is.numeric(value) || is.null(dim(value)) || is.null(dimnames(value)) ||
+      any(!vapply(
+        supplied_axes,
+        function(axis) {
+          is.numeric(axis) && length(axis) == 1L && !is.na(axis) &&
+            axis %% 1 == 0
+        },
+        logical(1L)
+      ))
+  ) {
+    stop(
+      "XLSX export reshaping requires a labelled numeric array and two axes.",
+      call. = FALSE
+    )
+  }
+  axes <- as.integer(unlist(supplied_axes, use.names = FALSE))
+  if (
+    any(axes < 1L) || any(axes > length(dim(value))) ||
+      anyDuplicated(axes)
+  ) {
+    stop("XLSX export axes are invalid or duplicated.", call. = FALSE)
+  }
+  fixed_axes <- setdiff(seq_along(dim(value)), axes)
+  if (length(fixed_axes) && any(dim(value)[fixed_axes] != 1L)) {
+    stop("Every non-export XLSX axis must select exactly one value.",
+      call. = FALSE
+    )
+  }
+  labels <- dimnames(value)[axes]
+  if (any(vapply(labels, is.null, logical(1L))) ||
+      any(vapply(labels, anyNA, logical(1L))) ||
+      any(vapply(labels, function(value) any(!nzchar(value)), logical(1L))) ||
+      any(vapply(labels, anyDuplicated, integer(1L)) != 0L)) {
+    stop("XLSX export axes must have unique non-missing labels.",
+      call. = FALSE
+    )
+  }
+  permuted <- aperm(value, c(axes, fixed_axes))
+  matrix(
+    as.numeric(permuted),
+    nrow = dim(value)[axes[[1L]]],
+    ncol = dim(value)[axes[[2L]]],
+    dimnames = labels
+  )
+}
+
+wlv_prepare_xlsx_display <- function(
+    my_data,
+    method_code,
+    indicator_codes,
+    display_contracts,
+    legacy_metadata = NULL) {
+  data <- as.matrix(my_data)
+  if (!is.numeric(data) || length(dim(data)) != 2L) {
+    stop("XLSX display conversion requires a numeric matrix.", call. = FALSE)
+  }
+  if (
+    !is.character(method_code) || length(method_code) != 1L ||
+      is.na(method_code) || !nzchar(method_code)
+  ) {
+    stop("XLSX display conversion requires one method code.", call. = FALSE)
+  }
+  if (
+    !is.character(indicator_codes) || !length(indicator_codes) ||
+      anyNA(indicator_codes) || any(!nzchar(indicator_codes))
+  ) {
+    stop("XLSX display conversion requires indicator codes.", call. = FALSE)
+  }
+  if (length(indicator_codes) == 1L) {
+    row_indicators <- rep(indicator_codes, nrow(data))
+  } else if (length(indicator_codes) == nrow(data)) {
+    row_indicators <- indicator_codes
+  } else {
+    stop(
+      "XLSX indicator codes must identify one indicator or every data row.",
+      call. = FALSE
+    )
+  }
+
+  display_data <- data
+  row_formats <- character(nrow(data))
+  for (indicator in unique(row_indicators)) {
+    rows <- which(row_indicators == indicator)
+    contract <- wlv_display_contract_row(
+      display_contracts,
+      method_code,
+      indicator
+    )
+    if (identical(contract$metadata_source[[1L]], "method_metadata")) {
+      display_data[rows, ] <- wlv_display_values(
+        data[rows, , drop = FALSE],
+        method_code,
+        indicator,
+        display_contracts,
+        legacy_metadata
+      )
+      row_formats[rows] <- wlv_excel_num_format(
+        method_code,
+        indicator,
+        display_contracts,
+        legacy_metadata
+      )
+    } else {
+      # Legacy workbooks stored fractions and delegated percent scaling to Excel.
+      row_formats[rows] <- wlv_legacy_xlsx_num_format(
+        indicator,
+        contract$legacy_type[[1L]]
+      )
+    }
+  }
+
+  formats <- unique(row_formats)
+  list(
+    data = display_data,
+    rows_style_list = lapply(
+      formats,
+      function(format) which(row_formats == format) + 6L
+    ),
+    styles_list = as.list(formats)
+  )
+}
+
+wlv_xlsx_contract_metadata <- function(
+    metadata,
+    method_code,
+    indicator_codes,
+    display_contracts) {
+  if (
+    !is.data.frame(metadata) || !"Code" %in% names(metadata) ||
+      !is.character(method_code) || length(method_code) != 1L ||
+      is.na(method_code) || !nzchar(method_code) ||
+      !is.character(indicator_codes) || !length(indicator_codes) ||
+      anyNA(indicator_codes) || any(!nzchar(indicator_codes))
+  ) {
+    stop("XLSX contract metadata inputs are invalid.", call. = FALSE)
+  }
+  codes <- unique(indicator_codes)
+  metadata_codes <- as.character(metadata$Code)
+  if (
+    anyNA(metadata_codes) || any(!nzchar(metadata_codes)) ||
+      anyDuplicated(metadata_codes) || !setequal(metadata_codes, codes)
+  ) {
+    stop(
+      "XLSX metadata must cover the exported indicators exactly once.",
+      call. = FALSE
+    )
+  }
+  resolved <- do.call(rbind, lapply(metadata_codes, function(indicator) {
+    wlv_display_contract_row(
+      display_contracts,
+      method_code,
+      indicator
+    )
+  }))
+  row.names(resolved) <- NULL
+  metadata$method <- rep(method_code, nrow(metadata))
+  for (column in c(
+    wlv_display_metadata_columns(),
+    "metadata_source",
+    "legacy_type"
+  )) {
+    metadata[[column]] <- resolved[[column]]
+  }
+  metadata
+}
+
 # Function to save data to a xlsx file
 save_my_xlsx <- function(file_name, header, row_names, my_data, metadata, specs,
-                         rows_style_list, styles_list, width_c1, width_c2) {
+                         rows_style_list, styles_list, width_c1, width_c2,
+                         method_code = NULL, indicator_codes = NULL,
+                          display_contracts = NULL, legacy_metadata = NULL) {
+
+  my_data <- as.matrix(my_data)
+  if (
+    !is.numeric(my_data) || length(dim(my_data)) != 2L ||
+      !is.character(row_names) || length(row_names) != nrow(my_data) ||
+      anyNA(row_names) || any(!nzchar(row_names))
+  ) {
+    stop(
+      "XLSX row labels must identify every row of one numeric data matrix.",
+      call. = FALSE
+    )
+  }
+
+  display_args <- c(
+    !is.null(method_code),
+    !is.null(indicator_codes),
+    !is.null(display_contracts)
+  )
+  if (any(display_args) && !all(display_args)) {
+    stop(
+      "Method, indicator and contracts must be supplied together for XLSX display.",
+      call. = FALSE
+    )
+  }
+  if (all(display_args)) {
+    display <- wlv_prepare_xlsx_display(
+      my_data,
+      method_code,
+      indicator_codes,
+      display_contracts,
+      legacy_metadata
+    )
+    my_data <- display$data
+    rows_style_list <- display$rows_style_list
+    styles_list <- display$styles_list
+    metadata <- wlv_xlsx_contract_metadata(
+      metadata,
+      method_code,
+      indicator_codes,
+      display_contracts
+    )
+  }
 
   ## create and format xlsx file
   wb <- createWorkbook()
@@ -48,7 +318,7 @@ save_my_xlsx <- function(file_name, header, row_names, my_data, metadata, specs,
            style = createStyle(halign = "center", textDecoration = "bold"))
   
   # format lines
-  for (i in 1:length(styles_list)) {
+  for (i in seq_along(styles_list)) {
     addStyle(wb, "data", gridExpand = TRUE,
              rows = rows_style_list[i] |> unlist(),
              cols = 3:cols,
@@ -74,11 +344,21 @@ save_my_xlsx <- function(file_name, header, row_names, my_data, metadata, specs,
 
 ## Read data
 meta_methods <- readRDS("data/meta_methods.RDS")
+meta_indicator_contracts <- readRDS("data/meta_indicator_contracts.RDS")
+wlv_validate_display_contracts(meta_indicator_contracts)
+legacy_indicator_metadata <- readRDS("data/meta_indicators.RDS")
+public_indicator_codes <- wlv_public_indicator_metadata(
+  legacy_indicator_metadata
+)$value
 indicator_en <- read.csv2("data/config/indicators_en.csv")
 sea_countries <- readRDS("data/sea_countries.RDS")
 sea_sectors <- readRDS("data/sea_sectors.RDS")
 language_file <- readRDS("data/language_file.RDS")
 m_countries <- readRDS("data/m_countries.RDS")
+wlv_validate_display_contract_coverage(
+  meta_indicator_contracts,
+  wlv_method_indicator_availability(sea_sectors, indicator_axis = 2L)
+)
 
 ### create files for each method ####
 for (method_code in meta_methods$code) {
@@ -88,26 +368,38 @@ for (method_code in meta_methods$code) {
                         c("name","code","source","description")]
   
   # select only countries and indicators with data
-  temp_data <- sea_countries[method_code,,,]
-  years <- temp_data[,1,1] |> names()
-  years <- years[temp_data[,1,1] |> is.na() |> not()]
-  countries <- temp_data[,1,] |> colnames()
-  countries <- countries[temp_data[,1,] |> colSums(na.rm = TRUE) !=0]
-  indicators <- temp_data[,,1] |> colnames()
-  indicators <- indicators[temp_data[,,1] |> colSums(na.rm = TRUE) !=0]
+  temp_data <- sea_countries[method_code,,,, drop = FALSE]
+  years <- wlv_observed_axis_labels(temp_data, 2L)
+  indicators <- wlv_observed_axis_labels(temp_data, 3L)
+  indicators <- intersect(indicators, public_indicator_codes)
+  if (!length(indicators)) {
+    stop(sprintf("Method `%s` has no public indicators to export.", method_code),
+      call. = FALSE
+    )
+  }
+  countries <- wlv_observed_axis_labels(temp_data, 4L)
   indicators <- indicators[order(indicators)]
   sectors <- names(sea_sectors[[method_code]][1,1,,1])
   countries_sectors <- names(sea_sectors[[method_code]][1,1,1,])
   
   # meta_indicators
-  indicators_names <- language_file[indicators,"English"]
-  indicators_descriptions <- language_file[paste0("desc.",indicators),"English"]
-  indicators_observations <- language_file[paste0("obs.",method_code,".",indicators),"English"]
-  meta_indicators <- cbind(indicators,
-                           indicators_names,
-                           indicators_descriptions,
-                           indicators_observations) |> data.frame()
-  colnames(meta_indicators) <- c("Code", "Name", "Description", "Observations")
+  indicator_metadata <- function(codes) {
+    value <- data.frame(
+      Code = codes,
+      Name = language_file[codes, "English"],
+      Description = language_file[paste0("desc.", codes), "English"],
+      Observations = language_file[
+        paste0("obs.", method_code, ".", codes),
+        "English"
+      ],
+      stringsAsFactors = FALSE,
+      check.names = FALSE
+    )
+    row.names(value) <- NULL
+    value
+  }
+  meta_indicators <- indicator_metadata(indicators)
+  indicators_names <- meta_indicators$Name
   types <- indicators |> ind_type()
   rows_list <- NULL
   rows_list$percentage <- which(types=="pc")+6
@@ -120,17 +412,23 @@ for (method_code in meta_methods$code) {
   styles_list$int <- "#,##0"
 
   # countries and sectors names
-  countries_names <- language_file[paste0("ISO3.",countries),"English"]
+  countries_names <- wlv_country_axis_names(countries, language_file)
+  countries_sectors_names <- wlv_country_axis_names(
+    countries_sectors,
+    language_file
+  )
   sectors_names <- language_file[paste0(sourcedata,".",sectors),"English"]
 
   ##### Country files (aggregated and sectors) ####
   for (country_code in countries) {
     ### Aggregated data
-    country_data <- 
-      t(sea_countries[method_code,
-                      years,
-                      indicators,
-                      country_code])
+    country_data <- wlv_xlsx_export_matrix(
+      sea_countries[
+        method_code, years, indicators, country_code, drop = FALSE
+      ],
+      row_axis = 3L,
+      column_axis = 2L
+    )
     country_name <- language_file[paste0("ISO3.",country_code),"English"]
     
     file_name <-  paste0(
@@ -144,20 +442,31 @@ for (method_code in meta_methods$code) {
                     NA, NA,
                     c("indicator", "code"))
 
-    save_my_xlsx(file_name, header, indicators_names, country_data, 
-                 meta_indicators, specs, rows_list, styles_list, 35, 35)
+    save_my_xlsx(
+      file_name, header, indicators_names, country_data,
+      meta_indicators, specs, rows_list, styles_list, 35, 35,
+      method_code = method_code,
+      indicator_codes = indicators,
+      display_contracts = meta_indicator_contracts
+    )
 
     if (country_code %in% countries_sectors |> not()) {
       next
     }
     
     ### Sectors data
-    sectors_data <- 
-      sea_sectors[[method_code]][,order(names(sea_sectors[[method_code]][1,,1,1])),
-                                 ,country_code]
+    sectors_data <- sea_sectors[[method_code]][
+      , indicators, , country_code, drop = FALSE
+    ]
+    sectors_data <- array(
+      sectors_data,
+      dim = dim(sectors_data)[-4L],
+      dimnames = dimnames(sectors_data)[-4L]
+    )
     
     indicators_sectors <- colnames(sectors_data)
     indicators_sectors_names <- language_file[indicators_sectors,"English"]
+    meta_indicators_sectors <- indicator_metadata(indicators_sectors)
     
     ### Data by sectors 
     for (sector_code in sectors) {
@@ -178,8 +487,13 @@ for (method_code in meta_methods$code) {
                       NA,
                       c("indicator", "code"))
       
-      save_my_xlsx(file_name, header, indicators_sectors_names, sector_data, 
-                   meta_indicators, specs, rows_list, styles_list, 35, 35)
+      save_my_xlsx(
+        file_name, header, indicators_sectors_names, sector_data,
+        meta_indicators_sectors, specs, rows_list, styles_list, 35, 35,
+        method_code = method_code,
+        indicator_codes = indicators_sectors,
+        display_contracts = meta_indicator_contracts
+      )
     }
 
     ### Country and indicator files (sectorial data) ####
@@ -214,18 +528,26 @@ for (method_code in meta_methods$code) {
       rows <- NULL
       rows$list <- 1:nrow(sector_data)+6
       
-      save_my_xlsx(file_name, header, sectors_names, sector_data, 
-                   meta_indicators[meta_indicators$Code == indicator_code,],
-                   specs, rows, id_style, 35, 8)
+      save_my_xlsx(
+        file_name, header, sectors_names, sector_data,
+        indicator_metadata(indicator_code),
+        specs, rows, id_style, 35, 8,
+        method_code = method_code,
+        indicator_codes = indicator_code,
+        display_contracts = meta_indicator_contracts
+      )
     }
   }
   
   #### Indicator files ####
   for (indicator_code in indicators) {
-    indicator_data <- t(sea_countries[method_code,
-                                      years,
-                                      indicator_code,
-                                      countries])
+    indicator_data <- wlv_xlsx_export_matrix(
+      sea_countries[
+        method_code, years, indicator_code, countries, drop = FALSE
+      ],
+      row_axis = 4L,
+      column_axis = 2L
+    )
     
     indicator_name <- language_file[indicator_code,"English"]
     
@@ -252,9 +574,14 @@ for (method_code in meta_methods$code) {
     rows <- NULL
     rows$list <- 1:nrow(sector_data)+6
     
-    save_my_xlsx(file_name, header, countries_names, indicator_data, 
-                 meta_indicators[meta_indicators$Code == indicator_code,],
-                 specs, rows, id_style, "auto", 6)
+    save_my_xlsx(
+      file_name, header, countries_names, indicator_data,
+      indicator_metadata(indicator_code),
+      specs, rows, id_style, "auto", 6,
+      method_code = method_code,
+      indicator_codes = indicator_code,
+      display_contracts = meta_indicator_contracts
+    )
 
     ### Sectorial data
     sectors_data <- 
@@ -292,9 +619,14 @@ for (method_code in meta_methods$code) {
       rows <- NULL
       rows$list <- 1:nrow(sector_data)+6
       
-      save_my_xlsx(file_name, header, countries_names, sector_data, 
-                   meta_indicators[meta_indicators$Code == indicator_code,],
-                   specs, rows, id_style, "auto", 6)
+      save_my_xlsx(
+        file_name, header, countries_sectors_names, sector_data,
+        indicator_metadata(indicator_code),
+        specs, rows, id_style, "auto", 6,
+        method_code = method_code,
+        indicator_codes = indicator_code,
+        display_contracts = meta_indicator_contracts
+      )
     }
   }
 }

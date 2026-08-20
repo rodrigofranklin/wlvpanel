@@ -275,12 +275,12 @@ TABPANEL <- tabPanel(
       div(
         class = "panel-body",
         l("dl_source_portable_msg"),
-        a(href = "download/reduction_problem_source_code.rar",
+        a(href = "https://github.com/rodrigofranklin/wlvdb/archive/refs/heads/master.zip",
           target="_blank",
           "[LINK]"),
         tags$br(),
         l("dl_source_code_msg"),
-        a(href = "https://gitlab.com/rodrigoesborges/worldlabourvalues",
+        a(href = "https://github.com/rodrigofranklin/wlvdb",
           target="_blank",
           "[LINK]")
       )
@@ -370,13 +370,10 @@ SERVER <- function(IP, OP, RV, SESSION) {
     
     req(method)
 
-    temp_data <- sea_countries[method,,,]
+    temp_data <- sea_countries[method,,,, drop = FALSE]
 
-    countries <- temp_data[,1,] |> colnames()
-    countries <- countries[temp_data[,1,] |> colSums(na.rm = TRUE) !=0]
-    
-    indicators <- temp_data[,,1] |> colnames()
-    indicators <- indicators[temp_data[,,1] |> colSums(na.rm = TRUE) !=0]
+    countries <- wlv_observed_axis_labels(temp_data, 4L)
+    indicators <- wlv_observed_axis_labels(temp_data, 3L)
 
     names(countries) <- lb(paste0("ISO3.",countries), lng)
     countries <- countries[order(names(countries))]
@@ -424,8 +421,24 @@ SERVER <- function(IP, OP, RV, SESSION) {
     indicator <- IP$dl_indicator
     country <- IP$dl_country |> isolate()
     sector <- IP$dl_sector |> isolate()
+    method <- IP$dl_method |> isolate()
+
+    req(method)
+    sector_countries <- wlv_sector_country_codes(sea_sectors, method)
+    if (
+      wlv_nonempty_selection(indicator) &&
+        wlv_nonempty_selection(country) &&
+        !country %in% sector_countries
+    ) {
+      updateSelectizeInput(inputId = "dl_country", selected = "")
+      return()
+    }
     
-    if (indicator != "" & country != "" & sector != "") {
+    if (
+      wlv_nonempty_selection(indicator) &&
+        wlv_nonempty_selection(country) &&
+        wlv_nonempty_selection(sector)
+    ) {
       updateSelectizeInput(
         inputId = "dl_sector",
         selected = ""
@@ -441,9 +454,26 @@ SERVER <- function(IP, OP, RV, SESSION) {
   observeEvent(IP$dl_country, {
     country <- IP$dl_country
     indicator <- IP$dl_indicator |> isolate()
+    sector <- IP$dl_sector |> isolate()
+    method <- IP$dl_method |> isolate()
     req(country)
+    req(method)
+
+    sector_countries <- wlv_sector_country_codes(sea_sectors, method)
+    if (!country %in% sector_countries) {
+      if (wlv_nonempty_selection(indicator)) {
+        updateSelectizeInput(inputId = "dl_indicator", selected = "")
+      }
+      if (wlv_nonempty_selection(sector)) {
+        updateSelectizeInput(inputId = "dl_sector", selected = "")
+      }
+      return()
+    }
     
-    if (indicator != "" & country != "") 
+    if (
+      wlv_nonempty_selection(indicator) &&
+        wlv_nonempty_selection(country)
+    )
       updateSelectizeInput(
         inputId = "dl_sector",
         selected = ""
@@ -453,9 +483,24 @@ SERVER <- function(IP, OP, RV, SESSION) {
   observeEvent(IP$dl_sector, {
     sector <- IP$dl_sector
     indicator <- IP$dl_indicator |> isolate()
+    country <- IP$dl_country |> isolate()
+    method <- IP$dl_method |> isolate()
     req(sector)
+    req(method)
+
+    sector_countries <- wlv_sector_country_codes(sea_sectors, method)
+    if (
+      wlv_nonempty_selection(country) &&
+        !country %in% sector_countries
+    ) {
+      updateSelectizeInput(inputId = "dl_country", selected = "")
+      return()
+    }
     
-    if (indicator != "" & sector != "")
+    if (
+      wlv_nonempty_selection(indicator) &&
+        wlv_nonempty_selection(sector)
+    )
       updateSelectizeInput(
         inputId = "dl_country",
         selected = ""
@@ -605,28 +650,27 @@ SERVER <- function(IP, OP, RV, SESSION) {
     indicator <- IP$dl_indicator
     country <- IP$dl_country
     sector <- IP$dl_sector
-    
-    file_name <- ""
-    disable <- TRUE
-    
-    if (country != "" & indicator != "") {
-      file_name <- paste0("download/",country,".",indicator,".",method,".xlsx")
-      disable <- NULL
-    } else if (country != "" & sector != "") {
-      file_name <- paste0("download/",country,".",sector,".",method,".xlsx")
-      disable <- NULL
-    } else if (indicator != "" & sector != "") {
-      file_name <- paste0("download/",indicator,".",sector,".",method,".xlsx")
-      disable <- NULL
-    } else if (indicator != "") {
-      file_name <- paste0("download/",indicator,".",method,".xlsx")
-      disable <- NULL
-    } else if (country != "") {
-      file_name <- paste0("download/",country,".",method,".xlsx")
-      disable <- NULL
+
+    sector_countries <- if (
+      wlv_nonempty_selection(method) && method %in% names(sea_sectors)
+    ) {
+      wlv_sector_country_codes(sea_sectors, method)
+    } else {
+      character()
     }
+    file_name <- wlv_aggregated_download_href(
+      method,
+      country,
+      indicator,
+      sector,
+      sector_countries
+    )
+    if (!wlv_download_href_available(file_name, download_directory)) {
+      file_name <- ""
+    }
+    disable <- if (nzchar(file_name)) NULL else TRUE
     
-    tags$a(href = file_name,
+    tags$a(href = if (nzchar(file_name)) file_name else NULL,
            download = NA,
            tags$button(
              class = "btn btn-default",
@@ -647,16 +691,28 @@ SERVER <- function(IP, OP, RV, SESSION) {
     file_name <- ""
     disable <- TRUE
     
-    if (partner != "") {
+    if (
+      wlv_nonempty_selection(country) &&
+        wlv_nonempty_selection(partner) &&
+        wlv_nonempty_selection(method)
+    ) {
       file_name <- paste0("download/",country,".",partner,".",method,".xlsx")
-      disable <- NULL
-    } else if (ind_cat != "" & ind_scope != "" & ind_un != "") {
+    } else if (
+      wlv_nonempty_selection(country) &&
+        wlv_nonempty_selection(ind_cat) &&
+        wlv_nonempty_selection(ind_scope) &&
+        wlv_nonempty_selection(ind_un) &&
+        wlv_nonempty_selection(method)
+    ) {
       file_name <- paste0("download/",country,".",ind_cat,ind_scope,ind_un,".",
                           method,".xlsx")
-      disable <- NULL
     }
+    if (!wlv_download_href_available(file_name, download_directory)) {
+      file_name <- ""
+    }
+    disable <- if (nzchar(file_name)) NULL else TRUE
     
-    tags$a(href = file_name,
+    tags$a(href = if (nzchar(file_name)) file_name else NULL,
            download = NA,
            tags$button(
              class = "btn btn-default",
