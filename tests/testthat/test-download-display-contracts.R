@@ -19,6 +19,7 @@ load_download_export_functions <- function() {
   expressions <- parse(wlvpanel_file("utils", "prepare_downloadable_files.R"))
   functions <- c(
     "ind_type",
+    "wlv_country_axis_names",
     "wlv_legacy_xlsx_num_format",
     "wlv_xlsx_export_matrix",
     "wlv_prepare_xlsx_display",
@@ -35,6 +36,15 @@ load_download_export_functions <- function() {
     }
   }
   environment
+}
+
+require_openxlsx_for_test <- function() {
+  if (!requireNamespace("openxlsx", quietly = TRUE)) {
+    stop(
+      "The XLSX integration tests require the declared `openxlsx` dependency.",
+      call. = FALSE
+    )
+  }
 }
 
 method_contract <- function(method, indicators, units, multipliers, types = NULL) {
@@ -349,8 +359,42 @@ testthat::test_that("XLSX export matrices preserve singleton axes", {
   )
 })
 
+testthat::test_that("sector workbooks use the sector-country axis exactly", {
+  export <- load_download_export_functions()
+  language_file <- matrix(
+    c("Country A", "World"),
+    ncol = 1L,
+    dimnames = list(c("ISO3.A", "ISO3.WWW"), "English")
+  )
+
+  aggregate_names <- export$wlv_country_axis_names(
+    c("A", "WWW"), language_file
+  )
+  sector_names <- export$wlv_country_axis_names("A", language_file)
+  testthat::expect_identical(aggregate_names, c("Country A", "World"))
+  testthat::expect_identical(sector_names, "Country A")
+  testthat::expect_false("World" %in% sector_names)
+
+  testthat::expect_error(
+    export$save_my_xlsx(
+      tempfile(fileext = ".xlsx"),
+      matrix(c("Indicator:", "Output"), nrow = 1L),
+      aggregate_names,
+      matrix(1, nrow = 1L),
+      data.frame(Code = "output"),
+      data.frame(code = "METHOD"),
+      list(7L),
+      list("#,##0.00"),
+      20,
+      10
+    ),
+    "identify every row",
+    fixed = TRUE
+  )
+})
+
 testthat::test_that("generated XLSX stores display percent with a literal format", {
-  testthat::skip_if_not_installed("openxlsx")
+  require_openxlsx_for_test()
   export <- load_download_export_functions()
   contracts <- method_contract(
     "NEW", "ratio.r.pc", "percent", 100, "percent"
@@ -398,7 +442,7 @@ testthat::test_that("generated XLSX stores display percent with a literal format
 })
 
 testthat::test_that("generated index XLSX publishes storage and display bases", {
-  testthat::skip_if_not_installed("openxlsx")
+  require_openxlsx_for_test()
   export <- load_download_export_functions()
   contracts <- method_contract(
     "WIOD16", "price.r.id", "index", 100
@@ -440,7 +484,7 @@ testthat::test_that("generated index XLSX publishes storage and display bases", 
 })
 
 testthat::test_that("generated legacy XLSX retains fraction and percent numFmt", {
-  testthat::skip_if_not_installed("openxlsx")
+  require_openxlsx_for_test()
   export <- load_download_export_functions()
   legacy_metadata <- data.frame(
     value = "ratio.r.pc",
@@ -496,7 +540,7 @@ testthat::test_that("generated legacy XLSX retains fraction and percent numFmt",
 })
 
 testthat::test_that("legacy type overrides a misleading percent suffix", {
-  testthat::skip_if_not_installed("openxlsx")
+  require_openxlsx_for_test()
   export <- load_download_export_functions()
   indicator <- "basket_price.r.pc"
   legacy_metadata <- data.frame(

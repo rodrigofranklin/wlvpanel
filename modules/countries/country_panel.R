@@ -630,20 +630,23 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
   OP$country_link <- renderUI({
     methods <- RV$bases()
     country <- IP$co_select_country
-    country_link <- NULL
-    if (country =="") return()
+    country_link <- list()
+    if (!wlv_nonempty_selection(country)) return()
 
     for (method in methods) {
       method_country_data <- sea_countries[
         method, , , country, drop = FALSE
       ]
-      if (wlv_has_observations(method_country_data))
-        country_link <- tagList(
-          country_link,
-          tags$a(method, href = paste0("download/",country,".", method, ".xlsx")),
-          "|")
+      href <- wlv_aggregated_download_href(method, country = country)
+      if (
+        wlv_has_observations(method_country_data) &&
+          wlv_download_href_available(href, download_directory)
+      ) {
+        country_link <- c(country_link, list(tags$a(method, href = href), "|"))
+      }
     }
-    country_link[1:(length(country_link)-1)]
+    if (!length(country_link)) return(NULL)
+    do.call(tagList, country_link[-length(country_link)])
   })
   outputOptions(OP,"country_link", suspendWhenHidden = FALSE)
   
@@ -651,19 +654,32 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
     methods <- RV$bases()
     country <- IP$co_select_country
     indicator <- co_panel_sector_indicator()
-    sector_data_link <- NULL
-    if (country =="") return()
+    sector_data_link <- list()
+    if (
+      !wlv_nonempty_selection(country) ||
+        !wlv_nonempty_selection(indicator)
+    ) return()
     
     for (method in methods) {
-      if ((country %in% names(sea_sectors[[method]][1,1,1,])) &
-          (indicator %in% names(sea_sectors[[method]][1,,1,1]))) {
-        sector_data_link <- tagList(
+      sector_countries <- wlv_sector_country_codes(sea_sectors, method)
+      href <- wlv_aggregated_download_href(
+        method,
+        country = country,
+        indicator = indicator,
+        sector_countries = sector_countries
+      )
+      if (
+        indicator %in% names(sea_sectors[[method]][1, , 1, 1]) &&
+          wlv_download_href_available(href, download_directory)
+      ) {
+        sector_data_link <- c(
           sector_data_link,
-          tags$a(method, href = paste0("download/",country,".",indicator,".", method, ".xlsx")),
-          "|")
+          list(tags$a(method, href = href), "|")
+        )
       }
     }
-    sector_data_link[1:(length(sector_data_link)-1)]
+    if (!length(sector_data_link)) return(NULL)
+    do.call(tagList, sector_data_link[-length(sector_data_link)])
   })
   outputOptions(OP,"sector_data_link", suspendWhenHidden = FALSE)
   

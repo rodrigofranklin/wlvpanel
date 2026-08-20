@@ -14,25 +14,233 @@ wlv_legacy_method_metadata_columns <- function() {
   )
 }
 
-wlv_validate_legacy_indicator_metadata <- function(metadata) {
+wlv_validate_legacy_indicator_identity <- function(metadata) {
   if (
     !is.data.frame(metadata) ||
-      any(!c("value", "type") %in% names(metadata)) ||
-      anyNA(metadata[c("value", "type")]) ||
+      !"value" %in% names(metadata) ||
+      anyNA(metadata["value"]) ||
       any(!nzchar(as.character(metadata$value))) ||
-      any(!nzchar(as.character(metadata$type))) ||
       anyDuplicated(as.character(metadata$value))
   ) {
     stop(
-      "Legacy indicator metadata must contain unique `value` and `type` fields.",
+      "Legacy indicator metadata must contain unique non-empty `value` fields.",
       call. = FALSE
     )
   }
   invisible(metadata)
 }
 
-wlv_legacy_indicator_types <- function(metadata, indicators) {
+wlv_read_indicator_editorial_metadata <- function(path) {
+  if (
+    !is.character(path) || length(path) != 1L || is.na(path) ||
+      !nzchar(path) || !file.exists(path)
+  ) {
+    stop("Indicator editorial metadata file does not exist.", call. = FALSE)
+  }
+  metadata <- read.csv2(
+    path,
+    stringsAsFactors = FALSE,
+    na.strings = c("", "NA"),
+    check.names = FALSE,
+    encoding = "UTF-8"
+  )
+  character_columns <- c(
+    "value", "groups", "type", "label_en", "description_en",
+    "label_pt", "description_pt"
+  )
+  required <- c(character_columns, "reverted")
+  if (
+    any(!required %in% names(metadata)) || ncol(metadata) != length(required) ||
+      !is.logical(metadata$reverted) || anyNA(metadata$reverted) ||
+      any(!vapply(metadata[character_columns], is.character, logical(1L))) ||
+      anyNA(metadata[character_columns]) ||
+      any(vapply(
+        metadata[character_columns],
+        function(value) any(!nzchar(value)),
+        logical(1L)
+      )) ||
+      anyDuplicated(metadata$value)
+  ) {
+    stop("Indicator editorial metadata is incomplete or duplicated.",
+      call. = FALSE
+    )
+  }
+  metadata
+}
+
+wlv_complete_legacy_indicator_metadata <- function(metadata, editorial) {
+  wlv_validate_legacy_indicator_identity(metadata)
+  if (!is.data.frame(editorial) || !all(c(
+    "value", "groups", "type", "reverted"
+  ) %in% names(editorial))) {
+    stop("Indicator editorial metadata has an invalid schema.", call. = FALSE)
+  }
+  unknown <- setdiff(editorial$value, metadata$value)
+  if (length(unknown)) {
+    stop(
+      sprintf(
+        "Indicator editorial metadata contains unknown indicator(s): %s.",
+        paste(unknown, collapse = ", ")
+      ),
+      call. = FALSE
+    )
+  }
+  if (!"groups" %in% names(metadata)) metadata$groups <- NA_character_
+  if (!"type" %in% names(metadata)) metadata$type <- NA_character_
+  if (!"reverted" %in% names(metadata)) metadata$reverted <- NA
+  if (!is.character(metadata$groups) || !is.character(metadata$type) ||
+      !is.logical(metadata$reverted)) {
+    stop("Legacy editorial columns have incompatible types.", call. = FALSE)
+  }
+  rows <- match(editorial$value, metadata$value)
+  for (column in c("groups", "type")) {
+    current <- metadata[[column]][rows]
+    missing <- is.na(current) | !nzchar(current)
+    conflict <- !missing & current != editorial[[column]]
+    if (any(conflict)) {
+      stop(
+        sprintf(
+          "Indicator editorial metadata conflicts for `%s`: %s.",
+          column,
+          paste(editorial$value[conflict], collapse = ", ")
+        ),
+        call. = FALSE
+      )
+    }
+    metadata[[column]][rows[missing]] <- editorial[[column]][missing]
+  }
+  current <- metadata$reverted[rows]
+  conflict <- !is.na(current) & current != editorial$reverted
+  if (any(conflict)) {
+    stop(
+      sprintf(
+        "Indicator editorial metadata conflicts for `reverted`: %s.",
+        paste(editorial$value[conflict], collapse = ", ")
+      ),
+      call. = FALSE
+    )
+  }
+  metadata$reverted[rows[is.na(current)]] <- editorial$reverted[is.na(current)]
   wlv_validate_legacy_indicator_metadata(metadata)
+  public <- wlv_public_indicator_metadata(metadata)
+  if (nrow(public) != nrow(metadata)) {
+    stop(
+      "Legacy indicator editorial metadata remains incomplete after restoration.",
+      call. = FALSE
+    )
+  }
+  metadata
+}
+
+wlv_complete_indicator_language_file <- function(language_file, editorial) {
+  portuguese <- "Portugu\u00eas"
+  if (
+    !(is.data.frame(language_file) || is.matrix(language_file)) ||
+      is.null(rownames(language_file)) ||
+      any(!c("English", portuguese) %in% colnames(language_file)) ||
+      !is.data.frame(editorial)
+  ) {
+    stop("Indicator language metadata has an invalid schema.", call. = FALSE)
+  }
+  mappings <- list(English = c(
+    label = "label_en",
+    description = "description_en"
+  ))
+  mappings[[portuguese]] <- c(
+    label = "label_pt",
+    description = "description_pt"
+  )
+  for (language in names(mappings)) {
+    for (kind in names(mappings[[language]])) {
+      keys <- if (identical(kind, "label")) {
+        editorial$value
+      } else {
+        paste0("desc.", editorial$value)
+      }
+      missing_keys <- setdiff(keys, rownames(language_file))
+      if (length(missing_keys)) {
+        stop(
+          sprintf(
+            "Indicator language metadata is missing key(s): %s.",
+            paste(missing_keys, collapse = ", ")
+          ),
+          call. = FALSE
+        )
+      }
+      current <- as.character(language_file[keys, language, drop = TRUE])
+      missing <- is.na(current) | !nzchar(current)
+      language_file[keys[missing], language] <-
+        editorial[[mappings[[language]][[kind]]]][missing]
+    }
+  }
+  language_file
+}
+
+wlv_validate_indicator_language_labels <- function(
+    language_file,
+    indicators,
+    languages = c("English", "Portugu\u00eas")) {
+  if (
+    !(is.data.frame(language_file) || is.matrix(language_file)) ||
+      is.null(rownames(language_file)) || !is.character(indicators) ||
+      !length(indicators) || anyNA(indicators) || any(!nzchar(indicators)) ||
+      anyDuplicated(indicators) || !is.character(languages) ||
+      !length(languages) || anyNA(languages) || any(!nzchar(languages)) ||
+      any(!languages %in% colnames(language_file))
+  ) {
+    stop("Indicator language label validation inputs are invalid.",
+      call. = FALSE
+    )
+  }
+  keys <- c(indicators, paste0("desc.", indicators))
+  missing_keys <- setdiff(keys, rownames(language_file))
+  values <- if (length(missing_keys)) {
+    matrix(NA_character_, nrow = length(keys), ncol = length(languages))
+  } else {
+    as.matrix(language_file[keys, languages, drop = FALSE])
+  }
+  if (
+    length(missing_keys) || anyNA(values) ||
+      any(!nzchar(as.character(values)))
+  ) {
+    stop("Indicator labels and descriptions must be complete in every language.",
+      call. = FALSE
+    )
+  }
+  invisible(language_file)
+}
+
+wlv_public_indicator_metadata <- function(metadata) {
+  wlv_validate_legacy_indicator_identity(metadata)
+  if (
+    any(!c("groups", "reverted") %in% names(metadata)) ||
+      !is.character(metadata$groups) || !is.logical(metadata$reverted)
+  ) {
+    stop(
+      "Public indicator metadata requires `groups` and logical `reverted` fields.",
+      call. = FALSE
+    )
+  }
+  public <- !is.na(metadata$groups) & nzchar(metadata$groups) &
+    !is.na(metadata$reverted)
+  if (!any(public)) {
+    stop("Public indicator metadata has no complete display rows.",
+      call. = FALSE
+    )
+  }
+  metadata[public, , drop = FALSE]
+}
+
+wlv_legacy_indicator_rows <- function(metadata, indicators) {
+  wlv_validate_legacy_indicator_identity(metadata)
+  if (
+    !is.character(indicators) || !length(indicators) || anyNA(indicators) ||
+      any(!nzchar(indicators)) || anyDuplicated(indicators)
+  ) {
+    stop("Legacy display indicators must be unique and non-empty.",
+      call. = FALSE
+    )
+  }
   rows <- match(indicators, as.character(metadata$value))
   if (anyNA(rows)) {
     stop(
@@ -43,6 +251,43 @@ wlv_legacy_indicator_types <- function(metadata, indicators) {
       call. = FALSE
     )
   }
+  rows
+}
+
+wlv_validate_legacy_indicator_metadata <- function(
+    metadata,
+    indicators = as.character(metadata$value)) {
+  rows <- wlv_legacy_indicator_rows(metadata, indicators)
+  missing_type <- if (!"type" %in% names(metadata)) {
+    rep(TRUE, length(rows))
+  } else {
+    is.na(metadata$type[rows]) |
+      !nzchar(as.character(metadata$type[rows]))
+  }
+  if (any(missing_type)) {
+    condition <- structure(
+      list(
+        message = sprintf(
+          "Legacy indicator fallback lacks an explicit `type` for: %s.",
+          paste(indicators[missing_type], collapse = ", ")
+        ),
+        call = NULL,
+        indicators = indicators[missing_type]
+      ),
+      class = c(
+        "wlv_legacy_display_type_error",
+        "error",
+        "condition"
+      )
+    )
+    stop(condition)
+  }
+  invisible(metadata)
+}
+
+wlv_legacy_indicator_types <- function(metadata, indicators) {
+  wlv_validate_legacy_indicator_metadata(metadata, indicators)
+  rows <- wlv_legacy_indicator_rows(metadata, indicators)
   as.character(metadata$type[rows])
 }
 
@@ -265,7 +510,7 @@ wlv_read_method_display_contract <- function(
   }
   # The shared legacy catalog remains authoritative for labels/grouping only.
   # Requiring coverage here does not import its presentation type.
-  invisible(wlv_legacy_indicator_types(legacy_metadata, indicators))
+  invisible(wlv_legacy_indicator_rows(legacy_metadata, indicators))
 
   data.frame(
     method_dir = rep(method_dir, length(indicators)),
@@ -280,6 +525,39 @@ wlv_read_method_display_contract <- function(
     legacy_type = rep(NA_character_, length(indicators)),
     stringsAsFactors = FALSE,
     check.names = FALSE
+  )
+}
+
+wlv_read_supported_method_display_contract <- function(
+    path,
+    method_dir,
+    method,
+    indicators,
+    legacy_metadata,
+    warn_legacy = TRUE) {
+  tryCatch(
+    wlv_read_method_display_contract(
+      path = path,
+      method_dir = method_dir,
+      method = method,
+      indicators = indicators,
+      legacy_metadata = legacy_metadata,
+      warn_legacy = warn_legacy
+    ),
+    wlv_legacy_display_type_error = function(error) {
+      warning(
+        sprintf(
+          paste0(
+            "Skipping result method `%s`: %s Recalculate it with a current ",
+            "unit contract or complete its legacy presentation metadata."
+          ),
+          method_dir,
+          conditionMessage(error)
+        ),
+        call. = FALSE
+      )
+      NULL
+    }
   )
 }
 
@@ -635,6 +913,110 @@ wlv_methods_with_indicator <- function(availability, methods, indicator) {
   methods[methods %in% availability$method[
     availability$indicator == indicator
   ]]
+}
+
+wlv_nonempty_selection <- function(value) {
+  is.character(value) && length(value) == 1L && !is.na(value) && nzchar(value)
+}
+
+wlv_sector_country_codes <- function(sea_sectors, method) {
+  if (
+    !is.list(sea_sectors) || is.null(names(sea_sectors)) ||
+      !wlv_nonempty_selection(method) || !method %in% names(sea_sectors)
+  ) {
+    stop("Sector-country lookup requires one known method.", call. = FALSE)
+  }
+  value <- sea_sectors[[method]]
+  if (
+    !is.numeric(value) || length(dim(value)) != 4L ||
+      is.null(dimnames(value))
+  ) {
+    stop("Sector-country lookup requires a labelled four-dimensional array.",
+      call. = FALSE
+    )
+  }
+  countries <- dimnames(value)[[4L]]
+  if (
+    is.null(countries) || !length(countries) || anyNA(countries) ||
+      any(!nzchar(countries)) || anyDuplicated(countries)
+  ) {
+    stop("Sector-country labels must be unique and non-empty.", call. = FALSE)
+  }
+  countries
+}
+
+wlv_aggregated_download_href <- function(
+    method,
+    country = NULL,
+    indicator = NULL,
+    sector = NULL,
+    sector_countries = character(),
+    prefix = "download") {
+  selected <- function(value) {
+    if (is.null(value) || !length(value)) return("")
+    if (!is.character(value) || length(value) != 1L || is.na(value)) {
+      stop("Download selections must be scalar non-missing strings.",
+        call. = FALSE
+      )
+    }
+    value
+  }
+  method <- selected(method)
+  country <- selected(country)
+  indicator <- selected(indicator)
+  sector <- selected(sector)
+  if (
+    !is.character(sector_countries) || anyNA(sector_countries) ||
+      any(!nzchar(sector_countries)) || anyDuplicated(sector_countries) ||
+      !wlv_nonempty_selection(prefix) || grepl("[/\\\\]", prefix)
+  ) {
+    stop("Download path inputs are invalid.", call. = FALSE)
+  }
+  if (!nzchar(method)) return("")
+  choices <- c(country, indicator, sector)
+  choices <- choices[nzchar(choices)]
+  if (length(choices) > 2L) return("")
+  uses_sector_country <- nzchar(country) &&
+    (nzchar(indicator) || nzchar(sector))
+  if (uses_sector_country && !country %in% sector_countries) return("")
+
+  components <- if (nzchar(country) && nzchar(indicator)) {
+    c(country, indicator, method)
+  } else if (nzchar(country) && nzchar(sector)) {
+    c(country, sector, method)
+  } else if (nzchar(indicator) && nzchar(sector)) {
+    c(indicator, sector, method)
+  } else if (nzchar(indicator)) {
+    c(indicator, method)
+  } else if (nzchar(country)) {
+    c(country, method)
+  } else {
+    character()
+  }
+  if (!length(components)) return("")
+  paste0(prefix, "/", paste(components, collapse = "."), ".xlsx")
+}
+
+wlv_download_href_available <- function(href, directory, prefix = "download") {
+  if (
+    !is.character(href) || length(href) != 1L || is.na(href) ||
+      !is.character(directory) || length(directory) != 1L ||
+      is.na(directory) || !nzchar(directory) ||
+      !wlv_nonempty_selection(prefix)
+  ) {
+    stop("Download availability inputs are invalid.", call. = FALSE)
+  }
+  if (!nzchar(href)) return(FALSE)
+  marker <- paste0(prefix, "/")
+  if (!startsWith(href, marker)) return(FALSE)
+  file_name <- substring(href, nchar(marker) + 1L)
+  if (
+    !nzchar(file_name) || !identical(basename(file_name), file_name) ||
+      grepl("[/\\\\]", file_name)
+  ) {
+    return(FALSE)
+  }
+  isTRUE(file.exists(file.path(directory, file_name)))
 }
 
 wlv_display_unit <- function(contracts, method, indicator) {

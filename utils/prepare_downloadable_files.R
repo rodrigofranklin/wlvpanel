@@ -6,8 +6,40 @@ library(openxlsx)
 library(magrittr)
 source("utils/display_contracts.R")
 
+download_directory <- file.path("data", "download")
+if (!dir.exists(download_directory) &&
+    !dir.create(download_directory, recursive = TRUE)) {
+  stop("Cannot create the panel download directory.", call. = FALSE)
+}
+
 ind_type <- function(x){
   substr(x, nchar(x)-1, nchar(x))
+}
+
+wlv_country_axis_names <- function(codes, language_file, language = "English") {
+  if (
+    !is.character(codes) || !length(codes) || anyNA(codes) ||
+      any(!nzchar(codes)) || anyDuplicated(codes) ||
+      !(is.data.frame(language_file) || is.matrix(language_file)) ||
+      is.null(rownames(language_file)) || !language %in% colnames(language_file)
+  ) {
+    stop("Country display labels require a valid country axis and language table.",
+      call. = FALSE
+    )
+  }
+  keys <- paste0("ISO3.", codes)
+  missing <- setdiff(keys, rownames(language_file))
+  if (length(missing)) {
+    stop(
+      sprintf("Country display labels are missing: %s.", paste(missing, collapse = ", ")),
+      call. = FALSE
+    )
+  }
+  labels <- as.character(language_file[keys, language, drop = TRUE])
+  if (length(labels) != length(codes) || anyNA(labels) || any(!nzchar(labels))) {
+    stop("Country display labels must be complete and non-empty.", call. = FALSE)
+  }
+  unname(labels)
 }
 
 wlv_legacy_xlsx_num_format <- function(indicator, legacy_type = NULL) {
@@ -207,7 +239,19 @@ wlv_xlsx_contract_metadata <- function(
 save_my_xlsx <- function(file_name, header, row_names, my_data, metadata, specs,
                          rows_style_list, styles_list, width_c1, width_c2,
                          method_code = NULL, indicator_codes = NULL,
-                         display_contracts = NULL, legacy_metadata = NULL) {
+                          display_contracts = NULL, legacy_metadata = NULL) {
+
+  my_data <- as.matrix(my_data)
+  if (
+    !is.numeric(my_data) || length(dim(my_data)) != 2L ||
+      !is.character(row_names) || length(row_names) != nrow(my_data) ||
+      anyNA(row_names) || any(!nzchar(row_names))
+  ) {
+    stop(
+      "XLSX row labels must identify every row of one numeric data matrix.",
+      call. = FALSE
+    )
+  }
 
   display_args <- c(
     !is.null(method_code),
@@ -302,6 +346,10 @@ save_my_xlsx <- function(file_name, header, row_names, my_data, metadata, specs,
 meta_methods <- readRDS("data/meta_methods.RDS")
 meta_indicator_contracts <- readRDS("data/meta_indicator_contracts.RDS")
 wlv_validate_display_contracts(meta_indicator_contracts)
+legacy_indicator_metadata <- readRDS("data/meta_indicators.RDS")
+public_indicator_codes <- wlv_public_indicator_metadata(
+  legacy_indicator_metadata
+)$value
 indicator_en <- read.csv2("data/config/indicators_en.csv")
 sea_countries <- readRDS("data/sea_countries.RDS")
 sea_sectors <- readRDS("data/sea_sectors.RDS")
@@ -323,6 +371,12 @@ for (method_code in meta_methods$code) {
   temp_data <- sea_countries[method_code,,,, drop = FALSE]
   years <- wlv_observed_axis_labels(temp_data, 2L)
   indicators <- wlv_observed_axis_labels(temp_data, 3L)
+  indicators <- intersect(indicators, public_indicator_codes)
+  if (!length(indicators)) {
+    stop(sprintf("Method `%s` has no public indicators to export.", method_code),
+      call. = FALSE
+    )
+  }
   countries <- wlv_observed_axis_labels(temp_data, 4L)
   indicators <- indicators[order(indicators)]
   sectors <- names(sea_sectors[[method_code]][1,1,,1])
@@ -358,7 +412,11 @@ for (method_code in meta_methods$code) {
   styles_list$int <- "#,##0"
 
   # countries and sectors names
-  countries_names <- language_file[paste0("ISO3.",countries),"English"]
+  countries_names <- wlv_country_axis_names(countries, language_file)
+  countries_sectors_names <- wlv_country_axis_names(
+    countries_sectors,
+    language_file
+  )
   sectors_names <- language_file[paste0(sourcedata,".",sectors),"English"]
 
   ##### Country files (aggregated and sectors) ####
@@ -397,9 +455,14 @@ for (method_code in meta_methods$code) {
     }
     
     ### Sectors data
-    sectors_data <- 
-      sea_sectors[[method_code]][,order(names(sea_sectors[[method_code]][1,,1,1])),
-                                 ,country_code]
+    sectors_data <- sea_sectors[[method_code]][
+      , indicators, , country_code, drop = FALSE
+    ]
+    sectors_data <- array(
+      sectors_data,
+      dim = dim(sectors_data)[-4L],
+      dimnames = dimnames(sectors_data)[-4L]
+    )
     
     indicators_sectors <- colnames(sectors_data)
     indicators_sectors_names <- language_file[indicators_sectors,"English"]
@@ -557,7 +620,7 @@ for (method_code in meta_methods$code) {
       rows$list <- 1:nrow(sector_data)+6
       
       save_my_xlsx(
-        file_name, header, countries_names, sector_data,
+        file_name, header, countries_sectors_names, sector_data,
         indicator_metadata(indicator_code),
         specs, rows, id_style, "auto", 6,
         method_code = method_code,

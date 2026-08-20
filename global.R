@@ -6,6 +6,16 @@
 source("requirements.R")
 source("utils/display_contracts.R")
 
+download_directory <- file.path("data", "download")
+if (!dir.exists(download_directory) &&
+    !dir.create(download_directory, recursive = TRUE)) {
+  stop("Cannot create the panel download directory.", call. = FALSE)
+}
+shiny::addResourcePath(
+  "download",
+  normalizePath(download_directory, winslash = "/", mustWork = TRUE)
+)
+
 ## Define disk caching
 shinyOptions(cache = cachem::cache_disk("data/labourvaluesdatapanel-cache/")) 
 
@@ -15,7 +25,9 @@ sea_countries <- readRDS("data/sea_countries.RDS")
 sea_sectors <- readRDS("data/sea_sectors.RDS")
 meta_methods <- readRDS("data/meta_methods.RDS")
 meta_indicators <- readRDS("data/meta_indicators.RDS")
-wlv_validate_legacy_indicator_metadata(meta_indicators)
+wlv_validate_legacy_indicator_identity(meta_indicators)
+legacy_indicator_metadata <- meta_indicators
+meta_indicators <- wlv_public_indicator_metadata(meta_indicators)
 groups <- meta_indicators$groups |> unique()
 countries_sp  <- readRDS("data/countries_sp.RDS")
 list_methods <- as.character(meta_methods$code)
@@ -40,7 +52,7 @@ if (file.exists("data/meta_indicator_contracts.RDS")) {
         method_dir = method,
         method = method,
         indicators = indicators,
-        legacy_metadata = meta_indicators,
+        legacy_metadata = legacy_indicator_metadata,
         warn = TRUE
       )
     }

@@ -297,6 +297,207 @@ test_that("modern display units never inherit legacy presentation types", {
   )
 })
 
+test_that("modern contracts require legacy identity but not legacy types", {
+  legacy <- wlvpanel_legacy_metadata()
+  legacy$type[c(1L, 3L)] <- NA_character_
+  path <- wlvpanel_write_metadata(wlvpanel_method_metadata())
+  on.exit(unlink(path), add = TRUE)
+
+  expect_silent(wlv_validate_legacy_indicator_identity(legacy))
+  contracts <- wlv_read_method_display_contract(
+    path,
+    "modern",
+    "MODERN",
+    legacy$value,
+    legacy
+  )
+  expect_true(all(contracts$metadata_source == "method_metadata"))
+  expect_true(all(is.na(contracts$legacy_type)))
+  expect_identical(
+    wlv_display_values(1, "MODERN", "price", contracts),
+    1
+  )
+
+  expect_error(
+    wlv_legacy_display_contract(
+      "legacy",
+      "LEGACY",
+      legacy$value,
+      legacy,
+      warn = FALSE
+    ),
+    class = "wlv_legacy_display_type_error"
+  )
+  expect_warning(
+    skipped <- wlv_read_supported_method_display_contract(
+      tempfile("absent-legacy-metadata-", fileext = ".RDS"),
+      "legacy",
+      "LEGACY",
+      legacy$value,
+      legacy,
+      warn_legacy = FALSE
+    ),
+    "Skipping result method `legacy`",
+    fixed = TRUE
+  )
+  expect_null(skipped)
+
+  partial <- wlvpanel_method_metadata()
+  partial$display_unit <- NULL
+  partial_path <- wlvpanel_write_metadata(partial)
+  on.exit(unlink(partial_path), add = TRUE)
+  expect_error(
+    wlv_read_supported_method_display_contract(
+      partial_path,
+      "modern",
+      "MODERN",
+      legacy$value,
+      legacy
+    ),
+    "partial modern schema",
+    fixed = TRUE
+  )
+
+  missing <- legacy[-1L, , drop = FALSE]
+  expect_error(
+    wlv_read_method_display_contract(
+      path,
+      "modern",
+      "MODERN",
+      wlvpanel_legacy_metadata()$value,
+      missing
+    ),
+    "missing indicator",
+    fixed = TRUE
+  )
+
+  duplicated <- rbind(legacy, legacy[1L, , drop = FALSE])
+  expect_error(
+    wlv_read_method_display_contract(
+      path,
+      "modern",
+      "MODERN",
+      legacy$value,
+      duplicated
+    ),
+    "unique non-empty `value`",
+    fixed = TRUE
+  )
+})
+
+test_that("incomplete editorial rows stay out of the UI until restored", {
+  metadata <- rbind(
+    wlvpanel_legacy_metadata(),
+    data.frame(
+      value = "internal.input",
+      type = NA_character_,
+      groups = NA_character_,
+      reverted = NA,
+      stringsAsFactors = FALSE
+    )
+  )
+
+  expect_silent(wlv_validate_legacy_indicator_identity(metadata))
+  public <- wlv_public_indicator_metadata(metadata)
+  expect_identical(public$value, wlvpanel_legacy_metadata()$value)
+  expect_false("internal.input" %in% public$value)
+
+  malformed <- metadata
+  malformed$reverted <- as.character(malformed$reverted)
+  expect_error(
+    wlv_public_indicator_metadata(malformed),
+    "logical `reverted`",
+    fixed = TRUE
+  )
+
+  metadata$groups <- NA_character_
+  metadata$reverted <- NA
+  expect_error(
+    wlv_public_indicator_metadata(metadata),
+    "no complete display rows",
+    fixed = TRUE
+  )
+})
+
+test_that("tracked editorial metadata restores published indicators and labels", {
+  editorial <- wlv_read_indicator_editorial_metadata(file.path(
+    wlvpanel_test_root,
+    "config",
+    "indicator-editorial-metadata.csv"
+  ))
+  legacy <- data.frame(
+    value = editorial$value,
+    groups = NA_character_,
+    type = NA_character_,
+    reverted = NA,
+    stringsAsFactors = FALSE
+  )
+  completed <- wlv_complete_legacy_indicator_metadata(legacy, editorial)
+
+  expect_identical(completed$groups, editorial$groups)
+  expect_identical(completed$type, editorial$type)
+  expect_identical(completed$reverted, editorial$reverted)
+  expect_identical(
+    wlv_public_indicator_metadata(completed)$value,
+    editorial$value
+  )
+
+  keys <- c(editorial$value, paste0("desc.", editorial$value))
+  language_file <- matrix(
+    NA_character_,
+    nrow = length(keys),
+    ncol = 2L,
+    dimnames = list(keys, c("English", "Portugu\u00eas"))
+  )
+  labels <- wlv_complete_indicator_language_file(language_file, editorial)
+  expect_invisible(wlv_validate_indicator_language_labels(
+    labels,
+    editorial$value
+  ))
+  expect_identical(
+    labels["gdp.s.us", "English"],
+    "Gross Domestic Product (USD)"
+  )
+  expect_identical(
+    labels["gdp.s.us", "Portugu\u00eas"],
+    "Produto Interno Bruto (USD)"
+  )
+  expect_identical(
+    labels["emp.s.un", "Portugu\u00eas"],
+    "N\u00famero de pessoas ocupadas"
+  )
+
+  conflict <- legacy
+  conflict$groups[[1L]] <- "Conflicting group"
+  expect_error(
+    wlv_complete_legacy_indicator_metadata(conflict, editorial),
+    "conflicts for `groups`",
+    fixed = TRUE
+  )
+})
+
+test_that("legacy fallback requires types only for selected indicators", {
+  legacy <- wlvpanel_legacy_metadata()
+  legacy$type[[1L]] <- NA_character_
+  expect_silent(wlv_legacy_display_contract(
+    "legacy",
+    "LEGACY",
+    legacy$value[-1L],
+    legacy,
+    warn = FALSE
+  ))
+  expect_error(
+    wlv_legacy_display_contract(
+      "legacy",
+      "LEGACY",
+      legacy$value,
+      legacy,
+      warn = FALSE
+    ),
+    class = "wlv_legacy_display_type_error"
+  )
+})
+
 test_that("consolidated contracts reject mixed sources and inconsistent units", {
   legacy <- wlvpanel_legacy_metadata()
   path <- wlvpanel_write_metadata(wlvpanel_method_metadata())
@@ -596,4 +797,84 @@ test_that("display contract cache versions cover all semantic fields", {
     fallback_version
   ))
   expect_false(identical(fallback_version, version))
+})
+
+test_that("sector-only country downloads exclude aggregate-only countries", {
+  sector_values <- array(
+    1,
+    dim = c(1L, 1L, 1L, 2L),
+    dimnames = list(
+      year = "2000",
+      indicator = "output",
+      sector = "S1",
+      country = c("A", "B")
+    )
+  )
+  arrays <- list(METHOD = sector_values)
+  sector_countries <- wlv_sector_country_codes(arrays, "METHOD")
+
+  expect_identical(sector_countries, c("A", "B"))
+  expect_identical(
+    wlv_aggregated_download_href(
+      "METHOD", country = "WWW", sector_countries = sector_countries
+    ),
+    "download/WWW.METHOD.xlsx"
+  )
+  expect_identical(
+    wlv_aggregated_download_href(
+      "METHOD", country = "WWW", indicator = "output",
+      sector_countries = sector_countries
+    ),
+    ""
+  )
+  expect_identical(
+    wlv_aggregated_download_href(
+      "METHOD", country = "WWW", sector = "S1",
+      sector_countries = sector_countries
+    ),
+    ""
+  )
+  expect_identical(
+    wlv_aggregated_download_href(
+      "METHOD", country = "A", indicator = "output",
+      sector_countries = sector_countries
+    ),
+    "download/A.output.METHOD.xlsx"
+  )
+  expect_identical(
+    wlv_aggregated_download_href(
+      "METHOD", country = "A", sector = "S1",
+      sector_countries = sector_countries
+    ),
+    "download/A.S1.METHOD.xlsx"
+  )
+  expect_identical(
+    wlv_aggregated_download_href(
+      "METHOD", indicator = "output", sector = "S1",
+      sector_countries = sector_countries
+    ),
+    "download/output.S1.METHOD.xlsx"
+  )
+  expect_identical(
+    wlv_aggregated_download_href(
+      "METHOD", country = "A", indicator = "output", sector = "S1",
+      sector_countries = sector_countries
+    ),
+    ""
+  )
+  expect_error(
+    wlv_sector_country_codes(arrays, "UNKNOWN"),
+    "known method",
+    fixed = TRUE
+  )
+
+  directory <- tempfile("wlvpanel-downloads-")
+  dir.create(directory)
+  on.exit(unlink(directory, recursive = TRUE), add = TRUE)
+  href <- "download/A.output.METHOD.xlsx"
+  expect_false(wlv_download_href_available(href, directory))
+  expect_true(file.create(file.path(directory, "A.output.METHOD.xlsx")))
+  expect_true(wlv_download_href_available(href, directory))
+  expect_false(wlv_download_href_available("download/missing.xlsx", directory))
+  expect_false(wlv_download_href_available("download/../outside.xlsx", directory))
 })

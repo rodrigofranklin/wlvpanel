@@ -10,8 +10,15 @@ source("utils/display_contracts.R")
 # The shared CSV remains the legacy presentation catalog. Method-specific
 # storage/display semantics are loaded separately below.
 meta_indicators <- read.csv2("results/meta_indicators.csv")
+indicator_editorial_metadata <- wlv_read_indicator_editorial_metadata(
+  "config/indicator-editorial-metadata.csv"
+)
+meta_indicators <- wlv_complete_legacy_indicator_metadata(
+  meta_indicators,
+  indicator_editorial_metadata
+)
 meta_indicators <- meta_indicators[order(meta_indicators$groups), ]
-wlv_validate_legacy_indicator_metadata(meta_indicators)
+wlv_validate_legacy_indicator_identity(meta_indicators)
 
 # Creating language_file ####
 # Here, we also need to merge language files of country names, variable names, etc
@@ -52,6 +59,15 @@ for (x in 1:length(languages$language)) {
 rownames(indicator_file) <- indicator_file[,1]
 indicator_file <- indicator_file[,-c(1,2)]
 language_file <- rbind(language_file,indicator_file)
+language_file <- wlv_complete_indicator_language_file(
+  language_file,
+  indicator_editorial_metadata
+)
+wlv_validate_indicator_language_labels(
+  language_file,
+  meta_indicators$value,
+  languages$language
+)
 
 language_file |> saveRDS("data/language_file.RDS")
 
@@ -94,8 +110,45 @@ meta_indicator_contract_parts <- list()
 
 for (x in method_list) {
 
-  # load data
+  # Resolve presentation semantics before loading large arrays. Legacy results
+  # with incomplete presentation metadata are excluded explicitly; modern
+  # partial/corrupt contracts still abort preparation.
   parameters <- read.csv2(paste0("results/",x,"/_parameters.csv"))
+  method_metadata_path <- file.path("results", x, "meta_indicators.RDS")
+  method_indicators <- if (file.exists(method_metadata_path)) {
+    method_metadata <- readRDS(method_metadata_path)
+    if (!is.data.frame(method_metadata) || !"code" %in% names(method_metadata)) {
+      stop(
+        sprintf("Method `%s` has invalid indicator metadata.", x),
+        call. = FALSE
+      )
+    }
+    as.character(method_metadata$code)
+  } else {
+    method_solutions <- read.csv2(
+      file.path("results", x, "_method_solutions.csv")
+    )
+    as.character(method_solutions$names)
+  }
+  method_code <- as.character(parameters$code[[1]])
+  if (!nzchar(method_code)) {
+    stop(sprintf("Method directory `%s` has no display method code.", x),
+      call. = FALSE
+    )
+  }
+  method_display_contract <- wlv_read_supported_method_display_contract(
+    path = method_metadata_path,
+    method_dir = x,
+    method = method_code,
+    indicators = method_indicators,
+    legacy_metadata = meta_indicators,
+    warn_legacy = TRUE
+  )
+  if (is.null(method_display_contract)) {
+    next
+  }
+
+  # load data
   
   sea_countries$temp <- read_fst_array(file = paste0("results/",x,"/sea_countries.fst"))
   sea_sectors$temp <- read_fst_array(file = paste0("results/",x,"/sea_sectors.fst"))
@@ -112,21 +165,8 @@ for (x in method_list) {
       call. = FALSE
     )
   }
-  method_code <- as.character(parameters$code[[1]])
-  if (!nzchar(method_code)) {
-    stop(sprintf("Method directory `%s` has no display method code.", x),
-      call. = FALSE
-    )
-  }
   meta_indicator_contract_parts[[length(meta_indicator_contract_parts) + 1L]] <-
-    wlv_read_method_display_contract(
-      path = file.path("results", x, "meta_indicators.RDS"),
-      method_dir = x,
-      method = method_code,
-      indicators = country_indicators,
-      legacy_metadata = meta_indicators,
-      warn_legacy = TRUE
-    )
+    method_display_contract
   
   # Convert ISO-2 to ISO-3
   temp_iso <- dimnames(sea_countries$temp)[[3]]
@@ -167,6 +207,10 @@ for (x in method_list) {
   
   # Save methods parameters
   meta_methods <- rbind(meta_methods,parameters)
+}
+
+if (!length(meta_indicator_contract_parts)) {
+  stop("No result method has usable display metadata.", call. = FALSE)
 }
 
 list_methods <- names(sea_countries)
