@@ -24,7 +24,14 @@ jobs:
       - name: Install contract test dependencies
         shell: Rscript {0}
         run: |
-          install.packages(c("testthat", "jsonlite", "openssl", "openxlsx"))
+          repository <- Sys.getenv("RSPM", unset = "")
+          if (!nzchar(repository)) {
+            repository <- "https://cloud.r-project.org"
+          }
+          install.packages(
+            c("testthat", "jsonlite", "openssl", "openxlsx"),
+            repos = c(CRAN = repository)
+          )
       - name: Parse contract sources
         shell: Rscript {0}
         run: |
