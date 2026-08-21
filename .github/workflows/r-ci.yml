@@ -1,0 +1,54 @@
+name: R contract CI
+
+on:
+  pull_request:
+  push:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Result contract / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: r-lib/actions/setup-r@d3c5be51b12e724e68f33216ca3c148b66d5f0b6 # v2
+        with:
+          r-version: release
+          use-public-rspm: true
+      - name: Install contract test dependencies
+        shell: Rscript --vanilla {0}
+        run: |
+          repository <- Sys.getenv("RSPM", unset = "")
+          if (!nzchar(repository)) {
+            repository <- "https://cloud.r-project.org"
+          }
+          install.packages(
+            c("testthat", "jsonlite", "openssl", "openxlsx"),
+            repos = c(CRAN = repository)
+          )
+      - name: Parse contract sources
+        shell: Rscript --vanilla {0}
+        run: |
+          invisible(lapply(
+            c(
+              "utils/display_contracts.R",
+              "utils/result_contracts.R",
+              "utils/prepare_data.R"
+            ),
+            parse
+          ))
+      - name: Run contract tests
+        shell: Rscript --vanilla {0}
+        run: |
+          testthat::test_dir(
+            "tests/testthat",
+            reporter = "summary",
+            stop_on_failure = TRUE,
+            stop_on_warning = TRUE
+          )
