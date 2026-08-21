@@ -6,10 +6,43 @@ library(magrittr)
 library(MazamaSpatialUtils)
 library(rworldmap)
 source("utils/display_contracts.R")
+source("utils/result_contracts.R")
+
+result_run_dirs <- wlv_resolve_result_run_dirs(
+  results_root = "results",
+  required_artifacts = c(
+    "_parameters.csv",
+    "_method_solutions.csv",
+    "meta_indicators.RDS",
+    "sea_countries.fst",
+    "sea_countries.fst.meta",
+    "sea_sectors.fst",
+    "sea_sectors.fst.meta",
+    "m_countries.fst",
+    "m_countries.fst.meta"
+  )
+)
+result_publication_mode <- attr(
+  result_run_dirs,
+  "publication_mode",
+  exact = TRUE
+)
+result_release_root <- attr(result_run_dirs, "release_root", exact = TRUE)
+result_metadata_root <- if (identical(
+  result_publication_mode,
+  "immutable_release"
+)) {
+  result_release_root
+} else {
+  "results"
+}
 
 # The shared CSV remains the legacy presentation catalog. Method-specific
 # storage/display semantics are loaded separately below.
-meta_indicators <- read.csv2("results/meta_indicators.csv")
+meta_indicators <- read.csv2(file.path(
+  result_metadata_root,
+  "meta_indicators.csv"
+))
 indicator_editorial_metadata <- wlv_read_indicator_editorial_metadata(
   "config/indicator-editorial-metadata.csv"
 )
@@ -48,10 +81,62 @@ language_file <- rbind(language_file,sectors_wiod13[,languages$language])
 rownames(sectors_wiod16) <- sectors_wiod16[,1]
 language_file <- rbind(language_file,sectors_wiod16[,languages$language])
 
-# Indicators names and description
-indicator_file <- read.csv2(paste0("results/indicators_",languages$file[1],".csv"))
+# Indicators names and description. Releases always contain a verified English
+# catalog. A language-specific catalog may also be part of the release; during
+# migration, a legacy catalog can be used only through this explicit fallback.
+wlv_panel_indicator_catalog_path <- function(language_code) {
+  filename <- paste0("indicators_", language_code, ".csv")
+  candidate <- file.path(result_metadata_root, filename)
+  if (file.exists(candidate)) {
+    return(candidate)
+  }
+  if (identical(result_publication_mode, "immutable_release")) {
+    legacy_candidate <- file.path("results", filename)
+    if (!identical(language_code, "en") && file.exists(legacy_candidate)) {
+      warning(
+        sprintf(
+          paste0(
+            "Release `%s` has no `%s`; using the unversioned legacy ",
+            "language catalog after release validation."
+          ),
+          attr(result_run_dirs, "release_id", exact = TRUE),
+          filename
+        ),
+        call. = FALSE
+      )
+      return(legacy_candidate)
+    }
+    warning(
+      sprintf(
+        "Release `%s` has no `%s`; using its verified English catalog.",
+        attr(result_run_dirs, "release_id", exact = TRUE),
+        filename
+      ),
+      call. = FALSE
+    )
+    return(file.path(result_release_root, "indicators_en.csv"))
+  }
+  english_legacy <- file.path("results", "indicators_en.csv")
+  if (file.exists(english_legacy)) {
+    warning(
+      sprintf(
+        "Legacy results have no `%s`; using `indicators_en.csv`.",
+        filename
+      ),
+      call. = FALSE
+    )
+    return(english_legacy)
+  }
+  stop(sprintf("No indicator catalog is available for `%s`.", language_code),
+    call. = FALSE
+  )
+}
+
+indicator_file <- read.csv2(
+  wlv_panel_indicator_catalog_path(languages$file[1])
+)
 for (x in 1:length(languages$language)) {
-  I_temp <-  read.csv2(paste0("results/indicators_",languages$file[1],".csv"))
+  I_temp <- read.csv2(wlv_panel_indicator_catalog_path(languages$file[x]))
   names(I_temp)[2] <- languages$language[x]
   indicator_file <- full_join(indicator_file, I_temp, by = "cod_label")
 }
@@ -92,10 +177,10 @@ read_fst_array <- function(file_name) {
     }
 }
 
-## Select methods that has parameters
-method_list <- gsub("results/","",list.dirs("results",recursive = F))
-method_parameters <- paste0("results/",method_list, "/_parameters.csv")
-method_list <- method_list[file.exists(method_parameters)]
+## Select methods published by the configured release channel. When no release
+## marker exists, `wlv_resolve_result_run_dirs()` returns the explicit legacy
+## `results/<method>` fallback with a warning.
+method_list <- names(result_run_dirs)
 
 ## Load data from all methods
 ## and create lists of arrays dimensions
@@ -110,11 +195,13 @@ meta_indicator_contract_parts <- list()
 
 for (x in method_list) {
 
+  method_result_dir <- unname(result_run_dirs[[x]])
+
   # Resolve presentation semantics before loading large arrays. Legacy results
   # with incomplete presentation metadata are excluded explicitly; modern
   # partial/corrupt contracts still abort preparation.
-  parameters <- read.csv2(paste0("results/",x,"/_parameters.csv"))
-  method_metadata_path <- file.path("results", x, "meta_indicators.RDS")
+  parameters <- read.csv2(file.path(method_result_dir, "_parameters.csv"))
+  method_metadata_path <- file.path(method_result_dir, "meta_indicators.RDS")
   method_indicators <- if (file.exists(method_metadata_path)) {
     method_metadata <- readRDS(method_metadata_path)
     if (!is.data.frame(method_metadata) || !"code" %in% names(method_metadata)) {
@@ -126,7 +213,7 @@ for (x in method_list) {
     as.character(method_metadata$code)
   } else {
     method_solutions <- read.csv2(
-      file.path("results", x, "_method_solutions.csv")
+      file.path(method_result_dir, "_method_solutions.csv")
     )
     as.character(method_solutions$names)
   }
@@ -150,9 +237,15 @@ for (x in method_list) {
 
   # load data
   
-  sea_countries$temp <- read_fst_array(file = paste0("results/",x,"/sea_countries.fst"))
-  sea_sectors$temp <- read_fst_array(file = paste0("results/",x,"/sea_sectors.fst"))
-  m_countries$temp <- read_fst_array(file = paste0("results/",x,"/m_countries.fst"))
+  sea_countries$temp <- read_fst_array(
+    file = file.path(method_result_dir, "sea_countries.fst")
+  )
+  sea_sectors$temp <- read_fst_array(
+    file = file.path(method_result_dir, "sea_sectors.fst")
+  )
+  m_countries$temp <- read_fst_array(
+    file = file.path(method_result_dir, "m_countries.fst")
+  )
 
   country_indicators <- dimnames(sea_countries$temp)[[2]]
   sector_indicators <- dimnames(sea_sectors$temp)[[2]]
