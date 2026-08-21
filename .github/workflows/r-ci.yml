@@ -22,7 +22,7 @@ jobs:
           r-version: release
           use-public-rspm: true
       - name: Install contract test dependencies
-        shell: Rscript {0}
+        shell: Rscript --vanilla {0}
         run: |
           repository <- Sys.getenv("RSPM", unset = "")
           if (!nzchar(repository)) {
@@ -33,7 +33,7 @@ jobs:
             repos = c(CRAN = repository)
           )
       - name: Parse contract sources
-        shell: Rscript {0}
+        shell: Rscript --vanilla {0}
         run: |
           invisible(lapply(
             c(
@@ -44,7 +44,7 @@ jobs:
             parse
           ))
       - name: Run contract tests
-        shell: Rscript {0}
+        shell: Rscript --vanilla {0}
         run: |
           testthat::test_dir(
             "tests/testthat",
