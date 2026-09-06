@@ -1,298 +1,139 @@
 ### Module: Download
-# Description: download country data; multilateral data; and source code.
+# Dados agregados, dados multilaterais e código-fonte.
+source("utils/download_workbooks.R", encoding = "UTF-8")
+source("utils/download_requests.R", encoding = "UTF-8")
 
-## Global #####
+# The historical bilateral array is loaded once, only when that selector is used.
+wlv_download_multilateral_data <- local({
+  values <- NULL
+  function() {
+    if (is.null(values) && file.exists("data/m_countries.RDS")) {
+      values <<- readRDS("data/m_countries.RDS")
+    }
+    values
+  }
+})
 
-middle_bold_bottom <- paste0("vertical-align: middle;",
-                             "padding-bottom: 15px;",
-                             "padding-right: 10px;",
-                             "font-weight: bold;")
-
-panels_width <- paste0("width: calc(100vw - 40px);")
-
-## UI ####
-
+# Os rótulos ficam associados aos inputs e são traduzidos sem recriar os campos.
 TABPANEL <- tabPanel(
   l("tab_name.download"),
-  absolutePanel(
-    top = bar_height,
-    left = 0,
-    right = 0,
-    style = paste0("margin:0px !important;",
-                   "height: calc(100vh - ",bar_height,"px);",
-                   "overflow-y:scroll;",
-                   "padding: 10px;",
-                   "background-color: ",panel_bgcolor,";"),
-    
-    ### Panel for download of aggregated data ####
-    div(
-      style = panels_width,
-      class="panel panel-default",
-      div(class = "panel-heading", l("dl_agg_title") |> strong()),
-      div(
-        class = "panel-body",
-        
-        
-        #### Method Selector ####
-        withTags(
-          table(
-            tr(
-              td(
-                style = middle_bold_bottom,
-                l("dl_select_method.label")
-              ),
-              td(
-                selectizeInput(
-                  "dl_method",
-                  label = NULL,
-                  choices = NULL)
+  value = "download",
+  tags$script(src = "wlv-download.js"),
+  div(class = "wlv-page",
+    div(class = "wlv-download-grid",
+      div(class = "panel panel-default",
+        div(class = "panel-heading", strong(l("dl_agg_title"))),
+        div(class = "panel-body",
+          selectizeInput("dl_method", l("dl_select_method.label"), choices = NULL),
+          conditionalPanel("input.dl_method && input.dl_method !== ''",
+            div(class = "wlv-download-fields",
+              selectizeInput("dl_indicator", l("dl_select_indicator.label"),
+                choices = NULL, options = list(optgroupField = "groups")),
+              selectizeInput("dl_country", l("dl_select_country.label"), choices = NULL),
+              conditionalPanel("input.dl_indicator || input.dl_country",
+                selectizeInput("dl_sector", l("dl_select_sector_country.label"), choices = NULL)
               )
-            )
-          )
-        ),
-        
-        # Only show others selectors if a method is selected
-        conditionalPanel(
-          "input.dl_method != ''",
-          tags$hr(style = "margin-top: 0px !important;"),
-          
-          
-          #### Indicator, country and sector selectors ####
-          withTags(
-            table(
-              ##### Indicator Selector ####
-              tr(
-                td(
-                  style = middle_bold_bottom,
-                  l("dl_select_indicator.label")
-                ),
-                td(
-                  style(HTML("#dl_indicator + div>.selectize-dropdown{width: 500px !important;}")),
-                  selectizeInput(
-                    "dl_indicator",
-                    label = NULL,
-                    choices = NULL,
-                    options = list(
-                      optgroupField = "groups",
-                      render = I("{option: function(item, escape) {
-                      return '<div style=\"padding-left: 3em;text-indent:-1em; color: black;\">' + escape(item.label) +'</div>';}
-                  }"))
-                  )
-                )
-              ),
-              tr(
-                td(
-                  colspan = 2,
-                  style = paste0("vertical-align: middle;",
-                                 "padding-bottom: 15px;",
-                                 "text-align: center;",
-                                 "font-weight: bold;"),
-                  l("dl_select_andor")
-                )
-              ),
-              
-              ##### Country Selector ####
-              tr(
-                td(
-                  style = middle_bold_bottom,
-                  l("dl_select_country.label")
-                ),
-                td(
-                  selectizeInput(
-                    "dl_country",
-                    label = NULL,
-                    choices = NULL
-                  )
-                ),
-                
-                ##### Sector Selector ####
-                td(
-                  style = paste0(middle_bold_bottom,
-                                 "padding-left: 10px;"),
-                  conditionalPanel(
-                    "input.dl_indicator != ''",
-                    l("dl_select_sector_indicator.label") |> strong()),
-                  conditionalPanel(
-                    "input.dl_indicator == '' &
-                      input.dl_country != ''",
-                    l("dl_select_sector_country.label") |> strong())
-                ),
-                td(
-                  conditionalPanel(
-                    "input.dl_indicator != '' |
-                   input.dl_country != ''",
-                    style(HTML("#dl_sector + div>.selectize-dropdown{width: 500px !important;}")),
-                    selectizeInput(
-                      "dl_sector",
-                      label = NULL,
-                      choices = NULL
-                    )
-                  )
-                )
-              )
-            )
-          )
-        ),
-        
-        #### Download button ####
-        uiOutput("dl_download")
-      )
-    ),
-    
-    ### Panel for download of multilateral data ####
-    div(
-      style = panels_width,
-      class="panel panel-default",
-      div(class = "panel-heading", l("dl_ml_title") |> strong()),
-      div(
-        class = "panel-body",
-        
-        #### Method Selector ####
-        withTags(
-          table(
-            tr(
-              td(
-                style = middle_bold_bottom,
-                l("dl_ml_select_method.label")
-              ),
-              td(
-                selectizeInput(
-                  "dl_ml_method",
-                  label = NULL,
-                  choices = NULL)
-              )
-            )
-          )
-        ),
-        
-        # Only show country selector if a method is selected
-        conditionalPanel(
-          "input.dl_ml_method != ''",
-          tags$hr(style = "margin-top: 0px !important;"),
-          
-          #### Country selector ####
-          withTags(
-            table(
-              tr(
-                td(
-                  style = middle_bold_bottom,
-                  l("dl_ml_select_country.label")
-                ),
-                td(
-                  selectizeInput(
-                    "dl_ml_country",
-                    label = NULL,
-                    choices = NULL
-                  )
+            ),
+            p(class = "wlv-download-hint", l("dl_select_andor"))
+          ),
+          uiOutput("dl_download")
+        )
+      ),
+      div(class = "panel panel-default",
+        div(class = "panel-heading", strong(l("dl_ml_title"))),
+        div(class = "panel-body",
+          selectizeInput("dl_ml_method", l("dl_ml_select_method.label"), choices = NULL),
+          conditionalPanel("input.dl_ml_method && input.dl_ml_method !== ''",
+            selectizeInput("dl_ml_country", l("dl_ml_select_country.label"), choices = NULL),
+            conditionalPanel("input.dl_ml_country && input.dl_ml_country !== ''",
+              p(class = "wlv-download-hint", l("dl_ml_select_and")),
+              selectizeInput("dl_ml_partner", l("dl_ml_select_partner.label"), choices = NULL),
+              tags$fieldset(
+                tags$legend(l("dl_ml_select_indicator.label")),
+                div(class = "wlv-download-fields",
+                  selectizeInput("dl_ml_ind_cat", l("dl_ml_ind_cat_placeholder"), choices = NULL),
+                  selectizeInput("dl_ml_ind_scope", l("dl_ml_ind_scope_placeholder"), choices = NULL),
+                  selectizeInput("dl_ml_ind_un", l("dl_ml_ind_un_placeholder"), choices = NULL)
                 )
               )
             )
           ),
-          
-          # Only show other selectors if a country is selected
-          conditionalPanel(
-            "input.dl_ml_country != ''",
-            tags$hr(style = "margin-top: 0px !important;"),
-            
-            #### Partner and Indicator selectors ####
-            withTags(
-              table(
-                tr(
-                  td(
-                    colspan = 2,
-                    style = middle_bold_bottom,
-                    l("dl_ml_select_and")
-                  )
-                ),
-
-                ##### Partner selector ####
-                tr(
-                  td(
-                    style = middle_bold_bottom,
-                    l("dl_ml_select_partner.label")
-                  ),
-                  td(
-                    selectizeInput(
-                      "dl_ml_partner",
-                      label = NULL,
-                      choices = NULL
-                    )
-                  )
-                )
-              )
-            ),
-            
-            ##### Indicator selector ####
-            withTags(
-              table(
-                tr(
-                  td(
-                    style = middle_bold_bottom,
-                    l("dl_ml_select_indicator.label")
-                  ),
-                  td(
-                    style = "padding-right: 5px;",
-                    selectizeInput(
-                      "dl_ml_ind_cat",
-                      label = NULL,
-                      choices = NULL,
-                      width = 250
-                    )
-                  ),
-                  td(
-                    style = "padding-right: 5px;",
-                    selectizeInput(
-                      "dl_ml_ind_scope",
-                      label = NULL,
-                      choices = NULL,
-                      width = 250
-                    )
-                  ),
-                  td(
-                    selectizeInput(
-                      "dl_ml_ind_un",
-                      label = NULL,
-                      choices = NULL,
-                      width = 250
-                    )
-                  )
-                )
-              )
-            )
-          )
-        ),
-        
-        #### Download button ####
-        uiOutput("dl_ml_download")
+          uiOutput("dl_ml_download")
+        )
       )
     ),
-    
-    ### Panel for download of multilateral data ####
-    div(
-      style = panels_width,
-      class="panel panel-default",
-      div(class = "panel-heading", l("dl_source_title") |> strong()),
-      div(
-        class = "panel-body",
-        l("dl_source_portable_msg"),
-        a(href = "https://github.com/rodrigofranklin/wlvdb/archive/refs/heads/master.zip",
-          target="_blank",
-          "[LINK]"),
-        tags$br(),
-        l("dl_source_code_msg"),
-        a(href = "https://github.com/rodrigofranklin/wlvdb",
-          target="_blank",
-          "[LINK]")
+    div(class = "panel panel-default",
+      div(class = "panel-heading", strong(l("dl_source_title"))),
+      div(class = "panel-body",
+        p(a(href = "https://github.com/rodrigofranklin/wlvdb/archive/refs/heads/master.zip",
+          target = "_blank", rel = "noopener noreferrer", l("dl_source_portable_msg"))),
+        p(a(href = "https://github.com/rodrigofranklin/wlvdb",
+          target = "_blank", rel = "noopener noreferrer", l("dl_source_code_msg")))
       )
     )
   )
 )
+modules_ui[[length(modules_ui) + 1L]] <- TABPANEL
 
-modules_ui[[modules_ui |> length() +1]] <- TABPANEL
+# Mantém somente seleções que continuam válidas na nova lista de opções.
+wlv_download_selection <- function(selected, choices) {
+  if (length(selected) == 1L && !is.na(selected) && selected %in% choices) selected else ""
+}
+
+wlv_download_action <- function(href, lang, status_id, download_id = NULL, awaiting = FALSE) {
+  if (!is.null(download_id)) {
+    downloadButton(download_id, lb("app.download", lang))
+  } else if (nzchar(href)) {
+    tags$a(href = href, download = NA, class = "btn btn-primary",
+      icon("download"), lb("app.download", lang))
+  } else {
+    tagList(
+      tags$button(type = "button", class = "btn btn-default", disabled = TRUE,
+        `aria-describedby` = status_id, icon("download"), lb("app.download", lang)),
+      tags$p(id = status_id, class = "wlv-download-hint", role = "status",
+        if (awaiting) {
+          if (identical(lang, "English")) "Complete a valid selection to download the data."
+          else "Complete uma seleção válida para baixar os dados."
+        } else lb("app.no_file", lang))
+    )
+  }
+}
 
 ## Server ####
 
-SERVER <- function(IP, OP, RV, SESSION) {
+download_server <- function(IP, OP, RV, SESSION) {
+  # Option refreshes carry labels and availability, never an old selected value.
+  # Rebuilding a server-side Selectize on language changes emits a transient
+  # empty value and can restore stale selections after the user's next action.
+  updateSelectizeInput <- function(session = SESSION, inputId, label = NULL,
+      choices = NULL, selected = NULL, options = list(), server = FALSE) {
+    if (is.null(choices)) {
+      return(shiny::updateSelectizeInput(session, inputId, label = label,
+        selected = selected, options = options, server = FALSE))
+    }
+    choice_rows <- if (is.data.frame(choices)) {
+      lapply(seq_len(nrow(choices)), function(i) as.list(choices[i, , drop = FALSE]))
+    } else {
+      labels <- names(choices)
+      if (is.null(labels)) labels <- as.character(choices)
+      lapply(seq_along(choices), function(i) list(
+        value = as.character(choices[[i]]), label = labels[[i]]
+      ))
+    }
+    dependencies <- switch(inputId,
+      dl_country = "dl_method", dl_indicator = "dl_method", dl_sector = "dl_method",
+      dl_ml_country = "dl_ml_method", dl_ml_partner = c("dl_ml_method", "dl_ml_country"),
+      dl_ml_ind_cat = "dl_ml_ind_un", dl_ml_ind_un = "dl_ml_ind_cat", character()
+    )
+    expected <- stats::setNames(lapply(dependencies, function(id) {
+      value <- isolate(IP[[id]])
+      if (is.null(value)) "" else value
+    }), dependencies)
+    session$sendCustomMessage("wlv-download-choices", list(
+      id = inputId, choices = choice_rows, label = label,
+      placeholder = options$placeholder, expected = expected
+    ))
+  }
   
   choices_ml_ind <- reactiveValues()
 
@@ -304,20 +145,20 @@ SERVER <- function(IP, OP, RV, SESSION) {
     updateSelectizeInput(
       inputId = "dl_method",
       choices = methods,
+      selected = wlv_download_selection(isolate(IP$dl_method), methods),
       server = FALSE, # needed for placeholder to work...
       options = list(
-        placeholder = lb("dl_select_method.placeholder", lng),
-        onInitialize = I('function() { this.setValue(""); }')
+        placeholder = lb("dl_select_method.placeholder", lng)
       )
     )
 
     updateSelectizeInput(
       inputId = "dl_ml_method",
       choices = methods,
+      selected = wlv_download_selection(isolate(IP$dl_ml_method), methods),
       server = FALSE, # needed for placeholder to work...
       options = list(
-        placeholder = lb("dl_select_method.placeholder", lng),
-        onInitialize = I('function() { this.setValue(""); }')
+        placeholder = lb("dl_select_method.placeholder", lng)
       )
     )
     
@@ -331,9 +172,13 @@ SERVER <- function(IP, OP, RV, SESSION) {
       lb("dl_ml_ind_TR", lng),
       lb("dl_ml_ind_TT", lng))
     choices_ml_ind$cat <- choices_ml_ind_cat
+    if (identical(isolate(IP$dl_ml_ind_un), "MP")) {
+      choices_ml_ind_cat <- choices_ml_ind_cat[!grepl("^T", choices_ml_ind_cat)]
+    }
     updateSelectizeInput(
       inputId = "dl_ml_ind_cat",
-      choices = choices_ml_ind_cat)
+      choices = choices_ml_ind_cat,
+      selected = wlv_download_selection(isolate(IP$dl_ml_ind_cat), choices_ml_ind_cat))
     
     choices_ml_ind_scope <- c("", "T.", "P.", "U.")
     names(choices_ml_ind_scope) <- c(
@@ -344,7 +189,8 @@ SERVER <- function(IP, OP, RV, SESSION) {
     choices_ml_ind$scope <- choices_ml_ind_scope
     updateSelectizeInput(
       inputId = "dl_ml_ind_scope",
-      choices = choices_ml_ind_scope)
+      choices = choices_ml_ind_scope,
+      selected = wlv_download_selection(isolate(IP$dl_ml_ind_scope), choices_ml_ind_scope))
     
     choices_ml_ind_un <- c("", "MP", "DP", "MV")
     names(choices_ml_ind_un) <- c(
@@ -353,14 +199,18 @@ SERVER <- function(IP, OP, RV, SESSION) {
       lb("dl_ml_ind_DP", lng),
       lb("dl_ml_ind_MV", lng))
     choices_ml_ind$un <- choices_ml_ind_un
+    if (any(grepl("^T", isolate(IP$dl_ml_ind_cat)))) {
+      choices_ml_ind_un <- choices_ml_ind_un[choices_ml_ind_un != "MP"]
+    }
     updateSelectizeInput(
       inputId = "dl_ml_ind_un",
-      choices = choices_ml_ind_un)
+      choices = choices_ml_ind_un,
+      selected = wlv_download_selection(isolate(IP$dl_ml_ind_un), choices_ml_ind_un))
     
   })
   
   # Selector's behaviour
-  observeEvent(IP$dl_method,{
+  observeEvent(list(IP$dl_method, IP$l), {
     method <- IP$dl_method
     lng <- IP$l
     selected_country <- IP$dl_country |> isolate()
@@ -368,7 +218,7 @@ SERVER <- function(IP, OP, RV, SESSION) {
     selected_sector <- IP$dl_sector |> isolate()
     
     
-    req(method)
+    req(method, method %in% dimnames(sea_countries)[[1L]])
 
     temp_data <- sea_countries[method,,,, drop = FALSE]
 
@@ -382,10 +232,9 @@ SERVER <- function(IP, OP, RV, SESSION) {
       inputId = "dl_country",
       choices = countries,
       server = FALSE, # needed for placeholder to work...
-      selected = selected_country,
+      selected = wlv_download_selection(selected_country, countries),
       options = list(
-        placeholder = lb("dl_select_country.placeholder", lng),
-        onInitialize = I('function() { this.setValue(""); }')
+        placeholder = lb("dl_select_country.placeholder", lng)
       ))
     
     
@@ -398,7 +247,7 @@ SERVER <- function(IP, OP, RV, SESSION) {
       inputId = "dl_indicator",
       choices = indicators,
       server = TRUE,
-      selected = selected_indicator,
+      selected = wlv_download_selection(selected_indicator, indicators$value),
       options = list(
         placeholder = lb("co_select_indicator.placeholder", lng)))
     
@@ -410,11 +259,17 @@ SERVER <- function(IP, OP, RV, SESSION) {
       inputId = "dl_sector",
       choices = sectors,
       server = FALSE,
-      selected = selected_sector,
+      selected = wlv_download_selection(selected_sector, sectors),
       options = list(
-        placeholder = lb("dl_select_sector.placeholder", lng),
-        onInitialize = I('function() { this.setValue(""); }')
+        placeholder = lb("dl_select_sector.placeholder", lng)
       ))
+  })
+
+  observe({
+    key <- if (wlv_nonempty_selection(IP$dl_indicator)) {
+      "dl_select_sector_indicator.label"
+    } else "dl_select_sector_country.label"
+    updateSelectizeInput(inputId = "dl_sector", label = lb(key, IP$l))
   })
   
   observeEvent(IP$dl_indicator, {
@@ -507,14 +362,12 @@ SERVER <- function(IP, OP, RV, SESSION) {
       )
   })
 
-  observeEvent(IP$dl_ml_method,{
+  observeEvent(list(IP$dl_ml_method, IP$l), {
     method <- IP$dl_ml_method
     lng <- IP$l
-    choices <- choices_ml_ind
     selected_country <- IP$dl_ml_country |> isolate()
-    selected_partner <- IP$dl_ml_partner |> isolate()
     
-    req(method)
+    req(method, method %in% names(sea_sectors))
     
     countries <- sea_sectors[[method]][1,1,1,] |> names()
     names(countries) <- lb(paste0("ISO3.",countries), lng)
@@ -524,39 +377,29 @@ SERVER <- function(IP, OP, RV, SESSION) {
       inputId = "dl_ml_country",
       choices = countries,
       server = FALSE, # needed for placeholder to work...
-      selected = selected_country,
+      selected = wlv_download_selection(selected_country, countries),
       options = list(
-        placeholder = lb("dl_select_country.placeholder", lng),
-        onInitialize = I('function() { this.setValue(""); }')
-      ))
-    
-    updateSelectizeInput(
-      inputId = "dl_ml_partner",
-      choices = countries,
-      server = FALSE,
-      selected = selected_partner,
-      options = list(
-        placeholder = lb("dl_select_country.placeholder", lng),
-        onInitialize = I('function() { this.setValue(""); }')
+        placeholder = lb("dl_select_country.placeholder", lng)
       ))
   })
   
-  observeEvent(IP$dl_ml_country, {
+  observeEvent(list(IP$dl_ml_country, IP$dl_ml_method, IP$l), {
     country <- IP$dl_ml_country
     partner <- IP$dl_ml_partner |> isolate()
     method <- IP$dl_ml_method |> isolate()
     lng <- IP$l
-    req(method)
+    req(method, method %in% names(sea_sectors))
     
     partners <- sea_sectors[[method]][1,1,1,] |> names()
     names(partners) <- lb(paste0("ISO3.",partners), lng)
     partners <- partners[order(names(partners))]
-    partners <- partners[partners!=country]
+    partners <- partners[!partners %in% country]
     
     updateSelectizeInput(
       inputId = "dl_ml_partner",
       choices = partners,
-      selected = partner)
+      selected = wlv_download_selection(partner, partners),
+      options = list(placeholder = lb("dl_select_country.placeholder", lng)))
   })
   
   observeEvent(IP$dl_ml_partner, {
@@ -599,10 +442,11 @@ SERVER <- function(IP, OP, RV, SESSION) {
         choices = choices_ml_ind$un,
         selected = selected)
     } else {
+      allowed_units <- choices_ml_ind$un[choices_ml_ind$un != "MP"]
       updateSelectizeInput(
         inputId = "dl_ml_ind_un",
-        choices = choices_ml_ind$un[choices_ml_ind$un != "MP"],
-        selected = selected)
+        choices = allowed_units,
+        selected = wlv_download_selection(selected, allowed_units))
     }
   })
   
@@ -636,90 +480,50 @@ SERVER <- function(IP, OP, RV, SESSION) {
         choices = choices_ml_ind$cat,
         selected = selected)
     } else {
+      allowed_categories <- choices_ml_ind$cat[!grepl("^T", choices_ml_ind$cat)]
       updateSelectizeInput(
         inputId = "dl_ml_ind_cat",
-        choices = choices_ml_ind$cat[-grep("T..", choices_ml_ind$cat)],
-        selected = selected)
+        choices = allowed_categories,
+        selected = wlv_download_selection(selected, allowed_categories))
     }
     
   })
   
-  # Download button - aggragated
-  OP$dl_download <- renderUI({
-    method <- IP$dl_method
-    indicator <- IP$dl_indicator
-    country <- IP$dl_country
-    sector <- IP$dl_sector
-
-    sector_countries <- if (
-      wlv_nonempty_selection(method) && method %in% names(sea_sectors)
-    ) {
-      wlv_sector_country_codes(sea_sectors, method)
-    } else {
-      character()
-    }
-    file_name <- wlv_aggregated_download_href(
-      method,
-      country,
-      indicator,
-      sector,
-      sector_countries
-    )
-    if (!wlv_download_href_available(file_name, download_directory)) {
-      file_name <- ""
-    }
-    disable <- if (nzchar(file_name)) NULL else TRUE
-    
-    tags$a(href = if (nzchar(file_name)) file_name else NULL,
-           download = NA,
-           tags$button(
-             class = "btn btn-default",
-             disabled = disable,
-             icon("download"),
-             "Download"))
+  aggregate_request <- reactive({
+    wlv_aggregated_download_request(IP$dl_method, IP$dl_country, IP$dl_indicator,
+      IP$dl_sector, countries = sea_countries, sectors = sea_sectors,
+      metadata = meta_indicators, methods = meta_methods, language = language_file,
+      contracts = meta_indicator_contracts)
   })
-
-  # Download button - multilateral
+  multilateral_request <- reactive({
+    req(wlv_nonempty_selection(IP$dl_ml_method), wlv_nonempty_selection(IP$dl_ml_country))
+    wlv_multilateral_download_request(IP$dl_ml_method, IP$dl_ml_country,
+      IP$dl_ml_partner, IP$dl_ml_ind_cat, IP$dl_ml_ind_scope, IP$dl_ml_ind_un,
+      values = wlv_download_multilateral_data(), methods = meta_methods, language = language_file)
+  })
+  OP$dl_file <- downloadHandler(
+    filename = function() { req(aggregate_request()); aggregate_request()$filename },
+    content = function(file) wlv_write_download_request(aggregate_request(), file),
+    contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+  OP$dl_ml_file <- downloadHandler(
+    filename = function() { req(multilateral_request()); multilateral_request()$filename },
+    content = function(file) wlv_write_download_request(multilateral_request(), file),
+    contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+  OP$dl_download <- renderUI({
+    available <- !is.null(aggregate_request())
+    awaiting <- !wlv_nonempty_selection(IP$dl_method) ||
+      !(wlv_nonempty_selection(IP$dl_country) || wlv_nonempty_selection(IP$dl_indicator))
+    wlv_download_action("", IP$l, "dl-download-status",
+      download_id = if (available) "dl_file" else NULL, awaiting = awaiting)
+  })
   OP$dl_ml_download <- renderUI({
-    method <- IP$dl_ml_method
-    country <- IP$dl_ml_country
-    partner <- IP$dl_ml_partner
-    ind_cat <- IP$dl_ml_ind_cat
-    ind_scope <- IP$dl_ml_ind_scope
-    ind_un <- IP$dl_ml_ind_un
-    
-    file_name <- ""
-    disable <- TRUE
-    
-    if (
-      wlv_nonempty_selection(country) &&
-        wlv_nonempty_selection(partner) &&
-        wlv_nonempty_selection(method)
-    ) {
-      file_name <- paste0("download/",country,".",partner,".",method,".xlsx")
-    } else if (
-      wlv_nonempty_selection(country) &&
-        wlv_nonempty_selection(ind_cat) &&
-        wlv_nonempty_selection(ind_scope) &&
-        wlv_nonempty_selection(ind_un) &&
-        wlv_nonempty_selection(method)
-    ) {
-      file_name <- paste0("download/",country,".",ind_cat,ind_scope,ind_un,".",
-                          method,".xlsx")
-    }
-    if (!wlv_download_href_available(file_name, download_directory)) {
-      file_name <- ""
-    }
-    disable <- if (nzchar(file_name)) NULL else TRUE
-    
-    tags$a(href = if (nzchar(file_name)) file_name else NULL,
-           download = NA,
-           tags$button(
-             class = "btn btn-default",
-             disabled = disable,
-             icon("download"),
-             "Download"))
+    awaiting <- !(wlv_nonempty_selection(IP$dl_ml_method) && wlv_nonempty_selection(IP$dl_ml_country) &&
+      (wlv_nonempty_selection(IP$dl_ml_partner) || (wlv_nonempty_selection(IP$dl_ml_ind_cat) &&
+        wlv_nonempty_selection(IP$dl_ml_ind_scope) && wlv_nonempty_selection(IP$dl_ml_ind_un))))
+    available <- !awaiting && !is.null(multilateral_request())
+    wlv_download_action("", IP$l, "dl-ml-download-status",
+      download_id = if (available) "dl_ml_file" else NULL, awaiting = awaiting)
   })
 }
 
-modules_server[[modules_server |> length() +1]] <- SERVER
+modules_server[[length(modules_server) + 1L]] <- download_server

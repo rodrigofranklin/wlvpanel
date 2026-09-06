@@ -16,7 +16,7 @@ load_download_export_functions <- function() {
   }
   environment <- new.env(parent = parent)
   sys.source(wlvpanel_file("utils", "display_contracts.R"), envir = environment)
-  expressions <- parse(wlvpanel_file("utils", "prepare_downloadable_files.R"))
+  expressions <- parse(wlvpanel_file("utils", "download_workbooks.R"))
   functions <- c(
     "ind_type",
     "wlv_country_axis_names",

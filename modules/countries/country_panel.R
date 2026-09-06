@@ -28,359 +28,335 @@ tickf2s <- function(ind, method, lng) {
 }
 
 # Panel for graphics and "loading..."
-graph_panel <- function (graph, graph_width, indicator) {
-  tags$table(
-    style = "display: inline-table;",
-    tags$tr(
-      tags$td(
-        valign = "text-top",
-        style = paste0("width: ", graph_width-20,"px;",
-                       "height: 40px !important;",
-                       "padding-left: 5px;"),
-        actionLink(
-          inputId = paste0(indicator,"_title"),
-          label = l(indicator),
-          style = paste0("font-size: 14px;",
-                         "font-weight: bold;",
-                         "color: gray;")),
+graph_panel <- function(graph, graph_width, indicator, lng = default_language) {
+  div(
+    class = "wlv-country-chart panel panel-default",
+    div(
+      class = "wlv-country-chart-heading",
+      actionLink(
+        inputId = paste0(indicator, "_title"),
+        label = lb(indicator, lng),
+        class = "wlv-country-chart-select",
+        title = wlv_tr("Ver composição por setor", "View sector breakdown", lng)
       ),
-      tags$td(
-        valign = "top",
-        style = paste0("text-align: right;",
-                       "padding-right: 3px;"),
-        actionLink(
-          inputId = paste0(indicator,"_info"),
-          label = NULL,
-          style = paste0("top: 3px;",
-                         "right: 3px",
-                         "font-size:14px;",
-                         "color: gray;"),
-          icon = icon("info-circle"))
+      actionLink(
+        inputId = paste0(indicator, "_info"),
+        label = tags$span(
+          class = "sr-only",
+          wlv_tr("Informações: ", "Information: ", lng),
+          lb(indicator, lng)
+        ),
+        icon = icon("info-circle"),
+        class = "wlv-country-chart-info"
       )
     ),
-    tags$tr(
-      tags$td(
-        colspan = 2,
-        width = graph_width,
-        graph
-      )
-    )
-  ) |> div(
-    width = graph_width,
-    class = "panel panel-default",
-    style = paste0("display: inline-block;",
-                   "height: 264px;",
-                   "margin-right: 15px;"))
+    graph
+  )
 }
+
+# Labels describe display units only; numeric conversion stays in the contract.
+country_axis_unit_label <- function(unit, lng = default_language) wlv_unit_label(unit, lng)
 
 
 
 ### UI ####
 
-## Country Panel ####
-country_panel <- conditionalPanel(
-  "output.show_country_panel != ''",
-  
-  tags$style(type = "text/css", ".profile_table {
-      line-height: 0.5 !important;
-      border-style: none !important;
-      border-color: red !important;
-    }"),
-  
-  # Close button
-  actionButton(
-    inputId = "close_country_panel",
-    label = NULL,
-    icon = icon("times"),
-    style = paste0("border-radius: 50%;",
-                  "color: white;",
-                  "font-size: 12px;",
-                  "position: absolute;",
-                  "top: ", bar_height + 15,"px;",
-                  "left: calc(50vw - 17px);",
-                  "z-index: 501;",
-                  "background-color:", item_color,";")),
-  
-  # The panel, properly
-  absolutePanel(
-    style = paste0("z-index:500;",
-                   "padding: 0px 10px 10px 10px;",
-                   "top:",bar_height+32,"px;",
-                   "height: calc(100vh - ", bar_height+32,"px);",
-                   "left: 10px;",
-                   "width: calc(100vw - 20px);",
-                   "background-color:  ", panel_bgcolor,";",
-                   "border: solid;",
-                   "border-width: 1px;",
-                   "border-top-right-radius: 3px;",
-                   "border-top-left-radius: 3px;",
-                   "border-color: rgb(221, 221, 221);"),
-    withTags(
-      table(
-        width = "100%",
-        tr(
-          td(
-            width = "100%",
-            valign = "text-top",
-            style = paste0("font-size: 33px;"),
-            textOutput("co_panel_title", inline = TRUE)
-          ),
-          td(
-            style = "padding: 10px 0px 0px 0px;",
-            sliderInput(
-              "co_panel_year",
-              label = NULL,
-              min = 1995, 
-              max = 2016, 
-              value = default_year, 
-              ticks = F, 
-              animate = F, 
-              sep = "")
-          )
+# This is an ordinary page: country selection is independent of the map, and
+# navigation, charts, comparisons and sector tables stay in the document flow.
+country_panel <- tags$main(
+  id = "wlv-country-page",
+  class = "wlv-country-page",
+  `aria-labelledby` = "country_page_title",
+  tags$link(rel = "stylesheet", href = "wlv-country.css"),
+  div(
+    class = "wlv-country-page-heading",
+    div(
+      tags$h1(id = "country_page_title", l("tab_name.country")),
+      tags$p(textOutput("country_page_description", inline = TRUE))
+    ),
+    div(
+      class = "wlv-country-selector",
+      selectizeInput("co_select_country", label = "País", choices = NULL,
+                     width = "100%", options = list(allowEmptyOption = TRUE))
+    )
+  ),
+  conditionalPanel(
+    "output.show_country_panel == ''",
+    div(class = "wlv-country-empty", role = "status",
+        textOutput("country_page_empty", inline = TRUE))
+  ),
+  conditionalPanel(
+    "output.show_country_panel != ''",
+    id = "wlv-country-content",
+  div(
+    id = "wlv-country-detail",
+    class = "wlv-country-detail",
+    role = "region",
+    `aria-labelledby` = "co_panel_title",
+    tabindex = "-1",
+    div(
+      class = "wlv-country-header",
+      div(
+        class = "wlv-country-heading",
+        tags$h2(textOutput("co_panel_title", inline = TRUE)),
+        tags$a(
+          href = "#wlv-country-sectors", class = "wlv-country-sector-jump",
+          textOutput("co_panel_sector_jump", inline = TRUE)
+        )
+      ),
+      div(
+        class = "wlv-country-year",
+        sliderInput(
+          "co_panel_year", label = textOutput("co_panel_year_label", inline = TRUE),
+          min = 1995, max = 2016, value = default_year,
+          ticks = FALSE, animate = FALSE, sep = ""
+        )
+      )
+    ),
+    div(
+      class = "wlv-country-body",
+      div(
+        class = "wlv-country-overview",
+        div(
+          class = "wlv-country-profile panel panel-default",
+          div(class = "panel-heading", tags$h3(textOutput("co_panel_profile_label", inline = TRUE))),
+          div(class = "wlv-country-table-scroll", dataTableOutput("co_panel_profile"))
         ),
-        tr(
-          td(
-            colspan = 2,
-            absolutePanel(
-              width = "calc(100vw - 32px)",
-              height = paste0("calc(100vh - ", bar_height+99,"px)"),
-              style = paste0("overflow-y:scroll;"),
-              table(
-                width = "100%",
-                tr(
-                  td(
-                    style = "padding: 0px 18px 0px 0px;",
-                    colspan = 2,
-                    # Profile table
-                    div(
-                      style = "width: 100%; border-radius: 0px !important;",
-                      class = "panel panel-default",
-                      dataTableOutput("co_panel_profile") |>
-                        div(
-                          class = "panel-body",
-                          style = paste0("background: white;",
-                                         "padding: 0px;")))
-                  ),
-                  td(
-                    width = 350,
-                    valign = "top",
-                    style = paste0("padding-right: 10px !important;"),
-                    # Download area
-                    div(
-                      class = "panel panel-default",
-                      tags$table(
-                        tags$tr(
-                          tags$td(
-                            icon("flag", 
-                                 style = "font-size: 28px; color: gray"),
-                            rowspan = 2),
-                          tags$td(
-                            style = paste0("padding: 0px 15px;",
-                                           "font-weight: bold;",
-                                           "font-size: 16px"),
-                            l("co_panel_download_country"),
-                            width = "100%")
-                        ),
-                        tags$tr(
-                          tags$td(
-                            uiOutput("country_link"),
-                            style = "text-align: center;font-size: 12px")
-                        )
-                      ) |> 
-                        div(class = "panel-heading",
-                            style = paste0("background: white;",
-                                           "font-size: 16px;",
-                                           "padding: 5px 15px !important;")),
-                      tags$table(
-                        tags$tr(
-                          tags$td(
-                            icon("chart-pie", 
-                                 style = "font-size: 28px; color: gray"),
-                            rowspan = 2
-                          ),
-                          tags$td(
-                            style = paste0("padding: 0px 15px;",
-                                           "font-weight: bold;",
-                                           "font-size: 16px"),
-                            l("co_panel_download_sector"),
-                            width = "100%")
-                        ),
-                        tags$tr(
-                          tags$td(
-                            uiOutput("sector_data_link"),
-                            style = "text-align: center;font-size: 12px"))
-                      )|>
-                        div(class = "panel-heading",
-                            style = paste0("background: white;",
-                                           "font-size: 16px;",
-                                           "padding: 5px 15px !important;"))
-                    ) 
-                  )
-                ),
-                tr(
-                  td(
-                    # Graphs
-                    width = 790,
-                    lapply(groups, \(z){
-                      tagList(
-                        # Group title
-                        l(paste0("group.",z)) |> 
-                          div(style = paste0("font-size: 18px;",
-                                              "font-weight: bold;")),
-                        tags$hr(style = paste0("margin-top: 0px;",
-                                               "margin-right: 18px;",
-                                               "text-align: left;")),
-                        conditionalPanel(
-                          'output["gdp.s.mv_plot"] == "1"',
-                          "TESTE"
-                        ),
-                        lapply(meta_indicators$value[meta_indicators$groups==z], \(i){
-                          # Indicator graphs
-                          uiOutput(paste0(i,"_plot"),
-                                   inline = TRUE,
-                                   container = tags$span)
-                        }),
-                        tags$br(),tags$br()
-                      )
-                    })
-                  ),
-                  td(
-                    # Sectorial data table
-                    colspan = 2,
-                    valign="top",
-                    style = "padding-right: 10px;",
-                    div(
-                      style ="position: sticky; top: 0px;",
-                      div(
-                        class = "panel panel-default",
-                        span(
-                          l("co_panel_sector_title"),"-",
-                          textOutput("co_panel_sector_indicator", inline = TRUE),
-                          "-", 
-                          textOutput("co_panel_year", inline = TRUE)) |>
-                          div(class = "panel-heading",
-                              style = paste0("text-align: center;",
-                                             "background: white;",
-                                             "font-size:16px;",
-                                             "font-weight: bold;",
-                                             "padding: 3px 5px;")),
-                        uiOutput("co_sector_panel",
-                                 inline = FALSE,
-                                 container = div,
-                                 class = "panel-body",
-                                 style = paste0("padding: 0px;",
-                                                "height: calc(100vh - 220px);"))
-                      )
-                    )
-                  )
-                )
+        div(
+          class = "wlv-country-downloads panel panel-default",
+          div(
+            class = "wlv-country-download-block",
+            icon("flag"),
+            div(tags$h3(l("co_panel_download_country")), uiOutput("country_link"))
+          ),
+          div(
+            class = "wlv-country-download-block",
+            icon("chart-pie"),
+            div(tags$h3(l("co_panel_download_sector")), uiOutput("sector_data_link"))
+          )
+        )
+      ),
+      div(
+        class = "wlv-country-analysis",
+        div(
+          class = "wlv-country-series",
+          lapply(groups, function(group) {
+            tags$section(
+              class = "wlv-country-group",
+              tags$h3(l(paste0("group.", group))),
+              div(
+                class = "wlv-country-chart-grid",
+                lapply(meta_indicators$value[meta_indicators$groups == group], function(indicator) {
+                  uiOutput(paste0(indicator, "_plot"), class = "wlv-country-chart-slot")
+                })
               )
             )
+          })
+        ),
+        tags$section(
+          id = "wlv-country-sectors",
+          class = "wlv-country-sectors panel panel-default",
+          tabindex = "-1",
+          div(
+            class = "panel-heading",
+            tags$h3(l("co_panel_sector_title")),
+            div(
+              class = "wlv-country-sector-subtitle",
+              textOutput("co_panel_sector_indicator", inline = TRUE),
+              " · ", textOutput("co_panel_year_text", inline = TRUE)
+            )
+          ),
+          div(
+            class = "panel-body",
+            selectInput(
+              "co_panel_sector_select",
+              label = textOutput("co_panel_sector_select_label", inline = TRUE),
+              choices = character(), width = "100%"
+            ),
+            uiOutput("co_sector_panel", class = "wlv-country-sector-tabs")
           )
         )
       )
     )
-  )
+  )),
+  tags$script(HTML("
+    $(function () {
+      function visible(element) { return !!element && element.getClientRects().length > 0; }
+      function showSectors(event) {
+        event.preventDefault();
+        var sector = document.getElementById('wlv-country-sectors');
+        sector.scrollIntoView({behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'});
+        sector.focus({preventScroll: true});
+      }
+      $(document).on('click', '.wlv-country-sector-jump', showSectors);
+      $(document).on('click', '.wlv-country-chart-select', function (event) {
+        if (window.matchMedia('(max-width: 900px)').matches) showSectors(event);
+      });
+      $(document).on('keydown.wlvCountry', function (event) {
+        var info = document.getElementById('wlv-country-info');
+        if (event.key === 'Escape' && !event.isDefaultPrevented()) {
+          if (visible(info)) document.getElementById('info_close_button').click();
+        }
+        if (event.key === 'Tab' && visible(info)) {
+          var focusable = Array.from(info.querySelectorAll('a[href],button,input,select,textarea,[tabindex]'))
+            .filter(function (item) { return item.tabIndex >= 0 && !item.disabled && visible(item); });
+          var first = focusable[0], last = focusable[focusable.length - 1];
+          if (event.shiftKey && (document.activeElement === first || !info.contains(document.activeElement))) {
+            event.preventDefault(); last.focus();
+          } else if (!event.shiftKey && (document.activeElement === last || !info.contains(document.activeElement))) {
+            event.preventDefault(); first.focus();
+          }
+        }
+      });
+      var info = document.getElementById('wlv-country-info-overlay');
+      var infoFocus = null;
+      var infoWasVisible = visible(info);
+      if (info) new MutationObserver(function () {
+        var infoIsVisible = visible(info);
+        if (infoIsVisible === infoWasVisible) return;
+        infoWasVisible = infoIsVisible;
+        if (infoIsVisible) {
+          infoFocus = document.activeElement;
+          requestAnimationFrame(function () { document.getElementById('info_close_button').focus(); });
+        } else if (infoFocus && visible(infoFocus)) infoFocus.focus({preventScroll: true});
+      }).observe(info, {attributes: true, attributeFilter: ['style', 'class', 'hidden']});
+    });
+  "))
 )
 
-## Indicator_info_panel ####
 co_info_panel <- conditionalPanel(
-  "output.show_info_panel !=0",
-  
-  absolutePanel(
-    id = "info_background",
-    style = paste0("position: fixed !important;",
-                   "top: ", bar_height,"px;",
-                   "left: 0px;",
-                   "right: 0px;",
-                   "bottom: 0px;",
-                   "background-color: ", bg_color, ";",
-                   "opacity: 0.7;",
-                   "text-align: center;",
-                   "z-index: 1000;")),
-  
-  absolutePanel(
-    top = "calc(50vh - 30vh)",
-    left = "calc(50vw - 30vw)",
-    width = "60vw",
-    class="panel panel-default",
-    style = "z-index: 1000;",
-    div(class = "panel-heading",
-        textOutput("co_info_indicator") |> tags$strong(),
-        actionLink(
-          "info_close_button",
-          label = NULL,
-          top = 5,
-          right = 5,
-          style = paste0("position: absolute;",
-                         "top: 5px;",
-                         "right: 10px;",
-                         "padding: 0px;",
-                         "font-size: 14px;",
-                         "color: gray;"),
-          icon = icon("times")
-        )
+  "output.show_info_panel != 0",
+  id = "wlv-country-info-overlay",
+  class = "wlv-country-info-overlay",
+  div(
+    id = "wlv-country-info",
+    class = "wlv-country-info panel panel-default",
+    role = "dialog",
+    `aria-modal` = "true",
+    `aria-labelledby` = "co_info_indicator",
+    div(
+      class = "panel-heading",
+      tags$h3(textOutput("co_info_indicator", inline = TRUE)),
+      actionButton(
+        "info_close_button",
+        label = tags$span(class = "sr-only", textOutput("co_info_close_label", inline = TRUE)),
+        icon = icon("times"), class = "wlv-country-close"
+      )
     ),
-    
-    div(class = "panel-body",
-        uiOutput("co_info_text"))
+    div(class = "panel-body", uiOutput("co_info_text"))
   )
 )
-
 ### Server ####
 
 country_panel_server <-  function(IP, OP, RV, SESSION) {
+  OP$country_page_description <- renderText(wlv_tr(
+    "Explore o perfil, a evolução dos indicadores e a composição por setor de um país.",
+    "Explore a country's profile, indicator trends and sector breakdown.", IP$l
+  ))
+  OP$country_page_empty <- renderText(wlv_tr(
+    "Selecione um país para consultar seus indicadores e comparar as bases disponíveis.",
+    "Select a country to explore its indicators and compare the available databases.", IP$l
+  ))
+  OP$co_panel_sector_jump <- renderText(wlv_tr("Ir para os setores", "Go to sectors", IP$l))
+  OP$co_panel_year_label <- renderText(wlv_tr("Ano de referência", "Reference year", IP$l))
+  OP$co_panel_profile_label <- renderText(wlv_tr("Perfil do país", "Country profile", IP$l))
+  OP$co_panel_sector_select_label <- renderText(wlv_tr("Indicador por setor", "Indicator by sector", IP$l))
+  OP$co_info_close_label <- renderText(wlv_tr("Fechar informações", "Close information", IP$l))
   
-  ## Open/close system for country_panel ####
-  show_country_panel <- reactiveVal("")
-  co_panel_sector_indicator <- reactiveVal("")
-  co_panel_year <- reactiveVal("")
+  ## Country controls are independent of map filters and its drawing lifecycle.
+  country_availability <- reactive({
+    methods <- intersect(RV$bases(), dimnames(sea_countries)[[1L]])
+    req(length(methods))
+    data <- sea_countries[methods, , , , drop = FALSE]
+    countries <- dimnames(data)[[4L]][apply(data, 4L, function(x) any(!is.na(x)))]
+    years <- as.numeric(dimnames(data)[[2L]][apply(data, 2L, function(x) any(!is.na(x)))])
+    req(length(countries), length(years))
+    list(countries = countries, years = years)
+  })
+  observe({
+    countries <- country_availability()$countries
+    current <- isolate(IP$co_select_country)
+    selected <- if (is.null(current) || !length(current)) {
+      if ("BRA" %in% countries) "BRA" else countries[[1L]]
+    } else if (identical(current, "") || current %in% countries) {
+      current
+    } else {
+      ""
+    }
+    labels <- lb(paste0("ISO3.", countries), IP$l)
+    choices <- stats::setNames(countries, labels)
+    choices <- choices[order(labels)]
+    updateSelectizeInput(
+      SESSION, "co_select_country", label = wlv_tr("País", "Country", IP$l),
+      choices = c(stats::setNames("", ""), choices), selected = selected,
+      server = FALSE,
+      options = list(placeholder = lb("co_select_country.placeholder", IP$l))
+    )
+  })
+  show_country_panel <- reactive({
+    country <- IP$co_select_country
+    if (wlv_nonempty_selection(country) && country %in% country_availability()$countries) country else ""
+  })
+  co_panel_sector_indicator <- reactiveVal(default_indicator)
+  co_panel_year <- reactiveVal(default_year)
   OP$show_country_panel <- renderText(show_country_panel())
   outputOptions(OP,"show_country_panel", suspendWhenHidden = FALSE)
-  observeEvent(IP$co_select_country,{
-    show_country_panel(IP$co_select_country)
-    co_panel_sector_indicator(IP$co_select_indicator)
-    co_panel_year(IP$co_select_year)
-  })
-
-  observeEvent(IP$close_country_panel, 
-               updateSelectizeInput(inputId = "co_select_country", selected = ""))
   
   ## Change input controls accordingly bases selected in setup panel ####
   observe({
-    year_max <- RV$yearmax()
-    year_min <- RV$yearmin()
-    year <- co_panel_year()
-    if (IP$co_panel_year |> isolate() > year_max) {
-      year <- year_max
-    } else if (IP$co_panel_year |> isolate() < year_min) {
-      year <- year_min
-    }
+    year_max <- max(country_availability()$years)
+    year_min <- min(country_availability()$years)
+    req(length(year_min) == 1L, length(year_max) == 1L)
+    year <- suppressWarnings(as.numeric(co_panel_year()))
+    if (length(year) != 1L || !is.finite(year)) year <- default_year
+    year <- max(year_min, min(year_max, year))
     updateSliderInput(
       inputId = "co_panel_year",
       max = year_max,
       min = year_min,
       value = year)
   })
+  observeEvent(IP$co_panel_year, co_panel_year(IP$co_panel_year))
+
+  observe({
+    methods <- RV$bases()
+    indicators <- meta_indicators$value[vapply(
+      meta_indicators$value,
+      function(indicator) length(wlv_methods_with_indicator(
+        method_indicator_availability, methods, indicator
+      )) > 0L,
+      logical(1L)
+    )]
+    selected <- co_panel_sector_indicator()
+    if (!length(selected) || !selected %in% indicators) {
+      selected <- if (default_indicator %in% indicators) default_indicator else indicators[1L]
+      if (length(selected) && !is.na(selected)) co_panel_sector_indicator(selected)
+    }
+    updateSelectInput(
+      SESSION, "co_panel_sector_select",
+      choices = stats::setNames(indicators, lb(indicators, IP$l)),
+      selected = selected
+    )
+  })
+  observeEvent(IP$co_panel_sector_select, {
+    if (wlv_nonempty_selection(IP$co_panel_sector_select)) {
+      co_panel_sector_indicator(IP$co_panel_sector_select)
+    }
+  })
   
   ## Graph panel ####
   # create uiOutput with graphs for all indicators
   lapply(meta_indicators$value, \(indicator) {
     OP[[paste0(indicator,"_plot")]] <- renderUI({
-      # reactive data
-      selected_methods <- RV$bases() |> isolate()
-      year_max <- RV$yearmax() |> isolate()
-      year_min <- RV$yearmin() |> isolate()
-      lng <- IP$l |> isolate()
       country <- IP$co_select_country
+      # An empty selection preserves hidden widgets until a country is chosen.
+      req(wlv_nonempty_selection(country), cancelOutput = TRUE)
+      # reactive data
+      selected_methods <- RV$bases()
+      year_max <- max(country_availability()$years)
+      year_min <- min(country_availability()$years)
+      lng <- IP$l
       graph_width <- 375
-
-      # loading...
-      graph <- div(
-        style = "height: 220px; text-align: center; padding: 80px;",
-        img(src = "/spinner.gif"))
-      if (country == "") 
-        return(graph_panel(graph, graph_width, indicator))
 
       methods <- wlv_methods_with_indicator(
         method_indicator_availability,
@@ -414,11 +390,11 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
             "height: 220px; margin: 0px; padding: 55px 15px;",
             "text-align: center;"
           ),
-          tags$strong("Incompatible display units"),
+          tags$strong(wlv_tr("Unidades de apresentação incompatíveis", "Incompatible display units", lng)),
           tags$br(),
           conditionMessage(comparable_unit)
         )
-        return(graph_panel(graph, graph_width, indicator))
+        return(graph_panel(graph, graph_width, indicator, lng))
       }
 
       data <- matrix(
@@ -440,18 +416,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
       if (!any(!is.na(data))) return()
       
       # labels for axis x
-      if((length(years) %% 2) != 0) {
-        half <- (length(years)+1)/2
-        break_years <- c(year_min,
-                         years[half],
-                         year_max)
-      } else {
-        half <- (length(years))/2
-        break_years <- c(year_min,
-                         years[half-1],
-                         years[half+2],
-                         year_max)
-      }
+      break_years <- unique(years[round(seq(1, length(years), length.out = min(4L, length(years))))])
       
       # Initialize graph area
       axis_format <- tickf2s(indicator, methods[[1L]], lng)
@@ -460,14 +425,14 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
         mode = "lines+markers",
         marker = list(size = 5, line = list(color = "white", width = 2.5)),
         hoverinfo = "text+x",
-        width = graph_width-10, height = 220) |>
-        plotly::layout(hovermode = "x",
-               separators = paste0(lb("big.mark", lng),lb("decimal.mark", lng)),
+        height = 220) |>
+        plotly::layout(hovermode = "x", autosize = TRUE,
+               separators = paste0(lb("decimal.mark", lng), lb("big.mark", lng)),
                xaxis = list(title = "",
                             showgrid = FALSE,
                             range = c(year_min, year_max),
                             tickvals = break_years),
-               yaxis = list(title = comparable_unit,
+               yaxis = list(title = country_axis_unit_label(comparable_unit, lng),
                             showgrid = FALSE,
                             zeroline = TRUE,
                             zerolinecolor = "#E6E6E6",
@@ -480,9 +445,10 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
                              y="-0.1", 
                              x="-0.1",
                              font = list(size = "10")),
-               margin = list(l = "0", t = "0", r = "10", pad = "0")) |>
+               margin = list(l = 48, t = 6, r = 12, b = 50, pad = 0)) |>
         config(displaylogo = FALSE,
-               displayModeBar = FALSE)
+               displayModeBar = FALSE,
+               responsive = TRUE)
       
       # add methods trace
       for (x in seq_along(methods)) {
@@ -505,11 +471,14 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
       }
 
       # Indicator Graph Panel
-      graph_panel(graph, graph_width, indicator)
+      graph_panel(graph, graph_width, indicator, lng)
     }) %>%bindCache(
       indicator,
       RV$bases(),
+      min(country_availability()$years),
+      max(country_availability()$years),
       IP$l,
+      lb(c(indicator, "hours", "big.mark", "decimal.mark"), IP$l),
       IP$co_select_country,
       display_contract_version
     )
@@ -530,6 +499,9 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
   OP$show_info_panel <- renderText(show_info_panel())
   outputOptions(OP,"show_info_panel", suspendWhenHidden = FALSE)
   observeEvent(IP$info_close_button, show_info_panel(0))
+  observeEvent(IP$main_nav, {
+    if (!identical(IP$main_nav, "country")) show_info_panel(0)
+  })
 
   # Select indicator
   co_info_indicator <- reactiveVal("")
@@ -574,12 +546,17 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
   # Table
   OP$co_panel_profile <- renderDataTable({
     # Reactive data
-    methods <- RV$bases() |> isolate()
+    methods <- RV$bases()
     country <- IP$co_select_country
     year <- IP$co_panel_year |> as.character()
     lng <- IP$l
     
-    if (country == "") return()
+    # DT cannot render NULL into a hidden container (it reads data.lazyRender
+    # before checking for NULL). Preserve the widget for an empty selection.
+    req(
+      wlv_nonempty_selection(country), length(year) == 1L,
+      year %in% dimnames(sea_countries)[[2L]], cancelOutput = TRUE
+    )
     
     # create table with profile data
     profile_table <- methods |> as.data.frame(row.names = methods)
@@ -620,68 +597,68 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
         columnDefs = list(
           list(className = 'dt-right', targets = c(1:length(methods))),
           list(className = 'dt-left', targets = 0)),
-        paging = FALSE,
         info = FALSE,
         lengthChange = FALSE))
   }, server = FALSE)
   outputOptions(OP,"co_panel_profile", suspendWhenHidden = FALSE)
   
   ## Download links ####
-  OP$country_link <- renderUI({
+  # The same request builder used by Download creates workbooks only on click.
+  # Available observations, rather than a pre-generated archive, enable a link.
+  country_download_requests <- reactive({
     methods <- RV$bases()
     country <- IP$co_select_country
-    country_link <- list()
-    if (!wlv_nonempty_selection(country)) return()
-
-    for (method in methods) {
-      method_country_data <- sea_countries[
-        method, , , country, drop = FALSE
-      ]
-      href <- wlv_aggregated_download_href(method, country = country)
-      if (
-        wlv_has_observations(method_country_data) &&
-          wlv_download_href_available(href, download_directory)
-      ) {
-        country_link <- c(country_link, list(tags$a(method, href = href), "|"))
-      }
-    }
-    if (!length(country_link)) return(NULL)
-    do.call(tagList, country_link[-length(country_link)])
+    if (!wlv_nonempty_selection(country)) return(list())
+    stats::setNames(lapply(methods, function(method) {
+      wlv_aggregated_download_request(
+        method, country = country, countries = sea_countries, sectors = sea_sectors,
+        metadata = meta_indicators, methods = meta_methods, language = language_file,
+        contracts = meta_indicator_contracts
+      )
+    }), methods)
   })
-  outputOptions(OP,"country_link", suspendWhenHidden = FALSE)
-  
-  OP$sector_data_link <- renderUI({
+  sector_download_requests <- reactive({
     methods <- RV$bases()
     country <- IP$co_select_country
     indicator <- co_panel_sector_indicator()
-    sector_data_link <- list()
-    if (
-      !wlv_nonempty_selection(country) ||
-        !wlv_nonempty_selection(indicator)
-    ) return()
-    
-    for (method in methods) {
-      sector_countries <- wlv_sector_country_codes(sea_sectors, method)
-      href <- wlv_aggregated_download_href(
-        method,
-        country = country,
-        indicator = indicator,
-        sector_countries = sector_countries
+    if (!wlv_nonempty_selection(country) || !wlv_nonempty_selection(indicator)) return(list())
+    stats::setNames(lapply(methods, function(method) {
+      wlv_aggregated_download_request(
+        method, country = country, indicator = indicator, countries = sea_countries,
+        sectors = sea_sectors, metadata = meta_indicators, methods = meta_methods,
+        language = language_file, contracts = meta_indicator_contracts
       )
-      if (
-        indicator %in% names(sea_sectors[[method]][1, , 1, 1]) &&
-          wlv_download_href_available(href, download_directory)
-      ) {
-        sector_data_link <- c(
-          sector_data_link,
-          list(tags$a(method, href = href), "|")
-        )
-      }
-    }
-    if (!length(sector_data_link)) return(NULL)
-    do.call(tagList, sector_data_link[-length(sector_data_link)])
+    }), methods)
   })
+  download_links <- function(requests, prefix) {
+    available <- names(requests)[!vapply(requests, is.null, logical(1L))]
+    if (!length(available)) return(tags$span(
+      class = "wlv-country-download-empty",
+      wlv_tr("Nenhum arquivo disponível para esta seleção.", "No file available for this selection.", IP$l)
+    ))
+    links <- unlist(lapply(available, function(method) {
+      list(downloadLink(paste0(prefix, method), method), "|")
+    }), recursive = FALSE)
+    do.call(tagList, links[-length(links)])
+  }
+  OP$country_link <- renderUI(download_links(country_download_requests(), "co_country_file_"))
+  OP$sector_data_link <- renderUI(download_links(sector_download_requests(), "co_sector_file_"))
+  outputOptions(OP,"country_link", suspendWhenHidden = FALSE)
   outputOptions(OP,"sector_data_link", suspendWhenHidden = FALSE)
+  lapply(meta_methods$code, function(method) {
+    country_request <- reactive(country_download_requests()[[method]])
+    sector_request <- reactive(sector_download_requests()[[method]])
+    OP[[paste0("co_country_file_", method)]] <- downloadHandler(
+      filename = function() { req(country_request()); country_request()$filename },
+      content = function(file) wlv_write_download_request(country_request(), file),
+      contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    OP[[paste0("co_sector_file_", method)]] <- downloadHandler(
+      filename = function() { req(sector_request()); sector_request()$filename },
+      content = function(file) wlv_write_download_request(sector_request(), file),
+      contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+  })
   
   ## Sector table ####
   OP$co_panel_sector_indicator <- renderText({
@@ -689,18 +666,19 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
     indicator <- co_panel_sector_indicator()
     lb(indicator,lng)})
   outputOptions(OP, "co_panel_sector_indicator", suspendWhenHidden = FALSE)
-  OP$co_panel_year <- renderText(IP$co_panel_year)
+  OP$co_panel_year_text <- renderText(IP$co_panel_year)
 
   # TabsetPanel
   OP$co_sector_panel <- renderUI({
-    methods <- RV$bases()
     country <- IP$co_select_country
-    if (country == "") 
-      return(div(style = "height: 220px; text-align: center; padding: 80px;",
-        img(src = "/spinner.gif")))
-    do.call("tabsetPanel", lapply(methods, \(method){
-      tabPanel(method,dataTableOutput(paste0("co_panel_sector_",method)))
-    }))
+    req(wlv_nonempty_selection(country), cancelOutput = TRUE)
+    methods <- RV$bases()
+    do.call("tabsetPanel", c(
+      list(id = "co_panel_sector_method"),
+      lapply(methods, function(method) {
+        tabPanel(method, dataTableOutput(paste0("co_panel_sector_", method)), value = method)
+      })
+    ))
   })
 
   # Each TabPanel
@@ -712,6 +690,10 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
         indicator <- co_panel_sector_indicator()
         
         temp_sectors <- sea_sectors[[method]]
+        req(
+          wlv_nonempty_selection(country), wlv_nonempty_selection(indicator),
+          length(year) == 1L, cancelOutput = TRUE
+        )
         if (year %in% names(temp_sectors[,1,1,1]) &
             country %in% names(temp_sectors[1,1,1,]) &
             indicator %in% names(temp_sectors[1,,1,1])) {
@@ -733,14 +715,15 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
         mydt |> as.data.frame() |> datatable(
           rownames = TRUE,
           colnames = c(""),
-          width = "calc(100vw - 850px)",
+          width = "100%",
           fillContainer = FALSE,
           options = list(
             ordering = TRUE,
             class = "compact",
             searching = FALSE,
             paging = FALSE,
-            scrollY= "calc(100vh - 280px)",
+            scrollY = "50vh",
+            scrollCollapse = TRUE,
             info = FALSE,
             columnDefs = list(list(className = 'text-nowrap', targets = 1)),
             lengthChange = FALSE))

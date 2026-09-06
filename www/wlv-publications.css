@@ -1,0 +1,18 @@
+.wlv-publications { max-width: 1180px; margin-inline: auto; }
+.wlv-publications-filters { display: grid; grid-template-columns: 2fr 1.4fr .8fr; gap: 1rem; margin-top: 1.5rem; }
+.wlv-publications-filters .shiny-input-container { width: 100%; min-width: 0; }
+.wlv-publications-coverage { color: #57616b; max-width: 80ch; }
+.wlv-publications-sources, .wlv-publication-links { display: flex; flex-wrap: wrap; gap: .6rem 1.5rem; }
+.wlv-publications-count { margin-block: .7rem 1.1rem; font-weight: 600; }
+.wlv-publications-list { margin: 0; padding: 0; list-style: none; }
+.wlv-publication { padding: 1.4rem 0; border-top: 1px solid #d8e0e5; }
+.wlv-publication h2 { margin: .4rem 0 .65rem; font-size: 20px; line-height: 1.45; }
+.wlv-publication-meta { color: #57616b; font-size: 12px; }
+.wlv-publication-authors { line-height: 1.6; }
+.wlv-publication a { overflow-wrap: anywhere; }
+.wlv-publication a:focus-visible, .wlv-publications-sources a:focus-visible { outline: 3px solid #1b6f89; outline-offset: 3px; }
+@media (max-width: 700px) {
+  .wlv-publications-filters { grid-template-columns: 1fr; gap: .1rem; }
+  .wlv-publication { padding: 1.1rem 0; }
+  .wlv-publication h2 { font-size: 18px; }
+}

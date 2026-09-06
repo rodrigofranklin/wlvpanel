@@ -12,3 +12,8 @@ dados_nuvem
 results
 results_nuvem
 www/download
+
+# Local operational inputs and all disposable campaigns/experiments.
+/data/
+/temp/
+/run_logs/
