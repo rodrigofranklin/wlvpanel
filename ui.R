@@ -1,49 +1,19 @@
-do.call("navbarPage", c(
-  theme = shinytheme(theme),
-  collapsible = TRUE,
-  windowTitle = "World Labour Values Database",
-  title = "WLVD",
-
-  # Common features
-  header = tagList(setup_panel),
-  
-  # Credits and lincense
-  footer = tagList(
-    absolutePanel(
-
-      fixed = TRUE,
-      style = "background-color: rgba(255,255,255,0.6);
-            z-index: 100;
-            pointer-events: none;
-            padding: 0px",
-      bottom = 0,
-      left = 0,
-      width = 300,
-      height = 20,
-      withTags(table(tr(td(
-        img(
-          src = "https://worldlabourvalues.org/images/a_batallar_ideas.png",
-          height = 20,
-          style = "filter: grayscale(80%)"
-        )
-      ),
-      td(
-        style = "font-size: 11px; font-family: Arial, Helvetica, sans-serif;",
-        "World Labour Values Task Force | ",
-        span("©", style = "display: inline-block;
-                        text-align: right;
-                        margin: 0px;
-                        -moz-transform: scaleX(-1);
-                        -o-transform: scaleX(-1);
-                        -webkit-transform: scaleX(-1);
-                        transform: scaleX(-1);
-                        filter: FlipH;
-                        -ms-filter: 'FlipH'"
-        ),
-        " CC-BY-NC SA 4.0"
-  )))))),
-  
-  # Call tabPanels of all modules
-  lapply(modules_ui, \(i) i)
-
-))
+do.call(navbarPage, c(list(
+  id = "main_nav", selected = "map", theme = shinytheme("simplex"),
+  collapsible = TRUE, windowTitle = "WLVD | World Labour Values Database",
+  title = tags$span(class = "wlv-brand", "WLVD", tags$small(l("app.title"))),
+  header = tagList(
+    tags$head(
+      tags$meta(name = "viewport", content = "width=device-width, initial-scale=1"),
+      tags$link(rel = "icon", href = "favicon.ico"),
+      tags$link(rel = "stylesheet", href = "wlv-panel.css"),
+      tags$script(src = "wlv-panel.js")
+    ),
+    tags$a(href = "#wlv-content", class = "wlv-skip", l("app.skip")),
+    setup_panel,
+    tags$div(id = "wlv-content", tabindex = "-1"),
+    tags$div(class = "wlv-busy", role = "status", `aria-live` = "polite", l("app.loading"))
+  ),
+  footer = tags$footer(class = "wlv-footer",
+    "World Labour Values Task Force", tags$span("CC BY-NC-SA 4.0"))
+), modules_ui))

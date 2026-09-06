@@ -3,10 +3,16 @@
 ##
 
 ## load required packages ####
-source("requirements.R")
-source("utils/display_contracts.R")
+if (.Platform$OS.type == "windows") {
+  invisible(Sys.setlocale("LC_CTYPE", "Portuguese_Brazil.utf8"))
+}
+options(encoding = "UTF-8")
+source("requirements.R", encoding = "UTF-8")
+source("utils/display_contracts.R", encoding = "UTF-8")
+source("utils/local_storage.R", encoding = "UTF-8")
+source("utils/i18n.R", encoding = "UTF-8")
 
-download_directory <- file.path("data", "download")
+download_directory <- wlvpanel_generated_directory("downloads")
 if (!dir.exists(download_directory) &&
     !dir.create(download_directory, recursive = TRUE)) {
   stop("Cannot create the panel download directory.", call. = FALSE)
@@ -17,10 +23,16 @@ shiny::addResourcePath(
 )
 
 ## Define disk caching
-shinyOptions(cache = cachem::cache_disk("data/labourvaluesdatapanel-cache/")) 
+shinyOptions(cache = cachem::cache_disk(
+  wlvpanel_generated_directory("cache"),
+  max_size = 256 * 1024^2,
+  max_age = 7 * 24 * 60 * 60
+))
 
 ## load data ####
-language_file <- readRDS("data/language_file.RDS")
+language_file <- wlv_complete_language(readRDS("data/language_file.RDS"))
+language_file <- wlv_complete_language(language_file, "config/indicator-translations.json")
+language_file <- wlv_complete_language(language_file, "config/method-translations.json")
 sea_countries <- readRDS("data/sea_countries.RDS")
 sea_sectors <- readRDS("data/sea_sectors.RDS")
 meta_methods <- readRDS("data/meta_methods.RDS")
@@ -82,7 +94,7 @@ panel_bgcolor <- "rgba(252,252,252,1)"
 ## Initial setup ####
 default_year <- 2007
 default_indicator <- "surplus_value.empe_p.r.pc"
-default_language <- "English"
+default_language <- "Português"
 profile_indicators <- c("surplus_value.empe_p.r.pc",
                         "gdp.s.mv",
                         "gdp.s.us",
@@ -91,14 +103,14 @@ profile_indicators <- c("surplus_value.empe_p.r.pc",
 init_bases <- c("WIOD13", "WIOD16")
 
 ## functions ####
-# Label function to be used on UI side: create textOutput for labels calls
+# Rótulos da UI são traduzidos em lote pelo navegador.
 l <- function(lab_code) {
-  textOutput(paste0("label.",lab_code), inline = TRUE)
+  tags$span(`data-wlv-label` = lab_code, lb(lab_code))
 }
 
 # Label function to be used on server side: need to specify input$l
 lb <- function(lab_code,lang = default_language){
-  language_file[lab_code,lang]
+  wlv_label(lab_code, lang, language_file)
 }
 
 # Format a value that has already been converted to its display unit.
@@ -203,8 +215,12 @@ list_display_f2s <- function(z, ind, method, lng) {
 ## modules ####
 modules_server <- NULL
 modules_ui <- NULL
-source("modules/panel_setup/main.R")
-source("modules/countries/main.R")
-# source("modules/trade/main.R")
-source("modules/download/main.R")
-source("modules/how_to_quote/main.R")
+source("modules/panel_setup/main.R", encoding = "UTF-8")
+source("modules/about/main.R", encoding = "UTF-8")
+source("modules/countries/main.R", encoding = "UTF-8")
+source("modules/country/main.R", encoding = "UTF-8")
+source("modules/indicators/main.R", encoding = "UTF-8")
+# source("modules/trade/main.R", encoding = "UTF-8")
+source("modules/download/main.R", encoding = "UTF-8")
+source("modules/publications/main.R", encoding = "UTF-8")
+source("modules/how_to_quote/main.R", encoding = "UTF-8")

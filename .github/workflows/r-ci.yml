@@ -29,7 +29,7 @@ jobs:
             repository <- "https://cloud.r-project.org"
           }
           install.packages(
-            c("testthat", "jsonlite", "openssl", "openxlsx"),
+            c("testthat", "jsonlite", "openssl", "openxlsx", "shiny"),
             repos = c(CRAN = repository)
           )
       - name: Parse contract sources
@@ -46,9 +46,18 @@ jobs:
       - name: Run contract tests
         shell: Rscript --vanilla {0}
         run: |
+          if (.Platform$OS.type == "windows") {
+            invisible(Sys.setlocale("LC_CTYPE", "Portuguese_Brazil.utf8"))
+          }
+          options(encoding = "UTF-8")
           testthat::test_dir(
             "tests/testthat",
             reporter = "summary",
             stop_on_failure = TRUE,
             stop_on_warning = TRUE
           )
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+      - name: Run map JavaScript tests
+        run: node --test tests/manual/test-equal-earth.cjs tests/manual/test-map-update.cjs tests/manual/test-map-years.cjs tests/manual/test-indicators-map-js.cjs

@@ -1,24 +1,11 @@
 function(input, output, session) {
-  
   RV <- reactiveValues()
-
-  # Call server function of all modules
-  lapply(
-    modules_server,
-    function (i, IP = input, OP = output, REACTIVES = RV, SESSION = session) {
-      i(IP, OP, REACTIVES, SESSION)
+  lapply(modules_server, function(module) module(input, output, RV, session))
+  observe({
+    lang <- wlv_language(input$l)
+    labels <- setNames(as.list(lb(rownames(language_file), lang)), rownames(language_file))
+    session$sendCustomMessage("wlv-language", list(lang = lang, labels = labels))
   })
-
-  # all labels and languages
-  lapply(rownames(language_file), function(i) {
-    output[[paste0("label.",i)]] <- renderText(lb(i, input$l))
-  })
-  
-  # Debug area. Shown in "How to quote" tab
-  RV$debug <- reactiveVal(NA)
-  output$debug <- renderText({
-    if (RV$debug() |> is.na()) return()
-    RV$debug()
-  })
+  observeEvent(input$about_map, updateNavbarPage(session, "main_nav", selected = "map"))
+  observeEvent(input$about_indicators, updateNavbarPage(session, "main_nav", selected = "indicators"))
 }
-

@@ -1,0 +1,676 @@
+{
+  "tab_name.about": {
+    "pt": "Sobre",
+    "en": "About"
+  },
+  "tab_name.countries": {
+    "pt": "Mapa",
+    "en": "Map"
+  },
+  "tab_name.country": {"pt": "País", "en": "Country"},
+  "tab_name.publications": {"pt": "Publicações", "en": "Publications"},
+  "map.indicators": {"pt": "Indicadores", "en": "Indicators"},
+  "map.indicator": {"pt": "Selecionar indicador", "en": "Select indicator"},
+  "map.search": {"pt": "Pesquisar indicador", "en": "Search indicators"},
+  "map.year": {"pt": "Ano", "en": "Year"},
+  "map.base": {"pt": "Base", "en": "Source"},
+  "map.world": {"pt": "Mundo", "en": "World"},
+  "tab_name.indicators": {
+    "pt": "Indicadores",
+    "en": "Indicators"
+  },
+  "tab_name.download": {
+    "pt": "Download",
+    "en": "Download"
+  },
+  "tab_name.how_to_quote": {
+    "pt": "Como citar",
+    "en": "How to cite"
+  },
+  "app.title": {
+    "pt": "Base Mundial de Valores-Trabalho",
+    "en": "World Labour Values Database"
+  },
+  "map.hint": {
+    "pt": "Compare os países por indicador, base e ano. Os perfis estão no módulo País.",
+    "en": "Compare countries by indicator, source and year. Profiles are in the Country module."
+  },
+  "map.legend": {"pt":"Legenda", "en":"Legend"},
+  "map.projection": {
+    "pt": "Equal Earth: áreas proporcionais na visão mundial.",
+    "en": "Equal Earth: proportional areas in the world view."
+  },
+  "app.bases": {
+    "pt": "Bases de dados",
+    "en": "Data sources"
+  },
+  "app.method_info": {
+    "pt": "Sobre as bases",
+    "en": "About the sources"
+  },
+  "app.close": {
+    "pt": "Fechar",
+    "en": "Close"
+  },
+  "app.skip": {
+    "pt": "Ir para o conteúdo",
+    "en": "Skip to content"
+  },
+  "app.loading": {
+    "pt": "Atualizando dados…",
+    "en": "Updating data…"
+  },
+  "app.no_file": {
+    "pt": "Não há observações para esta combinação. Selecione outra base, país, indicador ou setor.",
+    "en": "There are no observations for this combination. Select another source, country, indicator or sector."
+  },
+  "app.download": {
+    "pt": "Baixar arquivo",
+    "en": "Download file"
+  },
+  "about.eyebrow": {
+    "pt": "TRABALHO · VALOR · ECONOMIA MUNDIAL",
+    "en": "LABOUR · VALUE · WORLD ECONOMY"
+  },
+  "about.title": {
+    "pt": "Uma perspectiva sobre o trabalho na economia mundial.",
+    "en": "A perspective on labour in the world economy."
+  },
+  "about.intro": {
+    "pt": "Explore a Base Mundial de Valores-Trabalho: indicadores nacionais e setoriais para investigar trabalho, produção e relações econômicas entre países.",
+    "en": "Explore the World Labour Values Database: national and sectoral indicators for studying labour, production and economic relations across countries."
+  },
+  "about.map": {
+    "pt": "Explorar o mapa",
+    "en": "Explore the map"
+  },
+  "about.indicators": {
+    "pt": "Comparar indicadores",
+    "en": "Compare indicators"
+  },
+  "about.read": {
+    "pt": "Como explorar os dados",
+    "en": "How to explore the data"
+  },
+  "about.map_text": {
+    "pt": "Escolha um indicador, uma base e um ano para comparar países no mapa. No módulo País, consulte perfis, séries e dados setoriais.",
+    "en": "Choose an indicator, source and year to compare countries on the map. Use the Country module for profiles, time series and sector data."
+  },
+  "about.indicators_text": {
+    "pt": "Consulte as definições, compare países ao longo do tempo e explore mapas, tabelas e downloads por indicador.",
+    "en": "Read definitions, compare countries over time and explore maps, tables and downloads for each indicator."
+  },
+  "about.download_text": {
+    "pt": "Obtenha dados agregados, setoriais e multilaterais. As bases podem cobrir períodos e países diferentes.",
+    "en": "Get aggregate, sectoral and multilateral data. Sources may cover different periods and countries."
+  },
+  "about.methods": {
+    "pt": "Bases, métodos e leitura dos resultados",
+    "en": "Sources, methods and interpretation"
+  },
+  "about.methods_text": {
+    "pt": "Selecione as bases na engrenagem ao lado do idioma. Cada método mantém suas unidades e regras de apresentação; valores ausentes não são zeros. Consulte as definições dos indicadores e as informações das bases antes de comparar resultados.",
+    "en": "Select sources using the gear beside the language button. Each method retains its units and display rules; missing values are not zeros. Check indicator definitions and source information before comparing results."
+  },
+  "about.project": {
+    "pt": "Um projeto do World Labour Values Task Force.",
+    "en": "A project by the World Labour Values Task Force."
+  },
+  "about.website": {
+    "pt": "Conheça o projeto",
+    "en": "Visit the project"
+  },
+  "ps.bases_label": {
+    "pt": "Selecione as bases:"
+  },
+  "co_select_indicator.placeholder": {
+    "pt": "Selecione um indicador…"
+  },
+  "co_panel_download_country": {
+    "pt": "Baixar dados do país"
+  },
+  "co_panel_download_sector": {
+    "pt": "Baixar dados setoriais"
+  },
+  "co_panel_sector_title": {
+    "pt": "Dados setoriais"
+  },
+  "co_info_Code": {
+    "pt": "Código:"
+  },
+  "co_info_Description": {
+    "pt": "Descrição:"
+  },
+  "co_info_Observations": {
+    "pt": "Observações:"
+  },
+  "dl_select_country.placeholder": {
+    "pt": "Selecione um país…"
+  },
+  "dl_select_method.placeholder": {
+    "pt": "Selecione um método…"
+  },
+  "dl_select_sector.placeholder": {
+    "pt": "Selecione um setor…"
+  },
+  "dl_select_method.label": {
+    "pt": "Método:"
+  },
+  "dl_select_country.label": {
+    "pt": "País:"
+  },
+  "dl_select_indicator.label": {
+    "pt": "Indicador:"
+  },
+  "dl_select_sector_indicator.label": {
+    "pt": "ou setor:"
+  },
+  "dl_select_andor": {
+    "pt": "e/ou"
+  },
+  "dl_select_sector_country.label": {
+    "pt": "Setor (opcional):"
+  },
+  "dl_ml_select_method.label": {
+    "pt": "Método:"
+  },
+  "dl_ml_select_country.label": {
+    "pt": "País:"
+  },
+  "dl_ml_select_indicator.label": {
+    "pt": "Indicador:"
+  },
+  "dl_ml_select_partner.label": {
+    "pt": "Parceiro:"
+  },
+  "dl_ml_select_and": {
+    "pt": "Selecione um parceiro ou um indicador:"
+  },
+  "dl_ml_ind_cat_placeholder": {
+    "pt": "Tipo…"
+  },
+  "dl_ml_ind_scope_placeholder": {
+    "pt": "Setores…"
+  },
+  "dl_ml_ind_un_placeholder": {
+    "pt": "Unidade…",
+    "en": "Measured in…"
+  },
+  "dl_ml_ind_CX": {
+    "pt": "Exportações totais"
+  },
+  "dl_ml_ind_CM": {
+    "pt": "Importações totais"
+  },
+  "dl_ml_ind_CN": {
+    "pt": "Saldo comercial"
+  },
+  "dl_ml_ind_TS": {
+    "pt": "Transferências de valor pelas exportações"
+  },
+  "dl_ml_ind_TR": {
+    "pt": "Transferências de valor pelas importações"
+  },
+  "dl_ml_ind_TT": {
+    "pt": "Transferências líquidas de valor"
+  },
+  "dl_ml_ind_T": {
+    "pt": "Todos os setores"
+  },
+  "dl_ml_ind_P": {
+    "pt": "Setores produtivos"
+  },
+  "dl_ml_ind_U": {
+    "pt": "Setores improdutivos"
+  },
+  "dl_ml_ind_MP": {
+    "pt": "Preços de mercado (USD)"
+  },
+  "dl_ml_ind_DP": {
+    "pt": "Preços diretos (USD)"
+  },
+  "dl_ml_ind_MV": {
+    "pt": "Magnitude de valor"
+  },
+  "dl_ml_title": {
+    "pt": "Dados multilaterais"
+  },
+  "dl_agg_title": {
+    "pt": "Dados agregados e setoriais"
+  },
+  "dl_source_title": {
+    "pt": "Código-fonte"
+  },
+  "dl_source_portable_msg": {
+    "pt": "O código utilizado no artigo sobre o problema da redução do trabalho está disponível no repositório. Consulte também Como citar."
+  },
+  "dl_source_code_msg": {
+    "pt": "Acesse o código que calcula os dados apresentados neste painel:"
+  },
+  "ISO3.ALA": {
+    "pt": "Ilhas Åland"
+  },
+  "ISO3.ASM": {
+    "pt": "Samoa Americana"
+  },
+  "ISO3.AIA": {
+    "pt": "Anguila"
+  },
+  "ISO3.ATA": {
+    "pt": "Antártida"
+  },
+  "ISO3.ABW": {
+    "pt": "Aruba"
+  },
+  "ISO3.BMU": {
+    "pt": "Bermudas"
+  },
+  "ISO3.BVT": {
+    "pt": "Ilha Bouvet"
+  },
+  "ISO3.VGB": {
+    "pt": "Ilhas Virgens Britânicas"
+  },
+  "ISO3.IOT": {
+    "pt": "Território Britânico do Oceano Índico"
+  },
+  "ISO3.CYM": {
+    "pt": "Ilhas Cayman"
+  },
+  "ISO3.HKG": {
+    "pt": "Hong Kong, China"
+  },
+  "ISO3.MAC": {
+    "pt": "Macau, China"
+  },
+  "ISO3.CXR": {
+    "pt": "Ilha Christmas"
+  },
+  "ISO3.CCK": {
+    "pt": "Ilhas Cocos (Keeling)"
+  },
+  "ISO3.COK": {
+    "pt": "Ilhas Cook"
+  },
+  "ISO3.FLK": {
+    "pt": "Ilhas Malvinas (Falkland)"
+  },
+  "ISO3.FRO": {
+    "pt": "Ilhas Faroé"
+  },
+  "ISO3.GUF": {
+    "pt": "Guiana Francesa"
+  },
+  "ISO3.PYF": {
+    "pt": "Polinésia Francesa"
+  },
+  "ISO3.ATF": {
+    "pt": "Terras Austrais Francesas"
+  },
+  "ISO3.GIB": {
+    "pt": "Gibraltar"
+  },
+  "ISO3.GRL": {
+    "pt": "Groenlândia"
+  },
+  "ISO3.GLP": {
+    "pt": "Guadalupe"
+  },
+  "ISO3.GUM": {
+    "pt": "Guam"
+  },
+  "ISO3.GGY": {
+    "pt": "Guernsey"
+  },
+  "ISO3.HMD": {
+    "pt": "Ilhas Heard e McDonald"
+  },
+  "ISO3.IMN": {
+    "pt": "Ilha de Man"
+  },
+  "ISO3.JEY": {
+    "pt": "Jersey"
+  },
+  "ISO3.MTQ": {
+    "pt": "Martinica"
+  },
+  "ISO3.MYT": {
+    "pt": "Maiote"
+  },
+  "ISO3.MSR": {
+    "pt": "Montserrat"
+  },
+  "ISO3.ANT": {
+    "pt": "Antilhas Neerlandesas"
+  },
+  "ISO3.NCL": {
+    "pt": "Nova Caledônia"
+  },
+  "ISO3.NIU": {
+    "pt": "Niue"
+  },
+  "ISO3.NFK": {
+    "pt": "Ilha Norfolk"
+  },
+  "ISO3.MNP": {
+    "pt": "Ilhas Marianas do Norte"
+  },
+  "ISO3.PCN": {
+    "pt": "Ilhas Pitcairn"
+  },
+  "ISO3.PRI": {
+    "pt": "Porto Rico"
+  },
+  "ISO3.REU": {
+    "pt": "Reunião"
+  },
+  "ISO3.BLM": {
+    "pt": "São Bartolomeu"
+  },
+  "ISO3.SHN": {
+    "pt": "Santa Helena"
+  },
+  "ISO3.MAF": {
+    "pt": "São Martinho (parte francesa)"
+  },
+  "ISO3.SPM": {
+    "pt": "São Pedro e Miquelão"
+  },
+  "ISO3.SGS": {
+    "pt": "Geórgia do Sul e Ilhas Sandwich do Sul"
+  },
+  "ISO3.SJM": {
+    "pt": "Svalbard e Jan Mayen"
+  },
+  "ISO3.TKL": {
+    "pt": "Toquelau"
+  },
+  "ISO3.TCA": {
+    "pt": "Ilhas Turcas e Caicos"
+  },
+  "ISO3.UMI": {
+    "pt": "Ilhas Menores Distantes dos Estados Unidos"
+  },
+  "ISO3.VIR": {
+    "pt": "Ilhas Virgens Americanas"
+  },
+  "ISO3.ESH": {
+    "pt": "Saara Ocidental"
+  },
+  "wiodr13.TOT": {
+    "pt": "Total das atividades"
+  },
+  "wiodr13.AtB": {
+    "pt": "Agropecuária, caça, silvicultura e pesca"
+  },
+  "wiodr13.C": {
+    "pt": "Indústrias extrativas"
+  },
+  "wiodr13.15t16": {
+    "pt": "Alimentos, bebidas e fumo"
+  },
+  "wiodr13.17t18": {
+    "pt": "Têxteis e vestuário"
+  },
+  "wiodr13.19": {
+    "pt": "Couro e calçados"
+  },
+  "wiodr13.20": {
+    "pt": "Madeira e cortiça"
+  },
+  "wiodr13.21t22": {
+    "pt": "Celulose, papel, impressão e edição"
+  },
+  "wiodr13.23": {
+    "pt": "Coque, refino de petróleo e combustível nuclear"
+  },
+  "wiodr13.24": {
+    "pt": "Produtos químicos"
+  },
+  "wiodr13.25": {
+    "pt": "Borracha e plástico"
+  },
+  "wiodr13.26": {
+    "pt": "Produtos minerais não metálicos"
+  },
+  "wiodr13.27t28": {
+    "pt": "Metalurgia e produtos de metal"
+  },
+  "wiodr13.29": {
+    "pt": "Máquinas e equipamentos não especificados"
+  },
+  "wiodr13.30t33": {
+    "pt": "Equipamentos elétricos e ópticos"
+  },
+  "wiodr13.34t35": {
+    "pt": "Equipamentos de transporte"
+  },
+  "wiodr13.36t37": {
+    "pt": "Indústrias diversas e reciclagem"
+  },
+  "wiodr13.E": {
+    "pt": "Eletricidade, gás e água"
+  },
+  "wiodr13.F": {
+    "pt": "Construção"
+  },
+  "wiodr13.50": {
+    "pt": "Comércio e reparação de veículos; varejo de combustíveis"
+  },
+  "wiodr13.51": {
+    "pt": "Comércio atacadista, exceto veículos"
+  },
+  "wiodr13.52": {
+    "pt": "Comércio varejista, exceto veículos; reparação de bens domésticos"
+  },
+  "wiodr13.H": {
+    "pt": "Alojamento e alimentação"
+  },
+  "wiodr13.60": {
+    "pt": "Transporte terrestre"
+  },
+  "wiodr13.61": {
+    "pt": "Transporte aquaviário"
+  },
+  "wiodr13.62": {
+    "pt": "Transporte aéreo"
+  },
+  "wiodr13.63": {
+    "pt": "Atividades auxiliares dos transportes e agências de viagens"
+  },
+  "wiodr13.64": {
+    "pt": "Correios e telecomunicações"
+  },
+  "wiodr13.J": {
+    "pt": "Intermediação financeira"
+  },
+  "wiodr13.70": {
+    "pt": "Atividades imobiliárias"
+  },
+  "wiodr13.71t74": {
+    "pt": "Aluguel de máquinas e equipamentos e serviços às empresas"
+  },
+  "wiodr13.L": {
+    "pt": "Administração pública, defesa e seguridade social obrigatória"
+  },
+  "wiodr13.M": {
+    "pt": "Educação"
+  },
+  "wiodr13.N": {
+    "pt": "Saúde e serviços sociais"
+  },
+  "wiodr13.O": {
+    "pt": "Outros serviços coletivos, sociais e pessoais"
+  },
+  "wiodr13.P": {
+    "pt": "Serviços domésticos"
+  },
+  "wiodr16.A01": {
+    "pt": "Agricultura, pecuária, caça e serviços relacionados"
+  },
+  "wiodr16.A02": {
+    "pt": "Produção florestal"
+  },
+  "wiodr16.A03": {
+    "pt": "Pesca e aquicultura"
+  },
+  "wiodr16.B": {
+    "pt": "Indústrias extrativas"
+  },
+  "wiodr16.C10-C12": {
+    "pt": "Alimentos, bebidas e fumo"
+  },
+  "wiodr16.C13-C15": {
+    "pt": "Têxteis, vestuário e produtos de couro"
+  },
+  "wiodr16.C16": {
+    "pt": "Produtos de madeira, cortiça e materiais trançados, exceto móveis"
+  },
+  "wiodr16.C17": {
+    "pt": "Papel e produtos de papel"
+  },
+  "wiodr16.C18": {
+    "pt": "Impressão e reprodução de gravações"
+  },
+  "wiodr16.C19": {
+    "pt": "Coque e refino de petróleo"
+  },
+  "wiodr16.C20": {
+    "pt": "Produtos químicos"
+  },
+  "wiodr16.C21": {
+    "pt": "Produtos farmoquímicos e farmacêuticos"
+  },
+  "wiodr16.C22": {
+    "pt": "Produtos de borracha e plástico"
+  },
+  "wiodr16.C23": {
+    "pt": "Produtos minerais não metálicos"
+  },
+  "wiodr16.C24": {
+    "pt": "Metalurgia"
+  },
+  "wiodr16.C25": {
+    "pt": "Produtos de metal, exceto máquinas e equipamentos"
+  },
+  "wiodr16.C26": {
+    "pt": "Equipamentos de informática, eletrônicos e ópticos"
+  },
+  "wiodr16.C27": {
+    "pt": "Máquinas e equipamentos elétricos"
+  },
+  "wiodr16.C28": {
+    "pt": "Máquinas e equipamentos não especificados"
+  },
+  "wiodr16.C29": {
+    "pt": "Veículos automotores, reboques e carrocerias"
+  },
+  "wiodr16.C30": {
+    "pt": "Outros equipamentos de transporte"
+  },
+  "wiodr16.C31_C32": {
+    "pt": "Móveis e indústrias diversas"
+  },
+  "wiodr16.C33": {
+    "pt": "Manutenção, reparação e instalação de máquinas e equipamentos"
+  },
+  "wiodr16.D35": {
+    "pt": "Eletricidade, gás, vapor e ar condicionado"
+  },
+  "wiodr16.E36": {
+    "pt": "Captação, tratamento e distribuição de água"
+  },
+  "wiodr16.E37-E39": {
+    "pt": "Esgoto, resíduos, recuperação de materiais e descontaminação"
+  },
+  "wiodr16.F": {
+    "pt": "Construção"
+  },
+  "wiodr16.G45": {
+    "pt": "Comércio e reparação de veículos automotores e motocicletas"
+  },
+  "wiodr16.G46": {
+    "pt": "Comércio atacadista, exceto veículos"
+  },
+  "wiodr16.G47": {
+    "pt": "Comércio varejista, exceto veículos"
+  },
+  "wiodr16.H49": {
+    "pt": "Transporte terrestre e por dutos"
+  },
+  "wiodr16.H50": {
+    "pt": "Transporte aquaviário"
+  },
+  "wiodr16.H51": {
+    "pt": "Transporte aéreo"
+  },
+  "wiodr16.H52": {
+    "pt": "Armazenamento e atividades auxiliares dos transportes"
+  },
+  "wiodr16.H53": {
+    "pt": "Correios e entregas"
+  },
+  "wiodr16.I": {
+    "pt": "Alojamento e alimentação"
+  },
+  "wiodr16.J58": {
+    "pt": "Edição"
+  },
+  "wiodr16.J59_J60": {
+    "pt": "Cinema, vídeo, televisão, gravação de som e radiodifusão"
+  },
+  "wiodr16.J61": {
+    "pt": "Telecomunicações"
+  },
+  "wiodr16.J62_J63": {
+    "pt": "Tecnologia da informação e serviços de informação"
+  },
+  "wiodr16.K64": {
+    "pt": "Serviços financeiros, exceto seguros e previdência"
+  },
+  "wiodr16.K65": {
+    "pt": "Seguros, resseguros e previdência, exceto seguridade social obrigatória"
+  },
+  "wiodr16.K66": {
+    "pt": "Atividades auxiliares dos serviços financeiros e seguros"
+  },
+  "wiodr16.L68": {
+    "pt": "Atividades imobiliárias"
+  },
+  "wiodr16.M69_M70": {
+    "pt": "Serviços jurídicos, contábeis, sedes de empresas e consultoria em gestão"
+  },
+  "wiodr16.M71": {
+    "pt": "Arquitetura, engenharia, testes e análises técnicas"
+  },
+  "wiodr16.M72": {
+    "pt": "Pesquisa e desenvolvimento científico"
+  },
+  "wiodr16.M73": {
+    "pt": "Publicidade e pesquisa de mercado"
+  },
+  "wiodr16.M74_M75": {
+    "pt": "Outras atividades profissionais, científicas, técnicas e veterinárias"
+  },
+  "wiodr16.N": {
+    "pt": "Atividades administrativas e serviços complementares"
+  },
+  "wiodr16.O84": {
+    "pt": "Administração pública, defesa e seguridade social obrigatória"
+  },
+  "wiodr16.P85": {
+    "pt": "Educação"
+  },
+  "wiodr16.Q": {
+    "pt": "Saúde e serviços sociais"
+  },
+  "wiodr16.R_S": {
+    "pt": "Outras atividades de serviços"
+  },
+  "wiodr16.T": {
+    "pt": "Serviços domésticos e produção das famílias para uso próprio"
+  },
+  "wiodr16.U": {
+    "pt": "Organizações internacionais e instituições extraterritoriais"
+  }
+}
