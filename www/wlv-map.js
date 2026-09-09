@@ -33,7 +33,7 @@
         if (layer.getTooltip()) {
           layer.setTooltipContent(update.label);
         } else {
-          layer.bindTooltip(update.label, { sticky: true, direction: "auto" });
+          layer.bindTooltip(update.label, { sticky: true, direction: "auto", className: "tooltip-container" });
         }
         layer._wlvLabel = update.label;
       }
@@ -61,6 +61,7 @@
       } else {
         pending.delete(id);
         state.element.setAttribute("aria-busy", "false");
+        if (state.projection) state.projection.geometryReady();
       }
     });
   }
@@ -85,17 +86,43 @@
       details.className = "wlv-map-legend";
       details.open = state.legendOpen;
       const summary = root.document.createElement("summary");
-      summary.setAttribute("data-wlv-label", "map.legend");
-      summary.textContent = root.document.documentElement.lang === "en" ? "Legend" : "Legenda";
+      const english = root.document.documentElement.lang === "en";
+      const icon = root.document.createElement("i");
+      icon.className = "fas fa-list";
+      icon.setAttribute("aria-hidden", "true");
+      const label = root.document.createElement("span");
+      label.setAttribute("data-wlv-label", "map.legend");
+      label.textContent = english ? "Legend" : "Legenda";
+      summary.append(icon, label);
       const content = root.document.createElement("div");
       content.className = "wlv-map-legend-content";
       content.id = state.element.id + "-legend-content";
       summary.setAttribute("aria-controls", content.id);
       while (legend.firstChild) content.appendChild(legend.firstChild);
+      const close = root.document.createElement("button");
+      close.type = "button";
+      close.className = "wlv-map-legend-close";
+      const cross = root.document.createElement("span");
+      cross.setAttribute("aria-hidden", "true");
+      cross.textContent = "\u00d7";
+      const closeLabel = root.document.createElement("span");
+      closeLabel.className = "sr-only";
+      closeLabel.setAttribute("data-wlv-label", "app.close");
+      closeLabel.textContent = english ? "Close" : "Fechar";
+      close.append(cross, closeLabel);
+      close.addEventListener("click", function () {
+        details.open = false;
+        summary.focus();
+      });
+      content.appendChild(close);
       details.append(summary, content);
       legend.appendChild(details);
       details.addEventListener("toggle", function () {
-        if (details.isConnected) state.legendOpen = details.open;
+        if (details.isConnected) {
+          state.legendOpen = details.open;
+          // Ao abrir, o botão de fechar substitui o acionador como no e-mar.
+          if (details.open && root.document.activeElement === summary) close.focus();
+        }
       });
       if (root.L && root.L.DomEvent) {
         root.L.DomEvent.disableClickPropagation(details);
@@ -155,8 +182,7 @@
       map: map,
       active: true,
       tooltips: new Map(),
-      legendOpen: previous ? previous.legendOpen :
-        !(root.matchMedia && root.matchMedia("(max-width: 767px)").matches),
+      legendOpen: previous ? previous.legendOpen : false,
       stats: { updates: 0, layers: 0, lastDurationMs: 0 },
       onLayerAdd: function () { if (pending.has(element.id)) schedule(element.id); }
     };
@@ -166,7 +192,7 @@
     map.on("layeradd", state.onLayerAdd);
     map.on("unload", state.onUnload);
     map.on("tooltipopen", state.onTooltipOpen);
-    if (root.WLVEqualEarth) state.projection = root.WLVEqualEarth.attach(element, map);
+    if (root.WLVEqualEarth) state.projection = root.WLVEqualEarth.attach(element, map, {waitForGeometry:true});
     if (element.querySelector && root.MutationObserver) {
       state.controls = element.querySelector(".leaflet-control-container");
       if (state.controls) {

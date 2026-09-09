@@ -12,6 +12,16 @@ source("utils/display_contracts.R", encoding = "UTF-8")
 source("utils/local_storage.R", encoding = "UTF-8")
 source("utils/i18n.R", encoding = "UTF-8")
 
+# Capturar os assets junto do código R evita que um processo já aberto use
+# um módulo antigo com CSS/JavaScript de uma atualização posterior do disco.
+wlv_shared_assets <- tagList(
+  includeCSS("www/wlv-panel.css"),
+  includeCSS("www/wlv-explore.css"),
+  includeCSS("www/wlv-about.css"),
+  includeScript("www/wlv-panel.js"),
+  includeScript("www/wlv-equal-earth.js")
+)
+
 download_directory <- wlvpanel_generated_directory("downloads")
 if (!dir.exists(download_directory) &&
     !dir.create(download_directory, recursive = TRUE)) {
@@ -31,6 +41,7 @@ shinyOptions(cache = cachem::cache_disk(
 
 ## load data ####
 language_file <- wlv_complete_language(readRDS("data/language_file.RDS"))
+language_file <- wlv_complete_language(language_file, "config/about-translations.json")
 language_file <- wlv_complete_language(language_file, "config/indicator-translations.json")
 language_file <- wlv_complete_language(language_file, "config/method-translations.json")
 sea_countries <- readRDS("data/sea_countries.RDS")
@@ -216,6 +227,7 @@ list_display_f2s <- function(z, ind, method, lng) {
 modules_server <- NULL
 modules_ui <- NULL
 source("modules/panel_setup/main.R", encoding = "UTF-8")
+source("modules/how_to_quote/main.R", encoding = "UTF-8")
 source("modules/about/main.R", encoding = "UTF-8")
 source("modules/countries/main.R", encoding = "UTF-8")
 source("modules/country/main.R", encoding = "UTF-8")
@@ -223,4 +235,3 @@ source("modules/indicators/main.R", encoding = "UTF-8")
 # source("modules/trade/main.R", encoding = "UTF-8")
 source("modules/download/main.R", encoding = "UTF-8")
 source("modules/publications/main.R", encoding = "UTF-8")
-source("modules/how_to_quote/main.R", encoding = "UTF-8")

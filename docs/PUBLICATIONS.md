@@ -1,57 +1,39 @@
 # Catálogo de publicações
 
-O escopo solicitado é a produção de **Rodrigo Straessli Pinto Franklin** e
-**Rodrigo Emmanuel Santana Borges**, incluindo coautorias. A grafia Emmanuel
-segue os registros bibliográficos; a consulta também considerou a variante
-Emanuel informada pelo usuário. A inclusão de uma obra não implica que ela
-seja um resultado específico do World Labour Values.
+O módulo reúne estudos que desenvolvem a metodologia ou aplicam as estimativas produzidas na agenda de pesquisa do **World Labour Values Database (WLVD)** e o livro *Teoria da dependência: guia para uma análise do mercado mundial*, incluído por solicitação explícita do usuário como contexto teórico. Para os demais registros, a publicação de um trabalho por um membro do projeto, ou sua proximidade temática com a teoria do valor, não é suficiente para incluí-lo. A revisão deste escopo ocorreu em 9 de setembro de 2026.
 
-O catálogo local em `config/publications.json` contém metadados e links,
-sem PDFs, imagens, resumos ou dependência de serviços externos para abrir
-ou filtrar a página. A consulta das fontes ocorreu em 6 de setembro de 2026.
+O catálogo local `config/publications.json` armazena metadados e links. A página e seus filtros funcionam sem consultas externas. Cada entrada contém `project_relation`, com o tipo de relação (`methodology`, `application` ou `theoretical_context`), uma descrição da evidência e a fonte primária em que foi conferida. O livro selecionado possui também `inclusion_basis: explicit_user_selection`. Essa classificação não afirma que ele utilize os dados WLVD. Fontes de verificação permanecem nos metadados; a interface apresenta o acesso à publicação, sem repetir um segundo link de “Fonte verificada”.
 
-As identidades foram verificadas pelos nomes completos, coautorias e ORCID:
+## Estudos selecionados
 
-- [Franklin: 0000-0003-2698-2826](https://orcid.org/0000-0003-2698-2826).
-- [Borges: 0000-0003-2076-1424](https://orcid.org/0000-0003-2076-1424).
+| Publicação | Relação documentada |
+| --- | --- |
+| [Franklin, 2025 — Teoria da dependência: guia para uma análise do mercado mundial](https://www.edufes.ufes.br/items/show/777) | Livro solicitado pelo usuário como contexto teórico. A ficha da EDUFES confirma autoria de Rodrigo Straessli Pinto Franklin, ano 2025, formato e-book e ISBN 978-85-7772-611-0. A descrição apresenta categorias e procedimentos para analisar a dependência no mercado mundial; não se presume ligação empírica com os dados WLVD. |
+| [Vidal et al., 2024 — China, 1995–2014](https://enep.sep.org.br/uploads/1316_1710722071_artigo-rev-borges_pdf_ide.pdf) | Seção 4 aplica a metodologia desenvolvida por Franklin, Borges e coautores às transferências de valor por setor e parceiro comercial. |
+| Borges e Franklin, 2024 — Trabalho e exploração em nações e indústrias | Resumo expandido do VI Encontro Internacional Teoria do Valor Trabalho e Ciências Sociais. A [contribuição 77 do evento](https://gept.grupo.pro.br/event/2/contributions/77/) e seu resumo, disponíveis no índice de busca da fonte oficial, descrevem a integração da EXIOBASE à WLVD. A página e o PDF retornaram HTTP 404 na consulta direta em 09/09/2026; o registro permanece na bibliografia, com indicação de indisponibilidade e sem link clicável na interface. |
+| [Barreto et al., 2023 — Troca desigual e condições de trabalho no setor saúde e no complexo industrial da saúde](https://abrascoeventos.org.br/cshs/2023/programacao/exibe_trabalho.php?id_atividade=5223&id_trabalho=46781&tipo=) | Resumo de comunicação oral apresentado no 9º Congresso Brasileiro de Ciências Sociais e Humanas em Saúde, em 03/11/2023. A metodologia declara usar a WLVD de 2000 a 2014 para o setor Saúde e Serviço Social e seus fornecedores industriais. Fonte oficial acessível por HTTP 200; a codificação do site falha em alguns leitores, mas o conteúdo foi conferido na indexação da página oficial. |
+| [Borges et al., 2022 — Contemporary world market, values and consumption of fixed capital](https://www.iioa.org/conferences/28th/papers/files/4419_2022-Contemporaryworldmarket%2Cvaluesandconsumptionoffixedcapital%3AreflectionsfromtheWorldLabourValuesDatabase.pdf) | Manuscrito da 28ª conferência IIOA. Seção 3, pp. 4–7, descreve e testa a depreciação na WLVD; tabelas 1 e 2, p. 8, atribuem a fonte ao painel (1995–2009). Título e ordem dos quatro autores seguem a capa; o programa oficial também confirma a autoria. O índice do evento apresenta título alternativo e erros de autoria, por isso não é usado como referência principal. |
+| [Franklin e Borges, 2022 — Brasil, 1995–2009](https://econtents.sbu.unicamp.br/inpec/index.php/cma/article/view/18863) | Artigo apresenta estimativas de fluxos de valor em horas de trabalho, metodologia e comparação dos parceiros comerciais do Brasil. |
+| [Franklin et al., 2022 — Skilled Labour and the Reduction Problem](https://doi.org/10.13169/worlrevipoliecon.13.3.0362) | O [texto integral da UCA](https://www.uca.edu.sv/economia/wp-content/uploads/SKILLED-LABOUR-AND-THE-REDUCTION-PROBLEM-CESAR-SANCHEZ.pdf), seção 4.2, identifica expressamente as estimativas com a construção do WLVD. |
+| [Franklin et al., 2021 — The reduction problem of heterogeneous labour](https://www.anpec.org.br/encontro/2021/submissao/files_I/i2-6a876d3d630b0a4c2e1c05d022dcd522.pdf) | Trabalho da ANPEC compara métodos de redução do trabalho sobre a WIOD; antecede o artigo metodológico de 2022. |
+| [Franklin e Borges, 2020 — Transferências de valor e troca desigual](https://www.sep.org.br/enep_teste/uploads/1316_1583720809_2020_Troca_desigual_-_identificado_pdf_ide.pdf) | Trabalho do ENEP apresenta as estimativas de transferências de valor para o Brasil e a metodologia matricial, posteriormente publicadas em periódico. |
 
-As buscas por autor no Crossref foram limitadas aos nomes completos; as
-assinaturas abreviadas foram aproveitadas somente quando o DOI também
-constava no ORCID correspondente. As páginas de editoras, revistas,
-anais e repositórios universitários complementam esses registros. Cada
-entrada conserva os links que sustentam sua identificação.
+Artigos e versões em congressos permanecem registros distintos, com seu tipo e ano visíveis. A curadoria não pressupõe que cada registro corresponda a um conjunto de dados independente ou à versão atual dos resultados estatísticos do painel. O histórico anterior do catálogo permanece no Git. O endereço do livro com `www` foi preservado conforme solicitado; a conferência dos metadados foi feita também na [mesma ficha sem `www`](https://edufes.ufes.br/items/show/777).
 
-Os [registros públicos de Borges](https://pub.orcid.org/v3.0/0000-0003-2076-1424/works)
-também contêm capítulos e trabalhos em eventos sem DOI. A interface os
-identifica como registros do autor, distinguindo o acesso ao texto da
-consulta à referência bibliográfica. Oito registros não apresentam uma
-lista de autoria no ORCID; neles, a página informa somente o vínculo com
-o perfil, sem apresentar uma autoria completa presumida.
+## Atualização e conferência
 
-A [página de publicações do projeto](https://worldlabourvalues.org/publicacoes.html)
-e a [página de livros](https://worldlabourvalues.org/livros.html) continham
-somente os títulos das seções no HTML consultado. Não foi encontrada uma
-bibliografia embutida em Mendeley ou outro serviço nessas páginas. O link
-Lattes no perfil de Borges aponta para o mesmo identificador do perfil de
-Franklin e não foi utilizado para resolver a identidade de Borges.
+A seleção inclui ainda **Dependência e Desenvolvimento do Complexo Econômico Industrial da Saúde** (Barreto, Mendes e Borges, 2024), resumo expandido do mesmo VI Encontro. A [fonte oficial](https://gept.grupo.pro.br/event/2/contributions/94/attachments/85/98/Sa%C3%BAde%2C%20desenvolvimento%20e%20depend%C3%AAncia%20no%20Complexo%20Econ%C3%B4mico%20Industrial%20da%20Sa%C3%BAde.pdf), página 2, seção Metodologia, explicita a análise com informações do painel WLVD. A conferência foi feita na indexação primária; o PDF também está indisponível por HTTP 404. A assinatura **Antonio Angelo Barreto de Menezes** foi preservada no registro, com alias para **Antonio Angelo Menezes Barreto**, participante da mesma agenda com Mendes e Borges. Assim, o catálogo totaliza **dez referências**.
 
-Foi feita deduplicação por DOI e por título, ano e tipo. Edições em livro,
-artigos e versões em eventos permanecem distintas. A duplicação do artigo
-de 2017 sobre metas de inflação em um registro editorial de 2021 foi
-consolidada e explicada em nota. Datas de publicação on-line que diferem
-do fascículo também são indicadas. O artigo da Revista Econômica do
-Nordeste publicado em agosto de 2026 está vinculado ao fluxo de 2027;
-o catálogo usa 2026, seguindo a data de publicação informada pela revista.
+### Autoria e pesquisa dos coautores
 
-Um capítulo marcado “no prelo” e um registro SciELO que aponta para uma
-submissão não foram incluídos entre os trabalhos publicados. O JSON
-registra essas exclusões e o registro duplicado do artigo sobre mortalidade
-materna. Não foi possível confirmar exaustividade: currículos, ORCID e
-depósitos de DOI podem ser incompletos. Nenhuma sincronização periódica é
-executada pelo painel.
+O filtro **Membro do projeto** contém todos os autores das dez referências: Beatriz de Souza Vidal, Everlam Elias Montibeler, Mario César Sánchez, Rodrigo Emmanuel Santana Borges, Rodrigo Straessli Pinto Franklin, Antonio Angelo Menezes Barreto e Áquilas Nogueira Mendes. Esse cadastro serve ao filtro de autoria; não altera os vínculos institucionais apresentados na página Sobre. As assinaturas originais permanecem nas referências, enquanto `members[].aliases` reúne César Sánchez/Mario César Sánchez, Everlam Montibeler/Everlam Elias Montibeler e as formas abreviadas Rodrigo Borges e Rodrigo Franklin. A validação rejeita autores sem opção no filtro, omissões em `entry.members` e aliases compartilhados entre pessoas distintas.
 
-Para acrescentar ou corrigir uma referência, atualize o JSON com autoria,
-ano, tipo, veículo e fonte verificável. Preserve o DOI original, mantenha
-o aviso de autoria incompleta quando necessário e rode
-`tests/testthat/test-publications.R`. A suíte testa identidade dos autores,
-fontes, duplicações de DOI, busca sem acentos, filtros e troca de idioma.
+A pesquisa de setembro de 2026 verificou publicações dos demais coautores em fontes institucionais, periódicos e anais, sem inclusão automática por uso de WIOD ou proximidade temática. As notas registram fontes, achados, exclusões e limites: [Sánchez](research-sanchez-20260909.md), [Montibeler](research-montibeler-20260909.md) e [Vidal e os coautores da área da saúde](research-vidal-20260909.md). Não se afirma exaustividade. O trabalho IIOA de 2022 foi a nova publicação confirmada com Montibeler e Sánchez; foram encontrados também os resumos sobre saúde (2023) e EXIOBASE (2024), em coautoria com os pesquisadores já cadastrados.
+
+O livro coletivo *Inteligência artificial, trabalho, capitalismo* (Pontes, 2025; ISBN 9788521708100) deriva do VI Encontro, conforme a [editora](https://ponteseditores.com.br/loja3/loja/inteligencia-artificial-trabalho-capitalismo/). Não foi possível conferir o sumário nem demonstrar que ele republica o resumo sobre EXIOBASE; não foi cadastrado como se esse vínculo estivesse comprovado.
+
+`url_status: unavailable` distingue uma referência confirmada de um endereço fora do ar. A interface mantém título, autores e veículo, sem oferecer o endereço quebrado como acesso ao texto. A URL original e a data da verificação permanecem no catálogo para revisão futura. A terminologia editorial do painel é **mais-valor**; títulos bibliográficos originais são preservados.
+
+Para acrescentar uma referência, confira o texto ou resumo em uma fonte primária e registre a relação concreta com os dados ou a metodologia do projeto. Livros selecionados explicitamente como contexto teórico devem conservar essa distinção, sem criar uma justificativa empírica não comprovada. Preserve autoria, título, DOI ou ISBN, ano, veículo e links verificáveis. Não reintroduza trabalhos exclusivamente a partir de buscas por autor no ORCID ou Crossref.
+
+Rode `tests/testthat/test-publications.R` após alterações. A suíte confere o escopo documentado, campos de proveniência, metadados e endereço do livro, duplicações de DOI, busca sem acentos, filtros, troca de idioma e ausência dos antigos textos biográficos e links redundantes na interface. As fontes editoriais e a proveniência das imagens da apresentação do projeto ficam em [about-sources.md](about-sources.md).

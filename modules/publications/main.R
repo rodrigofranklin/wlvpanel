@@ -1,17 +1,13 @@
 wlv_publications_text <- function(key, lang = "pt") {
   dictionary <- list(title = c("Publicações", "Publications"),
-    intro = c("Publicações de Rodrigo Straessli Pinto Franklin e Rodrigo Emmanuel Santana Borges, incluindo coautorias.",
-      "Publications by Rodrigo Straessli Pinto Franklin and Rodrigo Emmanuel Santana Borges, including coauthored works."),
-    coverage = c("Referências reunidas de editoras, repositórios e dos registros públicos dos autores no ORCID. As fontes consultadas não permitem assegurar uma bibliografia exaustiva.",
-      "References collected from publishers, repositories and the authors' public ORCID records. These sources do not establish an exhaustive bibliography."),
     search = c("Buscar por título, autoria ou tema", "Search by title, author or topic"),
     author = c("Membro do projeto", "Project member"), year = c("Ano", "Year"),
     all_authors = c("Todos os membros", "All members"), all_years = c("Todos os anos", "All years"),
     count = c("referências encontradas", "references found"),
     empty = c("Nenhuma referência cadastrada corresponde a esta busca.", "No catalogued reference matches this search."),
-    read = c("Acessar publicação", "Open publication"), source = c("Fonte verificada", "Verified source"),
+    read = c("Acessar publicação", "Open publication"),
+    unavailable = c("Texto online temporariamente indisponível", "Online text temporarily unavailable"),
     record = c("Ver registro bibliográfico", "View bibliographic record"),
-    author_record = c("Registro do autor no ORCID", "Author's ORCID record"),
     incomplete_authorship = c("Obra vinculada ao ORCID de %s; a fonte não informa a lista completa de autoria.",
       "Work linked to %s's ORCID; the source does not provide the complete author list."),
     project = c("Publicações no site do projeto", "Publications on the project website"),
@@ -23,12 +19,25 @@ wlv_publications_text <- function(key, lang = "pt") {
   dictionary[[key]][[if (identical(lang, "en")) 2L else 1L]]
 }
 
+wlv_publications_author_key <- function(value) {
+  converted <- iconv(tolower(enc2utf8(value)), from = "UTF-8", to = "ASCII//TRANSLIT", sub = "")
+  trimws(gsub("[[:space:]]+", " ", converted))
+}
+
 wlv_validate_publications <- function(catalogue) {
   stopifnot(identical(catalogue$schema, "wlv-publications/1"),
+    identical(catalogue$scope, "wlvd-research-and-selected-books"),
     catalogue$coverage %in% c("partial", "complete"), length(catalogue$members) > 0L)
   members <- vapply(catalogue$members, `[[`, character(1L), "id")
   ids <- vapply(catalogue$entries, `[[`, character(1L), "id")
   stopifnot(!anyDuplicated(members), !anyDuplicated(ids))
+  author_ids <- unlist(lapply(catalogue$members, function(member) {
+    stopifnot(is.character(member$name), length(member$name) == 1L, nzchar(member$name))
+    aliases <- unique(wlv_publications_author_key(c(member$name, unlist(member$aliases))))
+    stopifnot(all(nzchar(aliases)))
+    stats::setNames(rep(member$id, length(aliases)), aliases)
+  }), use.names = TRUE)
+  stopifnot(!anyDuplicated(names(author_ids)))
   for (entry in catalogue$entries) {
     stopifnot(is.character(entry$title), length(entry$title) == 1L, nzchar(entry$title),
       length(entry$authors) > 0L, all(nzchar(unlist(entry$authors))),
@@ -36,7 +45,20 @@ wlv_validate_publications <- function(catalogue) {
       is.numeric(entry$year), length(entry$year) == 1L, is.finite(entry$year), entry$year %% 1L == 0L,
       entry$type %in% c("article", "conference", "dissertation", "thesis", "report", "software", "book", "chapter"),
       grepl("^https://", entry$url), length(entry$sources) > 0L,
-      all(grepl("^https://", unlist(entry$sources))))
+      all(grepl("^https://", unlist(entry$sources))),
+      is.list(entry$project_relation),
+      is.character(entry$project_relation$evidence), length(entry$project_relation$evidence) == 1L,
+      is.character(entry$project_relation$source), length(entry$project_relation$source) == 1L,
+      entry$project_relation$kind %in% c("methodology", "application", "theoretical_context"),
+      nzchar(entry$project_relation$evidence),
+      grepl("^https://", entry$project_relation$source))
+    stopifnot(is.null(entry$url_status) || entry$url_status %in% c("available", "unavailable"))
+    expected_members <- unname(author_ids[wlv_publications_author_key(unlist(entry$authors))])
+    stopifnot(!anyNA(expected_members), !anyDuplicated(unlist(entry$members)),
+      setequal(unlist(entry$members), expected_members))
+    if (identical(entry$project_relation$kind, "theoretical_context")) {
+      stopifnot(identical(entry$type, "book"), identical(entry$inclusion_basis, "explicit_user_selection"))
+    }
   }
   invisible(catalogue)
 }
@@ -78,6 +100,7 @@ wlv_publications_server <- function(id, catalogue, lang) {
     shiny::observe({
       authors <- vapply(catalogue$members, `[[`, character(1L), "id")
       names(authors) <- vapply(catalogue$members, `[[`, character(1L), "name")
+      authors <- authors[order(wlv_publications_author_key(names(authors)))]
       years <- sort(unique(vapply(catalogue$entries, `[[`, numeric(1L), "year")), decreasing = TRUE)
       shiny::updateTextInput(session, "search", label = txt("search"))
       shiny::updateSelectInput(session, "author", label = txt("author"),
@@ -88,8 +111,7 @@ wlv_publications_server <- function(id, catalogue, lang) {
         selected = shiny::isolate(input$year))
     })
     output$heading <- shiny::renderUI({
-      shiny::tagList(shiny::tags$h1(txt("title")), shiny::tags$p(class = "wlv-lead", txt("intro")),
-        if (identical(catalogue$coverage, "partial")) shiny::tags$p(class = "wlv-publications-coverage", txt("coverage")),
+      shiny::tagList(shiny::tags$h1(txt("title")),
         shiny::tags$p(class = "wlv-publications-sources",
           shiny::tags$a(href = catalogue$project_source, target = "_blank", rel = "noopener noreferrer", txt("project")),
           shiny::tags$a(href = catalogue$team_source, target = "_blank", rel = "noopener noreferrer", txt("team"))))
@@ -103,16 +125,16 @@ wlv_publications_server <- function(id, catalogue, lang) {
         shiny::tags$ol(class = "wlv-publications-list", lapply(records, function(entry) {
           shiny::tags$li(shiny::tags$article(class = "wlv-publication", `data-publication-id` = entry$id,
             shiny::tags$p(class = "wlv-publication-meta", paste(entry$year, txt(entry$type), sep = " · ")),
-            shiny::tags$h2(shiny::tags$a(href = entry$url, target = "_blank", rel = "noopener noreferrer", entry$title)),
+            shiny::tags$h2(if (identical(entry$url_status, "unavailable")) entry$title else
+              shiny::tags$a(href = entry$url, target = "_blank", rel = "noopener noreferrer", entry$title)),
             shiny::tags$p(class = "wlv-publication-authors", if (identical(entry$authorship_complete, FALSE))
               sprintf(txt("incomplete_authorship"), paste(unlist(entry$authors), collapse = "; "))
               else paste(unlist(entry$authors), collapse = "; ")),
             shiny::tags$p(shiny::tags$em(entry$venue)),
             if (!is.null(entry$note)) shiny::tags$p(entry$note[[lang()]]),
             shiny::div(class = "wlv-publication-links",
-              shiny::tags$a(href = entry$url, target = "_blank", rel = "noopener noreferrer", txt(if (isTRUE(entry$record_only)) "record" else "read")),
-              shiny::tags$a(href = entry$sources[[1L]], target = "_blank", rel = "noopener noreferrer",
-                txt(if (identical(entry$source_kind, "author_record")) "author_record" else "source")))))
+              if (identical(entry$url_status, "unavailable")) shiny::tags$span(txt("unavailable")) else
+                shiny::tags$a(href = entry$url, target = "_blank", rel = "noopener noreferrer", txt(if (isTRUE(entry$record_only)) "record" else "read")))))
         })))
     })
   })

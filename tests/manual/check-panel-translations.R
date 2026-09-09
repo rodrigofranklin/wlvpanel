@@ -15,8 +15,10 @@ stopifnot(all(keys %in% rownames(language_file)))
 rows <- match(keys, rownames(language_file))
 stopifnot(!anyNA(pt[rows]), all(nzchar(pt[rows])))
 stopifnot(!any(grepl("\ufffd", pt[rows], fixed = TRUE)))
-stopifnot(identical(lb("surplus_value.empe_p.r.pc"), "Taxa de mais-valia (trabalhadores produtivos)"))
-for (file in c("config/translations.json", "config/indicator-translations.json", "config/method-translations.json")) {
+stopifnot(identical(lb("surplus_value.empe_p.r.pc"), "Taxa de mais-valor (trabalhadores produtivos)"))
+stopifnot(!any(grepl("mais.?valia", pt, ignore.case = TRUE)))
+stopifnot(identical(lb("surplus_value.empe_p.r.pc", "English"), "Rate of surplus value (productive workers)"))
+for (file in c("config/translations.json", "config/indicator-translations.json", "config/method-translations.json", "config/about-translations.json")) {
   value <- jsonlite::fromJSON(file, simplifyVector = FALSE)
   restored <- jsonlite::fromJSON(jsonlite::toJSON(value, auto_unbox = TRUE), simplifyVector = FALSE)
   stopifnot(identical(value, restored))

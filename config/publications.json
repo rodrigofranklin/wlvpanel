@@ -1,248 +1,85 @@
 {
   "schema": "wlv-publications/1",
-  "verified_on": "2026-09-06",
+  "verified_on": "2026-09-09",
   "coverage": "partial",
   "team_source": "https://worldlabourvalues.org/equipe.html",
   "project_source": "https://worldlabourvalues.org/publicacoes.html",
-  "source_note": "Escopo definido pelo usuário: Rodrigo Straessli Pinto Franklin e Rodrigo Emmanuel Santana Borges, incluindo coautorias. Metadados de editoras e repositórios são complementados por registros públicos dos próprios autores no ORCID. Registros sem autoria completa são identificados na interface; não se presume ausência de outras coautorias. O catálogo não assegura exaustividade fora das fontes consultadas. Artigos, capítulos e versões em congressos são registros distintos.",
+  "source_note": "Seleção de estudos que desenvolvem a metodologia ou aplicam as estimativas de valores-trabalho e transferências de valor produzidas pelo projeto WLVD, acrescida do livro Teoria da dependência: guia para uma análise do mercado mundial por solicitação explícita do usuário. O livro é identificado internamente como contexto teórico, sem presumir uso das estimativas WLVD a partir de sua autoria. Para os demais registros, a inclusão exige evidência na publicação; a autoria por um membro do projeto ou a afinidade temática isolada não basta. Artigos e versões em congressos permanecem identificados como registros distintos.",
   "members": [
     {
       "id": "franklin",
       "name": "Rodrigo Straessli Pinto Franklin",
-      "orcid": "0000-0003-2698-2826"
+      "orcid": "0000-0003-2698-2826",
+      "aliases": [
+        "Rodrigo Franklin"
+      ]
     },
     {
       "id": "borges",
       "name": "Rodrigo Emmanuel Santana Borges",
-      "orcid": "0000-0003-2076-1424"
+      "orcid": "0000-0003-2076-1424",
+      "aliases": [
+        "Rodrigo Borges"
+      ]
+    },
+    {
+      "id": "vidal",
+      "name": "Beatriz de Souza Vidal"
+    },
+    {
+      "id": "montibeler",
+      "name": "Everlam Elias Montibeler",
+      "aliases": [
+        "Everlam Montibeler"
+      ]
+    },
+    {
+      "id": "sanchez",
+      "name": "Mario César Sánchez",
+      "aliases": [
+        "César Sánchez"
+      ]
+    },
+    {
+      "id": "barreto",
+      "name": "Antonio Angelo Menezes Barreto",
+      "aliases": [
+        "Antonio Angelo Barreto de Menezes"
+      ]
+    },
+    {
+      "id": "mendes",
+      "name": "Áquilas Nogueira Mendes"
     }
   ],
   "entries": [
     {
-      "id": "doi-a5f8024588c7af",
-      "title": "IMPACTOS DO AJUSTE FISCAL SOBRE A ECONOMIA DO ESTADO DO RIO DE JANEIRO A PARTIR DO REGIME DE RECUPERAÇÃO FISCAL",
+      "id": "franklin-2025-teoria-dependencia",
+      "title": "Teoria da dependência: guia para uma análise do mercado mundial",
       "authors": [
-        "Filipe Vasconcelos Rocha",
-        "Everlam Elias Montibeler",
-        "Joilson de Assis Cabral",
-        "Rodrigo Straessli Pinto Franklin",
-        "Daniel Rodrigues Cordeiro"
-      ],
-      "members": [
-        "franklin"
-      ],
-      "year": 2026,
-      "type": "article",
-      "venue": "Revista Econômica do Nordeste, e20273113",
-      "doi": "10.61673/ren.2027.3113",
-      "url": "https://www.bnb.gov.br/revista/ren/article/view/3113",
-      "sources": [
-        "https://www.bnb.gov.br/revista/ren/article/view/3113",
-        "https://api.crossref.org/works/10.61673/ren.2027.3113"
-      ],
-      "source_kind": "publisher",
-      "note": {
-        "pt": "Publicado on-line em 14/08/2026; vinculado ao fluxo contínuo de 2027.",
-        "en": "Published online on 14 August 2026; assigned to the 2027 continuous issue."
-      }
-    },
-    {
-      "id": "doi-019d88b227f7e6",
-      "title": "Matriz de ciclo de capital e geração de doença: uma proposta de análise da determinação social da saúde a partir das condições de trabalho",
-      "authors": [
-        "Rodrigo Emmanuel Santana BORGES",
-        "Antonio Angelo Menezes BARRETO"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2026,
-      "type": "article",
-      "venue": "Crítica Revolucionária, 5, e031",
-      "doi": "10.14295/2764-4979-rc_cr.2025.v5.182",
-      "url": "https://doi.org/10.14295/2764-4979-rc_cr.2025.v5.182",
-      "sources": [
-        "https://api.crossref.org/works/10.14295/2764-4979-rc_cr.2025.v5.182"
-      ],
-      "source_kind": "publisher",
-      "note": {
-        "pt": "O registro da editora informa publicação em 09/04/2026; o DOI identifica o volume de 2025.",
-        "en": "The publisher record states publication on 9 April 2026; the DOI identifies the 2025 volume."
-      }
-    },
-    {
-      "id": "doi-21ab91a2f98759",
-      "title": "Impacto da variação do preço do gás natural na economia capixaba",
-      "authors": [
-        "Felipe Meirelles Bittencourt Coelho Nunes",
-        "Everlam Elias Montibeler",
-        "Rodrigo Straessli Pinto Franklin",
-        "Daniel Rodrigues Cordeiro",
-        "Júlia Bragatto Grobério"
-      ],
-      "members": [
-        "franklin"
-      ],
-      "year": 2025,
-      "type": "article",
-      "venue": "Revista Planejamento e Políticas Públicas, 151-173",
-      "doi": "10.38116/ppp70art6",
-      "url": "https://doi.org/10.38116/ppp70art6",
-      "sources": [
-        "https://api.crossref.org/works/10.38116/ppp70art6"
-      ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "doi-215246d0453625",
-      "title": "Indicadores de desempenho nas compras públicas: uma análise da viabilidade e potencial a partir dos dados do SIASG",
-      "authors": [
-        "Rodrigo Straessli Pinto Franklin",
-        "Pollyanna Paganoto Moura"
-      ],
-      "members": [
-        "franklin"
-      ],
-      "year": 2025,
-      "type": "chapter",
-      "venue": "Abordagens teóricas e práticas em pesquisa. Coleção Ciências Sociais Aplicadas. V.1",
-      "doi": "10.31560/pimentacultural/978-85-7221-363-9.6",
-      "url": "https://doi.org/10.31560/pimentacultural/978-85-7221-363-9.6",
-      "sources": [
-        "https://api.crossref.org/works/10.31560/pimentacultural/978-85-7221-363-9.6"
-      ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "doi-0a6cb504bb8ced",
-      "title": "INDICADORES DE DESEMPENHO NAS COMPRAS PÚBLICAS: UMA ANÁLISE DA VIABILIDADE E POTENCIAL A PARTIR DOS DADOS DO SIASG",
-      "authors": [
-        "Rodrigo Straessli Pinto Franklin",
-        "Pollyanna Paganoto Moura"
-      ],
-      "members": [
-        "franklin"
-      ],
-      "year": 2025,
-      "type": "article",
-      "venue": "REVISTA FOCO, 18(1), e7570",
-      "doi": "10.54751/revistafoco.v18n1-092",
-      "url": "https://doi.org/10.54751/revistafoco.v18n1-092",
-      "sources": [
-        "https://api.crossref.org/works/10.54751/revistafoco.v18n1-092"
-      ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "franklin-2025-dengue",
-      "title": "Integration of Big Data and public health: an innovative methodology for predicting dengue cases in Espírito Santo and Distrito Federal",
-      "authors": [
-        "Rodrigo Straessli Pinto Franklin",
-        "Rodrigo Emmanuel Santana Borges",
-        "Everlam Elias Montibeler",
-        "Daniel Rodrigues Cordeiro",
-        "Edina Pereira dos Santos"
-      ],
-      "members": [
-        "franklin",
-        "borges"
-      ],
-      "year": 2025,
-      "type": "article",
-      "venue": "Revista Brasileira de Planejamento e Desenvolvimento, 14(3), 613–627",
-      "doi": "10.3895/rbpd.v14n2.19159",
-      "url": "https://periodicos.utfpr.edu.br/rbpd/article/view/19159",
-      "sources": [
-        "https://periodicos.utfpr.edu.br/rbpd/article/view/19159",
-        "https://periodicos.utfpr.edu.br/rbpd/issue/view/819"
-      ],
-      "source_kind": "publisher",
-      "note": {
-        "pt": "O artigo integra o número 3; o identificador DOI registrado contém “n2”.",
-        "en": "The article appears in issue 3; its registered DOI contains “n2”."
-      }
-    },
-    {
-      "id": "doi-18592bd6c29bfd",
-      "title": "Regime de metas de inflação: uma análise crítica",
-      "authors": [
-        "Pollyanna Paganoto Moura",
         "Rodrigo Straessli Pinto Franklin"
-      ],
-      "members": [
-        "franklin"
-      ],
-      "year": 2025,
-      "type": "article",
-      "venue": "Cuadernos de Educación y Desarrollo, 17(4), e8227",
-      "doi": "10.55905/cuadv17n5-182",
-      "url": "https://doi.org/10.55905/cuadv17n5-182",
-      "sources": [
-        "https://api.crossref.org/works/10.55905/cuadv17n5-182"
-      ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "doi-509481399a36e7",
-      "title": "sidra: Acesso aos Dados do 'SIDRA' do IBGE",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2025,
-      "type": "software",
-      "venue": "CRAN: Contributed Packages",
-      "doi": "10.32614/cran.package.sidra",
-      "url": "https://doi.org/10.32614/cran.package.sidra",
-      "sources": [
-        "https://api.crossref.org/works/10.32614/cran.package.sidra"
-      ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "franklin-2025-subdesenvolvimento",
-      "title": "Subdesenvolvimento em questão: visões a partir do pensamento social e econômico brasileiro",
-      "authors": [
-        "Rodrigo Straessli Pinto Franklin",
-        "Pollyanna Paganoto Moura"
       ],
       "members": [
         "franklin"
       ],
       "year": 2025,
       "type": "book",
-      "venue": "EDUFES — ISBN 978-85-7772-647-9",
-      "url": "https://edufes.ufes.br/items/show/800",
+      "venue": "EDUFES — ISBN 978-85-7772-611-0",
+      "publisher": "EDUFES",
+      "isbn": "978-85-7772-611-0",
+      "format": "e-book",
+      "url": "https://www.edufes.ufes.br/items/show/777",
       "sources": [
-        "https://edufes.ufes.br/items/show/800"
+        "https://www.edufes.ufes.br/items/show/777",
+        "https://edufes.ufes.br/items/show/777"
       ],
       "source_kind": "publisher",
-      "note": {
-        "pt": "Organização de Rodrigo Straessli Pinto Franklin e Pollyanna Paganoto Moura.",
-        "en": "Edited by Rodrigo Straessli Pinto Franklin and Pollyanna Paganoto Moura."
+      "inclusion_basis": "explicit_user_selection",
+      "project_relation": {
+        "kind": "theoretical_context",
+        "evidence": "Livro incluído por solicitação explícita do usuário. A descrição da EDUFES apresenta uma interpretação da teoria da dependência, categorias para analisar o mercado mundial e detalhamento metodológico para estudos concretos. Esse enquadramento não presume que o livro utilize as estimativas WLVD; título, autoria, ano e ISBN foram conferidos no catálogo da editora.",
+        "source": "https://edufes.ufes.br/items/show/777"
       }
-    },
-    {
-      "id": "doi-88d6f1e5804683",
-      "title": "Uma análise da moeda a partir do desejo de reter equivalente geral",
-      "authors": [
-        "Pollyanna Paganoto Moura",
-        "Rodrigo Straessli Pinto Franklin"
-      ],
-      "members": [
-        "franklin"
-      ],
-      "year": 2025,
-      "type": "article",
-      "venue": "Cuadernos de Educación y Desarrollo, 17(4), e8226",
-      "doi": "10.55905/cuadv17n5-181",
-      "url": "https://doi.org/10.55905/cuadv17n5-181",
-      "sources": [
-        "https://api.crossref.org/works/10.55905/cuadv17n5-181"
-      ],
-      "source_kind": "publisher"
     },
     {
       "id": "vidal-2024-china",
@@ -254,8 +91,10 @@
         "Everlam Elias Montibeler"
       ],
       "members": [
+        "vidal",
         "franklin",
-        "borges"
+        "borges",
+        "montibeler"
       ],
       "year": 2024,
       "type": "conference",
@@ -265,92 +104,12 @@
         "https://enep.sep.org.br/uploads/1316_1710722071_artigo-rev-borges_pdf_ide.pdf",
         "https://www.sep.org.br/01_sites/01/Caderno_de_Resumos_2024.pdf"
       ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "franklin-2024-compras-enap",
-      "title": "Avaliação da viabilidade de construção de indicadores de compras públicas a partir dos dados do SIASG",
-      "authors": [
-        "Rodrigo Straessli Pinto Franklin"
-      ],
-      "members": [
-        "franklin"
-      ],
-      "year": 2024,
-      "type": "report",
-      "venue": "Enap — Cadernos Enap, Coleção Cátedras, nº 135",
-      "url": "https://repositorio.enap.gov.br/handle/1/8219",
-      "sources": [
-        "https://repositorio.enap.gov.br/bitstream/1/8219/1/Caderno%20135%20Ca%CC%81tedras%202022%20Avaliac%CC%A7a%CC%83o%20da%20Viabilidade%20de%20Construc%CC%A7a%CC%83o%20de%20Indicadores.pdf"
-      ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "doi-5212dd6390f6bc",
-      "title": "Entrepreneurship in the Favela: Negotiating Precarity and Mental Health During Covid-19",
-      "authors": [
-        "Maria Lúcia Teixeira Garcia",
-        "Gary Spolander",
-        "Richard Tomlins",
-        "Fabiola Xavier Leal",
-        "Rodrigo Emmanuel Santana Borges",
-        "Arun Sukumar"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2024,
-      "type": "article",
-      "venue": "Social Work in Public Health, 39(1), 48-61",
-      "doi": "10.1080/19371918.2024.2316874",
-      "url": "https://doi.org/10.1080/19371918.2024.2316874",
-      "sources": [
-        "https://api.crossref.org/works/10.1080/19371918.2024.2316874",
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/154666973"
-      ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "doi-20185b1de06053",
-      "title": "Contribuição à crítica de O capital no século XXI",
-      "authors": [
-        "Pollyanna Paganoto Moura",
-        "Rodrigo Franklin"
-      ],
-      "members": [
-        "franklin"
-      ],
-      "year": 2023,
-      "type": "article",
-      "venue": "Economia e Sociedade, 32(1), 1-25",
-      "doi": "10.1590/1982-3533.2023v32n1art01",
-      "url": "https://doi.org/10.1590/1982-3533.2023v32n1art01",
-      "sources": [
-        "https://api.crossref.org/works/10.1590/1982-3533.2023v32n1art01",
-        "https://orcid.org/0000-0003-2698-2826",
-        "https://pub.orcid.org/v3.0/0000-0003-2698-2826/work/133549508"
-      ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "orcid-borges-167057912",
-      "title": "La intentona fascista del 2023 en Brasil: consideraciones e interrogantes",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges",
-        "Gissele Carraro"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2023,
-      "type": "chapter",
-      "venue": "CLACSO",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057912"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
+      "source_kind": "publisher",
+      "project_relation": {
+        "kind": "application",
+        "evidence": "Seções 4 e 5: aplica o cálculo de trabalho incorporado e de transferências de valor desenvolvido por Franklin e Borges (2020) e Franklin et al. (2022), com matrizes insumo-produto multirregionais, à China de 1995 a 2014.",
+        "source": "https://enep.sep.org.br/uploads/1316_1710722071_artigo-rev-borges_pdf_ide.pdf"
+      }
     },
     {
       "id": "franklin-borges-2022-transferencia",
@@ -373,96 +132,12 @@
         "https://api.crossref.org/works/10.53000/cma.v29i55.18863",
         "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/169843639"
       ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "orcid-borges-159828428",
-      "title": "O Auxílio Emergencial no Brasil durante a pandemia por Covid-19",
-      "authors": [
-        "Fabiola Leal",
-        "Aline Fardin Pandolfi",
-        "Dayene Karyne Cordeiro Sabino Braga",
-        "Rafael Da Silva Barbosa",
-        "Rodrigo Emmanuel Santana Borges"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2022,
-      "type": "article",
-      "venue": "SER Social",
-      "url": "https://doi.org/10.26512/sersocial.v24i51.33863",
-      "sources": [
-        "https://api.crossref.org/works/10.26512/sersocial.v24i51.33863",
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/159828428",
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057922"
-      ],
       "source_kind": "publisher",
-      "record_only": false,
-      "doi": "10.26512/sersocial.v24i51.33863"
-    },
-    {
-      "id": "doi-e91ab2f0a0dd41",
-      "title": "O capitalismo nos países “atrasados”: o debate que se repete",
-      "authors": [
-        "Rodrigo Straessli Pinto Franklin",
-        "Pollyanna Paganoto Moura",
-        "Camilla dos Santos Nogueira"
-      ],
-      "members": [
-        "franklin"
-      ],
-      "year": 2022,
-      "type": "chapter",
-      "venue": "Economia, Estado e sociedade. Nacionalismos, modernismos, modernidades, 152-173",
-      "doi": "10.31560/pimentacultural/2022.95736.8",
-      "url": "https://doi.org/10.31560/pimentacultural/2022.95736.8",
-      "sources": [
-        "https://api.crossref.org/works/10.31560/pimentacultural/2022.95736.8"
-      ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "doi-d7ca0c1cb24c9e",
-      "title": "O peso do Estado no desenvolvimento da sociedade brasileira: a interpretação de Raymundo Faoro e Fernando Henrique Cardoso",
-      "authors": [
-        "Pollyanna Paganoto Moura",
-        "Camilla dos Santos Nogueira",
-        "Rodrigo Emmanuel Santana Borges"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2022,
-      "type": "chapter",
-      "venue": "Economia, Estado e sociedade. Nacionalismos, modernismos, modernidades, 104-119",
-      "doi": "10.31560/pimentacultural/2022.95736.5",
-      "url": "https://doi.org/10.31560/pimentacultural/2022.95736.5",
-      "sources": [
-        "https://api.crossref.org/works/10.31560/pimentacultural/2022.95736.5",
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057911"
-      ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "orcid-borges-167057907",
-      "title": "Produção, reprodução e política social no Brasil: para uma visão articulada e concreta",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges",
-        "Gissele Carraro"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2022,
-      "type": "chapter",
-      "venue": "EdiPUCRS",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057907"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
+      "project_relation": {
+        "kind": "application",
+        "evidence": "Artigo apresenta a metodologia e as estimativas de fluxos de valor em horas de trabalho nas trocas internacionais do Brasil de 1995 a 2009. Publicação em periódico da pesquisa apresentada no ENEP de 2020.",
+        "source": "https://econtents.sbu.unicamp.br/inpec/index.php/cma/article/view/18863"
+      }
     },
     {
       "id": "franklin-2022-skilled-labour",
@@ -475,7 +150,9 @@
       ],
       "members": [
         "franklin",
-        "borges"
+        "borges",
+        "sanchez",
+        "montibeler"
       ],
       "year": 2022,
       "type": "article",
@@ -487,237 +164,12 @@
         "https://www.uca.edu.sv/economia/wp-content/uploads/SKILLED-LABOUR-AND-THE-REDUCTION-PROBLEM-CESAR-SANCHEZ.pdf",
         "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/140685692"
       ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "orcid-borges-167057919",
-      "title": "Superexploração no século XXI: O renovado debate internacional em torno da categoria e proposta de síntese",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges",
-        "Camilla dos Santos Nogueira",
-        "Pollyanna Paganoto Moura",
-        "Aline Faé Stocco"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2022,
-      "type": "chapter",
-      "venue": "Expressão Popular",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057919"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    },
-    {
-      "id": "doi-4da194139e8d33",
-      "title": "Trajetória e desafios da teoria marxista da dependência: contribuições e propostas",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2022,
-      "type": "article",
-      "venue": "Germinal: marxismo e educação em debate, 14(1), 373-385",
-      "doi": "10.9771/gmed.v14i1.48963",
-      "url": "https://doi.org/10.9771/gmed.v14i1.48963",
-      "sources": [
-        "https://api.crossref.org/works/10.9771/gmed.v14i1.48963",
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/119020609"
-      ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "doi-8aff44eb3ba14c",
-      "title": "Auxílio Emergencial e pobreza no estado do Espírito Santo/Brasil",
-      "authors": [
-        "Aline Faé Stocco",
-        "Arelys Esquenazi Borrego",
-        "Rafael Da Silva Barbosa",
-        "Rodrigo Emmanuel Santana Borges",
-        "Aline Elisa M. Lang",
-        "Maria Lucia Teixeira Garcia"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2021,
-      "type": "article",
-      "venue": "Sociedade em Debate, 27(3), 85-104",
-      "doi": "10.47208/sd.v27i3.2947",
-      "url": "https://doi.org/10.47208/sd.v27i3.2947",
-      "sources": [
-        "https://api.crossref.org/works/10.47208/sd.v27i3.2947",
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/141706198"
-      ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "orcid-borges-167057917",
-      "title": "Considerações sobre renda e dependência: dinâmica do mercado mundial, mensuração e complementaridade",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2021,
-      "type": "chapter",
-      "venue": "Pontes Editora",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057917"
-      ],
-      "source_kind": "author_record",
-      "record_only": true,
-      "authorship_complete": false
-    },
-    {
-      "id": "doi-c6f7190cc8e687",
-      "title": "CRISIS Y PANDEMIA POR COVID-19: GESTIÓN ESTATAL DE LA FUERZA DE TRABAJO Y PRECARIEDAD LABORAL EN BRASIL",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges",
-        "Aline Faé Stocco",
-        "Naara Lima Campo"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2021,
-      "type": "chapter",
-      "venue": "Crisis capitalista mundial en tiempos de pandemia, 331-352",
-      "doi": "10.2307/j.ctv2v88btj.22",
-      "url": "https://doi.org/10.2307/j.ctv2v88btj.22",
-      "sources": [
-        "https://api.crossref.org/works/10.2307/j.ctv2v88btj.22"
-      ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "orcid-borges-167057934",
-      "title": "Mortalidad materna en Brasil y Cuba: estudio comparativo",
-      "authors": [
-        "Arelys Esquenazi Borrego",
-        "Edinéia Oliveira Anjos",
-        "Leila Morchezi Tavares Menandro",
-        "Silvia Odriozola Guitart",
-        "Olga Pérez Soto",
-        "Maria Lúcia Teixeira Garcia",
-        "Rodrigo Emmanuel Santana Borges",
-        "Laura Galeano Zaldívar"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2021,
-      "type": "article",
-      "venue": "REVISTA CUBANA DE SALUD PÚBLICA (IMPRESA)",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057934"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    },
-    {
-      "id": "doi-a257343b73b6ab",
-      "title": "O peso do Estado no desenvolvimento da sociedade brasileira: a interpretação de Raymundo Faoro e Fernando Henrique Cardoso",
-      "authors": [
-        "Pollyanna Paganoto Moura",
-        "Camilla Dos Santos Nogueira",
-        "Rodrigo Emmanuel Santana Borges"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2021,
-      "type": "article",
-      "venue": "Diálogo, 01",
-      "doi": "10.18316/dialogo.v0i46.6683",
-      "url": "https://doi.org/10.18316/dialogo.v0i46.6683",
-      "sources": [
-        "https://api.crossref.org/works/10.18316/dialogo.v0i46.6683"
-      ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "orcid-borges-167057908",
-      "title": "Produção, reprodução e política social: para uma visão articulada e concreta",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges",
-        "Gissele Carraro"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2021,
-      "type": "conference",
-      "venue": "II SIPINF - PUCRS",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057908"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    },
-    {
-      "id": "orcid-borges-167057913",
-      "title": "Reducing complex into simple labor: an assessment based on empirical grounds",
-      "authors": [
-        "Rodrigo Straessli Pinto Franklin",
-        "Rodrigo Emmanuel Santana Borges",
-        "César Sánchez",
-        "Everlam Elias Montibeler"
-      ],
-      "members": [
-        "borges",
-        "franklin"
-      ],
-      "year": 2021,
-      "type": "conference",
-      "venue": "2021 IIPPE ANNUAL CONFERENCE",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057913"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    },
-    {
-      "id": "doi-2152a47152f85c",
-      "title": "The COVID-19 pandemic, emergency aid and social work in Brazil",
-      "authors": [
-        "Maria Lúcia T Garcia",
-        "Aline F Pandolfi",
-        "Fabiola X Leal",
-        "Aline F Stocco",
-        "Arelys Esquenazi Borrego",
-        "Rodrigo ES Borges",
-        "Edineia F dos A Oliveira",
-        "Aline EM Lang",
-        "Cenira Oliveira Andrade",
-        "Silvia N Salazar",
-        "Leila MT Menandro",
-        "Gary Spolander"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2021,
-      "type": "article",
-      "venue": "Qualitative Social Work, 20(1-2), 356-365",
-      "doi": "10.1177/1473325020981753",
-      "url": "https://doi.org/10.1177/1473325020981753",
-      "sources": [
-        "https://api.crossref.org/works/10.1177/1473325020981753",
-        "https://orcid.org/0000-0003-2076-1424",
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/140685694"
-      ],
-      "source_kind": "publisher"
+      "source_kind": "publisher",
+      "project_relation": {
+        "kind": "methodology",
+        "evidence": "Seção 4.2: declara expressamente que as estimativas são parte da construção da World Labour Values Database pela World Labour Task Force do Group of Concrete Studies on Theory of Value. Compara métodos de redução de trabalho complexo a simples sobre WIOD 2013.",
+        "source": "https://www.uca.edu.sv/economia/wp-content/uploads/SKILLED-LABOUR-AND-THE-REDUCTION-PROBLEM-CESAR-SANCHEZ.pdf"
+      }
     },
     {
       "id": "franklin-2021-heterogeneous-labour",
@@ -730,7 +182,9 @@
       ],
       "members": [
         "franklin",
-        "borges"
+        "borges",
+        "sanchez",
+        "montibeler"
       ],
       "year": 2021,
       "type": "conference",
@@ -740,134 +194,12 @@
         "https://en.anpec.org.br/previous-editions.php?r=encontro-2021",
         "https://www.anpec.org.br/encontro/2021/submissao/files_I/i2-6a876d3d630b0a4c2e1c05d022dcd522.pdf"
       ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "orcid-borges-167057929",
-      "title": "Três questões em torno da teoria do valor trabalho",
-      "authors": [
-        "Sadi dal Rosso",
-        "Rodrigo Emmanuel Santana Borges",
-        "Fábio Marvulle Bueno"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2021,
-      "type": "chapter",
-      "venue": "Pontes Editores",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057929"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    },
-    {
-      "id": "orcid-borges-167057915",
-      "title": "Crise, pandemia, políticas públicas e trabalhadores no Brasil",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges",
-        "Aline Faé Stocco"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2020,
-      "type": "conference",
-      "venue": "Anais do III Seminário Nacional e V Seminário Regional de Políticas Públicas, Intersetorialidade e Família (III SENPINF/ V SERPINF) - inflexões da Pandemia-COVID 19 na vida, nas políticas públicas e no trabalho",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057915"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    },
-    {
-      "id": "orcid-borges-167057924",
-      "title": "Desenvolvimento da primeira infância em Cuba: avanços e desafios à luz do sexagésimo aniversário do triunfo da Revolução",
-      "authors": [
-        "Arelys Esquenazi Borrego",
-        "Aline Faé Stocco",
-        "Rodrigo Emmanuel Santana Borges"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2020,
-      "type": "chapter",
-      "venue": "Initia Via",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057924"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    },
-    {
-      "id": "orcid-borges-167057932",
-      "title": "Financeirização e capital fictício na América Latina e Brasil",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges",
-        "Camilla dos Santos Nogueira"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2020,
-      "type": "chapter",
-      "venue": "Cortez Editora",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057932"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    },
-    {
-      "id": "orcid-borges-167057921",
-      "title": "O peso do Estado no desenvolvimento da sociedade brasileira: a interpretação de Raymundo Faoro e Fernando Henrique Cardoso",
-      "authors": [
-        "Pollyanna Paganoto Moura",
-        "Camilla dos Santos Nogueira",
-        "Rodrigo Emmanuel Santana Borges"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2020,
-      "type": "conference",
-      "venue": "Anais do II Seminário de Pensamento Social Brasileiro",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057921"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    },
-    {
-      "id": "doi-24f39d08283ee3",
-      "title": "POLÍTICA SOCIAL E DESENVOLVIMENTO DA PRIMEIRA INFÂNCIA: mapeando condições no Espírito Santo, 2012 a 2017",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges",
-        "Maria Lúcia Teixeira Garcia",
-        "Arelys Esquenazi Borrego",
-        "Aline Faé Stocco",
-        "Aline Elisa Maretto Lang"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2020,
-      "type": "article",
-      "venue": "Revista de Políticas Públicas, 24(2), 858",
-      "doi": "10.18764/2178-2865.v24n2p858-877",
-      "url": "https://doi.org/10.18764/2178-2865.v24n2p858-877",
-      "sources": [
-        "https://api.crossref.org/works/10.18764/2178-2865.v24n2p858-877",
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/114962296"
-      ],
-      "source_kind": "publisher"
+      "source_kind": "publisher",
+      "project_relation": {
+        "kind": "methodology",
+        "evidence": "Seção 4.1: compara métodos de redução do trabalho heterogêneo com dados WIOD de 1995 a 2009 e estimativas do grupo para preços diretos, produto, taxa de exploração e transferências de valor; antecede o artigo de 2022.",
+        "source": "https://www.anpec.org.br/encontro/2021/submissao/files_I/i2-6a876d3d630b0a4c2e1c05d022dcd522.pdf"
+      }
     },
     {
       "id": "franklin-borges-2020-transferencias",
@@ -888,643 +220,142 @@
         "https://www.sep.org.br/enep_teste/uploads/1316_1583720809_2020_Troca_desigual_-_identificado_pdf_ide.pdf",
         "https://biblio.imperialismoedependencia.org/textos-contemporaneos-tmd/transferencias-de-valor-e-troca-desigual-no-brasil-de-1995-a-2009/"
       ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "orcid-borges-167057931",
-      "title": "A gestão estatal da força de trabalho no Brasil: Economia política de uma reforma trabalhista",
-      "authors": [
-        "Aline Faé Stocco",
-        "Paulo Nakatani",
-        "Naara de Lima Campos",
-        "Rodrigo Emmanuel Santana Borges"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2019,
-      "type": "article",
-      "venue": "Anuario de Estudios Políticos Latinoamericanos",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057931"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    },
-    {
-      "id": "orcid-borges-167057905",
-      "title": "Da economia política do capital fictício: notas sobre seu movimento na América Latina e Brasil",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges",
-        "Aline Faé Stocco",
-        "Camilla Nogueira dos Santos"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2019,
-      "type": "conference",
-      "venue": "Anais do 7º Encontro Internacional de Política Social e o 14º Encontro Nacional de Política Social",
-      "url": "https://periodicos.ufes.br/einps/article/view/25221",
-      "sources": [
-        "https://periodicos.ufes.br/einps/article/view/25221",
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057905"
-      ],
       "source_kind": "publisher",
-      "record_only": false,
-      "note": {
-        "pt": "Ano e autoria conferidos nos anais da UFES de 2019; o registro ORCID informa 2018.",
-        "en": "Year and authors verified against the 2019 UFES proceedings; the ORCID record states 2018."
+      "project_relation": {
+        "kind": "application",
+        "evidence": "Seção 3: desenvolve e aplica estimativas próprias de trabalho incorporado e transferências de valor a partir das matrizes multirregionais de Timmer et al. (2015). Analisa o Brasil e seus parceiros comerciais de 1995 a 2009.",
+        "source": "https://www.sep.org.br/enep_teste/uploads/1316_1583720809_2020_Troca_desigual_-_identificado_pdf_ide.pdf"
       }
     },
     {
-      "id": "orcid-borges-167057894",
-      "title": "Mundialização financeira e as transferências de mais-valor: o caso brasileiro no contexto da América Latina",
+      "id": "barreto-2023-saude",
+      "title": "Troca desigual e condições de trabalho no setor saúde e no complexo industrial da saúde",
       "authors": [
-        "Camilla dos Santos Nogueira",
-        "Rodrigo Emanuel Santana Borges",
-        "Aline Faé Stocco"
+        "Antonio Angelo Menezes Barreto",
+        "Rodrigo Emmanuel Santana Borges",
+        "Rodrigo Straessli Pinto Franklin",
+        "Áquilas Nogueira Mendes"
       ],
       "members": [
-        "borges"
+        "barreto",
+        "borges",
+        "franklin",
+        "mendes"
       ],
-      "year": 2019,
+      "year": 2023,
       "type": "conference",
-      "venue": "Anais do 7º Encontro Internacional de Política Social e o 14º Encontro Nacional de Política Social",
-      "url": "https://periodicos.ufes.br/einps/article/view/25222",
+      "venue": "9º Congresso Brasileiro de Ciências Sociais e Humanas em Saúde — resumo de comunicação oral",
+      "url": "https://abrascoeventos.org.br/cshs/2023/programacao/exibe_trabalho.php?id_atividade=5223&id_trabalho=46781&tipo=",
       "sources": [
-        "https://periodicos.ufes.br/einps/article/view/25222",
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057894"
+        "https://abrascoeventos.org.br/cshs/2023/programacao/exibe_trabalho.php?id_atividade=5223&id_trabalho=46781&tipo="
       ],
       "source_kind": "publisher",
-      "record_only": false,
-      "note": {
-        "pt": "Ano e autoria conferidos nos anais da UFES de 2019; o registro ORCID informa 2018.",
-        "en": "Year and authors verified against the 2019 UFES proceedings; the ORCID record states 2018."
+      "project_relation": {
+        "kind": "application",
+        "evidence": "A seção Metodologia do resumo oficial declara utilizar o painel World Labour Values Database (WLVD), de 2000 a 2014, para estimar exploração do trabalho e transferências de valor no setor Saúde e Serviço Social e nos setores industriais que o abastecem. Autoria e apresentação em 3 de novembro de 2023 constam da programação oficial.",
+        "source": "https://abrascoeventos.org.br/cshs/2023/programacao/exibe_trabalho.php?id_atividade=5223&id_trabalho=46781&tipo="
       }
     },
     {
-      "id": "doi-d37c4fa42b4647",
-      "title": "O que é superexploração?",
-      "authors": [
-        "Rodrigo Straessli Pinto Franklin"
-      ],
-      "members": [
-        "franklin"
-      ],
-      "year": 2019,
-      "type": "article",
-      "venue": "Economia e Sociedade, 28(3), 689-715",
-      "doi": "10.1590/1982-3533.2019v28n3art04",
-      "url": "https://doi.org/10.1590/1982-3533.2019v28n3art04",
-      "sources": [
-        "https://api.crossref.org/works/10.1590/1982-3533.2019v28n3art04"
-      ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "orcid-borges-167057897",
-      "title": "Famílias e Programas Sociais no Brasil: reflexões sobre programas de transferência de renda a partir de Matrizes de Contabilidade Social",
+      "id": "borges-2022-fixed-capital",
+      "title": "Contemporary world market, values and consumption of fixed capital: insights from the World Labour Values Database",
       "authors": [
         "Rodrigo Emmanuel Santana Borges",
-        "Naara de Lima Campos",
-        "Isabela Ramos Ribeiro"
+        "Rodrigo Straessli Pinto Franklin",
+        "Everlam Montibeler",
+        "César Sánchez"
       ],
       "members": [
-        "borges"
+        "borges",
+        "franklin",
+        "montibeler",
+        "sanchez"
       ],
-      "year": 2018,
+      "year": 2022,
       "type": "conference",
-      "venue": "Anais do IV SERPINF - Seminário Regional de Políticas Públicas, Intersetorialidade e Família e II SENPINF - Seminário Nacional de Políticas Públicas, Intersetorialidade e Família",
-      "url": "https://orcid.org/0000-0003-2076-1424",
+      "venue": "28th International Input-Output Conference — IIOA",
+      "url": "https://www.iioa.org/conferences/28th/papers/files/4419_2022-Contemporaryworldmarket%2Cvaluesandconsumptionoffixedcapital%3AreflectionsfromtheWorldLabourValuesDatabase.pdf",
       "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057897"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    },
-    {
-      "id": "orcid-borges-167057903",
-      "title": "Padrão de reprodução do capital: potenciais e contribuições à categoria",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2018,
-      "type": "conference",
-      "venue": "Anais do II Seminário Estado, Trabalho, Educação e Desenvolvimento: 200 anos de Karl Marx e pensamento latino-americano",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057903"
-      ],
-      "source_kind": "author_record",
-      "record_only": true,
-      "authorship_complete": false
-    },
-    {
-      "id": "franklin-2018-reflexoes",
-      "title": "Reflexões teórico-metodológicas sobre uma pretensa formalização da superexploração do trabalho",
-      "authors": [
-        "Rodrigo Straessli Pinto Franklin"
-      ],
-      "members": [
-        "franklin"
-      ],
-      "year": 2018,
-      "type": "article",
-      "venue": "Revista da Sociedade Brasileira de Economia Política, nº 48 (2017)",
-      "url": "https://revistasep.org.br/index.php/SEP/article/view/290",
-      "sources": [
-        "https://revistasep.org.br/index.php/SEP/article/view/290"
+        "https://www.iioa.org/conferences/28th/papers/files/4419_2022-Contemporaryworldmarket%2Cvaluesandconsumptionoffixedcapital%3AreflectionsfromtheWorldLabourValuesDatabase.pdf",
+        "https://www.iioa.org/conferences/28th/download/IIOA%20Conference%20Program%2020072022LOC%20SK.pdf"
       ],
       "source_kind": "publisher",
-      "note": {
-        "pt": "Fascículo de 2017; a revista informa publicação on-line em 23/01/2018.",
-        "en": "2017 issue; the journal reports online publication on 23 January 2018."
+      "project_relation": {
+        "kind": "methodology",
+        "evidence": "O manuscrito examina o tratamento do consumo de capital fixo na construção da World Labour Values Database (1995–2009). Páginas 4–7 apresentam o método; a página 8 atribui as estimativas ao painel. A capa e o programa oficial confirmam os quatro autores; o título do índice do evento usa a variante 'depreciation'.",
+        "source": "https://www.iioa.org/conferences/28th/papers/files/4419_2022-Contemporaryworldmarket%2Cvaluesandconsumptionoffixedcapital%3AreflectionsfromtheWorldLabourValuesDatabase.pdf"
       }
     },
     {
-      "id": "orcid-borges-167057901",
-      "title": "Cadeias globais de valor no capitalismo contemporâneo: crítica e reconstrução a partir da ótica do ciclo do capital",
+      "id": "borges-franklin-2024-exiobase",
+      "title": "Trabalho e exploração em nações e indústrias - um panorama ampliado com a World Labour Values Database",
       "authors": [
-        "Rodrigo Emmanuel Santana Borges"
+        "Rodrigo Borges",
+        "Rodrigo Franklin"
       ],
       "members": [
-        "borges"
-      ],
-      "year": 2017,
-      "type": "conference",
-      "venue": "Anais do Colóquio Internacional Marx e o Marxismo 2017",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057901"
-      ],
-      "source_kind": "author_record",
-      "record_only": true,
-      "authorship_complete": false
-    },
-    {
-      "id": "doi-c8f8a4afc9c7a7",
-      "title": "Regime de metas de inflação: uma verificação empírica de sua eficiência",
-      "authors": [
-        "Pollyanna Paganoto Moura",
-        "Rodrigo Straessli Pinto Franklin"
-      ],
-      "members": [
+        "borges",
         "franklin"
       ],
-      "year": 2017,
-      "type": "article",
-      "venue": "Revista Ciências Sociais em Perspectiva, 16(30)",
-      "doi": "10.5935/1981-4747.20170006",
-      "url": "https://doi.org/10.5935/1981-4747.20170006",
+      "year": 2024,
+      "type": "conference",
+      "venue": "VI Encontro Internacional Teoria do Valor Trabalho e Ciências Sociais — resumo expandido",
+      "url": "https://gept.grupo.pro.br/event/2/contributions/77/",
+      "url_status": "unavailable",
+      "url_checked_on": "2026-09-09",
       "sources": [
-        "https://api.crossref.org/works/10.5935/1981-4747.20170006",
-        "https://api.crossref.org/works/10.48075/revistacsp.v16i30.13157"
+        "https://gept.grupo.pro.br/event/2/contributions/77/",
+        "https://gept.grupo.pro.br/event/2/contributions/77/attachments/68/79/Trabalho%20e%20explora%C3%A7%C3%A3o%20em%20na%C3%A7%C3%B5es%20e%20ind%C3%BAstrias%20-%20panorama%20ampliado%20da%20World%20Labour%20Values%20Database-anon.pdf"
       ],
       "source_kind": "publisher",
-      "note": {
-        "pt": "Registro de 2017; a migração editorial também registra o mesmo artigo sob o DOI 10.48075/revistacsp.v16i30.13157, com data de 2021. Contado uma vez.",
-        "en": "2017 record; the editorial migration also registers this article under DOI 10.48075/revistacsp.v16i30.13157 with a 2021 date. Counted once."
+      "project_relation": {
+        "kind": "methodology",
+        "evidence": "O resumo expandido e a contribuição 77, apresentados no VI Encontro em 5 de dezembro de 2024, descrevem explicitamente a integração da EXIOBASE à World Labour Values Database para ampliar a cobertura de países, setores e períodos. Título, autoria e conteúdo conferidos na indexação das fontes oficiais; a página e o PDF retornaram HTTP 404 na consulta direta em 9 de setembro de 2026.",
+        "source": "https://gept.grupo.pro.br/event/2/contributions/77/"
       }
     },
     {
-      "id": "orcid-borges-167057918",
-      "title": "Renda da Terra e Teoria Marxista da Dependência - Incompatibilidade na Aparência ou na Essência?",
+      "id": "barreto-2024-dependencia-ceis",
+      "title": "Dependência e Desenvolvimento do Complexo Econômico Industrial da Saúde",
       "authors": [
-        "Rodrigo Emmanuel Santana Borges",
-        "Isadora de Andrade Guerreiro",
-        "Evaldo Gomes Júnior",
-        "Tomás de Siervi Barcellos",
-        "Pietro Caldeirini Aruto",
-        "Vitor Hugo Tonin"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2017,
-      "type": "conference",
-      "venue": "Anais do XVII Enanpur",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057918"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    },
-    {
-      "id": "orcid-borges-167057904",
-      "title": "A esfera alta de consumo no padrão de reprodução brasileiro contemporâneo",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges",
-        "Tomás de Siervi Barcellos"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2016,
-      "type": "conference",
-      "venue": "Anais do III Encontro Teoria do Valor Trabalho e Ciências Sociais",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057904"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    },
-    {
-      "id": "orcid-borges-167057910",
-      "title": "Intercambio Desigual, Transferencia de Valor y Renta de la Tierra: Contribuciones en torno a polémicas inconclusas desde la perspectiva de la teoría marxista de la dependencia",
-      "authors": [
+        "Antonio Angelo Barreto de Menezes",
+        "Áquilas Nogueira Mendes",
         "Rodrigo Emmanuel Santana Borges"
       ],
       "members": [
+        "barreto",
+        "mendes",
         "borges"
       ],
-      "year": 2016,
+      "year": 2024,
       "type": "conference",
-      "venue": "Actas digitales IX Jornadas de Economía Crítica / XI Coloquio de la SEPLA",
-      "url": "https://orcid.org/0000-0003-2076-1424",
+      "venue": "VI Encontro Internacional Teoria do Valor Trabalho e Ciências Sociais — resumo expandido",
+      "url": "https://gept.grupo.pro.br/event/2/contributions/94/attachments/85/98/Sa%C3%BAde%2C%20desenvolvimento%20e%20depend%C3%AAncia%20no%20Complexo%20Econ%C3%B4mico%20Industrial%20da%20Sa%C3%BAde.pdf",
+      "url_status": "unavailable",
+      "url_checked_on": "2026-09-09",
       "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057910"
+        "https://gept.grupo.pro.br/event/2/contributions/94/attachments/85/98/Sa%C3%BAde%2C%20desenvolvimento%20e%20depend%C3%AAncia%20no%20Complexo%20Econ%C3%B4mico%20Industrial%20da%20Sa%C3%BAde.pdf",
+        "https://gept.grupo.pro.br/event/2/contributions/94/"
       ],
-      "source_kind": "author_record",
-      "record_only": true,
-      "authorship_complete": false
-    },
-    {
-      "id": "doi-2699531aa179e8",
-      "title": "Seria Fernando Henrique Cardoso um weberiano?",
-      "authors": [
-        "Rodrigo Straessli Pinto Franklin"
-      ],
-      "members": [
-        "franklin"
-      ],
-      "year": 2016,
-      "type": "article",
-      "venue": "História Econômica & História de Empresas, 19(1)",
-      "doi": "10.29182/hehe.v19i1.417",
-      "url": "https://doi.org/10.29182/hehe.v19i1.417",
-      "sources": [
-        "https://api.crossref.org/works/10.29182/hehe.v19i1.417"
-      ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "franklin-2015-tese",
-      "title": "Teoria da dependência: categorias para uma análise do mercado mundial",
-      "authors": [
-        "Rodrigo Straessli Pinto Franklin"
-      ],
-      "members": [
-        "franklin"
-      ],
-      "year": 2015,
-      "type": "thesis",
-      "venue": "Universidade Federal do Rio Grande do Sul — Doutorado em Economia",
-      "url": "https://lume.ufrgs.br/handle/10183/132928",
-      "sources": [
-        "https://lume.ufrgs.br/handle/10183/132928"
-      ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "doi-994325a7cdefa2",
-      "title": "Input–Output Matrix study: A theoretical frame to study the impact of Brazilian IPI reduction in final demand",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges",
-        "Everlam Elias Montibeler"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2014,
-      "type": "article",
-      "venue": "EconomiA, 15(2), 228-241",
-      "doi": "10.1016/j.econ.2014.03.004",
-      "url": "https://doi.org/10.1016/j.econ.2014.03.004",
-      "sources": [
-        "https://api.crossref.org/works/10.1016/j.econ.2014.03.004",
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/140685696"
-      ],
-      "source_kind": "publisher"
-    },
-    {
-      "id": "orcid-borges-167057916",
-      "title": "¿Alternativas al neoliberalismo en América Latina? Las políticas económicas en Venezuela, Brasil, Uruguay, Bolivia y Ecuador",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges",
-        "BIBIANA MEDIALDEA",
-        "RICARDO MOLERO SIMARRO",
-        "LUIS BUENDÍA",
-        "Antonio Sanabria",
-        "Eddy Sanchez Iglesias",
-        "Jaime Rendón",
-        "Juan Pablo Mateo Tomé",
-        "Maria José Paz Antolín"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2013,
-      "type": "book",
-      "venue": "Fondo de Cultura Económica",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057916"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    },
-    {
-      "id": "orcid-borges-167057898",
-      "title": "Breve histórico das tabelas insumo-produto no Brasil",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges",
-        "Tiago Camarinha Lopes"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2013,
-      "type": "conference",
-      "venue": "Anais do X Congresso da Associação Brasileira de História Econômica e XI Conferência Internacional de História de Empresas",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057898"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    },
-    {
-      "id": "orcid-borges-167057926",
-      "title": "Oil explotation regulational framework, effects in the sector and its relation to the whole economy: the case of Brazil's 1997 change",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges",
-        "Everlam Elias Montibeler"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2012,
-      "type": "article",
-      "venue": "ESTUDOS DO CEPE",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057926"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    },
-    {
-      "id": "orcid-borges-167057920",
-      "title": "Crisis, Ideological Domination and Mass Media",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2011,
-      "type": "conference",
-      "venue": "Conference 2011 Papers",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057920"
-      ],
-      "source_kind": "author_record",
-      "record_only": true,
-      "authorship_complete": false
-    },
-    {
-      "id": "orcid-borges-167057923",
-      "title": "Globalización, dependencia y crisis económica. Análisis heterodoxos desde la economía del desarrollo",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges",
-        "Juan Pablo Mateo Tomé",
-        "RICARDO MOLERO SIMARRO"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2011,
-      "type": "book",
-      "venue": "FIM",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057923"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    },
-    {
-      "id": "orcid-borges-167057895",
-      "title": "VAT reduction as anticiclic policy and macroeconomic effects: the case of Brazil in the current crisis",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2011,
-      "type": "conference",
-      "venue": "Contributions",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057895"
-      ],
-      "source_kind": "author_record",
-      "record_only": true,
-      "authorship_complete": false
-    },
-    {
-      "id": "orcid-borges-167057900",
-      "title": "Comparación de la matriz de combustibles líquidos brasileña y mundial: perspectivas sobre biocombustibles",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2008,
-      "type": "conference",
-      "venue": "XI JORNADAS DE ECONOMÍA CRÍTICA",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057900"
-      ],
-      "source_kind": "author_record",
-      "record_only": true,
-      "authorship_complete": false
-    },
-    {
-      "id": "orcid-borges-167057925",
-      "title": "Política econômica e políticas sociais, de FHC a Lula",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges",
-        "Reinaldo Antônio Carcanholo",
-        "Grupo de Estudos sobre Política Econômica Brasileira GEPEBRA"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2008,
-      "type": "chapter",
-      "venue": "EDFES",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057925"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    },
-    {
-      "id": "orcid-borges-167057906",
-      "title": "Inserción en la mundialización capitalista: impactos sobre la relación salarial y la (super)explotación en Brasil ? 1990 a 2005",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2007,
-      "type": "conference",
-      "venue": "Annales du Congrès Marx Internationale V - Section d'Economie",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057906"
-      ],
-      "source_kind": "author_record",
-      "record_only": true,
-      "authorship_complete": false
-    },
-    {
-      "id": "orcid-borges-167057893",
-      "title": "Gobierno Lula: Incongruencias del Social Liberalismo en Brasil",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges",
-        "Estevão Nicolau dos Santos"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2005,
-      "type": "conference",
-      "venue": "I ENCUENTRO DE LAS ASOCIACIONES DE ESTUDIANTES POR UNA ECONOMIA CRÍTICA DE ESPAÑA",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057893"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    },
-    {
-      "id": "orcid-borges-167057928",
-      "title": "Política Econômica e Políticas Sociais, de FHC a Lula",
-      "authors": [
-        "Reinaldo Antônio Carcanholo",
-        "Rodrigo Emmanuel Santana Borges",
-        "Grupo de Estudos sobre Política Econômica Brasileira GEPEBRA"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2005,
-      "type": "conference",
-      "venue": "",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057928"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    },
-    {
-      "id": "orcid-borges-167057899",
-      "title": "Globalização: Teoria e Prática",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges",
-        "Rodrigo Andrade Aragão",
-        "Diogo Franco Magalhães",
-        "Ana Letícia Espolador Leitão"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2004,
-      "type": "conference",
-      "venue": "Anais da 56 ª Reunião Anual da Sociedade Brasileira para o Progresso da Ciência",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057899"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    },
-    {
-      "id": "orcid-borges-167057896",
-      "title": "O FUNDAP no período de 1993 a 2001: impactos nas finanças públicas e perspectivas",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges",
-        "Vitor Januário de Oliveira"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2003,
-      "type": "conference",
-      "venue": "Anais da 55ª Reunião Anual da SBPC",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057896"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    },
-    {
-      "id": "orcid-borges-167057902",
-      "title": "O Sistema Bretton Woods: sua evolução, contradições e superação",
-      "authors": [
-        "Rodrigo Emmanuel Santana Borges",
-        "Aline Faé Stocco"
-      ],
-      "members": [
-        "borges"
-      ],
-      "year": 2002,
-      "type": "conference",
-      "venue": "ANAIS da 54ª Reunião Anual da SBPC",
-      "url": "https://orcid.org/0000-0003-2076-1424",
-      "sources": [
-        "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057902"
-      ],
-      "source_kind": "author_record",
-      "record_only": true
-    }
-  ],
-  "excluded_records": [
-    {
-      "title": "A miséria da economia no século XXI",
-      "source": "https://pub.orcid.org/v3.0/0000-0003-2698-2826/work/127239486",
-      "reason": "In-press or submission record: publication not confirmed."
-    },
-    {
-      "title": "Planificação no processo sócio-histórico cubano: experiência e desafios no contexto atual (no prelo)",
-      "source": "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/167057930",
-      "reason": "In-press or submission record: publication not confirmed."
-    },
-    {
-      "title": "Maternal mortality in Brazil and Cuba: comparative study,Mortalidad materna en Brasil y Cuba: estudio comparativo",
-      "source": "https://pub.orcid.org/v3.0/0000-0003-2076-1424/work/140685689",
-      "reason": "Duplicate bilingual record; complete author record retained."
+      "source_kind": "publisher",
+      "project_relation": {
+        "kind": "application",
+        "evidence": "A seção 2 (Metodologia), página 2 do resumo expandido, declara analisar o complexo econômico industrial da saúde com informações do painel World Labour Values Database (WLVD). A página 1 identifica título, três autores e evento de 3 a 5 de dezembro de 2024. Texto conferido na indexação da fonte oficial; o PDF retorna HTTP 404 na consulta direta em 9 de setembro de 2026. A ordem de sobrenomes de Barreto foi preservada conforme impressa e associada à identidade também presente no resumo ABRASCO de 2023.",
+        "source": "https://gept.grupo.pro.br/event/2/contributions/94/attachments/85/98/Sa%C3%BAde%2C%20desenvolvimento%20e%20depend%C3%AAncia%20no%20Complexo%20Econ%C3%B4mico%20Industrial%20da%20Sa%C3%BAde.pdf"
+      }
     }
   ],
   "metadata_sources": [
-    "https://orcid.org/0000-0003-2698-2826",
-    "https://orcid.org/0000-0003-2076-1424"
-  ]
+    "https://edufes.ufes.br/items/show/777",
+    "https://enep.sep.org.br/uploads/1316_1710722071_artigo-rev-borges_pdf_ide.pdf",
+    "https://econtents.sbu.unicamp.br/inpec/index.php/cma/article/view/18863",
+    "https://www.uca.edu.sv/economia/wp-content/uploads/SKILLED-LABOUR-AND-THE-REDUCTION-PROBLEM-CESAR-SANCHEZ.pdf",
+    "https://www.anpec.org.br/encontro/2021/submissao/files_I/i2-6a876d3d630b0a4c2e1c05d022dcd522.pdf",
+    "https://www.sep.org.br/enep_teste/uploads/1316_1583720809_2020_Troca_desigual_-_identificado_pdf_ide.pdf",
+    "https://abrascoeventos.org.br/cshs/2023/programacao/exibe_trabalho.php?id_atividade=5223&id_trabalho=46781&tipo=",
+    "https://www.iioa.org/conferences/28th/papers/files/4419_2022-Contemporaryworldmarket%2Cvaluesandconsumptionoffixedcapital%3AreflectionsfromtheWorldLabourValuesDatabase.pdf",
+    "https://gept.grupo.pro.br/event/2/contributions/77/",
+    "https://gept.grupo.pro.br/event/2/contributions/94/attachments/85/98/Sa%C3%BAde%2C%20desenvolvimento%20e%20depend%C3%AAncia%20no%20Complexo%20Econ%C3%B4mico%20Industrial%20da%20Sa%C3%BAde.pdf"
+  ],
+  "scope": "wlvd-research-and-selected-books"
 }

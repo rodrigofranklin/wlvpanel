@@ -1,2 +1,2 @@
-// Compatibility entry point for the current seven-tab interface.
+// Compatibility entry point for the current six-tab interface.
 require('./check-panel-interface.cjs');

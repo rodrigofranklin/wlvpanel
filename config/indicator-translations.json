@@ -99,25 +99,25 @@
     "pt": "Produto total (preços diretos — USD)"
   },
   "surplus_value.empe_hs.r.pc": {
-    "pt": "Taxa de mais-valia (alta qualificação)"
+    "pt": "Taxa de mais-valor (alta qualificação)"
   },
   "surplus_value.empe_ms.r.pc": {
-    "pt": "Taxa de mais-valia (média qualificação)"
+    "pt": "Taxa de mais-valor (média qualificação)"
   },
   "surplus_value.empe_ls.r.pc": {
-    "pt": "Taxa de mais-valia (baixa qualificação)"
+    "pt": "Taxa de mais-valor (baixa qualificação)"
   },
   "surplus_value.empe.r.pc": {
-    "pt": "Taxa de mais-valia"
+    "pt": "Taxa de mais-valor"
   },
   "surplus_value.emp.r.pc": {
-    "pt": "Taxa de mais-valia das pessoas ocupadas"
+    "pt": "Taxa de mais-valor das pessoas ocupadas"
   },
   "surplus_value.emp_p.r.pc": {
-    "pt": "Taxa de mais-valia das pessoas ocupadas (trabalhadores produtivos)"
+    "pt": "Taxa de mais-valor das pessoas ocupadas (trabalhadores produtivos)"
   },
   "surplus_value.empe_p.r.pc": {
-    "pt": "Taxa de mais-valia (trabalhadores produtivos)"
+    "pt": "Taxa de mais-valor (trabalhadores produtivos)"
   },
   "compensation.empe.s.us": {
     "pt": "Salários e ordenados (USD)"
@@ -162,7 +162,7 @@
     "pt": "Comércio internacional"
   },
   "group.Rate of surplus value": {
-    "pt": "Taxa de mais-valia"
+    "pt": "Taxa de mais-valor"
   },
   "desc.capital_stock.s.us": {
     "pt": "O estoque de capital corresponde ao preço dos ativos de capital em USD correntes."
@@ -177,7 +177,7 @@
     "pt": "A depreciação do capital refere-se ao desgaste físico de um ativo de capital, medido pela queda de seu preço de mercado."
   },
   "desc.appropriated_profit.r.pc": {
-    "pt": "A taxa de lucro apropriado representa a relação entre o lucro líquido apropriado por um setor (lucro menos depreciação do capital) e seu estoque de capital. Trata-se de uma primeira aproximação da taxa de lucro. Ela não corresponde ao conceito marxista de taxa de lucro, isto é, a mais-valia dividida pelos capitais constante e variável."
+    "pt": "A taxa de lucro apropriado representa a relação entre o lucro líquido apropriado por um setor (lucro menos depreciação do capital) e seu estoque de capital. Trata-se de uma primeira aproximação da taxa de lucro. Ela não corresponde ao conceito marxista de taxa de lucro, isto é, o mais-valor dividido pelos capitais constante e variável."
   },
   "desc.trade_transfers.s.mv": {
     "pt": "A transferência de valor pelo comércio representa o valor recebido do resto do mundo (quando positiva) ou enviado a ele (quando negativa), em decorrência da diferença entre a magnitude de valor e o valor representado pelos preços das mercadorias. Os dados abrangem dois tipos de transferência: as originadas em setores improdutivos, nas quais a quantia de dinheiro recebida ou enviada representa valor, mas nenhum valor é entregue ou recebido em contrapartida; e as originadas em setores produtivos, nas quais a quantia de dinheiro recebida nas exportações ou enviada nas importações pode representar uma quantidade de valor diferente do trabalho abstrato efetivamente incorporado às mercadorias comercializadas."
@@ -252,7 +252,7 @@
     "pt": "O Produto Interno Bruto calculado pela ótica do valor adicionado representa todo o valor criado pelos residentes. Os dados são expressos em magnitude de valor e, portanto, abrangem apenas os setores produtivos."
   },
   "desc.gross_output.s.mv": {
-    "pt": "O produto total é a soma do valor de todos os bens e serviços produzidos pelos residentes, isto é, o trabalho produtivo total incorporado em todas as mercadorias. Inclui o valor adicionado (capital variável e mais-valia) e o valor do consumo intermediário (capital constante)."
+    "pt": "O produto total é a soma do valor de todos os bens e serviços produzidos pelos residentes, isto é, o trabalho produtivo total incorporado em todas as mercadorias. Inclui o valor adicionado (capital variável e mais-valor) e o valor do consumo intermediário (capital constante)."
   },
   "desc.value.m.mv": {
     "pt": "O valor médio por unidade de produto representa o trabalho produtivo abstrato incorporado por $ 1,00 de cada setor."
@@ -261,28 +261,28 @@
     "pt": "O Produto Interno Bruto calculado pela ótica do valor adicionado representa todo o valor criado pelos residentes. Os dados são expressos em preços diretos (preços proporcionais ao valor) e, portanto, abrangem apenas os setores produtivos."
   },
   "desc.gross_output.s.du": {
-    "pt": "O produto total é a soma dos preços de todos os bens e serviços produzidos pelos residentes. Inclui o valor adicionado (capital variável e mais-valia) e o preço do consumo intermediário (capital constante). Os dados são expressos em preços diretos (preços proporcionais aos valores)."
+    "pt": "O produto total é a soma dos preços de todos os bens e serviços produzidos pelos residentes. Inclui o valor adicionado (capital variável e mais-valor) e o preço do consumo intermediário (capital constante). Os dados são expressos em preços diretos (preços proporcionais aos valores)."
   },
   "desc.surplus_value.empe_hs.r.pc": {
-    "pt": "Taxa de mais-valia dos trabalhadores assalariados de alta qualificação. É uma medida da exploração do trabalho em uma relação capitalista de produção."
+    "pt": "Taxa de mais-valor dos trabalhadores assalariados de alta qualificação. É uma medida da exploração do trabalho em uma relação capitalista de produção."
   },
   "desc.surplus_value.empe_ms.r.pc": {
-    "pt": "Taxa de mais-valia dos trabalhadores assalariados de média qualificação. É uma medida da exploração do trabalho em uma relação capitalista de produção."
+    "pt": "Taxa de mais-valor dos trabalhadores assalariados de média qualificação. É uma medida da exploração do trabalho em uma relação capitalista de produção."
   },
   "desc.surplus_value.empe_ls.r.pc": {
-    "pt": "Taxa de mais-valia dos trabalhadores assalariados de baixa qualificação. É uma medida da exploração do trabalho em uma relação capitalista de produção."
+    "pt": "Taxa de mais-valor dos trabalhadores assalariados de baixa qualificação. É uma medida da exploração do trabalho em uma relação capitalista de produção."
   },
   "desc.surplus_value.empe.r.pc": {
-    "pt": "Taxa de mais-valia dos trabalhadores assalariados produtivos e improdutivos. É uma medida da exploração do trabalho em uma relação capitalista de produção."
+    "pt": "Taxa de mais-valor dos trabalhadores assalariados produtivos e improdutivos. É uma medida da exploração do trabalho em uma relação capitalista de produção."
   },
   "desc.surplus_value.emp.r.pc": {
-    "pt": "Taxa de mais-valia das pessoas ocupadas. Inclui setores produtivos e improdutivos."
+    "pt": "Taxa de mais-valor das pessoas ocupadas. Inclui setores produtivos e improdutivos."
   },
   "desc.surplus_value.emp_p.r.pc": {
-    "pt": "Taxa de mais-valia das pessoas ocupadas, abrangendo apenas os setores produtivos."
+    "pt": "Taxa de mais-valor das pessoas ocupadas, abrangendo apenas os setores produtivos."
   },
   "desc.surplus_value.empe_p.r.pc": {
-    "pt": "Taxa de mais-valia dos trabalhadores assalariados produtivos. É uma medida da exploração do trabalho em uma relação capitalista de produção."
+    "pt": "Taxa de mais-valor dos trabalhadores assalariados produtivos. É uma medida da exploração do trabalho em uma relação capitalista de produção."
   },
   "desc.compensation.empe.s.us": {
     "pt": "Remuneração recebida pelos trabalhadores assalariados."

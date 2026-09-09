@@ -1,0 +1,142 @@
+{
+  "text.quote": {
+    "pt": "Ao utilizar os dados ou o código em pesquisas e publicações, cite o seguinte trabalho:",
+    "en": "When using the data or code in research and publications, please cite the following study:"
+  },
+  "about2.kicker": {
+    "pt": "WLVD · Base Mundial de Valores-Trabalho",
+    "en": "WLVD · World Labour Values Database"
+  },
+  "about2.title": {
+    "pt": "O trabalho por trás da economia mundial.",
+    "en": "The labour behind the world economy."
+  },
+  "about2.intro": {
+    "pt": "Uma base para investigar como o trabalho se transforma em riqueza, como essa riqueza se distribui e como circula entre os países.",
+    "en": "A database for investigating how labour becomes wealth, how that wealth is distributed and how it flows between countries."
+  },
+  "about2.project_kicker": {
+    "pt": "O projeto",
+    "en": "The project"
+  },
+  "about2.project_title": {
+    "pt": "Dar dimensão empírica à teoria do valor",
+    "en": "Bringing empirical evidence to value theory"
+  },
+  "about2.project_text": {
+    "pt": "A Base Mundial de Valores-Trabalho reúne estimativas para estudar a produção, a exploração do trabalho e as relações econômicas internacionais. O painel torna essas informações acessíveis por meio de mapas, séries históricas, perfis nacionais e arquivos para download.",
+    "en": "The World Labour Values Database brings together estimates for studying production, labour exploitation and international economic relations. This panel provides access through maps, time series, country profiles and downloadable files."
+  },
+  "about2.project_network": {
+    "pt": "O projeto integra a agenda do Grupo de Estudos Concretos sobre Teoria do Valor, uma rede internacional de pesquisa dedicada ao estudo crítico da economia com dados e diferentes abordagens teóricas e metodológicas.",
+    "en": "The project is part of the research agenda of the Group of Concrete Studies on Theory of Value, an international network studying the economy critically through data and different theoretical and methodological approaches."
+  },
+  "about2.project_link": {
+    "pt": "Conheça o projeto e sua agenda de pesquisa →",
+    "en": "Explore the project and its research agenda →"
+  },
+  "about2.questions": {
+    "pt": "O que podemos investigar?",
+    "en": "What can we investigate?"
+  },
+  "about2.labour_title": {
+    "pt": "Trabalho e exploração",
+    "en": "Labour and exploitation"
+  },
+  "about2.labour_text": {
+    "pt": "Horas trabalhadas, remuneração e mais-valor ajudam a examinar as relações entre trabalho realizado e riqueza apropriada.",
+    "en": "Working hours, compensation and surplus value help examine the relationship between labour performed and wealth appropriated."
+  },
+  "about2.production_title": {
+    "pt": "Produção e rentabilidade",
+    "en": "Production and profitability"
+  },
+  "about2.production_text": {
+    "pt": "Valores, capital e lucro permitem comparar a estrutura produtiva e acompanhar suas transformações ao longo do tempo.",
+    "en": "Values, capital and profit allow comparisons of productive structures and their changes over time."
+  },
+  "about2.trade_title": {
+    "pt": "Relações internacionais",
+    "en": "International relations"
+  },
+  "about2.trade_text": {
+    "pt": "Fluxos de comércio e transferências de valor oferecem uma perspectiva sobre a divisão internacional do trabalho e a troca desigual.",
+    "en": "Trade flows and value transfers offer a perspective on the international division of labour and unequal exchange."
+  },
+  "about2.research_kicker": {
+    "pt": "Da pesquisa à consulta",
+    "en": "From research to exploration"
+  },
+  "about2.research_title": {
+    "pt": "Dados que convidam a novas perguntas",
+    "en": "Data that invite new questions"
+  },
+  "about2.research_text": {
+    "pt": "As estimativas dialogam com problemas clássicos da teoria do valor e com questões da economia contemporânea. Consulte a metodologia e observe a base, o período e a unidade de cada indicador ao comparar resultados. O código-fonte está disponível para examinar os cálculos e desenvolver novas análises.",
+    "en": "The estimates address longstanding questions in value theory and contemporary economic issues. Consult the methodology and check each indicator’s source, period and unit when comparing results. The source code is available to examine the calculations and develop new analyses."
+  },
+  "about2.code_link": {
+    "pt": "Acessar o código-fonte →",
+    "en": "View the source code →"
+  },
+  "about2.method_title": {
+    "pt": "Como comparar trabalhos diferentes?",
+    "en": "How can different kinds of labour be compared?"
+  },
+  "about2.method_text": {
+    "pt": "O estudo metodológico de 2022 compara formas de reduzir trabalho complexo a trabalho simples e questiona a hipótese de equalização das taxas de exploração. Suas estimativas integram a construção da WLVD.",
+    "en": "The 2022 methodological study compares ways of reducing complex labour to simple labour and questions the hypothesis of equal exploitation rates. Its estimates form part of the construction of the WLVD."
+  },
+  "about2.method_link": {
+    "pt": "Ler o artigo metodológico · 2022 →",
+    "en": "Read the methodological article · 2022 →"
+  },
+  "about2.applications_title": {
+    "pt": "O que as trocas internacionais revelam?",
+    "en": "What does international trade reveal?"
+  },
+  "about2.applications_text": {
+    "pt": "Estudos sobre Brasil e China investigam o trabalho incorporado no comércio e as transferências de valor entre economias, considerando parceiros comerciais e estruturas produtivas.",
+    "en": "Studies of Brazil and China investigate labour embodied in trade and value transfers between economies, considering trading partners and productive structures."
+  },
+  "about2.brazil_link": {
+    "pt": "Brasil · artigo de 2022 →",
+    "en": "Brazil · 2022 article →"
+  },
+  "about2.china_link": {
+    "pt": "China · estudo de 2024 →",
+    "en": "China · 2024 study →"
+  },
+  "about2.team_kicker": {
+    "pt": "Uma construção coletiva",
+    "en": "A collective undertaking"
+  },
+  "about2.team_title": {
+    "pt": "Pessoas por trás da pesquisa",
+    "en": "People behind the research"
+  },
+  "about2.team_text": {
+    "pt": "Coordenadores apresentados pelo projeto e coautores do estudo metodológico da WLVD. A rede reúne também outros pesquisadores e colaboradores.",
+    "en": "Coordinators listed by the project and coauthors of the WLVD methodological study. The network also includes other researchers and collaborators."
+  },
+  "about2.profile": {
+    "pt": "Conhecer o pesquisador →",
+    "en": "View researcher profile →"
+  },
+  "about2.team_link": {
+    "pt": "Conheça a equipe e os demais integrantes →",
+    "en": "Meet the team and other members →"
+  },
+  "about2.institution_kicker": {
+    "pt": "Vínculo institucional",
+    "en": "Institutional affiliation"
+  },
+  "about2.institution_text": {
+    "pt": "O WLVD está vinculado ao LabCidades. Essa parceria aproxima a pesquisa sobre trabalho, produção e desenvolvimento da construção de ferramentas públicas para explorar dados.",
+    "en": "The WLVD is affiliated with LabCidades. This partnership connects research on labour, production and development with public tools for exploring data."
+  },
+  "about2.institution_link": {
+    "pt": "Visitar o LabCidades →",
+    "en": "Visit LabCidades →"
+  }
+}

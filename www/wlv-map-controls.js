@@ -13,7 +13,6 @@
   function initialize() {
     const layout = document.querySelector('.wlv-map-layout');
     if (!layout) return;
-    const search = document.getElementById('map-indicator-search');
     const selected = document.getElementById('co_select_indicator');
     const yearInput = document.getElementById('co_select_year');
     let years = [], lastYear;
@@ -47,40 +46,64 @@
     });
     const mobile = () => window.matchMedia('(max-width: 767px)').matches;
     let opener;
-    const normalize = text => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-    function filter() {
-      const query = normalize(search.value.trim());
-      layout.querySelectorAll('.wlv-map-indicator-group').forEach(function (group) {
-        let count = 0;
-        group.querySelectorAll('[data-indicator]').forEach(function (button) {
-          button.hidden = !normalize(button.textContent + ' ' + button.dataset.indicator).includes(query);
-          if (!button.hidden) count += 1;
-        });
-        group.hidden = count === 0;
-        if (query) group.open = count > 0;
+    function expandGroup(group, expanded) {
+      const header = group.querySelector('.wlv-map-group-header');
+      const body = group.querySelector('.wlv-map-group-body');
+      header.setAttribute('aria-expanded', String(expanded));
+      body.dataset.expanded = String(expanded);
+      body.inert = !expanded;
+      body.setAttribute('aria-hidden', String(!expanded));
+      body.style.setProperty('--wlv-group-height', body.scrollHeight + 'px');
+    }
+    function openGroup(group) {
+      layout.querySelectorAll('.wlv-map-indicator-group').forEach(function (item) {
+        expandGroup(item, item === group);
       });
     }
     function sync() {
       const code = selected.selectize ? selected.selectize.getValue() : selected.value;
       let label;
+      layout.querySelectorAll('.wlv-map-indicator-group').forEach(function (group) {
+        expandGroup(group, group.querySelector('.wlv-map-group-header').getAttribute('aria-expanded') === 'true');
+      });
+      document.getElementById('inputs_panel').setAttribute('aria-label',
+        document.documentElement.lang === 'en' ? 'Indicators' : 'Indicadores');
       layout.querySelectorAll('[data-indicator]').forEach(function (button) {
         const active = button.dataset.indicator === code;
         button.setAttribute('aria-pressed', String(active));
-        if (active) { label = button.textContent; button.closest('details').open = true; }
+        if (active) {
+          label = button.closest('.wlv-map-indicator-row').querySelector('.wlv-map-indicator-label').textContent;
+          openGroup(button.closest('.wlv-map-indicator-group'));
+        }
       });
       const title = document.getElementById('map-current-indicator');
       if (label && title.textContent !== label) title.textContent = label;
-      filter();
     }
     function close(restoreFocus) {
       delete layout.dataset.sheet;
       layout.querySelectorAll('[data-map-sheet]').forEach(button => button.setAttribute('aria-expanded', 'false'));
+      if (mobile()) {
+        const legend = layout.querySelector('.wlv-map-legend');
+        if (legend) legend.open = false;
+      }
       if (restoreFocus && opener) opener.focus();
     }
     layout.addEventListener('click', function (event) {
-      const option = event.target.closest('[data-indicator]');
-      if (option) {
-        selected.selectize.setValue(option.dataset.indicator);
+      const help = event.target.closest('[data-indicator-info]');
+      if (help) {
+        window.Shiny.setInputValue('map_show_indicator_info', help.dataset.indicatorInfo, {priority:'event'});
+        return;
+      }
+      const header = event.target.closest('.wlv-map-group-header');
+      if (header) {
+        const group = header.closest('.wlv-map-indicator-group');
+        if (header.getAttribute('aria-expanded') === 'true') expandGroup(group, false);
+        else openGroup(group);
+      }
+      const row = event.target.closest('[data-indicator-code]');
+      if (row) {
+        if (selected.selectize) selected.selectize.setValue(row.dataset.indicatorCode);
+        else window.jQuery(selected).val(row.dataset.indicatorCode).trigger('change');
         if (mobile()) close(true);
         sync();
       }
@@ -97,7 +120,10 @@
             const legend = layout.querySelector('.wlv-map-legend');
             if (legend) legend.open = true;
           }
-          if (sheet === 'indicators') search.focus();
+          if (sheet === 'indicators') {
+            const current = layout.querySelector('[data-indicator][aria-pressed="true"]');
+            if (current) current.focus();
+          }
         }
       }
       if (event.target.closest('[data-map-close]')) close(true);
@@ -109,10 +135,16 @@
     layout.addEventListener('keydown', function (event) {
       if (event.key === 'Escape' && layout.dataset.sheet) { event.preventDefault(); close(true); }
     });
-    search.addEventListener('input', filter);
     window.jQuery(selected).on('change', sync);
     new MutationObserver(sync).observe(document.getElementById('map_indicator_list'), { childList:true, subtree:true });
     window.matchMedia('(max-width: 767px)').addEventListener('change', () => close(false));
+    function measureGroups() {
+      layout.querySelectorAll('.wlv-map-group-body').forEach(function (body) {
+        body.style.setProperty('--wlv-group-height', body.scrollHeight + 'px');
+      });
+    }
+    new ResizeObserver(measureGroups).observe(document.getElementById('inputs_panel'));
+    if (document.fonts) document.fonts.ready.then(measureGroups);
     sync();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialize);

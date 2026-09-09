@@ -1,0 +1,55 @@
+/* Apresentação editorial: uma família tipográfica e a paleta do painel. */
+.wlv-about { margin:0 -15px; }
+.wlv-about-hero { padding:clamp(36px,6vw,84px) max(28px,calc((100% - 1280px)/2)); min-height:500px; background:linear-gradient(90deg,#8D2028 0%,#8D2028ed 36%,#8D202866 72%,#8D202820),url('images/wlv-work-world.png') center 66% / cover; color:#fff; }
+.wlv-about-hero-content { max-width:770px; }
+.wlv-about-kicker { font-size:13px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--wlv-red-dark); margin:0 0 14px; }
+.wlv-about-hero .wlv-about-kicker { color:var(--wlv-amber); }
+.wlv-about-hero h1 { color:#fff; max-width:690px; font-size:clamp(38px,4.6vw,64px); margin:0 0 22px; line-height:1.06; }
+.wlv-about-lead { max-width:640px; font-size:21px; line-height:1.5; }
+.wlv-about-hero .btn-primary { color:var(--wlv-red-dark); background:var(--wlv-amber); border-color:var(--wlv-amber); }
+.wlv-about-content { max-width:1340px; padding:0 28px 44px; margin:auto; }
+.wlv-about-content > section { margin:0; padding:48px 0; border-bottom:1px solid var(--wlv-line); }
+.wlv-about-content h2 { margin:0 0 20px; font-size:30px; }
+.wlv-about-content h3 { margin:0 0 14px; font-size:22px; }
+.wlv-about-content p { font-size:17px; line-height:1.65; }
+.wlv-about-content .wlv-about-kicker { font-size:13px; }
+.wlv-about-content a { font-weight:600; text-underline-offset:4px; }
+.wlv-about-intro { display:grid; grid-template-columns:1fr 1.7fr; gap:64px; }
+.wlv-about-topics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:32px; }
+.wlv-about-topics article { padding:22px 0 0; border-top:4px solid var(--wlv-amber); }
+.wlv-about-topic-icon { display:block; font-size:27px; color:var(--wlv-red-dark); margin-bottom:18px; }
+.wlv-about-research { display:grid; grid-template-columns:1fr 1.25fr; gap:64px; }
+.wlv-about-studies { background:var(--wlv-surface); border:1px solid var(--wlv-line); border-radius:12px; padding:28px; }
+.wlv-about-studies article+article { margin-top:26px; padding-top:26px; border-top:1px solid #DDBDB7; }
+.wlv-about-study-links { display:flex; gap:22px; flex-wrap:wrap; }
+.wlv-about-people { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:22px; margin:28px 0 22px; }
+.wlv-about-person { background:#fff; border:1px solid var(--wlv-line); border-radius:10px; overflow:hidden; }
+.wlv-about-person img { display:block; width:100%; height:280px; object-fit:contain; object-position:center top; padding:16px 16px 0; background:var(--wlv-surface); }
+.wlv-about-person img.wlv-about-portrait-white { background:#fff; }
+.wlv-about-person>div { padding:22px; }
+.wlv-about-person h3 { font-size:21px; }
+.wlv-about-person-text { display:flex; align-items:center; background:var(--wlv-surface); border-top:8px solid var(--wlv-red-light); }
+.wlv-about-content .wlv-about-institution { display:grid; grid-template-columns:280px minmax(0,1fr); gap:48px; align-items:center; padding:36px; background:var(--wlv-surface); border:1px solid var(--wlv-line); border-radius:12px; margin:32px 0 0; }
+.wlv-about-lab-logo { display:flex; align-items:center; padding:22px; background:#fff; border-radius:8px; }
+.wlv-about-lab-logo img { display:block; width:100%; height:auto; }
+.wlv-about-content .wlv-about-citation { border:0; padding-bottom:0; }
+.wlv-about-citation .wlv-citation { padding:24px 28px; background:#fff; border-left:5px solid var(--wlv-amber); border-radius:0 8px 8px 0; }
+@media(max-width:1000px) { .wlv-about-people { grid-template-columns:repeat(2,minmax(0,1fr)); } .wlv-about-intro,.wlv-about-research { gap:32px; } }
+@media(max-width:767px) {
+  .wlv-about-hero { min-height:0; padding:36px 22px 46px; background-position:center,bottom right; }
+  .wlv-about-lead { font-size:18px; }
+  .wlv-about-content { padding:0 20px 32px; }
+  .wlv-about-content > section { padding:32px 0; }
+  .wlv-about-content h2 { font-size:26px; }
+  .wlv-about-intro,.wlv-about-research,.wlv-about-topics { grid-template-columns:1fr; gap:22px; }
+  .wlv-about-content .wlv-about-institution { grid-template-columns:1fr; gap:24px; padding:22px; }
+  .wlv-about-lab-logo { max-width:260px; }
+  .wlv-about-people { gap:14px; }
+  .wlv-about-person img { height:190px; }
+  .wlv-about-person>div { padding:16px; }
+  .wlv-about-person h3 { font-size:19px; }
+  .wlv-about-person a { font-size:14px; }
+  .wlv-about-studies { padding:22px; }
+  .wlv-about-citation .wlv-citation { padding:18px; }
+}
+@media(max-width:420px) { .wlv-about-people { grid-template-columns:1fr; } .wlv-about-person img { height:260px; } .wlv-about-person-text { min-height:145px; } }

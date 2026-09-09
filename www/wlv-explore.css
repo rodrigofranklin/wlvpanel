@@ -1,0 +1,28 @@
+/* Fundo comum às páginas de exploração, inspirado na faixa do e-mar. */
+body[data-wlv-tab="indicators"], body[data-wlv-tab="country"], body[data-wlv-tab="download"] {
+  background:var(--wlv-red-dark) url('images/wlv-work-world.png') center bottom / cover fixed no-repeat;
+}
+body[data-wlv-tab="indicators"] > .container-fluid,
+body[data-wlv-tab="country"] > .container-fluid,
+body[data-wlv-tab="download"] > .container-fluid { padding-inline:0; }
+body[data-wlv-tab="indicators"] > .container-fluid > .row,
+body[data-wlv-tab="country"] > .container-fluid > .row,
+body[data-wlv-tab="download"] > .container-fluid > .row { margin-inline:0; }
+.wlv-explore-page { position:relative; isolation:isolate; min-height:calc(100dvh - var(--wlv-nav-height) - 50px); padding:32px 28px 64px; }
+.wlv-explore-page::before { content:''; position:absolute; z-index:-1; top:0; left:0; right:0; height:260px; background:url('images/wlv-explore-band.svg') center bottom / 100% 100% no-repeat; }
+.wlv-explore-content { position:relative; width:100%; max-width:1400px; margin-inline:auto; }
+.wlv-explore-content > h1, .wlv-explore-content > h2 { margin:0 0 26px; color:#fff; font-size:32px; }
+.wlv-explore-page mark, .selectize-dropdown .highlight { background:var(--wlv-amber); color:var(--wlv-red-dark); padding:0; border-radius:2px; font-weight:600; }
+body[data-wlv-tab="indicators"] .wlv-footer,
+body[data-wlv-tab="country"] .wlv-footer,
+body[data-wlv-tab="download"] .wlv-footer { color:#fff; background:var(--wlv-red-dark); }
+.wlv-download-page .wlv-download-grid { align-items:start; }
+.wlv-country-year .irs-bar,.wlv-country-year .irs-bar-edge { background:var(--wlv-amber); border-color:var(--wlv-amber); }
+.wlv-country-year .irs-from,.wlv-country-year .irs-to,.wlv-country-year .irs-single { background:var(--wlv-red-dark); color:#fff; }
+.wlv-country-year .irs-handle,.wlv-country-year .irs-slider { border-color:var(--wlv-red-dark); background:var(--wlv-surface); }
+@media(max-width:767px) {
+  body[data-wlv-tab="indicators"], body[data-wlv-tab="country"], body[data-wlv-tab="download"] { background-attachment:scroll; }
+  .wlv-explore-page { padding:24px 16px 40px; }
+  .wlv-explore-page::before { height:220px; }
+  .wlv-explore-content > h1, .wlv-explore-content > h2 { font-size:28px; margin-bottom:20px; }
+}

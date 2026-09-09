@@ -1,36 +1,79 @@
 .wlv-indicators{max-width:1480px;margin:auto;padding:24px}
-.wlv-indicators-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(230px,300px);grid-template-areas:"main controls";gap:24px}
-.wlv-indicators-controls{grid-area:controls;background:#f4f6f7;padding:20px;border-radius:10px;align-self:start;position:sticky;top:20px;min-width:0}
+.wlv-indicators-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(230px,300px);grid-template-areas:"main controls";gap:24px;align-items:start}
+.wlv-indicators .panel{border:1px solid var(--wlv-line);border-radius:10px;background:var(--wlv-surface);box-shadow:none}
+.wlv-indicators-controls{grid-area:controls;padding:20px;align-self:start;position:sticky;top:20px;min-width:0}
 .wlv-indicators-main{grid-area:main;min-width:0}
+.wlv-indicators-detail-heading{padding:18px 20px;margin:0}
+.wlv-indicators-detail-heading h3{margin:0 0 12px;font-size:22px}
+.wlv-indicators-detail-heading p:last-child{margin-bottom:0}
+.wlv-indicators-views{overflow:hidden;margin-top:20px;margin-bottom:28px}
+.wlv-indicators-views .nav-tabs{padding:8px 12px 0;background:var(--wlv-paper);border-bottom:1px solid var(--wlv-line)}
+.wlv-indicators-views .tab-content{padding:0}
+.wlv-indicators-table-panel{margin:0 0 32px}
+.wlv-indicators-table-panel>.panel-heading{padding:15px 18px;background:var(--wlv-paper);border-bottom:1px solid var(--wlv-line);border-radius:9px 9px 0 0}
+.wlv-indicators-table-panel>.panel-heading h3{margin:0;font-size:18px;font-weight:600;color:var(--wlv-red-dark)}
+.wlv-indicators-table-panel>.panel-body{padding:16px 18px}
+.wlv-indicators-table-hint{font-size:14px;color:var(--wlv-muted);margin-bottom:16px}
 .wlv-indicators-controls>.btn:first-child{margin-bottom:20px}
+.wlv-indicators-controls .btn:hover,.wlv-indicators-controls .btn:focus,.wlv-indicators-controls .btn:active,.wlv-indicators-controls .btn.active{background:var(--wlv-paper);color:var(--wlv-red-dark);border-color:var(--wlv-red-dark);box-shadow:none}
 .wlv-indicators .selectize-control{width:100%}
 .wlv-indicators .selectize-dropdown{max-width:100%;word-break:normal}
 .wlv-indicators table.dataTable{width:100%!important;font-size:14px}
 .wlv-indicators .dataTables_wrapper{overflow-x:auto}
 .wlv-indicators table.dataTable tbody tr{background:#fff}
-.wlv-indicators table.dataTable tbody tr:hover{background:#f6f6f6}
-.wlv-indicators table.dataTable tbody tr.selected{background:#dcecea}
+.wlv-indicators table.dataTable tbody tr:hover{background:var(--wlv-paper)}
+.wlv-indicators table.dataTable tbody tr.selected,.wlv-indicators table.dataTable tbody tr.selected>td{background:var(--wlv-amber);color:var(--wlv-red-dark)}
 .wlv-indicators table.dataTable tbody td{padding:15px}
 .wlv-indicators table.dataTable tbody td:first-child{font-weight:700;text-align:left}
 .wlv-indicators table.dataTable tbody td:not(:first-child){text-align:right;padding-right:30px}
 .wlv-indicators table.dataTable thead th:not(:first-child){text-align:right}
 .wlv-indicators .leaflet-top.leaflet-left{left:0!important}
-.wlv-indicators .leaflet-container{background:#f8fbfa}
-.wlv-indicators .wlv-map-world{min-height:44px;min-width:44px;padding:0 8px;border:0;background:#fff;color:#183d43;font-family:inherit;font-weight:600;cursor:pointer}
-.wlv-indicators .leaflet-tooltip{max-width:min(300px,calc(100vw - 72px));white-space:normal;overflow-wrap:anywhere}
+.wlv-indicators .leaflet-container{background:var(--wlv-ocean)}
+.wlv-indicators .wlv-map-world{min-height:44px;min-width:44px;padding:0 8px;border:0;background:var(--wlv-red-dark);color:#fff;font-family:inherit;font-weight:600;cursor:pointer}
+.wlv-indicators .leaflet-tooltip{width:max-content;max-width:min(300px,calc(100vw - 72px));white-space:normal;overflow-wrap:anywhere;font:400 13px/1.4 var(--wlv-font);color:var(--wlv-text);background:rgb(255 255 255 / 97%);padding:10px 12px;border:1px solid var(--wlv-line);border-radius:6px;box-shadow:0 2px 8px rgb(0 0 0 / 16%)}
+.wlv-indicator-tooltip-country{font-size:15px;font-weight:600;color:var(--wlv-red-dark);margin-bottom:5px}
+.wlv-indicator-tooltip-name{margin-bottom:3px}
+.wlv-indicator-tooltip-value{font-weight:700;color:var(--wlv-red-dark)}
+.wlv-indicator-tooltip-source{margin-top:6px;font-size:12px;color:var(--wlv-muted)}
+.wlv-indicators-map-frame{position:relative}
+.wlv-indicators-map-base{position:absolute;top:12px;right:12px;z-index:600;width:min(210px,calc(100% - 82px));padding:12px 14px;background:rgb(255 255 255 / 85%);border:1px solid rgb(255 255 255 / 70%);border-radius:8px;backdrop-filter:blur(8px)}
+.wlv-indicators-map-base .form-group{margin:0}
+.wlv-indicators-map-base label{font-size:14px;font-weight:600;margin-bottom:4px}
+.wlv-indicators-map-base .form-control{height:36px;font-size:15px}
+.wlv-indicators-map-empty{position:absolute;z-index:550;bottom:14px;left:14px;max-width:calc(100% - 112px);margin:0;padding:8px 12px;background:rgb(255 255 255 / 92%);border-radius:6px;font-size:14px}
+.wlv-indicators-map-year{padding:14px 22px 8px;border-top:1px solid var(--wlv-line);background:var(--wlv-surface)}
+.wlv-indicators-map-year .form-group{margin-bottom:8px}
+.wlv-indicators-map-year label{font-size:15px;font-weight:600}
+.wlv-indicators-map-year .irs-bar,.wlv-indicators-map-year .irs-bar-edge{background:var(--wlv-amber);border-color:var(--wlv-amber)}
+.wlv-indicators-map-year .irs-from,.wlv-indicators-map-year .irs-to,.wlv-indicators-map-year .irs-single{background:var(--wlv-red-dark);color:#fff}
+.wlv-indicators-map-year .irs-handle,.wlv-indicators-map-year .irs-slider{border-color:var(--wlv-red-dark);background:var(--wlv-surface)}
+.wlv-indicators .leaflet-control.info.legend{font:400 12px/1.4 var(--wlv-font);max-width:210px;color:var(--wlv-text);background:rgb(255 255 255 / 96%);border-radius:6px;padding:0}
+.wlv-indicator-legend>summary{min-height:44px;padding:12px 14px;color:var(--wlv-red-dark);font-size:14px;font-weight:600;cursor:pointer;list-style:none}
+.wlv-indicator-legend>summary::-webkit-details-marker{display:none}
+.wlv-indicator-legend>summary::after{content:' +';margin-left:4px}
+.wlv-indicator-legend[open]>summary::after{content:' −'}
+.wlv-indicator-legend-content{padding:0 14px 12px;max-height:260px;overflow:auto}
+.wlv-indicator-legend-content::after{content:'';display:block;clear:both}
 .wlv-indicators .btn{white-space:normal;min-height:44px}
 .wlv-indicators small{display:block;margin-top:8px}
 .wlv-indicators .nav>li>a{min-height:44px}
-.wlv-indicators-catalogue-filters{display:grid;grid-template-columns:2fr 1fr 1fr;gap:20px;margin:24px 0}
-.wlv-indicators-catalogue-group{border-top:1px solid #d5dfdc;margin-top:24px;padding-top:8px}
+.wlv-indicators-catalogue-filters{display:grid;grid-template-columns:2fr 1fr 1fr;gap:20px;margin:24px 0;padding:20px;background:var(--wlv-surface);border:1px solid var(--wlv-line);border-radius:10px}
+.wlv-indicators-catalogue-filters .form-group{margin:0}
+.wlv-indicators-catalogue-group{border:1px solid var(--wlv-line);border-radius:10px;background:var(--wlv-surface);margin-top:24px;padding:20px 24px}
+.wlv-indicators-catalogue-group>h3{margin:0 0 14px;font-size:17px;font-weight:600;color:var(--wlv-red-dark)}
 .wlv-indicators-catalogue-families{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 32px}
-.wlv-indicators-catalogue-family h4{font-size:15px;color:#536965}
+.wlv-indicators-catalogue-family h4{font-size:15px;font-weight:600;color:var(--wlv-muted)}
 .wlv-indicators-catalogue-family ul{list-style:none;margin:0;padding:0}
-.wlv-indicators-catalogue-family li a{display:block;padding:10px 0;min-height:44px;overflow-wrap:anywhere}
+.wlv-indicators-catalogue-family li a{display:block;padding:10px 0;min-height:44px;overflow-wrap:anywhere;font-size:15px}
+.wlv-indicators mark,.wlv-indicators .selectize-dropdown .highlight{padding:0 1px;background:var(--wlv-amber);color:var(--wlv-red-dark);border-radius:2px}
 @media(max-width:767px){
   .wlv-indicators{padding:16px}
   .wlv-indicators-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"controls" "main";gap:16px}
   .wlv-indicators-controls{padding:16px;position:static}
+  .wlv-indicators-table-panel>.panel-body{padding:14px 12px}
+  .wlv-indicators-catalogue-filters,.wlv-indicators-catalogue-group{padding:16px}
+  .wlv-indicators-map-base{padding:8px 10px;top:10px;right:10px;width:min(170px,calc(100% - 74px))}
+  .wlv-indicators-map-year{padding:12px 16px 8px}
   .wlv-indicators .plotly{min-height:340px}
   .wlv-indicators h2{font-size:26px}
   .wlv-indicators-catalogue-filters,.wlv-indicators-catalogue-families{grid-template-columns:minmax(0,1fr);gap:8px}

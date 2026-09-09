@@ -6,9 +6,14 @@ O mapa principal mantém as camadas vetoriais do Leaflet e utiliza o CRS esféri
 em `www/wlv-equal-earth.js`. `mapFactory` aplica esse CRS antes de criar o
 widget, pois o binding R normaliza o argumento `crs` para uma lista interna
 de projeções. Indicadores usa o mesmo helper com uma instância independente.
-O contorno mundial e o enquadramento usam os extremos projetados,
-incluindo o equador e os polos: `fitBounds` com apenas cantos geográficos
-polares não representa toda a largura de Equal Earth.
+O enquadramento inicial e o botão Mundo usam a caixa projetada dos vértices
+dos polígonos temáticos visíveis da base selecionada. Terra de fundo,
+bases ocultas, oceano e grade não ampliam essa caixa. Não há margem extra;
+a proporção da janela deixa espaço
+apenas no eixo que não limita a escala. `fitBounds` com apenas os cantos
+geográficos não representa corretamente a extensão em Equal Earth.
+O primeiro enquadramento do mapa aguarda os polígonos temáticos enviados
+por proxy; novas mensagens de atributos não disparam outro enquadramento.
 
 Zoom, pan, cliques e tooltips continuam sob controle do Leaflet. A preparação
 das coordenadas é feita uma vez no navegador; mudar atributos não repete a
@@ -76,6 +81,13 @@ de bases e recriação do widget. Ele grava `results/map-update-check.json`
 dentro da campanha.
 Também verifica a presença de uma única base GeoJSON, o limite de 150 KB,
 o enquadramento inicial do mundo e a ausência de chamadas a tiles externos.
+
+`tests/manual/check-map-legend.cjs` abre a aba Mapa explicitamente e verifica
+títulos longos reais em português e inglês. A legenda desktop cresce para
+exibir título, unidade e escala completos, sem rolagem interna, em 1440 × 900,
+1366 × 768 e 1024 × 600. Em 390 × 844 e 320 × 568, preserva a folha mobile
+com altura limitada e permite alcançar todos os rótulos. As capturas e o
+relatório `map-legend.json` ficam em `results/` da campanha ativa.
 
 Na verificação de 06/09/2026, as duas bases iniciais (WIOD13 e WIOD16, 83
 feições ao todo) exigiram 465.113 bytes no envio de polígonos do desenho

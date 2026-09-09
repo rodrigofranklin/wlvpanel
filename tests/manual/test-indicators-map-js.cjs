@@ -2,9 +2,10 @@ const assert = require('node:assert/strict');
 const frames = [];
 const projectionEvents = [];
 const observers = [];
-global.WLVEqualEarth = {attach(element, map) {
-  projectionEvents.push(['attach', element.id, map]);
+global.WLVEqualEarth = {attach(element, map, options) {
+  projectionEvents.push(['attach', element.id, map, options]);
   return {resize() {projectionEvents.push(['resize', element.id]);},
+    geometryReady() {projectionEvents.push(['geometryReady', element.id]);},
     destroy() {projectionEvents.push(['destroy', element.id]);}};
 }};
 global.ResizeObserver = class {
@@ -36,6 +37,7 @@ assert.deepEqual(updates.pending('indicator-map'), ['BRA']);
 const original = map();
 updates.attach({id: 'indicator-map'}, original);
 assert.equal(projectionEvents[0][0], 'attach');
+assert.deepEqual(projectionEvents[0][3], {polygonPane:'wlv-indicator-polygons', waitForGeometry:true});
 observers[0].callback();
 assert.deepEqual(projectionEvents[1], ['resize', 'indicator-map']);
 updates.receive({id: 'indicator-map', countries: newest});
@@ -48,11 +50,13 @@ tick();
 assert.equal(brazil.style.fillColor, '#222222');
 assert.equal(brazil.tooltip, 'Brasil: 2');
 assert.deepEqual(updates.pending('indicator-map'), ['AUT']);
+assert.equal(projectionEvents.some(event => event[0] === 'geometryReady'), false);
 layers.AUT = austria;
 original.fire('layeradd');
 tick();
 assert.equal(austria.tooltip, '\u00c1ustria: 3');
 assert.deepEqual(updates.pending('indicator-map'), []);
+assert.equal(projectionEvents.at(-1)[0], 'geometryReady');
 original.fire('unload');
 assert.equal(observers[0].disconnected, true);
 assert.equal(projectionEvents.at(-1)[0], 'destroy');

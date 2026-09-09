@@ -19,7 +19,9 @@ TABPANEL <- tabPanel(
   l("tab_name.download"),
   value = "download",
   tags$script(src = "wlv-download.js"),
-  div(class = "wlv-page",
+  div(class = "wlv-explore-page wlv-download-page",
+    div(class = "wlv-explore-content",
+    tags$h1(l("tab_name.download")),
     div(class = "wlv-download-grid",
       div(class = "panel panel-default",
         div(class = "panel-heading", strong(l("dl_agg_title"))),
@@ -71,6 +73,7 @@ TABPANEL <- tabPanel(
           target = "_blank", rel = "noopener noreferrer", l("dl_source_code_msg")))
       )
     )
+  )
   )
 )
 modules_ui[[length(modules_ui) + 1L]] <- TABPANEL

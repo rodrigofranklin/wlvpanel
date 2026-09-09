@@ -4,18 +4,17 @@
 wlv_indicators_text <- function(key, lang = "pt") {
   dictionary <- list(
     title = c("Indicadores", "Indicators"),
-    intro = c("Explore os indicadores e compare países, anos e bases de dados.", "Explore indicators and compare countries, years and databases."),
     indicator = c("Indicador", "Indicator"), countries = c("Países para comparar", "Countries to compare"),
-    methods = c("Bases para comparar", "Databases to compare"), year = c("Ano das tabelas e do mapa", "Year for tables and map"),
+    methods = c("Bases para comparar", "Databases to compare"), year = c("Ano", "Year"),
     map_method = c("Base do mapa", "Map database"), series = c("Série histórica", "Time series"),
     map = c("Mapa", "Map"), catalogue = c("Catálogo de indicadores", "Indicator catalogue"),
-    catalogue_intro = c("Escolha um indicador por grupo e subgrupo, ou pesquise pelo nome.", "Choose an indicator by group and subgroup, or search by name."),
     group = c("Grupo", "Group"), subgroup = c("Subgrupo", "Subgroup"),
     all_groups = c("Todos os grupos", "All groups"), all_subgroups = c("Todos os subgrupos", "All subgroups"),
     back = c("Voltar ao catálogo", "Back to catalogue"),
     search = c("Buscar no catálogo", "Search the catalogue"), all = c("Todos os países", "All countries"),
     selected = c("Países selecionados", "Selected countries"), country = c("País", "Country"),
     hint = c("Toque em uma linha ou em um país no mapa para adicioná-lo à comparação.", "Tap a row or a country on the map to add it to the comparison."),
+    selected_hint = c("Toque em uma linha para retirar o país da comparação.", "Tap a row to remove the country from the comparison."),
     empty = c("Não há observações para esta seleção.", "No observations are available for this selection."),
     choose = c("Selecione pelo menos um país e uma base para comparar.", "Select at least one country and database to compare."),
     no_match = c("Nenhum indicador encontrado.", "No indicators found."),
@@ -47,8 +46,38 @@ wlv_indicators_unit_label <- function(unit, lang = "pt") {
     index_point = c("Pontos de índice", "Index points"), person = c("Pessoas", "People"),
     integer = c("Pessoas", "People"), hour = c("Horas", "Hours"), hours = c("Horas", "Hours"),
     value = c("Horas de trabalho abstrato", "Abstract labour hours"),
-    abstract_labour_hour = c("Horas de trabalho abstrato", "Abstract labour hours"))
-  if (unit %in% names(labels)) labels[[unit]][[if (identical(lang, "en")) 2L else 1L]] else unit
+    abstract_labour_hour = c("Horas de trabalho abstrato", "Abstract labour hours"),
+    abstract_labour_hour_per_person = c("mv/pessoa", "mv/person"),
+    abstract_labour_hour_per_usd = c("mv/US$", "mv/US$"),
+    local_currency_per_usd = c("Moeda local/US$", "Local currency/US$"),
+    ratio = c("Razão", "Ratio"), multiplier = c("Multiplicador", "Multiplier"))
+  if (unit %in% names(labels)) labels[[unit]][[if (identical(lang, "en")) 2L else 1L]] else gsub("_", " ", unit, fixed = TRUE)
+}
+
+wlv_indicators_fold <- function(value) {
+  tolower(iconv(value, from = "UTF-8", to = "ASCII//TRANSLIT", sub = ""))
+}
+
+# Locate matches in folded text, but preserve accents and escape every original
+# text segment before adding markup. Neither the query nor a label is HTML.
+wlv_indicators_highlight <- function(value, search = "") {
+  if (is.null(search) || !nzchar(trimws(search))) return(value)
+  characters <- strsplit(value, "", fixed = TRUE)[[1L]]
+  lengths <- nchar(wlv_indicators_fold(characters))
+  folded <- paste0(wlv_indicators_fold(characters), collapse = "")
+  query <- wlv_indicators_fold(trimws(search))
+  if (!nzchar(query)) return(value)
+  matches <- gregexpr(query, folded, fixed = TRUE)[[1L]]
+  if (matches[[1L]] < 0L) return(value)
+  ends <- cumsum(lengths)
+  starts <- ends - lengths + 1L
+  marked <- rep(FALSE, length(characters))
+  for (position in matches) marked <- marked | (ends >= position & starts < position + nchar(query))
+  segments <- split(seq_along(characters), cumsum(c(TRUE, diff(marked) != 0L)))
+  htmltools::HTML(paste0(vapply(segments, function(indices) {
+    text <- htmltools::htmlEscape(paste0(characters[indices], collapse = ""))
+    if (marked[[indices[[1L]]]]) paste0("<mark>", text, "</mark>") else text
+  }, character(1L)), collapse = ""))
 }
 
 # Keep all dimensions: singleton methods, years and countries are valid inputs.
@@ -122,15 +151,12 @@ indicators_ui <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
     shiny::tags$link(rel = "stylesheet", href = "wlv-indicators.css"),
-    shiny::tags$script(src = "wlv-equal-earth.js"),
     shiny::tags$script(src = "wlv-indicators.js"),
-    shiny::div(class = "wlv-indicators",
+    shiny::div(class = "wlv-explore-page",
+     shiny::div(class = "wlv-indicators wlv-explore-content",
       shiny::h2(shiny::textOutput(ns("title"), inline = TRUE)),
-      shiny::p(shiny::textOutput(ns("intro"), inline = TRUE)),
       shiny::conditionalPanel("output.page === 'catalogue'", ns = ns,
         shiny::div(class = "wlv-indicators-catalogue-page",
-          shiny::h3(shiny::textOutput(ns("catalogue_title"), inline = TRUE)),
-          shiny::p(shiny::textOutput(ns("catalogue_intro"), inline = TRUE)),
           shiny::div(class = "wlv-indicators-catalogue-filters",
             shiny::textInput(ns("search"), "Buscar no catálogo", width = "100%"),
             shiny::selectInput(ns("group"), "Grupo", choices = NULL, width = "100%", selectize = FALSE),
@@ -138,27 +164,35 @@ indicators_ui <- function(id) {
           shiny::uiOutput(ns("catalogue")))),
       shiny::conditionalPanel("output.page === 'detail'", ns = ns,
        shiny::div(class = "wlv-indicators-grid",
-        shiny::div(class = "wlv-indicators-controls",
+        shiny::div(class = "wlv-indicators-controls panel panel-default",
           shiny::actionButton(ns("back"), "Voltar ao catálogo", icon = shiny::icon("arrow-left"), width = "100%"),
           shiny::selectizeInput(ns("indicator"), "Indicador", choices = NULL, width = "100%"),
           shiny::selectizeInput(ns("countries"), "Países para comparar", choices = NULL, multiple = TRUE, width = "100%"),
           shiny::selectizeInput(ns("methods"), "Bases para comparar", choices = NULL, multiple = TRUE, width = "100%"),
-          shiny::selectInput(ns("year"), "Ano das tabelas e do mapa", choices = NULL, width = "100%"),
-          shiny::selectInput(ns("map_method"), "Base do mapa", choices = NULL, width = "100%"),
           shiny::uiOutput(ns("workbooks")),
           shiny::downloadButton(ns("download"), shiny::textOutput(ns("export_label"), inline = TRUE)),
           shiny::tags$small(shiny::textOutput(ns("export_hint"), inline = TRUE))) ,
         shiny::div(class = "wlv-indicators-main",
-          shiny::h3(shiny::textOutput(ns("indicator_title"), inline = TRUE)),
-          shiny::uiOutput(ns("description")),
-          shiny::tabsetPanel(id = ns("view"),
+          shiny::div(class = "wlv-indicators-detail-heading panel panel-default",
+            shiny::h3(shiny::textOutput(ns("indicator_title"), inline = TRUE)),
+            shiny::uiOutput(ns("description"))),
+          shiny::div(class = "wlv-indicators-views panel panel-default", shiny::tabsetPanel(id = ns("view"),
             shiny::tabPanel(shiny::textOutput(ns("series_label"), inline = TRUE), value = "series", plotly::plotlyOutput(ns("series"), height = "420px")),
             shiny::tabPanel(shiny::textOutput(ns("map_label"), inline = TRUE), value = "map",
-              shiny::conditionalPanel("output.map_available === 'yes'", ns = ns, leaflet::leafletOutput(ns("map"), height = "420px")),
-              shiny::conditionalPanel("output.map_available !== 'yes'", ns = ns, shiny::p(shiny::textOutput(ns("map_empty"), inline = TRUE))))),
-          shiny::p(shiny::textOutput(ns("hint"), inline = TRUE)),
-          shiny::h3(shiny::textOutput(ns("selected_title"), inline = TRUE)), DT::DTOutput(ns("selected")),
-          shiny::h3(shiny::textOutput(ns("all_title"), inline = TRUE)), DT::DTOutput(ns("all")))))))
+              shiny::div(class = "wlv-indicators-map-frame",
+                leaflet::leafletOutput(ns("map"), height = "420px"),
+                shiny::div(class = "wlv-indicators-map-base",
+                  shiny::selectInput(ns("map_method"), "Base do mapa", choices = NULL, width = "100%")),
+                shiny::conditionalPanel("output.map_available !== 'yes'", ns = ns,
+                  shiny::p(class = "wlv-indicators-map-empty", role = "status", shiny::textOutput(ns("map_empty"), inline = TRUE)))),
+              shiny::div(class = "wlv-indicators-map-year",
+                shiny::sliderInput(ns("year"), "Ano", min = 1995, max = 2020, value = 2007, step = 1, sep = "", width = "100%"))))),
+          shiny::div(class = "wlv-indicators-table-panel panel panel-default",
+            shiny::div(class = "panel-heading", shiny::h3(shiny::textOutput(ns("selected_title"), inline = TRUE))),
+            shiny::div(class = "panel-body", shiny::p(class = "wlv-indicators-table-hint", shiny::textOutput(ns("selected_hint"), inline = TRUE)), DT::DTOutput(ns("selected")))),
+          shiny::div(class = "wlv-indicators-table-panel panel panel-default",
+            shiny::div(class = "panel-heading", shiny::h3(shiny::textOutput(ns("all_title"), inline = TRUE))),
+            shiny::div(class = "panel-body", shiny::p(class = "wlv-indicators-table-hint", shiny::textOutput(ns("hint"), inline = TRUE)), DT::DTOutput(ns("all"))))))))))
 }
 
 indicators_server <- function(id, data, lang, bases) {
@@ -170,7 +204,7 @@ indicators_server <- function(id, data, lang, bases) {
     output$page <- shiny::renderText(page())
     shiny::outputOptions(output, "page", suspendWhenHidden = FALSE)
     shiny::observeEvent(input$back, page("catalogue"))
-    output_labels <- c(title = "title", intro = "intro", export_label = "export", export_hint = "export_hint", catalogue_title = "catalogue", catalogue_intro = "catalogue_intro", series_label = "series", map_label = "map", hint = "hint", selected_title = "selected", all_title = "all")
+    output_labels <- c(title = "title", export_label = "export", export_hint = "export_hint", series_label = "series", map_label = "map", hint = "hint", selected_hint = "selected_hint", selected_title = "selected", all_title = "all")
     lapply(names(output_labels), function(id) { output[[id]] <- shiny::renderText(tr(output_labels[[id]])) })
     available_methods <- shiny::reactive(intersect(bases(), dimnames(data$countries)[[1L]]))
     available_indicators <- shiny::reactive({
@@ -245,14 +279,18 @@ indicators_server <- function(id, data, lang, bases) {
       current_method <- shiny::isolate(input$map_method)
       selected_method <- if (length(current_method) && current_method %in% methods) current_method else head(methods, 1L)
       shiny::updateSelectInput(session, "map_method", label = tr("map_method"), choices = methods, selected = selected_method)
-      years <- sort(unique(values$year[is.finite(values$value)]))
+    })
+    shiny::observe({
+      values <- series()
+      method <- input$map_method
+      years <- sort(unique(values$year[values$method %in% method & is.finite(values$value)]))
       if (length(years)) {
         # Empty select controls reach the server as "" before their choices are
         # acknowledged by the browser. Never index with which.min(NA).
         current_year <- suppressWarnings(as.integer(shiny::isolate(input$year)))
         if (length(current_year) != 1L || !is.finite(current_year)) current_year <- 2007L
         current_year <- years[[which.min(abs(years - current_year))]]
-        shiny::updateSelectInput(session, "year", label = tr("year"), choices = years, selected = current_year)
+        shiny::updateSliderInput(session, "year", label = tr("year"), min = min(years), max = max(years), value = current_year, step = 1)
       }
     })
     output$indicator_title <- shiny::renderText({ shiny::req(input$indicator); label(input$indicator) })
@@ -269,9 +307,8 @@ indicators_server <- function(id, data, lang, bases) {
       if (!is.null(search) && nzchar(search)) {
         # Accent-insensitive matching keeps a plain keyboard search useful in
         # Portuguese, and fixed=TRUE treats punctuation as text, not a regexp.
-        fold <- function(value) tolower(iconv(value, from = "UTF-8", to = "ASCII//TRANSLIT", sub = ""))
-        haystack <- paste(label(rows$value), rows$value, label(paste0("group.", rows$groups), rows$groups), subgroup_label(rows$subgroup))
-        rows <- rows[grepl(fold(search), fold(haystack), fixed = TRUE), , drop = FALSE]
+        haystack <- paste(label(rows$value), label(paste0("group.", rows$groups), rows$groups), subgroup_label(rows$subgroup))
+        rows <- rows[grepl(wlv_indicators_fold(trimws(search)), wlv_indicators_fold(haystack), fixed = TRUE), , drop = FALSE]
       }
       if (!nrow(rows)) return(shiny::p(role = "status", tr("no_match")))
       grouped <- split(rows, rows$groups)
@@ -279,12 +316,12 @@ indicators_server <- function(id, data, lang, bases) {
         values <- grouped[[group]]
         families <- split(values$value, values$subgroup)
         shiny::tags$section(class = "wlv-indicators-catalogue-group",
-          shiny::h3(label(paste0("group.", group), group)),
+          shiny::h3(wlv_indicators_highlight(label(paste0("group.", group), group), search)),
           shiny::div(class = "wlv-indicators-catalogue-families", lapply(names(families), function(family) {
             codes <- families[[family]]
-            shiny::div(class = "wlv-indicators-catalogue-family", shiny::h4(subgroup_label(family)),
+            shiny::div(class = "wlv-indicators-catalogue-family", shiny::h4(wlv_indicators_highlight(subgroup_label(family), search)),
               shiny::tags$ul(lapply(codes[order(label(codes))], function(code) {
-                shiny::tags$li(shiny::actionLink(session$ns(paste0("catalogue_", code)), label(code)))
+                shiny::tags$li(shiny::actionLink(session$ns(paste0("catalogue_", code)), wlv_indicators_highlight(label(code), search)))
               })))
           })))
       }))
@@ -319,7 +356,10 @@ indicators_server <- function(id, data, lang, bases) {
           country_name <- label(paste0("ISO3.", country), country)
           chart <- plotly::add_trace(chart, x = rows$year, y = rows$value, type = "scatter", mode = "lines+markers", name = paste(country_name, method, sep = " · "), connectgaps = FALSE, hovertemplate = paste0("%{x}: %{y:.4~g} ", htmltools::htmlEscape(unit_label), "<extra>%{fullData.name}</extra>"))
         }
-        plotly::layout(chart, xaxis = list(title = "", tickformat = "d"), yaxis = list(title = unit_label), separators = if (identical(lang(), "en")) ".," else ",.", legend = list(orientation = "h", y = -0.2), margin = list(t = 15, b = 90))
+        # The numeral in the family name requires CSS quotes. Without them,
+        # SVG text falls back to Open Sans after Plotly has measured the legend.
+        chart_font <- list(family = "'Source Sans 3', sans-serif", size = 13, color = "#292B2E")
+        plotly::layout(chart, font = chart_font, xaxis = list(title = "", tickformat = "d"), yaxis = list(title = unit_label), separators = if (identical(lang(), "en")) ".," else ",.", legend = list(font = chart_font, orientation = "h", y = -0.2), margin = list(t = 15, b = 90))
       })
       chart <- if (length(charts) == 1L) charts[[1L]] else plotly::subplot(charts, nrows = length(charts), shareX = TRUE, titleY = TRUE)
       plotly::config(chart, displaylogo = FALSE, responsive = TRUE, locale = if (identical(lang(), "en")) "en" else "pt-br")
@@ -334,13 +374,25 @@ indicators_server <- function(id, data, lang, bases) {
       table
     }
     output$all <- DT::renderDT(table_widget(snapshot()), server = TRUE)
-    output$selected <- DT::renderDT(table_widget(snapshot()[snapshot()$country %in% input$countries, , drop = FALSE]), server = TRUE)
+    selected_snapshot <- shiny::reactive(snapshot()[snapshot()$country %in% input$countries, , drop = FALSE])
+    output$selected <- DT::renderDT(table_widget(selected_snapshot()), server = TRUE)
     add_country <- function(country) {
       if (length(country) == 1L && country %in% unique(series()$country)) shiny::updateSelectizeInput(session, "countries", selected = unique(c(input$countries, country)))
     }
     shiny::observeEvent(input$all_rows_selected, {
       row <- input$all_rows_selected
-      if (length(row) == 1L && row <= nrow(snapshot())) add_country(snapshot()$country[[row]])
+      if (length(row) == 1L && row > 0L && row <= nrow(snapshot())) {
+        add_country(snapshot()$country[[row]])
+        DT::selectRows(DT::dataTableProxy("all", session), NULL)
+      }
+    })
+    shiny::observeEvent(input$selected_rows_selected, {
+      row <- input$selected_rows_selected
+      values <- selected_snapshot()
+      if (length(row) == 1L && row > 0L && row <= nrow(values)) {
+        shiny::updateSelectizeInput(session, "countries", selected = setdiff(input$countries, values$country[[row]]))
+        DT::selectRows(DT::dataTableProxy("selected", session), NULL)
+      }
     })
     polygons <- data$polygons[[1L]]
     for (method in names(data$polygons)[-1L]) {
@@ -354,7 +406,8 @@ indicators_server <- function(id, data, lang, bases) {
         minZoom = -2, maxZoom = 10, zoomSnap = 0, zoomDelta = 0.25, worldCopyJump = FALSE,
         preferCanvas = TRUE, trackResize = FALSE, doubleClickZoom = FALSE))
       widget <- leaflet::setView(widget, lng = 0, lat = 0, zoom = 0)
-      widget <- leaflet::addPolygons(widget, data = polygons, layerId = as.character(polygons@data$ISO3), fillColor = "#e2e8f0", fillOpacity = 0.8, color = "#ffffff", weight = 0.6)
+      widget <- leaflet::addMapPane(widget, "wlv-indicator-polygons", zIndex = 400)
+      widget <- leaflet::addPolygons(widget, data = polygons, layerId = as.character(polygons@data$ISO3), fillColor = "#e2e8f0", fillOpacity = 0.8, color = "#ffffff", weight = 0.6, options = leaflet::pathOptions(pane = "wlv-indicator-polygons"))
       htmlwidgets::onRender(widget, "function(el,x){this.attributionControl.addAttribution('<a href=\"https://www.naturalearthdata.com/\" target=\"_blank\" rel=\"noopener\">Natural Earth</a> / rworldmap · Equal Earth'); WLVIndicators.attach(el,this);}")
     })
     shiny::observe({
@@ -371,12 +424,16 @@ indicators_server <- function(id, data, lang, bases) {
       unit <- wlv_indicators_unit_label(wlv_display_unit(data$contracts, input$map_method, input$indicator), lang())
       labels <- lapply(seq_along(codes), function(i) {
         number <- if (!is.finite(values[[i]])) tr("missing") else paste(format(values[[i]], digits = 5L, big.mark = if (identical(lang(), "en")) "," else ".", decimal.mark = if (identical(lang(), "en")) "." else ",", trim = TRUE), unit)
-        list(color = palette(values[[i]]), missing = !is.finite(values[[i]]), label = paste0("<strong>", htmltools::htmlEscape(label(paste0("ISO3.", codes[[i]]), codes[[i]])), "</strong>: ", htmltools::htmlEscape(number)))
+        list(color = palette(values[[i]]), missing = !is.finite(values[[i]]), label = paste0(
+          "<div class='wlv-indicator-tooltip-country'>", htmltools::htmlEscape(label(paste0("ISO3.", codes[[i]]), codes[[i]])), "</div>",
+          "<div class='wlv-indicator-tooltip-name'>", htmltools::htmlEscape(label(input$indicator)), "</div>",
+          "<div class='wlv-indicator-tooltip-value'>", htmltools::htmlEscape(number), "</div>",
+          "<div class='wlv-indicator-tooltip-source'>", htmltools::htmlEscape(paste(input$map_method, input$year, sep = " · ")), "</div>"))
       })
       names(labels) <- codes
       session$sendCustomMessage("wlvIndicatorsMap", list(id = session$ns("map"), countries = labels))
-      proxy <- leaflet::clearControls(leaflet::leafletProxy("map", session))
-      if (length(finite)) leaflet::addLegend(proxy, position = "bottomright", pal = palette, values = finite, title = htmltools::htmlEscape(paste(input$map_method, input$year, unit)))
+      proxy <- leaflet::removeControl(leaflet::leafletProxy("map", session), "indicator-legend")
+      if (length(finite)) leaflet::addLegend(proxy, layerId = "indicator-legend", position = "bottomleft", pal = palette, values = finite, title = htmltools::htmlEscape(unit))
     })
     shiny::observeEvent(input$map_shape_click, add_country(input$map_shape_click$id))
     output$workbooks <- shiny::renderUI({

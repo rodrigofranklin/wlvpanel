@@ -77,6 +77,25 @@ test_that("catalogue subgroups follow stable families and preserve explicit meta
   expect_identical(indicator_env$wlv_indicators_subgroup_label("exports", "en"), "Exports")
 })
 
+test_that("catalogue highlights preserve accents and escape HTML-like labels and queries", {
+  highlight <- indicator_env$wlv_indicators_highlight
+  expect_identical(as.character(highlight("Participação no comércio", "participacao")), "<mark>Participação</mark> no comércio")
+  expect_identical(as.character(highlight("<b>Preço</b> & preço", "preco")), "&lt;b&gt;<mark>Preço</mark>&lt;/b&gt; &amp; <mark>preço</mark>")
+  expect_identical(as.character(highlight("Produto (USD)", "(USD)")), "Produto <mark>(USD)</mark>")
+  expect_identical(as.character(highlight("<script>alert(1)</script>", "<script>")), "<mark>&lt;script&gt;</mark>alert(1)&lt;/script&gt;")
+  expect_identical(highlight("Preço", ""), "Preço")
+  expect_identical(highlight("Preço", NULL), "Preço")
+  expect_identical(highlight("Preço", "sem correspondência"), "Preço")
+})
+
+test_that("compound units use readable translated labels", {
+  unit_label <- indicator_env$wlv_indicators_unit_label
+  expect_identical(unit_label("abstract_labour_hour_per_person"), "mv/pessoa")
+  expect_identical(unit_label("abstract_labour_hour_per_person", "en"), "mv/person")
+  expect_identical(unit_label("legacy:abstract_labour_hour_per_usd"), "mv/US$")
+  expect_identical(unit_label("local_currency_per_usd"), "Moeda local/US$")
+})
+
 test_that("indicator module translates without changing data and renders both views", {
   for (package in c("shiny", "plotly", "leaflet", "DT", "sp")) skip_if_not_installed(package)
   fixture <- wlvpanel_indicator_fixture()
@@ -103,6 +122,7 @@ test_that("indicator module translates without changing data and renders both vi
     expect_false(table$x$options$info)
     session$setInputs(search = "participacao")
     expect_match(output$catalogue$html, "catalogue_share", fixed = TRUE)
+    expect_match(output$catalogue$html, "<mark>Participação</mark>", fixed = TRUE)
     expect_false(grepl("catalogue_price", output$catalogue$html, fixed = TRUE))
     session$setInputs(search = "", group = "test", subgroup = "price")
     expect_match(output$catalogue$html, "catalogue_price", fixed = TRUE)
@@ -115,7 +135,9 @@ test_that("indicator module translates without changing data and renders both vi
     expect_identical(input$countries, "BRA")
     expect_match(output$series, "Brazil|Brasil")
     map <- jsonlite::fromJSON(output$map, simplifyVector = FALSE)
-    expect_identical(map$x$calls[[1L]]$method, "addPolygons")
+    expect_identical(map$x$calls[[1L]]$method, "createMapPane")
+    expect_identical(map$x$calls[[2L]]$method, "addPolygons")
+    expect_identical(map$x$calls[[2L]]$args[[4L]]$pane, "wlv-indicator-polygons")
     expect_match(map$x$options$mapFactory, "WLVEqualEarth.install", fixed = TRUE)
     session$setInputs(map_ready = 1L)
     language("en")

@@ -73,6 +73,64 @@ label_f2s <- function(ind, method, lng) {
   }
 }
 
+# O tooltip mostra a unidade em uma coluna própria, preservando os mesmos
+# arredondamentos e sufixos de magnitude usados nas demais visualizações.
+map_tooltip_values <- function(values, indicator, method, lng) {
+  formatted <- list_display_f2s(values, indicator, method, lng) |>
+    unlist(use.names = FALSE) |>
+    as.character()
+  type <- wlv_display_format_type(meta_indicator_contracts, method, indicator)
+  suffix <- switch(type, percent = "%", value = "mv", hours = lb("hours", lng), "")
+  if (nzchar(suffix)) {
+    matched <- !is.na(formatted) & endsWith(formatted, suffix)
+    formatted[matched] <- substr(formatted[matched], 1L,
+      nchar(formatted[matched]) - nchar(suffix))
+  }
+  if (identical(type, "usd")) {
+    matched <- !is.na(formatted) & startsWith(formatted, "US$ ")
+    formatted[matched] <- substring(formatted[matched], 5L)
+  }
+  formatted[!is.finite(values)] <- wlv_tr("Sem dados", "No data", lng)
+  formatted
+}
+
+# A ajuda consulta o código clicado, sem alterar o indicador exibido no mapa.
+# Unidades vêm dos mesmos contratos de apresentação usados nos dados e tooltips.
+map_indicator_info <- function(indicator, methods, lng,
+    dictionary = language_file, contracts = meta_indicator_contracts) {
+  methods <- unique(methods)
+  stopifnot(length(methods) > 0L)
+  optional_label <- function(key) {
+    value <- wlv_label(key, lng, dictionary)
+    if (!length(value) || is.na(value) || !nzchar(trimws(value)) ||
+        identical(value, key)) "" else value
+  }
+  by_method <- function(values, missing) {
+    values[!nzchar(values)] <- missing
+    if (length(unique(values)) == 1L) return(unname(values[[1L]]))
+    paste(paste(methods, values, sep = ": "), collapse = "\n")
+  }
+  units <- vapply(methods, function(method) {
+    wlv_unit_label(wlv_display_unit(contracts, method, indicator), lng)
+  }, character(1))
+  missing_notes <- wlv_tr("Não informadas", "Not provided", lng)
+  general_notes <- optional_label(paste0("obs.", indicator))
+  method_notes <- vapply(paste0("obs.", methods, ".", indicator),
+    optional_label, character(1), USE.NAMES = FALSE)
+  notes <- c(general_notes, if (any(nzchar(method_notes))) {
+    by_method(method_notes, missing_notes)
+  })
+  notes <- unique(notes[nzchar(notes)])
+  description <- optional_label(paste0("desc.", indicator))
+  list(
+    variable = wlv_label(indicator, lng, dictionary),
+    unit = by_method(units, wlv_tr("Não informada", "Not provided", lng)),
+    description = if (nzchar(description)) description else
+      wlv_tr("Não informada", "Not provided", lng),
+    observations = if (length(notes)) paste(notes, collapse = "\n") else missing_notes
+  )
+}
+
 ### UI ####
 
 # Controles únicos: o CSS os apresenta como painéis flutuantes no mobile.
@@ -82,20 +140,22 @@ map_sheet_button <- function(sheet, label, symbol) {
     "aria-expanded" = "false", icon(symbol), l(label))
 }
 map_ui <- div(class = "wlv-map-canvas",
-  tags$link(rel = "stylesheet", href = "wlv-map-controls.css"),
-  tags$script(src = "wlv-equal-earth.js"),
-  tags$script(src = "wlv-map.js"),
-  tags$script(src = "wlv-map-controls.js"),
+  # Capturar os recursos junto com a UI impede que um processo R em uso
+  # combine seu HTML anterior com arquivos www de uma versão mais recente.
+  includeCSS("www/wlv-map-controls.css"),
+  includeScript("www/wlv-map.js"),
+  includeScript("www/wlv-map-controls.js"),
   tags$button(type = "button", class = "wlv-map-indicator-toggle",
     "data-map-sheet" = "indicators", "aria-controls" = "inputs_panel",
     "aria-expanded" = "false", tags$span(id = "map-current-indicator", l("map.indicator")), icon("chevron-down")),
   leafletOutput("map", width = "100%", height = "100%"),
-  div(id = "map-year-panel", class = "wlv-map-float wlv-map-year",
-    sliderInput("co_select_year", label = l("map.year"), min = 1995,
-      max = 2007, value = default_year, ticks = FALSE, sep = "",
-      animate = animationOptions(interval = 500, loop = FALSE))),
-  div(id = "map-base-panel", class = "wlv-map-float wlv-map-base",
-    selectInput("co_map_method", l("map.base"), choices = init_bases, selectize = FALSE)),
+  div(class = "wlv-map-float wlv-map-filter-panel",
+    div(id = "map-base-panel", class = "wlv-map-base",
+      selectInput("co_map_method", l("map.base"), choices = init_bases, selectize = FALSE)),
+    div(id = "map-year-panel", class = "wlv-map-year",
+      sliderInput("co_select_year", label = l("map.year"), min = 1995,
+        max = 2007, value = default_year, ticks = FALSE, sep = "",
+        animate = animationOptions(interval = 500, loop = FALSE)))),
   tags$p(class = "wlv-map-status", role = "status", textOutput("map_status")),
   div(class = "wlv-map-bottom-bar",
     map_sheet_button("legend", "map.legend", "list"),
@@ -105,15 +165,13 @@ map_ui <- div(class = "wlv-map-canvas",
       icon("globe"), l("map.world")))
 )
 panel_of_inputs <- tags$aside(id = "inputs_panel", class = "wlv-map-controls",
-  tags$h2(l("map.indicators")),
-  tags$label("for" = "map-indicator-search", l("map.search")),
-  tags$input(id = "map-indicator-search", type = "search", class = "form-control"),
+  "aria-label" = lb("map.indicators", default_language),
   div(style = "display:none", "aria-hidden" = "true",
     selectizeInput("co_select_indicator", NULL, choices = NULL,
       selected = default_indicator)),
   uiOutput("map_indicator_list"),
-  tags$p(class = "wlv-map-projection-note", l("map.projection")),
-  tags$button(type = "button", class = "btn wlv-map-indicators-close", "data-map-close" = "true", l("app.close"))
+  tags$button(type = "button", class = "wlv-map-indicators-close", "data-map-close" = "true",
+    icon("xmark", class = "wlv-map-close-icon"), l("app.close"))
 )
 
 ### Server ####
@@ -138,17 +196,54 @@ map_server <- function(IP, OP, RV, SESSION) {
   OP$map_indicator_list <- renderUI({
     rows <- meta_indicators[meta_indicators$value %in% control_availability(), ]
     selected <- isolate(IP$co_select_indicator)
-    lapply(unique(rows$groups), function(group) {
+    tags$ul(class = "wlv-map-indicator-list", lapply(unique(rows$groups), function(group) {
       codes <- rows$value[rows$groups == group]
-      tags$details(class = "wlv-map-indicator-group", open = if (any(codes %in% selected)) "open" else NULL,
-        tags$summary(lb(paste0("group.", group), IP$l)),
-        lapply(codes, function(code) tags$button(type = "button",
-          class = "wlv-map-indicator-option", "data-indicator" = code,
-          "aria-pressed" = if (identical(code, selected)) "true" else "false",
-          lb(code, IP$l))))
-    })
+      expanded <- any(codes %in% selected)
+      body_id <- paste0("map-indicator-group-", match(group, unique(rows$groups)))
+      tags$li(class = "wlv-map-indicator-group",
+        tags$button(type = "button", class = "wlv-map-group-header",
+          "aria-expanded" = if (expanded) "true" else "false", "aria-controls" = body_id,
+          tags$span(lb(paste0("group.", group), IP$l)),
+          tags$span(class = "wlv-map-group-arrow", icon("chevron-right"))),
+        tags$ul(id = body_id, class = "wlv-map-group-body",
+          "data-expanded" = if (expanded) "true" else "false",
+          lapply(codes, function(code) {
+            label_id <- paste0("map-indicator-label-", code)
+            tags$li(class = "wlv-map-indicator-row", "data-indicator-code" = code,
+              tags$button(type = "button", class = "wlv-map-indicator-option",
+                "data-indicator" = code, "aria-labelledby" = label_id,
+                "aria-pressed" = if (identical(code, selected)) "true" else "false",
+                tags$svg(class = "wlv-map-indicator-svg", xmlns = "http://www.w3.org/2000/svg",
+                  viewBox = "0 0 17 17", "aria-hidden" = "true",
+                  tags$circle(cx = "8.5", cy = "8.5", r = "8", fill = "var(--wlv-ink)",
+                    stroke = "#fff", "stroke-width" = "1"),
+                  tags$circle(cx = "8.5", cy = "8.5", r = "4", class = "inner-circle", fill = "#fff"))),
+              div(class = "wlv-map-indicator-text",
+                tags$span(id = label_id, class = "wlv-map-indicator-label", lb(code, IP$l)),
+                HTML("&nbsp;"),
+                tags$button(type = "button", class = "wlv-map-indicator-help",
+                  "data-indicator-info" = code,
+                  "aria-label" = paste(wlv_tr("Sobre", "About", IP$l), lb(code, IP$l)),
+                  icon("question-circle"))))
+          })))
+    }))
   })
   outputOptions(OP, "map_indicator_list", suspendWhenHidden = FALSE)
+  observeEvent(IP$map_show_indicator_info, {
+    code <- IP$map_show_indicator_info
+    req(length(code) == 1L, code %in% control_availability())
+    methods <- wlv_methods_with_indicator(method_indicator_availability, RV$bases(), code)
+    info <- map_indicator_info(code, methods, IP$l)
+    fields <- wlv_tr(c("Variável", "Unidade", "Descrição", "Observações"),
+      c("Variable", "Unit", "Description", "Notes"), IP$l)
+    showModal(modalDialog(title = lb(code, IP$l),
+      div(class = "wlv-map-indicator-info", lapply(seq_along(info), function(i) {
+        tags$p(class = paste0("wlv-map-indicator-", names(info)[[i]]),
+          tags$span(class = "wlv-map-info-label", paste0(fields[[i]], ": ")),
+          tags$span(class = "wlv-map-info-value", info[[i]]))
+      })),
+      easyClose = TRUE, footer = modalButton(lb("app.close", IP$l))))
+  })
   indicator_methods <- reactive({
     req(IP$co_select_indicator)
     wlv_methods_with_indicator(method_indicator_availability, RV$bases(), IP$co_select_indicator)
@@ -211,12 +306,12 @@ map_server <- function(IP, OP, RV, SESSION) {
       addGeoJSON(
         wlv_land_geojson,
         layerId = "wlv-world-land",
-        color = "#bdcbc3", weight = 0.6,
-        fillColor = "#f4f3ec", fillOpacity = 1,
+        color = "#CDD5D6", weight = 0.6,
+        fillColor = "#F7F3ED", fillOpacity = 1,
         options = pathOptions(pane = "base", interactive = FALSE)
       ) |>
-      # O enquadramento final usa os limites projetados completos no cliente.
-      # fitBounds com cantos polares cortaria a largura do mundo no equador.
+      # O cliente aguarda as geometrias e enquadra seus vértices projetados.
+      # Cantos geográficos não descrevem a extensão real em Equal Earth.
       setView(lng = 0, lat = 0, zoom = 0) |>
       htmlwidgets::onRender("function(el, x) {
         this.attributionControl.addAttribution(
@@ -305,22 +400,16 @@ map_server <- function(IP, OP, RV, SESSION) {
       )
 
       sprintf(
-        "<p style='
-        text-align: center;
-        border-style: none none solid;
-        border-width: 1px;
-        font-weight: bold'>
-        %s</p><strong>%s</strong><br>%s (%s): %s",
+        "<div><div class='tooltip-city'>%s</div>
+          <div class='tooltip-content'>
+            <span class='tooltip-label'>%s:</span>
+            <span class='tooltip-value'>%s</span>
+            <span class='tooltip-unit'>%s</span>
+          </div></div>",
         htmltools::htmlEscape(lb(paste0("ISO3.", method_data$ISO3), lng)),
-        htmltools::htmlEscape(method),
         htmltools::htmlEscape(lb(indicator, lng)),
-        htmltools::htmlEscape(unit),
-        ifelse(is.finite(method_data$data), list_display_f2s(
-          method_data$data,
-          indicator,
-          method,
-          lng
-        ) |> unlist(use.names = FALSE), wlv_tr("Sem dados", "No data", lng))
+        htmltools::htmlEscape(map_tooltip_values(method_data$data, indicator, method, lng)),
+        htmltools::htmlEscape(unit)
       ) |>
         lapply(htmltools::HTML)
     })
@@ -414,7 +503,7 @@ map_server <- function(IP, OP, RV, SESSION) {
         legend_range <- legend_range + c(-spread, spread)
       }
       proxy |>
-        addLegend("bottomright",
+        addLegend("bottomleft",
                   layerId = "wlv-legend",
                   # informing values as an interval to solve a bug when there 
                   # is only one number

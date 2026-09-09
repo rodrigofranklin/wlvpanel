@@ -57,6 +57,48 @@ graph_panel <- function(graph, graph_width, indicator, lng = default_language) {
 # Labels describe display units only; numeric conversion stays in the contract.
 country_axis_unit_label <- function(unit, lng = default_language) wlv_unit_label(unit, lng)
 
+# Geographic groups follow the map metadata. Aggregate observations remain
+# selectable even when they do not correspond to a country polygon.
+wlv_country_regions <- local({
+  geography <- rworldmap::getMap(resolution = "low")@data
+  regions <- stats::setNames(as.character(geography$REGION), geography$ISO3)
+  regions["MEX"] <- "North America" # The bundled source misclassifies Mexico.
+  regions[regions == "Australia"] <- "Oceania"
+  regions[c("ROW", "WWW")] <- "Aggregates"
+  regions
+})
+wlv_country_region_order <- c("Africa", "North America", "South America", "Asia", "Europe", "Oceania", "Aggregates", "Other")
+
+wlv_country_region_label <- function(region, lng = default_language) {
+  labels <- c("Africa" = "África", "Asia" = "Ásia", "Europe" = "Europa",
+              "North America" = "América do Norte", "South America" = "América do Sul",
+              "Oceania" = "Oceania", "Aggregates" = "Agregados", "Other" = "Outros")
+  if (identical(lng, "English")) return(region)
+  unname(labels[region])
+}
+
+wlv_country_search_fold <- function(text) {
+  tolower(iconv(enc2utf8(text), from = "UTF-8", to = "ASCII//TRANSLIT", sub = ""))
+}
+
+wlv_country_search_label <- function(label, query) {
+  query <- wlv_country_search_fold(trimws(query))
+  if (!nzchar(query)) return(label)
+  matches <- gregexpr(query, wlv_country_search_fold(label), fixed = TRUE)[[1L]]
+  if (matches[[1L]] < 0L) return(label)
+  position <- 1L
+  pieces <- list()
+  for (index in seq_along(matches)) {
+    start <- matches[[index]]
+    end <- start + attr(matches, "match.length")[[index]] - 1L
+    if (start > position) pieces <- c(pieces, list(substr(label, position, start - 1L)))
+    pieces <- c(pieces, list(tags$mark(substr(label, start, end))))
+    position <- end + 1L
+  }
+  if (position <= nchar(label)) pieces <- c(pieces, list(substr(label, position, nchar(label))))
+  do.call(tagList, pieces)
+}
+
 
 
 ### UI ####
@@ -65,25 +107,20 @@ country_axis_unit_label <- function(unit, lng = default_language) wlv_unit_label
 # navigation, charts, comparisons and sector tables stay in the document flow.
 country_panel <- tags$main(
   id = "wlv-country-page",
-  class = "wlv-country-page",
+  class = "wlv-country-page wlv-explore-page",
   `aria-labelledby` = "country_page_title",
   tags$link(rel = "stylesheet", href = "wlv-country.css"),
-  div(
-    class = "wlv-country-page-heading",
-    div(
-      tags$h1(id = "country_page_title", l("tab_name.country")),
-      tags$p(textOutput("country_page_description", inline = TRUE))
-    ),
-    div(
-      class = "wlv-country-selector",
-      selectizeInput("co_select_country", label = "País", choices = NULL,
-                     width = "100%", options = list(allowEmptyOption = TRUE))
-    )
-  ),
+  tags$script(src = "wlv-country.js"),
+  div(class = "wlv-explore-content",
+  div(class = "wlv-country-page-heading", tags$h1(id = "country_page_title", l("tab_name.country"))),
   conditionalPanel(
     "output.show_country_panel == ''",
-    div(class = "wlv-country-empty", role = "status",
-        textOutput("country_page_empty", inline = TRUE))
+    id = "wlv-country-catalogue",
+    div(class = "wlv-country-catalogue-filters panel panel-default",
+      textInput("co_catalogue_search", "Buscar país", width = "100%"),
+      selectInput("co_catalogue_region", "Continente", choices = NULL, width = "100%", selectize = FALSE)
+    ),
+    uiOutput("co_country_catalogue")
   ),
   conditionalPanel(
     "output.show_country_panel != ''",
@@ -98,11 +135,13 @@ country_panel <- tags$main(
       class = "wlv-country-header",
       div(
         class = "wlv-country-heading",
-        tags$h2(textOutput("co_panel_title", inline = TRUE)),
-        tags$a(
-          href = "#wlv-country-sectors", class = "wlv-country-sector-jump",
-          textOutput("co_panel_sector_jump", inline = TRUE)
-        )
+        actionButton("co_catalogue_back", "Voltar aos países", icon = icon("arrow-left")),
+        tags$h2(textOutput("co_panel_title", inline = TRUE))
+      ),
+      div(
+        class = "wlv-country-selector",
+        selectizeInput("co_select_country", label = "País", choices = NULL,
+                       width = "100%", options = list(allowEmptyOption = TRUE))
       ),
       div(
         class = "wlv-country-year",
@@ -115,6 +154,7 @@ country_panel <- tags$main(
     ),
     div(
       class = "wlv-country-body",
+      div(class = "wlv-country-main",
       div(
         class = "wlv-country-overview",
         div(
@@ -136,8 +176,6 @@ country_panel <- tags$main(
           )
         )
       ),
-      div(
-        class = "wlv-country-analysis",
         div(
           class = "wlv-country-series",
           lapply(groups, function(group) {
@@ -152,19 +190,15 @@ country_panel <- tags$main(
               )
             )
           })
-        ),
+        )
+      ),
         tags$section(
           id = "wlv-country-sectors",
           class = "wlv-country-sectors panel panel-default",
           tabindex = "-1",
           div(
             class = "panel-heading",
-            tags$h3(l("co_panel_sector_title")),
-            div(
-              class = "wlv-country-sector-subtitle",
-              textOutput("co_panel_sector_indicator", inline = TRUE),
-              " · ", textOutput("co_panel_year_text", inline = TRUE)
-            )
+            tags$h3(l("co_panel_sector_title"))
           ),
           div(
             class = "panel-body",
@@ -176,9 +210,19 @@ country_panel <- tags$main(
             uiOutput("co_sector_panel", class = "wlv-country-sector-tabs")
           )
         )
-      )
     )
-  )),
+  )))
+)
+
+# Country charts are rendered concurrently. Put their shared core in the
+# initial document so no widget runs before the first dynamic bundle finishes.
+country_panel <- htmltools::attachDependencies(
+  country_panel,
+  plotly::plotly_build(plotly::plot_ly(type = "scatter", mode = "lines"))$dependencies,
+  append = TRUE
+)
+
+country_panel <- tagList(country_panel,
   tags$script(HTML("
     $(function () {
       function visible(element) { return !!element && element.getClientRects().length > 0; }
@@ -249,15 +293,6 @@ co_info_panel <- conditionalPanel(
 ### Server ####
 
 country_panel_server <-  function(IP, OP, RV, SESSION) {
-  OP$country_page_description <- renderText(wlv_tr(
-    "Explore o perfil, a evolução dos indicadores e a composição por setor de um país.",
-    "Explore a country's profile, indicator trends and sector breakdown.", IP$l
-  ))
-  OP$country_page_empty <- renderText(wlv_tr(
-    "Selecione um país para consultar seus indicadores e comparar as bases disponíveis.",
-    "Select a country to explore its indicators and compare the available databases.", IP$l
-  ))
-  OP$co_panel_sector_jump <- renderText(wlv_tr("Ir para os setores", "Go to sectors", IP$l))
   OP$co_panel_year_label <- renderText(wlv_tr("Ano de referência", "Reference year", IP$l))
   OP$co_panel_profile_label <- renderText(wlv_tr("Perfil do país", "Country profile", IP$l))
   OP$co_panel_sector_select_label <- renderText(wlv_tr("Indicador por setor", "Indicator by sector", IP$l))
@@ -277,7 +312,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
     countries <- country_availability()$countries
     current <- isolate(IP$co_select_country)
     selected <- if (is.null(current) || !length(current)) {
-      if ("BRA" %in% countries) "BRA" else countries[[1L]]
+      ""
     } else if (identical(current, "") || current %in% countries) {
       current
     } else {
@@ -292,6 +327,56 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
       server = FALSE,
       options = list(placeholder = lb("co_select_country.placeholder", IP$l))
     )
+  })
+  catalogue_countries <- reactive({
+    codes <- country_availability()$countries
+    regions <- unname(wlv_country_regions[codes])
+    regions[is.na(regions) | !nzchar(regions)] <- "Other"
+    labels <- lb(paste0("ISO3.", codes), IP$l)
+    rows <- data.frame(code = codes, label = labels, region = regions, stringsAsFactors = FALSE)
+    rows[order(rows$label), , drop = FALSE]
+  })
+  observe({
+    regions <- intersect(wlv_country_region_order, unique(catalogue_countries()$region))
+    labels <- wlv_country_region_label(regions, IP$l)
+    region <- isolate(IP$co_catalogue_region)
+    if (!length(region) || !region %in% regions) region <- ""
+    choices <- stats::setNames(regions, labels)
+    updateSelectInput(SESSION, "co_catalogue_region", label = wlv_tr("Continente", "Continent", IP$l),
+      choices = c(stats::setNames("", wlv_tr("Todos os continentes", "All continents", IP$l)), choices), selected = region)
+    updateTextInput(SESSION, "co_catalogue_search", label = wlv_tr("Buscar país", "Search countries", IP$l))
+    updateActionButton(SESSION, "co_catalogue_back", label = wlv_tr("Voltar aos países", "Back to countries", IP$l))
+  })
+  OP$co_country_catalogue <- renderUI({
+    rows <- catalogue_countries()
+    region <- IP$co_catalogue_region
+    query <- trimws(if (is.null(IP$co_catalogue_search)) "" else IP$co_catalogue_search)
+    if (length(region) && nzchar(region)) rows <- rows[rows$region == region, , drop = FALSE]
+    if (nzchar(query)) rows <- rows[grepl(wlv_country_search_fold(query), wlv_country_search_fold(rows$label), fixed = TRUE), , drop = FALSE]
+    if (!nrow(rows)) return(div(class = "wlv-country-empty panel panel-default", role = "status",
+      wlv_tr("Nenhum país encontrado.", "No countries found.", IP$l)))
+    regions <- intersect(wlv_country_region_order, unique(rows$region))
+    div(class = "wlv-country-catalogue-groups", lapply(regions, function(region) {
+      countries <- rows[rows$region == region, , drop = FALSE]
+      tags$section(class = "wlv-country-catalogue-group panel panel-default",
+        tags$h2(class = "panel-heading", wlv_country_region_label(region, IP$l)),
+        tags$ul(class = "wlv-country-catalogue-list", lapply(seq_len(nrow(countries)), function(index) {
+          tags$li(tags$button(type = "button", class = "wlv-country-catalogue-link",
+            `data-wlv-country` = countries$code[[index]],
+            wlv_country_search_label(countries$label[[index]], query),
+            icon("arrow-right", class = "wlv-country-catalogue-arrow", `aria-hidden` = "true")))
+        }))
+      )
+    }))
+  })
+  observeEvent(IP$co_catalogue_country, {
+    country <- IP$co_catalogue_country
+    if (length(country) == 1L && country %in% country_availability()$countries) {
+      updateSelectizeInput(SESSION, "co_select_country", selected = country)
+    }
+  }, ignoreInit = TRUE)
+  observeEvent(IP$co_catalogue_back, {
+    updateSelectizeInput(SESSION, "co_select_country", selected = "")
   })
   show_country_panel <- reactive({
     country <- IP$co_select_country
@@ -427,6 +512,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
         hoverinfo = "text+x",
         height = 220) |>
         plotly::layout(hovermode = "x", autosize = TRUE,
+               font = list(family = "'Source Sans 3', sans-serif", color = "#292B2E"),
                separators = paste0(lb("decimal.mark", lng), lb("big.mark", lng)),
                xaxis = list(title = "",
                             showgrid = FALSE,
@@ -526,9 +612,6 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
     }
     
     tagList(
-      p(strong(lb("co_info_Code", lng)),
-        indicator,
-        style = "text-align: justifY;"),
       p(strong(lb("co_info_Description", lng)),
         lb(paste0("desc.",indicator), lng),
         style = "text-align: justifY;"),

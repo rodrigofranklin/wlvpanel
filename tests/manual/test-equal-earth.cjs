@@ -159,3 +159,246 @@ test("base local é finita, cobre a Antártida e já está cortada no antimeridi
   assert.equal(minimumLatitude, -90);
   assert.ok(maximumLatitude > 83);
 });
+
+function leafletScene(width = 1000, height = 600) {
+  const ll = (lat, lng) => ({ lat, lng });
+  const latlngs = parts => parts.map(p => Array.isArray(p) ?
+    (typeof p[0] === "number" ? ll(p[0], p[1]) : latlngs(p)) : p);
+  class Polygon {
+    constructor(points, options = {}) { this.points = latlngs(points); this.options = options; }
+    getLatLngs() { return this.points; }
+    setLatLngs(points) { this.points = points; }
+    addTo(map) { map.addLayer(this); return this; }
+  }
+  class Polyline {
+    constructor(points, options = {}) { this.points = points; this.options = options; }
+    addTo(map) { map.addLayer(this); return this; }
+  }
+  const node = () => ({ style: {}, children: [], listeners: {},
+    setAttribute(name, value) { this[name] = value; },
+    addEventListener(name, callback) { this.listeners[name] = callback; } });
+  const L = {
+    CRS: { WLVEqualEarth: {} }, Polygon: Polygon, latLng: ll,
+    polygon: (points, options) => new Polygon(points, options),
+    polyline: (points, options) => new Polyline(points, options),
+    control: options => ({ options, addTo(map) { this.container = this.onAdd(); map.controls.push(this); } }),
+    DomUtil: { create(tag, className, parent) {
+      const result = Object.assign(node(), { tag, className });
+      if (parent) parent.children.push(result);
+      return result;
+    } },
+    DomEvent: { disableClickPropagation() {}, disableScrollPropagation() {} }
+  };
+  const element = Object.assign(node(), { clientWidth: width, clientHeight: height, querySelector: () => null });
+  const map = {
+    options: { crs: L.CRS.WLVEqualEarth }, layers: new Set(), controls: [], listeners: new Map(),
+    center: ll(0, 0), zoom: 0, views: [], _loaded: true,
+    getContainer() { return element; },
+    hasLayer(layer) { return this.layers.has(layer); },
+    eachLayer(callback) { this.layers.forEach(callback); },
+    addLayer(layer) { this.layers.add(layer); this.fire("layeradd", { layer }); },
+    removeLayer(layer) { this.layers.delete(layer); },
+    createPane() { return node(); },
+    on(name, callback) {
+      if (!this.listeners.has(name)) this.listeners.set(name, new Set());
+      this.listeners.get(name).add(callback);
+    },
+    off(name, callback) { if (this.listeners.has(name)) this.listeners.get(name).delete(callback); },
+    fire(name, event) { if (this.listeners.has(name)) this.listeners.get(name).forEach(fn => fn(event)); },
+    getCenter() { return this.center; }, getZoom() { return this.zoom; },
+    getMinZoom: () => -2, getMaxZoom: () => 10,
+    invalidateSize() {},
+    setView(center, zoom) {
+      this.fire("movestart");
+      this.center = Array.isArray(center) ? ll(center[0], center[1]) : { ...center };
+      this.zoom = zoom;
+      this.views.push({ center: this.center, zoom });
+      this.fire("moveend");
+    },
+    removeControl(control) { this.controls = this.controls.filter(item => item !== control); }
+  };
+  function withGlobals(callback) {
+    const original = { L: globalThis.L, document: globalThis.document,
+      getComputedStyle: globalThis.getComputedStyle };
+    globalThis.L = L;
+    globalThis.document = { documentElement: { lang: "pt" } };
+    globalThis.getComputedStyle = () => ({ getPropertyValue: () => "" });
+    try { callback(); } finally {
+      if (original.L === undefined) delete globalThis.L; else globalThis.L = original.L;
+      if (original.document === undefined) delete globalThis.document; else globalThis.document = original.document;
+      if (original.getComputedStyle === undefined) delete globalThis.getComputedStyle;
+      else globalThis.getComputedStyle = original.getComputedStyle;
+    }
+  }
+  return { L, map, element, withGlobals };
+}
+
+test("limites projetados incluem apenas geometrias temáticas ativas, sem terra de fundo ou overlays", () => {
+  const { L, map } = leafletScene();
+  const country = L.polygon([[70, -160], [50, -120], [60, -110]], { pane: "polygons" }).addTo(map);
+  const land = L.polygon([[-30, 20], [-10, 40], [-20, 50]], { pane: "base" }).addTo(map);
+  L.polygon([[-90, -180], [0, 180], [90, -180]], { pane: "wlv-equal-earth-ocean" }).addTo(map);
+  L.polyline([[-90, -180], [90, 180]], { pane: "wlv-equal-earth-grid" }).addTo(map);
+  L.polygon([[-90, -180], [-60, 150], [-60, -150]], { pane: "overlayPane" }).addTo(map);
+  L.polygon([[-90, -180], [0, 180], [90, -180]], { pane: "auxiliary" }).addTo(map);
+  const hidden = L.polygon([[-85, -180], [-80, 180], [90, 0]], { pane: "polygons" });
+  const group = { eachLayer(callback) { [country, hidden].forEach(callback); } };
+  map.addLayer(group);
+  country.setLatLngs(ee.densify(country.getLatLngs(), L.latLng));
+  land.setLatLngs(ee.densify(land.getLatLngs(), L.latLng));
+  const actual = ee.polygonBounds(map, L);
+  const drawn = country.getLatLngs().map(p => ee.forward(p.lng, p.lat));
+  assert.deepEqual(actual, {
+    min: { x: Math.min(...drawn.map(p => p.x)), y: Math.min(...drawn.map(p => p.y)) },
+    max: { x: Math.max(...drawn.map(p => p.x)), y: Math.max(...drawn.map(p => p.y)) }
+  });
+  assert.ok(actual.min.x > ee.forward(-160, -30).x,
+    "o canto inexistente do bbox geográfico não deve ampliar o enquadramento");
+  assert.ok(actual.min.y > -ee.extent.y && actual.max.y < ee.extent.y,
+    "o contorno da esfera não é o limite dos polígonos");
+  country.options.fillColor = "#cccccc";
+  country.options.fillOpacity = 0;
+  assert.deepEqual(ee.polygonBounds(map, L), actual,
+    "valor ausente ou mudança de estilo não altera a extensão da geometria temática");
+  map.removeLayer(country);
+  assert.equal(ee.polygonBounds(map, L), null,
+    "sem geometrias temáticas ativas, a terra de fundo não serve de fallback");
+});
+
+test("resize de mapa revelado após Sobre espera setView e preserva o fit inicial", () => {
+  const scene = leafletScene();
+  const { L, map, element } = scene;
+  map._loaded = false;
+  map.center = undefined;
+  map.zoom = undefined;
+  const getCenter = map.getCenter;
+  map.getCenter = function () {
+    if (!this._loaded) throw new Error("Set map center and zoom first.");
+    return getCenter.call(this);
+  };
+  scene.withGlobals(() => {
+    const state = ee.attach(element, map, {waitForGeometry:true});
+    try {
+      assert.doesNotThrow(() => state.resize());
+      assert.equal(state.initialFitPending, true);
+      assert.equal(state.width, 0);
+      // Leaflet sets _loaded just before movestart, then supplies center/zoom
+      // and emits load at the end of its first _resetView.
+      map._loaded = true;
+      map.fire('movestart');
+      assert.equal(state.initialFitPending, true, 'first Leaflet setView is not user navigation');
+      map.center = {lat:0,lng:0}; map.zoom = 0;
+      map.fire('moveend');
+      map.fire('load');
+      L.polygon([[0,160],[50,150],[30,100]], {pane:'polygons'}).addTo(map);
+      state.geometryReady();
+      state.resize();
+      assert.equal(state.initialFitPending, false);
+      const expected = ee.boundsView(ee.polygonBounds(map,L),element.clientWidth,element.clientHeight);
+      assert.deepEqual(state.view,expected);
+    } finally { state.destroy(); }
+  });
+});
+
+test("o pane temático de Indicadores é explícito e não inclui os demais panes", () => {
+  const scene = leafletScene();
+  const { L, map, element } = scene;
+  L.polygon([[-90, -180], [0, 180], [90, -180]], { pane: "base" }).addTo(map);
+  L.polygon([[0, 0], [70, 150], [-30, 150]], { pane: "overlayPane" }).addTo(map);
+  assert.equal(ee.polygonBounds(map, L), null);
+  scene.withGlobals(() => {
+    const state = ee.attach(element, map, { polygonPane: "overlayPane" });
+    try {
+      assert.equal(state.initialFitPending, false);
+      assert.deepEqual(state.view,
+        ee.boundsView(ee.polygonBounds(map, L, "overlayPane"), element.clientWidth, element.clientHeight));
+    } finally { state.destroy(); }
+  });
+});
+
+test("enquadramento dos polígonos centraliza a caixa projetada e encosta no eixo limitante sem margem", () => {
+  const bounds = { min: { x: -1.6, y: -1.1 }, max: { x: 2.4, y: 0.8 } };
+  [[1440, 700], [768, 500], [390, 420], [280, 330]].forEach(([width, height]) => {
+    const view = ee.boundsView(bounds, width, height);
+    const center = ee.forward(view.center.lng, view.center.lat);
+    close(center.x, 0.4);
+    close(center.y, -0.15);
+    const scale = 256 * 2 ** view.zoom / (2 * ee.extent.x);
+    const spanX = (bounds.max.x - bounds.min.x) * scale;
+    const spanY = (bounds.max.y - bounds.min.y) * scale;
+    assert.ok(spanX <= width + 1e-8 && spanY <= height + 1e-8);
+    assert.ok(Math.abs(spanX - width) < 1e-8 || Math.abs(spanY - height) < 1e-8);
+  });
+  assert.equal(ee.boundsView(null, 1000, 600), null);
+  assert.equal(ee.boundsView(bounds, 0, 600), null);
+});
+
+test("primeiro fit espera os países; Mundo recalcula os visíveis; filtros e resize preservam a navegação", () => {
+  const scene = leafletScene();
+  const { L, map, element } = scene;
+  L.polygon([[-30, -30], [40, -30], [40, 30]], { pane: "base" }).addTo(map);
+  scene.withGlobals(() => {
+    const state = ee.attach(element, map, { waitForGeometry: true });
+    try {
+      assert.equal(state.initialFitPending, true);
+      assert.equal(map.zoom, 0, "a terra inicial não libera o enquadramento antes dos países");
+      state.geometryReady();
+      assert.equal(state.fitWorld(), false,
+        "Mundo não usa o fundo enquanto as geometrias temáticas ainda não chegaram");
+      assert.equal(state.initialFitPending, true,
+        "uma atualização sem geometrias mantém o primeiro enquadramento pendente");
+      map.fire("moveend"); // invalidateSize pode concluir depois do callback inicial.
+      assert.equal(state.initialFitPending, true);
+      const country = L.polygon([[0, 160], [50, 150], [30, 100]], { pane: "polygons" }).addTo(map);
+      state.geometryReady();
+      const initial = ee.boundsView(ee.polygonBounds(map, L), element.clientWidth, element.clientHeight);
+      assert.deepEqual(state.view, initial);
+      assert.equal(state.initialFitPending, false);
+      assert.equal(map.controls[0].options.position, "bottomright");
+      map.setView({ lat: 12, lng: 28 }, 3.25);
+      map.removeLayer(country);
+      L.polygon([[-60, -150], [60, -150], [20, 10]], { pane: "polygons" }).addTo(map);
+      state.geometryReady();
+      assert.deepEqual(map.center, { lat: 12, lng: 28 });
+      assert.equal(map.zoom, 3.25);
+      element.clientWidth = 650;
+      element.clientHeight = 420;
+      state.resize();
+      assert.deepEqual(map.center, { lat: 12, lng: 28 });
+      assert.equal(map.zoom, 3.25);
+      map.controls[0].container.children[0].listeners.click();
+      const expected = ee.boundsView(ee.polygonBounds(map, L), 650, 420);
+      assert.deepEqual(state.view, expected);
+      assert.notDeepEqual(expected, initial);
+    } finally { state.destroy(); }
+    assert.equal(map.controls.length, 0);
+    assert.ok([...map.listeners.values()].every(callbacks => callbacks.size === 0));
+  });
+});
+
+test("navegar antes das geometrias chegarem cancela o fit automático; mapa inicialmente oculto espera dimensões", () => {
+  const scene = leafletScene();
+  scene.withGlobals(() => {
+    const state = ee.attach(scene.element, scene.map, { waitForGeometry: true });
+    try {
+      scene.map.setView({ lat: 35, lng: 70 }, 4);
+      scene.L.polygon([[0, 0], [70, 150], [-30, 150]], { pane: "polygons" }).addTo(scene.map);
+      state.geometryReady();
+      assert.deepEqual(scene.map.center, { lat: 35, lng: 70 });
+      assert.equal(scene.map.zoom, 4);
+    } finally { state.destroy(); }
+  });
+  const hidden = leafletScene(0, 0);
+  hidden.L.polygon([[0, 0], [70, 150], [-30, 150]], { pane: "polygons" }).addTo(hidden.map);
+  hidden.withGlobals(() => {
+    const state = ee.attach(hidden.element, hidden.map);
+    try {
+      assert.equal(state.initialFitPending, true);
+      hidden.element.clientWidth = 900;
+      hidden.element.clientHeight = 500;
+      state.resize();
+      assert.deepEqual(state.view, ee.boundsView(ee.polygonBounds(hidden.map, hidden.L), 900, 500));
+      assert.equal(state.initialFitPending, false);
+    } finally { state.destroy(); }
+  });
+});

@@ -27,7 +27,7 @@ const evidence = { delayMs: delay, bundleRequests: [], errors: [] };
       if (message.type() === 'error' && message.text().includes('[shiny]')) evidence.errors.push(message.text());
     });
     await page.goto(url, { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => window.WLVMap && WLVMap.stats('map')?.layers > 0, null, { timeout: 45000 });
+    await page.waitForFunction(() => window.Shiny?.shinyapp?.$inputValues.main_nav, null, { timeout: 45000 });
     for (const english of [true, false]) {
       await page.locator('#language_toggle').click();
       await page.waitForFunction(en => {

@@ -39,6 +39,10 @@ async function bounds(page, name) {
       page.setDefaultTimeout(30000);
       page.on('pageerror', error => evidence.errors.push(error.stack || error.message));
       await page.goto('http://127.0.0.1:' + (process.env.WLVPANEL_PORT || '38129'));
+      await page.waitForFunction(() => window.Shiny?.shinyapp?.$inputValues.main_nav);
+      if (mobile) await page.locator('.navbar-toggle').click();
+      await page.locator('#main_nav a[data-value="map"]').click();
+      if (mobile) await page.locator('.navbar-collapse').waitFor({state:'hidden'});
       await page.waitForFunction(() => window.WLVMap?.stats('map')?.layers > 0 &&
         document.getElementById('map').getAttribute('aria-busy') === 'false');
       await page.locator('#map').evaluate(node => node.scrollIntoView({block:'center',behavior:'instant'}));

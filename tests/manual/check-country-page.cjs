@@ -20,36 +20,72 @@ async function nav(page, value) {
       !(await page.locator('.navbar-collapse').isVisible())) await page.locator('.navbar-toggle').click();
   await page.locator('#main_nav a[data-value="' + value + '"]').click();
   await page.waitForFunction(value => Shiny.shinyapp.$inputValues.main_nav === value, value);
+  if (await page.locator('.navbar-toggle').isVisible()) await page.locator('.navbar-collapse').waitFor({ state: 'hidden' });
   await settle(page);
 }
 
 (async () => {
   const browser = await chromium.launch({ headless: true });
   try {
-    for (const width of [1440, 390, 320]) {
+    for (const width of [1920, 1440, 390, 320]) {
       const context = await browser.newContext({ viewport: { width, height: width > 768 ? 1000 : 844 }, hasTouch: width < 768 });
       const page = await context.newPage();
       page.on('pageerror', error => evidence.errors.push(String(error)));
       await page.goto(url, { waitUntil: 'domcontentloaded' });
-      await page.waitForFunction(() => window.WLVMap && WLVMap.stats('map')?.layers > 0, null, { timeout: 45000 });
+      await page.waitForFunction(() => window.Shiny?.shinyapp?.$inputValues.main_nav, null, { timeout: 45000 });
       await nav(page, 'country');
-      await select(page, 'co_select_country', 'BRA');
+      await page.locator('#wlv-country-catalogue').waitFor({ state: 'visible' });
+      await page.locator('[data-wlv-country="BRA"]').waitFor();
+      assert.equal(await page.locator('#co_select_country').inputValue(), '', 'Country opens on the catalogue');
+      assert.ok(await page.locator('.wlv-country-catalogue-group').count() >= 5, 'Countries are grouped geographically');
+      const countryCodes = await page.locator('[data-wlv-country]').evaluateAll(nodes => nodes.map(node => node.dataset.wlvCountry));
+      assert.ok(countryCodes.includes('ROW') && countryCodes.includes('WWW'), 'Aggregate observations are retained');
+      assert.equal((await page.locator('[data-wlv-country="TWN"]').textContent()).trim(), 'Taiwan, China', 'Country catalogue uses the requested name');
+      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 2), 'Catalogue fits the viewport');
+      await page.screenshot({ path: path.join(campaign, 'results', 'country-catalogue-' + width + '.png') });
+      await page.locator('#co_catalogue_region').selectOption('Europe');
+      await page.waitForFunction(() => document.querySelectorAll('.wlv-country-catalogue-group').length === 1 && !document.querySelector('[data-wlv-country="BRA"]'));
+      assert.equal(await page.locator('[data-wlv-country="GBR"]').count(), 1, 'Continent filter retains the matching countries');
+      await page.locator('#co_catalogue_region').selectOption('');
+      await page.locator('#co_catalogue_search').fill('mex');
+      await page.waitForFunction(() => document.querySelectorAll('[data-wlv-country]').length === 1);
+      assert.equal(await page.locator('[data-wlv-country="MEX"] mark').count(), 1, 'Search is accent-insensitive and highlighted');
+      assert.match(await page.locator('.wlv-country-catalogue-group h2').textContent(), /Norte/);
+      await page.locator('#co_catalogue_search').fill('');
+      await page.locator('[data-wlv-country="BRA"]').click();
       await page.waitForFunction(() => document.getElementById('co_panel_title')?.textContent === 'Brasil');
       await page.waitForFunction(() => document.querySelectorAll('.wlv-country-chart-slot .js-plotly-plot').length > 0);
       await settle(page);
       assert.equal(await page.locator('#co_select_country').count(), 1, 'Country input occurs once');
       assert.equal(await page.locator('#wlv-country-overlay, #close_country_panel').count(), 0, 'Country is an ordinary page');
-      assert.equal(await page.locator('#wlv-country-page').evaluate(node => getComputedStyle(node).position), 'static');
+      assert.equal(await page.locator('.wlv-country-sector-jump, .wlv-country-sector-subtitle, #country_page_description').count(), 0, 'Redundant copy is removed');
       const profile = await page.locator('#co_panel_profile').textContent();
       assert.ok(profile.includes('WIOD13') && profile.includes('WIOD16'), 'Country comparisons remain available');
       await page.waitForFunction(() => document.querySelector('#co_panel_sector_WIOD13 tbody tr'));
       const layout = await page.evaluate(() => ({
         width: innerWidth, scrollWidth: document.documentElement.scrollWidth,
+        pageScroll: (() => { const node = document.querySelector('.wlv-page-scroll') || document.querySelector('body > .container-fluid'); return node ? { width: node.clientWidth, scrollWidth: node.scrollWidth } : null; })(),
         plots: document.querySelectorAll('.wlv-country-chart-slot .js-plotly-plot').length,
+        chartColumns: getComputedStyle(document.querySelector('.wlv-country-chart-grid')).gridTemplateColumns.split(' ').length,
+        overviewColumns: getComputedStyle(document.querySelector('.wlv-country-overview')).gridTemplateColumns.split(' ').length,
+        sectors: (() => { const x = document.getElementById('wlv-country-sectors').getBoundingClientRect(); return { x: x.x, y: x.y }; })(),
+        profile: (() => { const x = document.querySelector('.wlv-country-profile').getBoundingClientRect(); return { right: x.right, y: x.y }; })(),
         errors: Array.from(document.querySelectorAll('.shiny-output-error')).filter(node => node.getClientRects().length).map(node => node.textContent)
       }));
       assert.ok(layout.scrollWidth <= width + 2, 'No horizontal page overflow: ' + JSON.stringify(layout));
+      if (layout.pageScroll) assert.ok(layout.pageScroll.scrollWidth <= layout.pageScroll.width + 2, 'Country content fits its scroll container');
       assert.deepEqual(layout.errors, []);
+      assert.ok(layout.chartColumns <= 2, 'There are never more than two chart columns');
+      if (width > 1180) {
+        assert.equal(layout.chartColumns, 2, 'Desktop charts use two columns');
+        assert.equal(layout.overviewColumns, 2, 'Profile and downloads share their own first row');
+        assert.ok(layout.sectors.x > layout.profile.right && Math.abs(layout.sectors.y - layout.profile.y) < 2, 'Sector panel starts alongside the profile in the right column');
+        const divisions = await page.evaluate(() => ({
+          overview: document.querySelector('.wlv-country-downloads').getBoundingClientRect().x,
+          charts: document.querySelector('.wlv-country-chart-slot:nth-child(2)').getBoundingClientRect().x
+        }));
+        assert.ok(Math.abs(divisions.overview - divisions.charts) > 15, 'Overview division is independent of the chart grid');
+      }
       await page.screenshot({ path: path.join(campaign, 'results', 'country-page-' + width + '.png') });
 
       const info = page.locator('.wlv-country-chart-info').first();
@@ -78,8 +114,8 @@ async function nav(page, value) {
         year.data('ionRangeSlider').update({ from: 2008 });
         year.trigger('change');
       });
-      await page.waitForFunction(() => document.getElementById('co_panel_year_text')?.textContent === '2008');
-      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.waitForFunction(() => Shiny.shinyapp.$inputValues.co_panel_year === 2008);
+      await page.evaluate(() => (document.querySelector('.wlv-page-scroll') || document.scrollingElement).scrollTo(0, 0));
       await page.locator('#language_toggle').click();
       await page.waitForFunction(() => document.documentElement.lang === 'en' && document.getElementById('co_panel_title')?.textContent === 'Brazil');
       await settle(page);
@@ -92,12 +128,11 @@ async function nav(page, value) {
       await nav(page, 'country');
       assert.equal(await page.locator('#co_select_country').inputValue(), 'BRA', 'Navigation preserves country');
       assert.equal(await page.locator('#co_panel_year').inputValue(), '2008', 'Navigation preserves year');
-      await select(page, 'co_select_country', '');
-      await page.locator('.wlv-country-empty').waitFor({ state: 'visible' });
-      await page.waitForFunction(() => document.getElementById('country_page_empty')?.textContent.startsWith('Select a country'));
-      assert.match(await page.locator('.wlv-country-empty').textContent(), /Select a country/);
+      await page.locator('#co_catalogue_back').click();
+      await page.locator('#wlv-country-catalogue').waitFor({ state: 'visible' });
+      assert.equal((await page.locator('[data-wlv-country="TWN"]').textContent()).trim(), 'Taiwan, China', 'Country name stays the same in English');
       await page.locator('#wlv-country-detail').waitFor({ state: 'hidden' });
-      await select(page, 'co_select_country', 'AUS');
+      await page.locator('[data-wlv-country="AUS"]').click();
       await page.waitForFunction(() => document.getElementById('co_panel_title')?.textContent === 'Australia');
       await page.locator('#wlv-country-detail').waitFor({ state: 'visible' });
       await settle(page);

@@ -8,6 +8,7 @@
     "en": "Map"
   },
   "tab_name.country": {"pt": "País", "en": "Country"},
+  "ISO3.TWN": {"pt": "Taiwan, China", "en": "Taiwan, China"},
   "tab_name.publications": {"pt": "Publicações", "en": "Publications"},
   "map.indicators": {"pt": "Indicadores", "en": "Indicators"},
   "map.indicator": {"pt": "Selecionar indicador", "en": "Select indicator"},
@@ -242,7 +243,8 @@
     "pt": "Código-fonte"
   },
   "dl_source_portable_msg": {
-    "pt": "O código utilizado no artigo sobre o problema da redução do trabalho está disponível no repositório. Consulte também Como citar."
+    "pt": "O código utilizado no artigo sobre o problema da redução do trabalho está disponível no repositório. A referência para citação está ao final da página Sobre.",
+    "en": "The code used in the article on the labour reduction problem is available in the repository. The citation is at the end of the About page."
   },
   "dl_source_code_msg": {
     "pt": "Acesse o código que calcula os dados apresentados neste painel:"

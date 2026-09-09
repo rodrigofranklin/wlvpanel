@@ -19,7 +19,7 @@ if (!campaign) throw new Error('WLV_CAMPAIGN_ROOT is required');
       });
       try {
         await page.goto('http://127.0.0.1:' + (process.env.WLVPANEL_PORT || '38129'));
-        await page.waitForFunction(() => window.WLVMap?.stats('map')?.layers > 0);
+        await page.waitForFunction(() => window.Shiny?.shinyapp?.$inputValues.main_nav);
         if (width < 768) await page.locator('.navbar-toggle').click();
         await page.locator('#main_nav a[data-value="download"]').click();
         const choose = async (id, value) => {

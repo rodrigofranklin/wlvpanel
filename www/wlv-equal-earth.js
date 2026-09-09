@@ -81,6 +81,47 @@
       (height - 2 * gap) * X / Y)) / 256);
   }
 
+  // Medir os vértices temáticos que o Leaflet desenha, já densificados,
+  // exclui a terra de contexto e os extremos falsos de um bbox geográfico.
+  // A seleção explícita do pane também exclui futuros polígonos auxiliares.
+  function polygonBounds(map, L, polygonPane = "polygons") {
+    const seen = new Set();
+    const bounds = { min: { x: Infinity, y: Infinity }, max: { x: -Infinity, y: -Infinity } };
+    function coordinates(parts) {
+      parts.forEach(function (point) {
+        if (Array.isArray(point)) return coordinates(point);
+        if (!point || !Number.isFinite(point.lat) || !Number.isFinite(point.lng)) return;
+        const projected = forward(point.lng, point.lat);
+        bounds.min.x = Math.min(bounds.min.x, projected.x);
+        bounds.min.y = Math.min(bounds.min.y, projected.y);
+        bounds.max.x = Math.max(bounds.max.x, projected.x);
+        bounds.max.y = Math.max(bounds.max.y, projected.y);
+      });
+    }
+    function visit(layer) {
+      if (!layer || seen.has(layer) || !map.hasLayer(layer)) return;
+      seen.add(layer);
+      const pane = layer.options && layer.options.pane;
+      if (layer instanceof L.Polygon && layer.getLatLngs) {
+        if (pane === polygonPane) coordinates(layer.getLatLngs());
+      }
+      else if (layer.eachLayer) layer.eachLayer(visit);
+    }
+    map.eachLayer(visit);
+    return Number.isFinite(bounds.min.x) ? bounds : null;
+  }
+
+  function boundsView(bounds, width, height) {
+    if (!bounds || width <= 0 || height <= 0) return null;
+    const spanX = bounds.max.x - bounds.min.x, spanY = bounds.max.y - bounds.min.y;
+    if (spanX <= 0 || spanY <= 0) return null;
+    const center = inverse((bounds.min.x + bounds.max.x) / 2, (bounds.min.y + bounds.max.y) / 2);
+    // A transformação do CRS usa 256 px / (2 * X) no zoom zero. Nenhuma
+    // margem extra: um eixo encosta no limite e o outro respeita o aspecto.
+    const zoom = Math.log2(Math.min(width / spanX, height / spanY) * 2 * X / 256);
+    return { center: center, zoom: zoom };
+  }
+
   function boxView(map, start, end) {
     const viewport = map.getSize();
     const scale = Math.min(viewport.x / Math.max(1, Math.abs(end.x - start.x)),
@@ -144,6 +185,9 @@
   }
 
   function backdrop(map, L) {
+    const theme = root.getComputedStyle(map.getContainer());
+    const oceanColor = theme.getPropertyValue('--wlv-ocean').trim() || '#E3E9EB';
+    const gridColor = theme.getPropertyValue('--wlv-grid').trim() || '#CDD5D6';
     const oceanPane = map.createPane("wlv-equal-earth-ocean");
     oceanPane.style.zIndex = 2;
     oceanPane.style.pointerEvents = "none";
@@ -156,7 +200,7 @@
     for (let lat = 88; lat >= -90; lat -= 2) edge.push([lat, 180]);
     for (let lng = 178; lng >= -180; lng -= 2) edge.push([-90, lng]);
     const ocean = L.polygon(edge, { pane: "wlv-equal-earth-ocean", interactive: false,
-      color: "#9ebbbd", weight: 0.8, fillColor: "#deecec", fillOpacity: 1,
+      color: gridColor, weight: 0.8, fillColor: oceanColor, fillOpacity: 1,
       smoothFactor: 0.2 });
     prepared.add(ocean);
     ocean.addTo(map);
@@ -172,37 +216,64 @@
       grid.push(line);
     }
     const graticule = L.polyline(grid, { pane: "wlv-equal-earth-grid", interactive: false,
-      color: "#b8cece", weight: 0.65, opacity: 0.65, smoothFactor: 0.2 }).addTo(map);
+      color: gridColor, weight: 0.65, opacity: 0.65, smoothFactor: 0.2 }).addTo(map);
     return [ocean, graticule];
   }
 
-  function attach(element, map) {
+  function attach(element, map, options) {
     const L = root.L;
     if (!L || !map.options || map.options.crs !== L.CRS.WLVEqualEarth) return null;
     if (states.has(map)) return states.get(map);
-    const state = { worldView: true, fitting: false, width: 0, height: 0 };
+    const polygonPane = options && options.polygonPane || "polygons";
+    const state = { worldView: true, fitting: false, width: 0, height: 0,
+      initialFitPending: true, awaitingInitialView: !map._loaded,
+      geometriesReady: !(options && options.waitForGeometry) };
     states.set(map, state);
     element.setAttribute("data-wlv-projection", "Equal Earth");
     element.setAttribute("role", "region");
-    const onLayerAdd = event => prepareLayer(event.layer, L);
+    const onLayerAdd = function (event) {
+      prepareLayer(event.layer, L);
+      if (!state.initialFitPending || !state.geometriesReady || state.initialFitTimer) return;
+      // Agrupar adições síncronas para não enquadrar somente o primeiro país.
+      state.initialFitTimer = root.setTimeout(function () {
+        state.initialFitTimer = null;
+        if (!state.destroyed) state.fitInitial();
+      }, 0);
+    };
     map.on("layeradd", onLayerAdd);
     map.eachLayer(layer => prepareLayer(layer, L));
     state.backdrop = backdrop(map, L);
     const restoreBoxZoom = prepareBoxZoom(map, L);
 
     state.fitWorld = function () {
-      if (!element.clientWidth || !element.clientHeight) return;
+      const view = boundsView(polygonBounds(map, L, polygonPane), element.clientWidth, element.clientHeight);
+      if (!view) return false;
       state.fitting = true;
-      state.worldZoom = fitZoom(element.clientWidth, element.clientHeight);
-      map.setView([0, 0], state.worldZoom, { animate: false, reset: true });
+      state.worldZoom = clamp(view.zoom, map.getMinZoom(), map.getMaxZoom());
+      map.setView(view.center, state.worldZoom, { animate: false, reset: true });
       state.worldView = true;
-      state.view = { center: { lat: 0, lng: 0 }, zoom: state.worldZoom };
+      state.view = { center: view.center, zoom: state.worldZoom };
+      state.initialFitPending = false;
       state.fitting = false;
+      return true;
     };
+    state.fitInitial = function () {
+      return state.initialFitPending && state.geometriesReady && state.fitWorld();
+    };
+    // O mapa principal recebe as bases por proxy após onRender; a conclusão
+    // da primeira atualização libera o fit. Indicadores já traz os polígonos.
+    state.geometryReady = function () { state.geometriesReady = true; state.fitInitial(); };
 
     // Navegação livre: registrar a vista sem corrigir o pan ou o zoom.
+    const onMoveStart = function () {
+      // The first setView belongs to Leaflet/htmlwidgets initialization,
+      // including widgets first revealed after the About page.
+      if (state.fitting || state.awaitingInitialView || !map._loaded) return;
+      state.worldView = false;
+      state.initialFitPending = false;
+    };
     const onMoveEnd = function () {
-      if (state.fitting) return;
+      if (state.fitting || state.awaitingInitialView || !map._loaded) return;
       // O binding htmlwidgets chama invalidateSize antes do ResizeObserver.
       // Não registrar o pan arredondado dessa etapa como navegação do usuário.
       if (element.clientWidth !== state.width || element.clientHeight !== state.height) return;
@@ -210,9 +281,15 @@
       const position = map.getCenter();
       state.view = { center: { lat: position.lat, lng: position.lng }, zoom: zoom };
     };
+    map.on("movestart", onMoveStart);
     map.on("moveend", onMoveEnd);
+    const onLoad = function () {
+      state.awaitingInitialView = false;
+      state.resize();
+    };
+    map.on("load", onLoad);
 
-    const control = L.control({ position: "topleft" });
+    const control = L.control({ position: "bottomright" });
     let button;
     control.onAdd = function () {
       const container = L.DomUtil.create("div", "leaflet-bar wlv-map-world-control");
@@ -247,17 +324,17 @@
     state.resize = function () {
       const width = element.clientWidth, height = element.clientHeight;
       if (!width || !height || (width === state.width && height === state.height)) return;
+      // A visible ResizeObserver can run before htmlwidgets applies setView.
+      // Keep dimensions and the initial fit pending until a center exists.
+      if (!map._loaded) return;
       state.width = width;
       state.height = height;
-      const firstView = !state.view;
       const center = state.view ? state.view.center : map.getCenter();
       const zoom = state.view ? state.view.zoom : map.getZoom();
       state.fitting = true;
       map.invalidateSize({ pan: false, debounceMoveend: true });
       // Uma mudança de idioma/tamanho preserva a vista aproximada do usuário.
-      state.worldZoom = fitZoom(width, height);
-      if (firstView) state.fitWorld();
-      else {
+      if (!state.fitInitial()) {
         // No mesmo zoom, setView pode escolher panBy, que arredonda pixels e
         // acumula deslocamento a cada resize. reset preserva o centro exato.
         map.setView(center, zoom, { animate: false, reset: true });
@@ -267,10 +344,13 @@
     state.destroy = function () {
       if (state.destroyed) return;
       state.destroyed = true;
+      if (state.initialFitTimer) root.clearTimeout(state.initialFitTimer);
       if (state.languageObserver) state.languageObserver.disconnect();
       restoreBoxZoom();
       map.off("layeradd", onLayerAdd);
+      map.off("movestart", onMoveStart);
       map.off("moveend", onMoveEnd);
+      map.off("load", onLoad);
       map.off("unload", state.destroy);
       map.removeControl(control);
       state.backdrop.forEach(layer => { if (map.hasLayer(layer)) map.removeLayer(layer); });
@@ -282,7 +362,8 @@
   }
 
   const api = { install: install, attach: attach, forward: forward, inverse: inverse,
-    fitZoom: fitZoom, boxView: boxView, densify: densify, extent: { x: X, y: Y },
+    fitZoom: fitZoom, polygonBounds: polygonBounds, boundsView: boundsView,
+    boxView: boxView, densify: densify, extent: { x: X, y: Y },
     fitWorld: function (map) { if (states.has(map)) states.get(map).fitWorld(); } };
   root.WLVEqualEarth = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;

@@ -7,6 +7,7 @@ const campaign=process.env.WLV_CAMPAIGN_ROOT;
 assert.ok(campaign&&fs.existsSync(path.join(campaign,'.campaign.json')));
 const results=path.join(campaign,'results');
 const records=[];
+const catalogue=JSON.parse(fs.readFileSync(path.join(__dirname,'../../config/publications.json'),'utf8'));
 async function choose(p,id,value){
   if(value) await p.waitForFunction(({id,value})=>{
     const n=document.getElementById(id);
@@ -43,10 +44,12 @@ async function download(p,id,file){
       const errors=[];p.on('pageerror',e=>errors.push(String(e)));
       try{
         await p.goto('http://127.0.0.1:'+(process.env.WLVPANEL_PORT||'38129'));
+        await p.waitForFunction(()=>window.Shiny?.shinyapp?.$inputValues.main_nav);
+        await nav(p,'map');
         await p.waitForFunction(()=>window.WLVMap?.stats('map')?.layers>0);
-        assert.deepEqual((await p.locator('#main_nav a').allTextContents()).map(s=>s.trim()),['Sobre','Mapa','País','Indicadores','Download','Publicações','Como citar']);
+        assert.deepEqual((await p.locator('#main_nav a').allTextContents()).map(s=>s.trim()),['Sobre','Mapa','País','Indicadores','Download','Publicações']);
         await layout(p,'map');
-        for(const value of ['about','country','indicators','download','publications','cite']){
+        for(const value of ['about','country','indicators','download','publications']){
           await nav(p,value);await layout(p,value);
         }
         await nav(p,'download');
@@ -87,7 +90,7 @@ async function download(p,id,file){
         await p.locator('.wlv-publication').first().waitFor();
         const total=await p.locator('.wlv-publication').count();assert.ok(total>0);
         const authors=await p.locator('#publications-author').evaluate(n=>n.selectize?Object.keys(n.selectize.options).filter(Boolean):[...n.options].map(o=>o.value).filter(Boolean));
-        assert.equal(authors.length,2);
+        assert.deepEqual([...authors].sort(),catalogue.members.map(member=>member.id).sort());
         await choose(p,'publications-author',authors[0]);await idle(p);
         assert.ok(await p.locator('.wlv-publication').count()>0);
         await choose(p,'publications-author','');await idle(p);
@@ -100,7 +103,7 @@ async function download(p,id,file){
         await layout(p,'publications');
         await p.screenshot({path:path.join(results,'publications-'+width+'.png'),fullPage:true});
         assert.deepEqual(errors,[]);
-        records.push({width,status:'passed',tabs:7,aggregate,bilateral,multilateral,publications:total});
+        records.push({width,status:'passed',tabs:6,aggregate,bilateral,multilateral,publications:total});
       }catch(error){await p.screenshot({path:path.join(results,'panel-failure-'+width+'.png'),fullPage:true});console.error('ERRORS',errors,await p.evaluate(()=>Object.fromEntries(Object.entries(Shiny.shinyapp.$inputValues).filter(([key])=>key.startsWith('dl_')))));throw error;}
       finally{await p.close();}
     }

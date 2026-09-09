@@ -10,9 +10,64 @@ stopifnot(exists("wlv_tr", mode = "function"))
 stopifnot(identical(mypallet(c(NA_real_, NA_real_), default_indicator)(c(NA, NA)),
   c("transparent", "transparent")))
 stopifnot(length(mypallet(c(0, 0), default_indicator)(c(0, 0))) == 2L)
+
+# Ajuda: usa unidades reais por base, mantém notas disponíveis e identifica
+# lacunas de metadados sem apresentar o código de tradução como conteúdo.
+for (lng in c("Português", "English")) {
+  info <- map_indicator_info(default_indicator, init_bases, lng)
+  stopifnot(identical(names(info), c("variable", "unit", "description", "observations")),
+    identical(info$variable, lb(default_indicator, lng)),
+    identical(info$description, lb(paste0("desc.", default_indicator), lng)),
+    identical(info$unit, "%"), !grepl("obs\\.", info$observations))
+  empty_notes <- language_file[!startsWith(rownames(language_file), "obs."), , drop = FALSE]
+  missing_info <- map_indicator_info(default_indicator, init_bases, lng, dictionary = empty_notes)
+  stopifnot(identical(missing_info$observations,
+    if (lng == "English") "Not provided" else "Não informadas"))
+  differing_units <- meta_indicator_contracts
+  rows <- differing_units$indicator == default_indicator & differing_units$method %in% init_bases
+  differing_units$metadata_source[rows] <- "method_metadata"
+  differing_units$display_unit[rows] <- ifelse(
+    differing_units$method[rows] == init_bases[[1L]], "person", "hour")
+  varied <- map_indicator_info(default_indicator, init_bases, lng, contracts = differing_units)
+  stopifnot(identical(varied$unit, paste0(init_bases[[1L]], ": ",
+    wlv_unit_label("person", lng), "\n", init_bases[[2L]], ": ", wlv_unit_label("hour", lng))))
+}
+
+# A troca de base pode produzir um ciclo sem observações. Mesmo quando
+# list_display_f2s devolve apenas NA numéricos, o tooltip continua textual.
+tooltip_cases <- unique(meta_indicator_contracts[c("method", "indicator")])
+tooltip_cases$type <- vapply(seq_len(nrow(tooltip_cases)), function(i) {
+  wlv_display_format_type(meta_indicator_contracts,
+    tooltip_cases$method[[i]], tooltip_cases$indicator[[i]])
+}, character(1))
+tooltip_cases <- tooltip_cases[!duplicated(tooltip_cases$type), , drop = FALSE]
+for (i in seq_len(nrow(tooltip_cases))) {
+  method <- tooltip_cases$method[[i]]
+  indicator <- tooltip_cases$indicator[[i]]
+  for (language in c("Português", "English")) {
+    missing_label <- if (language == "English") "No data" else "Sem dados"
+    for (missing_values in list(c(NA_real_, NA_real_), c(NaN, NaN),
+      c(Inf, -Inf), c(NA_real_, NaN, Inf, -Inf))) {
+      stopifnot(identical(map_tooltip_values(missing_values, indicator, method, language),
+        rep(missing_label, length(missing_values))))
+    }
+    expected <- if (language == "English") {
+      c("235", "1.20K", "-1.20K")
+    } else {
+      c("235", "1,20K", "-1,20K")
+    }
+    stopifnot(identical(map_tooltip_values(
+      c(235, 1200, -1200, NA_real_, NaN, Inf, -Inf), indicator, method, language),
+      c(expected, rep(missing_label, 4L))))
+    stopifnot(identical(map_tooltip_values(numeric(), indicator, method, language),
+      character()))
+  }
+}
+
 capture <- new.env(parent = emptyenv())
 capture$messages <- list()
 capture$inputs <- list()
+capture$modals <- list()
 
 map_calls <- function(messages, method) {
   sum(vapply(messages, function(message) {
@@ -33,6 +88,9 @@ shiny::testServer(function(input, output, session) {
   }
   session$sendInputMessage <- function(inputId, message) {
     capture$inputs[[length(capture$inputs) + 1L]] <- list(id = inputId, data = message)
+  }
+  session$sendModal <- function(type, message) {
+    capture$modals[[length(capture$modals) + 1L]] <- list(type = type, data = message)
   }
   RV <- reactiveValues()
   RV$bases <- reactiveVal(init_bases)
@@ -58,7 +116,8 @@ shiny::testServer(function(input, output, session) {
     first <- Filter(function(layer) startsWith(layer$id, paste0(method, ".")), initial$layers)[[1L]]
     unit <- wlv_unit_label(wlv_display_unit(meta_indicator_contracts, method,
       default_indicator), default_language)
-    stopifnot(grepl(paste0("(", htmltools::htmlEscape(unit), ")"), first$label, fixed = TRUE))
+    stopifnot(grepl(paste0("<span class='tooltip-unit'>", htmltools::htmlEscape(unit), "</span>"),
+      first$label, fixed = TRUE))
   }
   stopifnot(all(vapply(initial$layers, function(layer) {
     identical(names(layer), c("id", "color", "label"))
@@ -84,6 +143,14 @@ shiny::testServer(function(input, output, session) {
     method_indicator_availability$indicator[method_indicator_availability$method == method]
   }))
   alternative <- setdiff(common, default_indicator)[[1L]]
+  capture$messages <- list()
+  session$setInputs(map_show_indicator_info = alternative)
+  stopifnot(identical(input$co_select_indicator, default_indicator),
+    map_calls(capture$messages, "addPolygons") == 0L)
+  modal <- tail(capture$modals, 1L)[[1L]]
+  stopifnot(identical(modal$type, "show"), all(vapply(
+    c("Variável:", "Unidade:", "Descrição:", "Observações:"),
+    function(label) grepl(label, modal$data$html, fixed = TRUE), logical(1))))
   capture$messages <- list()
   session$setInputs(co_select_indicator = alternative)
   stopifnot(map_calls(capture$messages, "addPolygons") == 0L)
