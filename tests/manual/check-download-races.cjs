@@ -11,7 +11,7 @@ if (!campaign) throw new Error('WLV_CAMPAIGN_ROOT is required');
   const evidence = [];
   try {
     for (const width of [1440, 390]) {
-      const page = await browser.newPage({ viewport: { width, height: 900 }, acceptDownloads: true });
+      const page = await browser.newPage({ locale: 'pt-BR', viewport: { width, height: 900 }, acceptDownloads: true });
       const errors = [], indicatorRequests = [];
       page.on('pageerror', error => errors.push(String(error)));
       page.on('request', request => {
@@ -27,6 +27,9 @@ if (!campaign) throw new Error('WLV_CAMPAIGN_ROOT is required');
           await page.waitForFunction(({ id, value }) => Shiny.shinyapp.$inputValues[id] === value, { id, value });
         };
         const ready = async id => page.waitForFunction(id => document.getElementById(id)?.getAttribute('href')?.includes('/download/'), id);
+        // main_nav is bound before the first asynchronous method options arrive.
+        // Selectize silently discards values that are not in its option list.
+        await page.waitForFunction(() => document.getElementById('dl_method')?.selectize?.options.WIOD13);
         await choose('dl_method', 'WIOD13');
         await page.waitForFunction(() => document.getElementById('dl_country').selectize.options.BRA);
         await choose('dl_country', 'BRA');
@@ -66,6 +69,14 @@ if (!campaign) throw new Error('WLV_CAMPAIGN_ROOT is required');
         assert.deepEqual(indicatorRequests, [], 'Small indicator options stay local through language changes');
         assert.deepEqual(errors, []);
         evidence.push({ width, status: 'passed', filename: download.suggestedFilename(), errors });
+      } catch (error) {
+        console.error('DOWNLOAD_RACE_STATE', width, await page.evaluate(() => ({
+          inputs: Object.fromEntries(Object.entries(window.Shiny?.shinyapp?.$inputValues || {})
+            .filter(([id]) => id.startsWith('dl_') || id === 'main_nav')),
+          aggregate: document.getElementById('dl_download')?.innerHTML,
+          multilateral: document.getElementById('dl_ml_download')?.innerHTML
+        })));
+        throw error;
       } finally {
         await page.close();
       }

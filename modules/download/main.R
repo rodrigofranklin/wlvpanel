@@ -21,7 +21,7 @@ TABPANEL <- tabPanel(
   htmltools::includeScript("www/wlv-download.js"),
   div(class = "wlv-explore-page wlv-download-page",
     div(class = "wlv-explore-content",
-    tags$h1(l("tab_name.download")),
+    tags$header(class = "wlv-explore-heading", tags$h1(l("tab_name.download"))),
     div(class = "wlv-download-grid",
       div(class = "panel panel-default",
         div(class = "panel-heading", strong(l("dl_agg_title"))),
@@ -95,8 +95,7 @@ wlv_download_action <- function(href, lang, status_id, download_id = NULL, await
         `aria-describedby` = status_id, icon("download"), lb("app.download", lang)),
       tags$p(id = status_id, class = "wlv-download-hint", role = "status",
         if (awaiting) {
-          if (identical(lang, "English")) "Complete a valid selection to download the data."
-          else "Complete uma seleção válida para baixar os dados."
+          wlv_tr("Complete uma seleção válida para baixar os dados.", "Complete a valid selection to download the data.", lang)
         } else lb("app.no_file", lang))
     )
   }
@@ -492,28 +491,27 @@ download_server <- function(IP, OP, RV, SESSION) {
     
   })
   
-  aggregate_request <- reactive({
-    wlv_aggregated_download_request(IP$dl_method, IP$dl_country, IP$dl_indicator,
+  aggregate_plan <- reactive({
+    wlv_aggregated_download_plan(IP$dl_method, IP$dl_country, IP$dl_indicator,
       IP$dl_sector, countries = sea_countries, sectors = sea_sectors,
-      metadata = meta_indicators, methods = meta_methods, language = language_file,
-      contracts = meta_indicator_contracts)
+      metadata = meta_indicators, methods = meta_methods, contracts = meta_indicator_contracts)
   })
-  multilateral_request <- reactive({
+  multilateral_plan <- reactive({
     req(wlv_nonempty_selection(IP$dl_ml_method), wlv_nonempty_selection(IP$dl_ml_country))
-    wlv_multilateral_download_request(IP$dl_ml_method, IP$dl_ml_country,
+    wlv_multilateral_download_plan(IP$dl_ml_method, IP$dl_ml_country,
       IP$dl_ml_partner, IP$dl_ml_ind_cat, IP$dl_ml_ind_scope, IP$dl_ml_ind_un,
-      values = wlv_download_multilateral_data(), methods = meta_methods, language = language_file)
+      values = wlv_download_multilateral_data(), methods = meta_methods)
   })
-  OP$dl_file <- downloadHandler(
-    filename = function() { req(aggregate_request()); aggregate_request()$filename },
-    content = function(file) wlv_write_download_request(aggregate_request(), file),
-    contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-  OP$dl_ml_file <- downloadHandler(
-    filename = function() { req(multilateral_request()); multilateral_request()$filename },
-    content = function(file) wlv_write_download_request(multilateral_request(), file),
-    contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+  # These numeric reactives are lazy and independent of the selected language.
+  # Showing a button evaluates only the plan; an actual click composes the XLSX.
+  aggregate_data <- reactive(wlv_aggregated_download_data(aggregate_plan()))
+  multilateral_data <- reactive(wlv_multilateral_download_data(multilateral_plan()))
+  OP$dl_file <- wlv_request_download_handler(function()
+    wlv_aggregated_download_localize(aggregate_data(), language_file, IP$l))
+  OP$dl_ml_file <- wlv_request_download_handler(function()
+    wlv_multilateral_download_localize(multilateral_data(), language_file, IP$l))
   OP$dl_download <- renderUI({
-    available <- !is.null(aggregate_request())
+    available <- !is.null(aggregate_plan())
     awaiting <- !wlv_nonempty_selection(IP$dl_method) ||
       !(wlv_nonempty_selection(IP$dl_country) || wlv_nonempty_selection(IP$dl_indicator))
     wlv_download_action("", IP$l, "dl-download-status",
@@ -523,7 +521,7 @@ download_server <- function(IP, OP, RV, SESSION) {
     awaiting <- !(wlv_nonempty_selection(IP$dl_ml_method) && wlv_nonempty_selection(IP$dl_ml_country) &&
       (wlv_nonempty_selection(IP$dl_ml_partner) || (wlv_nonempty_selection(IP$dl_ml_ind_cat) &&
         wlv_nonempty_selection(IP$dl_ml_ind_scope) && wlv_nonempty_selection(IP$dl_ml_ind_un))))
-    available <- !awaiting && !is.null(multilateral_request())
+    available <- !awaiting && !is.null(multilateral_plan())
     wlv_download_action("", IP$l, "dl-ml-download-status",
       download_id = if (available) "dl_ml_file" else NULL, awaiting = awaiting)
   })

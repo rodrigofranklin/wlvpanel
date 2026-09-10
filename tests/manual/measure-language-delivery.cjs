@@ -1,0 +1,40 @@
+'use strict';
+// Measure bootstrap delivery and verify stale-client recovery after optimization.
+const {chromium}=require('playwright');
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),zlib=require('node:zlib');
+const campaign=process.env.WLV_CAMPAIGN_ROOT;
+assert.ok(campaign&&fs.existsSync(path.join(campaign,'.campaign.json')));
+for(const key of ['TEMP','TMP','TMPDIR'])assert.equal(path.resolve(process.env[key]),path.resolve(campaign,'scratch'));
+const url='http://127.0.0.1:'+(process.env.WLVPANEL_PORT||38134);
+(async()=>{const browser=await chromium.launch({headless:true});try{
+ const optimized=process.env.WLV_PERF_VARIANT==='after';
+ const result={variant:optimized?'after':'before',method:'One unthrottled French session; exact dictionary equality, decoded payload sizes; compression estimates are not measured wire bytes.'};
+ const page=await browser.newPage({locale:'fr-FR',viewport:{width:1440,height:1000}});
+ const messages=[];
+ page.on('websocket',socket=>socket.on('framereceived',event=>{try{const data=JSON.parse(String(event.payload));if(data.custom?.['wlv-language'])messages.push(data.custom['wlv-language']);}catch{}}));
+ const response=await page.goto(url+'/?lang=fr',{waitUntil:'load'});
+ await page.waitForFunction(()=>window.Shiny?.shinyapp?.$inputValues.l==='Français'&&!document.documentElement.classList.contains('shiny-busy'));
+ await page.waitForTimeout(400);
+ const initial=await page.evaluate(()=>window.wlvInitialLanguage);
+ const initialMessages=messages.filter(item=>item.lang===initial.language);
+ let message=initialMessages[0];
+ if(optimized){
+  assert.equal(initialMessages.length,0,'Matching HTML bootstrap must not be sent again over WebSocket');
+  assert.ok(initial.fingerprint,'Bootstrap includes content fingerprint');
+  await page.evaluate(()=>Shiny.setInputValue('wlv_language_sync',{fingerprint:'stale',connection:2},{priority:'event'}));
+  await page.waitForFunction(()=>document.getElementById('wlv_language_bootstrap').value===window.wlvInitialLanguage.fingerprint);
+  for(let attempt=0;attempt<100&&!messages.length;attempt++)await page.waitForTimeout(50);
+  assert.equal(messages.length,1,'Stale client receives exactly one replacement dictionary');
+  message=messages[0];
+  assert.equal(message.fingerprint,initial.fingerprint);
+  await page.evaluate(()=>Shiny.setInputValue('wlv_language_sync',{fingerprint:window.wlvInitialLanguage.fingerprint,connection:3},{priority:'event'}));
+  await page.waitForTimeout(400);
+  assert.equal(messages.length,1,'Matching reconnect does not resend dictionary');
+  result.recovery={staleResynchronized:true,matchingReconnectSkipped:true};
+ }else assert.ok(message,'Initial custom language message received');
+ assert.deepEqual(message.labels,initial.labels);assert.deepEqual(message.phrases,initial.phrases);
+ const payload=JSON.stringify(message),html=await response.body();
+ result.duplicate={sameLabels:true,samePhrases:true,messages:initialMessages.length,decodedMessageBytes:optimized?0:Buffer.byteLength(payload),fullDictionaryBytes:Buffer.byteLength(payload),labels:Object.keys(initial.labels).length,phraseKeys:Object.keys(initial.phrases).length,nonemptyPhraseKeys:Object.values(initial.phrases).filter(item=>Object.keys(item).length).length};
+ result.http={contentEncoding:response.headers()['content-encoding']||'',decodedHtmlBytes:html.length,gzipEstimateBytes:zlib.gzipSync(html).length,brotliEstimateBytes:zlib.brotliCompressSync(html).length};
+ fs.writeFileSync(path.join(campaign,'results/language-delivery.json'),JSON.stringify(result,null,2),'utf8');console.log(JSON.stringify(result));
+}finally{await browser.close();}})().catch(error=>{console.error(error.stack);process.exitCode=1;});

@@ -12,6 +12,27 @@ trade_workbook_fixture <- function(metric = "transfer", series = FALSE) {
     metric = metric, scope = "productive", unit = "value", stringsAsFactors = FALSE)
 }
 
+testthat::test_that("Spanish and Mandarin trade exports translate labels without changing values", {
+  rows <- trade_workbook_fixture()
+  for (lang in c("es", "zh")) {
+    payload <- trade_workbook_env$wlv_trade_workbook_payload(rows,
+      selection = list(unit = "value"), lang = lang)
+    testthat::expect_identical(payload$lang, lang)
+    testthat::expect_identical(colnames(payload$values)[[2L]],
+      if (lang == "es") "Transferencia neta de valor" else "净价值转移")
+    testthat::expect_equal(unname(payload$values[, 2L]), rows$value)
+    testthat::expect_identical(payload$coverage[[1L]], if (lang == "es") "Completa" else "完整")
+    file <- tempfile(fileext = ".xlsx")
+    on.exit(unlink(file), add = TRUE)
+    trade_workbook_env$wlv_write_trade_xlsx(file, rows, selection = list(unit = "value"),
+      lang = lang, helper_path = file.path(wlvpanel_test_root, "utils/download_workbooks.R"))
+    actual <- openxlsx::read.xlsx(file, sheet = "data", startRow = 6L, check.names = FALSE)
+    header <- openxlsx::read.xlsx(file, sheet = "data", rows = 6L, cols = 4L, colNames = FALSE)
+    testthat::expect_identical(header[[1L]][[1L]], colnames(payload$values)[[2L]])
+    testthat::expect_equal(actual[[4L]], rows$value)
+  }
+})
+
 testthat::test_that("trade XLSX payload preserves signs, zero and gaps for every metric", {
   api <- trade_workbook_env
   for (metric in c("transfer", "balance", "exports", "imports")) {

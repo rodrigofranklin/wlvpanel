@@ -51,7 +51,7 @@ function frame(payload) {
   try {
     for (const width of widths) {
       const mobile = width < 768;
-      const context = await browser.newContext({viewport:{width,height:900}, hasTouch:mobile, acceptDownloads:true});
+      const context = await browser.newContext({locale: 'pt-BR', viewport:{width,height:900}, hasTouch:mobile, acceptDownloads:true});
       const page = await context.newPage(); active = page;
       const journal = []; activeJournal = journal;
       page.on('pageerror', error => evidence.errors.push(error.message));

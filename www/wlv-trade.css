@@ -1,10 +1,7 @@
-.wlv-trade{max-width:1400px;margin:0 auto;color:var(--wlv-text)}
+.wlv-trade{color:var(--wlv-text)}
 .wlv-trade *{box-sizing:border-box}
 .wlv-trade .panel{border:1px solid var(--wlv-line);border-radius:10px;background:var(--wlv-surface);box-shadow:none}
-.wlv-trade-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-bottom:26px}
-.wlv-trade-heading>div{min-width:0}
-.wlv-trade-heading h1{font-size:32px;margin:0 0 10px;letter-spacing:normal;color:#fff}
-.wlv-trade-heading p{max-width:820px;color:#fff;font-size:15px;line-height:1.55;margin:0;overflow-wrap:anywhere}
+.wlv-trade-intro{color:var(--wlv-muted);font-size:15px;line-height:1.55;margin:0;overflow-wrap:anywhere}
 .wlv-trade-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(230px,300px);grid-template-areas:"main controls";align-items:start;gap:24px}
 .wlv-trade-main,.wlv-trade-layout>main,.wlv-trade-layout>section{min-width:0}
 .wlv-trade-main{grid-area:main}
@@ -97,9 +94,6 @@
   .wlv-trade-stat-main{padding-top:13px}
 }
 @media(max-width:767px){
-  .wlv-trade-heading{display:block;margin-bottom:22px}
-  .wlv-trade-heading h1{font-size:28px}
-  .wlv-trade-heading p{font-size:15px;line-height:1.55}
   .wlv-trade-layout{grid-template-columns:minmax(0,1fr);grid-template-areas:"controls" "main";gap:16px}
   .wlv-trade-controls{position:static;padding:8px 16px}
   .wlv-trade-overview,.wlv-trade-bottom{padding:16px}

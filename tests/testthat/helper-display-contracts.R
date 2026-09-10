@@ -15,6 +15,10 @@ wlvpanel_test_root <- normalizePath(
   mustWork = TRUE
 )
 sys.source(
+  file.path(wlvpanel_test_root, "utils", "i18n.R"),
+  envir = environment()
+)
+sys.source(
   file.path(wlvpanel_test_root, "utils", "display_contracts.R"),
   envir = environment()
 )

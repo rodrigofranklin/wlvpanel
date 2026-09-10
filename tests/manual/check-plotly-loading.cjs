@@ -16,7 +16,7 @@ const evidence = { delayMs: delay, bundleRequests: [], errors: [] };
 (async () => {
   const browser = await chromium.launch({ headless: true });
   try {
-    const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+    const page = await browser.newPage({ locale: 'pt-BR', viewport: { width: 1440, height: 1000 } });
     await page.route(/plotly-main[^?]*\.js(?:\?.*)?$/, async route => {
       evidence.bundleRequests.push(route.request().url());
       await new Promise(resolve => setTimeout(resolve, delay));
@@ -29,7 +29,8 @@ const evidence = { delayMs: delay, bundleRequests: [], errors: [] };
     await page.goto(url, { waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => window.Shiny?.shinyapp?.$inputValues.main_nav, null, { timeout: 45000 });
     for (const english of [true, false]) {
-      await page.locator('#language_toggle').click();
+      await page.locator('#language_menu_toggle').click();
+      await page.locator('#language_menu [lang="' + (english ? 'en' : 'pt-BR') + '"]').click();
       await page.waitForFunction(en => {
         const select = document.getElementById('co_select_country').selectize;
         return document.documentElement.lang === (en ? 'en' : 'pt-BR') &&

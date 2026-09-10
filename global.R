@@ -11,6 +11,7 @@ source("requirements.R", encoding = "UTF-8")
 source("utils/display_contracts.R", encoding = "UTF-8")
 source("utils/local_storage.R", encoding = "UTF-8")
 source("utils/i18n.R", encoding = "UTF-8")
+source("utils/initial_language.R", encoding = "UTF-8")
 
 # Capturar os assets junto do código R evita que um processo já aberto use
 # um módulo antigo com CSS/JavaScript de uma atualização posterior do disco.
@@ -18,6 +19,7 @@ source("utils/i18n.R", encoding = "UTF-8")
 # não reutilizar arquivos de uma versão anterior no cache do navegador.
 wlv_shared_assets <- tagList(
   includeCSS("www/wlv-panel.css"),
+  includeCSS("www/wlv-language.css"),
   includeCSS("www/wlv-explore.css"),
   includeCSS("www/wlv-about.css"),
   includeScript("www/wlv-panel.js"),
@@ -46,6 +48,9 @@ language_file <- wlv_complete_language(readRDS("data/language_file.RDS"))
 language_file <- wlv_complete_language(language_file, "config/about-translations.json")
 language_file <- wlv_complete_language(language_file, "config/indicator-translations.json")
 language_file <- wlv_complete_language(language_file, "config/method-translations.json")
+language_file <- wlv_complete_language(language_file, "config/legacy-translations.json")
+language_file <- wlv_complete_locale_languages(language_file)
+wlv_language_messages <- wlv_language_payload_cache(language_file)
 sea_countries <- readRDS("data/sea_countries.RDS")
 sea_sectors <- readRDS("data/sea_sectors.RDS")
 meta_methods <- readRDS("data/meta_methods.RDS")

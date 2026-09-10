@@ -10,6 +10,10 @@
 # Shiny page is the visual QA surface; these functions have no global data inputs.
 
 wlv_trade_chart_words <- function(lang = "pt") {
+  lang <- wlv_language_code(lang)
+  if (!lang %in% c("pt", "en")) {
+    return(Map(function(pt, en) wlv_tr(pt, en, lang), wlv_trade_chart_words("pt"), wlv_trade_chart_words("en")))
+  }
   if (identical(lang, "en")) {
     return(list(
       empty = "No data for this selection.", zero = "All available values are zero; there are no areas to show.",
@@ -43,8 +47,8 @@ wlv_trade_chart_format <- function(value, lang = "pt", signed = FALSE) {
   vapply(value, function(number) {
     if (!is.finite(number)) return(words$unavailable)
     formatted <- format(signif(number, 6), scientific = FALSE, trim = TRUE,
-      big.mark = if (identical(lang, "en")) "," else ".",
-      decimal.mark = if (identical(lang, "en")) "." else ",")
+      big.mark = wlv_number_marks(lang)$grouping,
+      decimal.mark = wlv_number_marks(lang)$decimal)
     if (signed && number > 0) paste0("+", formatted) else formatted
   }, character(1L), USE.NAMES = FALSE)
 }
@@ -167,14 +171,14 @@ wlv_trade_chart_layout <- function(chart, title, unit, note, lang = "pt", height
       x = 0, xanchor = "left", y = 0.98, yanchor = "top", font = list(size = 17)),
     font = list(family = "'Source Sans 3', sans-serif", size = 13, color = "#292B2E"),
     paper_bgcolor = "rgba(0,0,0,0)", plot_bgcolor = "rgba(0,0,0,0)",
-    separators = if (identical(lang, "en")) ".," else ",.",
+    separators = wlv_plotly_separators(lang),
     margin = list(l = left, r = if (left < 10L) 4L else 24L, b = bottom, t = top_margin, pad = if (left < 10L) 0 else 6),
     autosize = TRUE, showlegend = FALSE,
     hoverlabel = list(bgcolor = "#FFFFFF", bordercolor = "#D8DBDF", font = list(color = "#292B2E")))
   chart$height <- height
   chart$x$layout$height <- height
   chart <- plotly::event_register(chart, "plotly_click")
-  chart <- plotly::config(chart, responsive = TRUE, displaylogo = FALSE, scrollZoom = FALSE,
+  chart <- wlv_plotly_config(chart, lang, responsive = TRUE, displaylogo = FALSE, scrollZoom = FALSE,
     modeBarButtonsToRemove = c("lasso2d", "select2d", "autoScale2d"))
   chart <- htmlwidgets::onRender(chart, "function(el,x){if(x.layout && x.layout.height){el.style.height=x.layout.height+'px';}}")
   attr(chart, "wlv_trade_chart_padding") <- c(top = top_margin, bottom = bottom)
@@ -267,7 +271,7 @@ wlv_trade_composition_chart <- function(rows, unit, title, lang = "pt", source =
     wlv_trade_chart_format(100 * share, lang), "%")
   label <- wlv_trade_chart_labels(rows$label, width = 22L, max_lines = 2L)$text
   percent <- ifelse(share < 0.0005,
-    if (identical(lang, "en")) "&lt;0.1%" else "&lt;0,1%",
+    paste0("&lt;0", wlv_number_marks(lang)$decimal, "1%"),
     paste0(wlv_trade_chart_format(round(share * 100, 1), lang), "%"))
   template <- ifelse(share >= 0.018, paste0("<b>", percent, "</b><br>", label), paste0("<b>", percent, "</b>"))
   colours <- wlv_trade_mosaic_colours(ifelse(nzchar(rows$id), rows$id, rows$label), rows$value)

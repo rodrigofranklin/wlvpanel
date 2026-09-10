@@ -218,14 +218,16 @@ function leafletScene(width = 1000, height = 600) {
     removeControl(control) { this.controls = this.controls.filter(item => item !== control); }
   };
   function withGlobals(callback) {
-    const original = { L: globalThis.L, document: globalThis.document,
+    const original = { L: globalThis.L, document: globalThis.document, wlvI18n: globalThis.wlvI18n,
       getComputedStyle: globalThis.getComputedStyle };
     globalThis.L = L;
     globalThis.document = { documentElement: { lang: "pt" } };
+    globalThis.wlvI18n = { text: (pt, en) => globalThis.document.documentElement.lang === "en" ? en : pt };
     globalThis.getComputedStyle = () => ({ getPropertyValue: () => "" });
     try { callback(); } finally {
       if (original.L === undefined) delete globalThis.L; else globalThis.L = original.L;
       if (original.document === undefined) delete globalThis.document; else globalThis.document = original.document;
+      if (original.wlvI18n === undefined) delete globalThis.wlvI18n; else globalThis.wlvI18n = original.wlvI18n;
       if (original.getComputedStyle === undefined) delete globalThis.getComputedStyle;
       else globalThis.getComputedStyle = original.getComputedStyle;
     }

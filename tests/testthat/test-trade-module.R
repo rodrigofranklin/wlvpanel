@@ -6,6 +6,7 @@ trade_module_root <- function() {
 trade_module_environment <- function(register = FALSE) {
   root <- trade_module_root()
   env <- new.env(parent = globalenv())
+  base::source(file.path(root, "utils/i18n.R"), local = env, encoding = "UTF-8")
   env$source <- function(file, ...) base::source(file.path(root, file), local = env, ...)
   env$readRDS <- function(...) stop("Unexpected startup data read")
   if (register) {
@@ -246,7 +247,7 @@ testthat::test_that("module preserves transfer signs units coverage and translat
     testthat::expect_equal(record$value, record$incoming)
     testthat::expect_identical(record$sign_convention, "incoming")
     language("en"); session$flushReact()
-    testthat::expect_identical(output$title, "Value transfers")
+    testthat::expect_identical(output$title, "Trade")
     testthat::expect_match(context_title(), "Brazil", fixed = TRUE)
     stable <- fixture$calls$values
     language("pt"); session$flushReact()

@@ -303,14 +303,11 @@
     control.addTo(map);
 
     const translate = function () {
-      const english = root.document.documentElement.lang === "en";
-      button.textContent = english ? "World" : "Mundo";
-      button.title = english ? "Show the whole world" : "Mostrar o mundo inteiro";
+            button.textContent = root.wlvI18n.text("Mundo", "World");
+      button.title = root.wlvI18n.text("Mostrar o mundo inteiro", "Show the whole world");
       button.setAttribute("aria-label", button.title);
-      element.setAttribute("aria-label", english ?
-        "World map in Equal Earth. Use arrow keys to pan and plus or minus to zoom. Country profiles are in the Country module." :
-        "Mapa-múndi em Equal Earth. Use as setas para mover e mais ou menos para ampliar. Os perfis dos países estão no módulo País.");
-      const labels = english ? ["Zoom in", "Zoom out"] : ["Ampliar", "Reduzir"];
+      element.setAttribute("aria-label", root.wlvI18n.text("Mapa-múndi em Equal Earth. Use as setas para mover e mais ou menos para ampliar. Os perfis dos países estão no módulo País.", "World map in Equal Earth. Use arrow keys to pan and plus or minus to zoom. Country profiles are in the Country module."));
+      const labels = [root.wlvI18n.text("Ampliar", "Zoom in"), root.wlvI18n.text("Reduzir", "Zoom out")];
       [".leaflet-control-zoom-in", ".leaflet-control-zoom-out"].forEach(function (selector, index) {
         const link = element.querySelector(selector);
         if (link) { link.title = labels[index]; link.setAttribute("aria-label", labels[index]); }

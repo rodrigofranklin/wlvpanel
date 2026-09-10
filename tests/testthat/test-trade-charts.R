@@ -1,6 +1,13 @@
 trade_chart_env <- new.env(parent = environment())
 source(file.path(wlvpanel_test_root, "modules", "trade", "charts.R"), local = trade_chart_env, encoding = "UTF-8")
 
+testthat::test_that("trade chart explanations and numeric separators follow Spanish and Mandarin", {
+  testthat::expect_identical(trade_chart_env$wlv_trade_chart_words("es")$positive, "Valores positivos")
+  testthat::expect_identical(trade_chart_env$wlv_trade_chart_words("zh")$positive, "正值")
+  testthat::expect_identical(trade_chart_env$wlv_trade_chart_format(1234.5, "es"), "1.234,5")
+  testthat::expect_identical(trade_chart_env$wlv_trade_chart_format(1234.5, "zh"), "1,234.5")
+})
+
 trade_chart_fixture <- function(value = c(12, -8, 0, NA_real_)) {
   data.frame(id = paste0("ID", seq_along(value)), label = paste("Category", seq_along(value)),
     value = value, outgoing = abs(value) + 2, incoming = rep(2, length(value)))

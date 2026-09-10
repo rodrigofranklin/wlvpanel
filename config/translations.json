@@ -1,678 +1,1152 @@
 {
   "tab_name.about": {
     "pt": "Sobre",
-    "en": "About"
+    "en": "About",
+    "es": "Acerca de",
+    "zh": "关于"
   },
   "tab_name.countries": {
     "pt": "Mapa",
-    "en": "Map"
+    "en": "Map",
+    "es": "Mapa",
+    "zh": "地图"
   },
-  "tab_name.country": {"pt": "País", "en": "Country"},
-  "ISO3.TWN": {"pt": "Taiwan, China", "en": "Taiwan, China"},
-  "tab_name.publications": {"pt": "Publicações", "en": "Publications"},
-  "map.indicators": {"pt": "Indicadores", "en": "Indicators"},
-  "map.indicator": {"pt": "Selecionar indicador", "en": "Select indicator"},
-  "map.search": {"pt": "Pesquisar indicador", "en": "Search indicators"},
-  "map.year": {"pt": "Ano", "en": "Year"},
-  "map.base": {"pt": "Base", "en": "Source"},
-  "map.world": {"pt": "Mundo", "en": "World"},
+  "tab_name.country": {
+    "pt": "País",
+    "en": "Country",
+    "es": "País",
+    "zh": "国家"
+  },
+  "ISO3.TWN": {
+    "pt": "Taiwan, China",
+    "en": "Taiwan, China",
+    "es": "Taiwán, China",
+    "zh": "中国台湾"
+  },
+  "tab_name.publications": {
+    "pt": "Publicações",
+    "en": "Publications",
+    "es": "Publicaciones",
+    "zh": "出版物"
+  },
+  "map.indicators": {
+    "pt": "Indicadores",
+    "en": "Indicators",
+    "es": "Indicadores",
+    "zh": "指标"
+  },
+  "map.indicator": {
+    "pt": "Selecionar indicador",
+    "en": "Select indicator",
+    "es": "Seleccionar indicador",
+    "zh": "选择指标"
+  },
+  "map.search": {
+    "pt": "Pesquisar indicador",
+    "en": "Search indicators",
+    "es": "Buscar indicadores",
+    "zh": "搜索指标"
+  },
+  "map.year": {
+    "pt": "Ano",
+    "en": "Year",
+    "es": "Año",
+    "zh": "年份"
+  },
+  "map.base": {
+    "pt": "Base",
+    "en": "Source",
+    "es": "Base",
+    "zh": "数据来源"
+  },
+  "map.world": {
+    "pt": "Mundo",
+    "en": "World",
+    "es": "Mundo",
+    "zh": "世界"
+  },
   "tab_name.indicators": {
     "pt": "Indicadores",
-    "en": "Indicators"
+    "en": "Indicators",
+    "es": "Indicadores",
+    "zh": "指标"
   },
   "tab_name.download": {
     "pt": "Download",
-    "en": "Download"
+    "en": "Download",
+    "es": "Descargas",
+    "zh": "下载"
   },
   "tab_name.how_to_quote": {
     "pt": "Como citar",
-    "en": "How to cite"
+    "en": "How to cite",
+    "es": "Cómo citar",
+    "zh": "引用方式"
   },
   "app.title": {
     "pt": "Base Mundial de Valores-Trabalho",
-    "en": "World Labour Values Database"
+    "en": "World Labour Values Database",
+    "es": "Base Mundial de Valores-Trabajo",
+    "zh": "世界劳动价值数据库"
   },
   "map.hint": {
     "pt": "Compare os países por indicador, base e ano. Os perfis estão no módulo País.",
-    "en": "Compare countries by indicator, source and year. Profiles are in the Country module."
+    "en": "Compare countries by indicator, source and year. Profiles are in the Country module.",
+    "es": "Compare los países por indicador, base y año. Los perfiles están en el módulo País.",
+    "zh": "按指标、数据来源和年份比较各国。国家概况位于“国家”模块。"
   },
-  "map.legend": {"pt":"Legenda", "en":"Legend"},
+  "map.legend": {
+    "pt": "Legenda",
+    "en": "Legend",
+    "es": "Leyenda",
+    "zh": "图例"
+  },
   "map.projection": {
     "pt": "Equal Earth: áreas proporcionais na visão mundial.",
-    "en": "Equal Earth: proportional areas in the world view."
+    "en": "Equal Earth: proportional areas in the world view.",
+    "es": "Equal Earth: áreas proporcionales en la vista mundial.",
+    "zh": "Equal Earth：世界视图中的面积按比例呈现。"
   },
   "app.bases": {
     "pt": "Bases de dados",
-    "en": "Data sources"
+    "en": "Data sources",
+    "es": "Bases de datos",
+    "zh": "数据来源"
   },
   "app.method_info": {
     "pt": "Sobre as bases",
-    "en": "About the sources"
+    "en": "About the sources",
+    "es": "Acerca de las bases",
+    "zh": "关于数据来源"
   },
   "app.close": {
     "pt": "Fechar",
-    "en": "Close"
+    "en": "Close",
+    "es": "Cerrar",
+    "zh": "关闭"
   },
   "app.skip": {
     "pt": "Ir para o conteúdo",
-    "en": "Skip to content"
+    "en": "Skip to content",
+    "es": "Ir al contenido",
+    "zh": "跳至内容"
   },
   "app.loading": {
     "pt": "Atualizando dados…",
-    "en": "Updating data…"
+    "en": "Updating data…",
+    "es": "Actualizando datos…",
+    "zh": "正在更新数据…"
   },
   "app.no_file": {
     "pt": "Não há observações para esta combinação. Selecione outra base, país, indicador ou setor.",
-    "en": "There are no observations for this combination. Select another source, country, indicator or sector."
+    "en": "There are no observations for this combination. Select another source, country, indicator or sector.",
+    "es": "No hay observaciones para esta combinación. Seleccione otra base, país, indicador o sector.",
+    "zh": "此组合没有观测数据。请选择其他数据来源、国家、指标或部门。"
   },
   "app.download": {
     "pt": "Baixar arquivo",
-    "en": "Download file"
+    "en": "Download file",
+    "es": "Descargar archivo",
+    "zh": "下载文件"
   },
   "about.eyebrow": {
     "pt": "TRABALHO · VALOR · ECONOMIA MUNDIAL",
-    "en": "LABOUR · VALUE · WORLD ECONOMY"
+    "en": "LABOUR · VALUE · WORLD ECONOMY",
+    "es": "TRABAJO · VALOR · ECONOMÍA MUNDIAL",
+    "zh": "劳动 · 价值 · 世界经济"
   },
   "about.title": {
     "pt": "Uma perspectiva sobre o trabalho na economia mundial.",
-    "en": "A perspective on labour in the world economy."
+    "en": "A perspective on labour in the world economy.",
+    "es": "Una perspectiva sobre el trabajo en la economía mundial.",
+    "zh": "从劳动的视角理解世界经济。"
   },
   "about.intro": {
     "pt": "Explore a Base Mundial de Valores-Trabalho: indicadores nacionais e setoriais para investigar trabalho, produção e relações econômicas entre países.",
-    "en": "Explore the World Labour Values Database: national and sectoral indicators for studying labour, production and economic relations across countries."
+    "en": "Explore the World Labour Values Database: national and sectoral indicators for studying labour, production and economic relations across countries.",
+    "es": "Explore la Base Mundial de Valores-Trabajo: indicadores nacionales y sectoriales para investigar el trabajo, la producción y las relaciones económicas entre países.",
+    "zh": "探索世界劳动价值数据库：利用国家和部门层面的指标研究劳动、生产及国家之间的经济关系。"
   },
   "about.map": {
     "pt": "Explorar o mapa",
-    "en": "Explore the map"
+    "en": "Explore the map",
+    "es": "Explorar el mapa",
+    "zh": "探索地图"
   },
   "about.indicators": {
     "pt": "Comparar indicadores",
-    "en": "Compare indicators"
+    "en": "Compare indicators",
+    "es": "Comparar indicadores",
+    "zh": "比较指标"
   },
   "about.read": {
     "pt": "Como explorar os dados",
-    "en": "How to explore the data"
+    "en": "How to explore the data",
+    "es": "Cómo explorar los datos",
+    "zh": "如何探索数据"
   },
   "about.map_text": {
     "pt": "Escolha um indicador, uma base e um ano para comparar países no mapa. No módulo País, consulte perfis, séries e dados setoriais.",
-    "en": "Choose an indicator, source and year to compare countries on the map. Use the Country module for profiles, time series and sector data."
+    "en": "Choose an indicator, source and year to compare countries on the map. Use the Country module for profiles, time series and sector data.",
+    "es": "Elija un indicador, una base y un año para comparar países en el mapa. En el módulo País, consulte perfiles, series temporales y datos sectoriales.",
+    "zh": "选择指标、数据来源和年份，在地图上比较各国。在“国家”模块中查看国家概况、时间序列和部门数据。"
   },
   "about.indicators_text": {
     "pt": "Consulte as definições, compare países ao longo do tempo e explore mapas, tabelas e downloads por indicador.",
-    "en": "Read definitions, compare countries over time and explore maps, tables and downloads for each indicator."
+    "en": "Read definitions, compare countries over time and explore maps, tables and downloads for each indicator.",
+    "es": "Consulte las definiciones, compare países a lo largo del tiempo y explore mapas, tablas y descargas por indicador.",
+    "zh": "查看定义，比较各国随时间的变化，并按指标浏览地图、表格及下载文件。"
   },
   "about.download_text": {
     "pt": "Obtenha dados agregados, setoriais e multilaterais. As bases podem cobrir períodos e países diferentes.",
-    "en": "Get aggregate, sectoral and multilateral data. Sources may cover different periods and countries."
+    "en": "Get aggregate, sectoral and multilateral data. Sources may cover different periods and countries.",
+    "es": "Obtenga datos agregados, sectoriales y multilaterales. Las bases pueden cubrir distintos períodos y países.",
+    "zh": "获取汇总、部门和多边数据。不同数据来源可能覆盖不同的时期和国家。"
   },
   "about.methods": {
     "pt": "Bases, métodos e leitura dos resultados",
-    "en": "Sources, methods and interpretation"
+    "en": "Sources, methods and interpretation",
+    "es": "Bases, métodos e interpretación de los resultados",
+    "zh": "数据来源、方法与结果解读"
   },
   "about.methods_text": {
     "pt": "Selecione as bases na engrenagem ao lado do idioma. Cada método mantém suas unidades e regras de apresentação; valores ausentes não são zeros. Consulte as definições dos indicadores e as informações das bases antes de comparar resultados.",
-    "en": "Select sources using the gear beside the language button. Each method retains its units and display rules; missing values are not zeros. Check indicator definitions and source information before comparing results."
+    "en": "Select sources using the gear beside the language button. Each method retains its units and display rules; missing values are not zeros. Check indicator definitions and source information before comparing results.",
+    "es": "Seleccione las bases mediante el engranaje junto al idioma. Cada método conserva sus unidades y reglas de presentación; los valores ausentes no son ceros. Consulte las definiciones de los indicadores y la información de las bases antes de comparar resultados.",
+    "zh": "通过语言按钮旁的齿轮选择数据来源。每种方法保留各自的单位和展示规则；缺失值不等于零。比较结果前，请查看指标定义和数据来源说明。"
   },
   "about.project": {
     "pt": "Um projeto do World Labour Values Task Force.",
-    "en": "A project by the World Labour Values Task Force."
+    "en": "A project by the World Labour Values Task Force.",
+    "es": "Un proyecto del World Labour Values Task Force.",
+    "zh": "World Labour Values Task Force 的研究项目。"
   },
   "about.website": {
     "pt": "Conheça o projeto",
-    "en": "Visit the project"
+    "en": "Visit the project",
+    "es": "Conozca el proyecto",
+    "zh": "了解项目"
   },
   "ps.bases_label": {
-    "pt": "Selecione as bases:"
+    "pt": "Selecione as bases:",
+    "es": "Seleccione las bases:",
+    "zh": "选择数据来源："
   },
   "co_select_indicator.placeholder": {
-    "pt": "Selecione um indicador…"
+    "pt": "Selecione um indicador…",
+    "es": "Seleccione un indicador…",
+    "zh": "选择指标…"
   },
   "co_panel_download_country": {
-    "pt": "Baixar dados do país"
+    "pt": "Baixar dados do país",
+    "es": "Descargar datos del país",
+    "zh": "下载国家数据"
   },
   "co_panel_download_sector": {
-    "pt": "Baixar dados setoriais"
+    "pt": "Baixar dados setoriais",
+    "es": "Descargar datos sectoriales",
+    "zh": "下载部门数据"
   },
   "co_panel_sector_title": {
-    "pt": "Dados setoriais"
+    "pt": "Dados setoriais",
+    "es": "Datos sectoriales",
+    "zh": "部门数据"
   },
   "co_info_Code": {
-    "pt": "Código:"
+    "pt": "Código:",
+    "es": "Código:",
+    "zh": "代码："
   },
   "co_info_Description": {
-    "pt": "Descrição:"
+    "pt": "Descrição:",
+    "es": "Descripción:",
+    "zh": "说明："
   },
   "co_info_Observations": {
-    "pt": "Observações:"
+    "pt": "Observações:",
+    "es": "Observaciones:",
+    "zh": "备注："
   },
   "dl_select_country.placeholder": {
-    "pt": "Selecione um país…"
+    "pt": "Selecione um país…",
+    "es": "Seleccione un país…",
+    "zh": "选择国家…"
   },
   "dl_select_method.placeholder": {
-    "pt": "Selecione um método…"
+    "pt": "Selecione um método…",
+    "es": "Seleccione un método…",
+    "zh": "选择方法…"
   },
   "dl_select_sector.placeholder": {
-    "pt": "Selecione um setor…"
+    "pt": "Selecione um setor…",
+    "es": "Seleccione un sector…",
+    "zh": "选择部门…"
   },
   "dl_select_method.label": {
-    "pt": "Método:"
+    "pt": "Método:",
+    "es": "Método:",
+    "zh": "方法："
   },
   "dl_select_country.label": {
-    "pt": "País:"
+    "pt": "País:",
+    "es": "País:",
+    "zh": "国家："
   },
   "dl_select_indicator.label": {
-    "pt": "Indicador:"
+    "pt": "Indicador:",
+    "es": "Indicador:",
+    "zh": "指标："
   },
   "dl_select_sector_indicator.label": {
-    "pt": "ou setor:"
+    "pt": "ou setor:",
+    "es": "o sector:",
+    "zh": "或部门："
   },
   "dl_select_andor": {
-    "pt": "e/ou"
+    "pt": "e/ou",
+    "es": "y/o",
+    "zh": "和／或"
   },
   "dl_select_sector_country.label": {
-    "pt": "Setor (opcional):"
+    "pt": "Setor (opcional):",
+    "es": "Sector (opcional):",
+    "zh": "部门（可选）："
   },
   "dl_ml_select_method.label": {
-    "pt": "Método:"
+    "pt": "Método:",
+    "es": "Método:",
+    "zh": "方法："
   },
   "dl_ml_select_country.label": {
-    "pt": "País:"
+    "pt": "País:",
+    "es": "País:",
+    "zh": "国家："
   },
   "dl_ml_select_indicator.label": {
-    "pt": "Indicador:"
+    "pt": "Indicador:",
+    "es": "Indicador:",
+    "zh": "指标："
   },
   "dl_ml_select_partner.label": {
-    "pt": "Parceiro:"
+    "pt": "Parceiro:",
+    "es": "Socio:",
+    "zh": "伙伴："
   },
   "dl_ml_select_and": {
-    "pt": "Selecione um parceiro ou um indicador:"
+    "pt": "Selecione um parceiro ou um indicador:",
+    "es": "Seleccione un socio o un indicador:",
+    "zh": "选择伙伴或指标："
   },
   "dl_ml_ind_cat_placeholder": {
-    "pt": "Tipo…"
+    "pt": "Tipo…",
+    "es": "Tipo…",
+    "zh": "类型…"
   },
   "dl_ml_ind_scope_placeholder": {
-    "pt": "Setores…"
+    "pt": "Setores…",
+    "es": "Sectores…",
+    "zh": "部门…"
   },
   "dl_ml_ind_un_placeholder": {
     "pt": "Unidade…",
-    "en": "Measured in…"
+    "en": "Measured in…",
+    "es": "Unidad…",
+    "zh": "单位…"
   },
   "dl_ml_ind_CX": {
-    "pt": "Exportações totais"
+    "pt": "Exportações totais",
+    "es": "Exportaciones totales",
+    "zh": "出口总额"
   },
   "dl_ml_ind_CM": {
-    "pt": "Importações totais"
+    "pt": "Importações totais",
+    "es": "Importaciones totales",
+    "zh": "进口总额"
   },
   "dl_ml_ind_CN": {
-    "pt": "Saldo comercial"
+    "pt": "Saldo comercial",
+    "es": "Saldo comercial",
+    "zh": "贸易差额"
   },
   "dl_ml_ind_TS": {
-    "pt": "Transferências de valor pelas exportações"
+    "pt": "Transferências de valor pelas exportações",
+    "es": "Transferencias de valor por las exportaciones",
+    "zh": "出口价值转移"
   },
   "dl_ml_ind_TR": {
-    "pt": "Transferências de valor pelas importações"
+    "pt": "Transferências de valor pelas importações",
+    "es": "Transferencias de valor por las importaciones",
+    "zh": "进口价值转移"
   },
   "dl_ml_ind_TT": {
-    "pt": "Transferências líquidas de valor"
+    "pt": "Transferências líquidas de valor",
+    "es": "Transferencias netas de valor",
+    "zh": "净价值转移"
   },
   "dl_ml_ind_T": {
-    "pt": "Todos os setores"
+    "pt": "Todos os setores",
+    "es": "Todos los sectores",
+    "zh": "所有部门"
   },
   "dl_ml_ind_P": {
-    "pt": "Setores produtivos"
+    "pt": "Setores produtivos",
+    "es": "Sectores productivos",
+    "zh": "生产性部门"
   },
   "dl_ml_ind_U": {
-    "pt": "Setores improdutivos"
+    "pt": "Setores improdutivos",
+    "es": "Sectores improductivos",
+    "zh": "非生产性部门"
   },
   "dl_ml_ind_MP": {
-    "pt": "Preços de mercado (USD)"
+    "pt": "Preços de mercado (USD)",
+    "es": "Precios de mercado (USD)",
+    "zh": "市场价格（USD）"
   },
   "dl_ml_ind_DP": {
-    "pt": "Preços diretos (USD)"
+    "pt": "Preços diretos (USD)",
+    "es": "Precios directos (USD)",
+    "zh": "直接价格（USD）"
   },
   "dl_ml_ind_MV": {
-    "pt": "Magnitude de valor"
+    "pt": "Magnitude de valor",
+    "es": "Magnitud de valor",
+    "zh": "价值量"
   },
   "dl_ml_title": {
-    "pt": "Dados multilaterais"
+    "pt": "Dados multilaterais",
+    "es": "Datos multilaterales",
+    "zh": "多边数据"
   },
   "dl_agg_title": {
-    "pt": "Dados agregados e setoriais"
+    "pt": "Dados agregados e setoriais",
+    "es": "Datos agregados y sectoriales",
+    "zh": "汇总与部门数据"
   },
   "dl_source_title": {
-    "pt": "Código-fonte"
+    "pt": "Código-fonte",
+    "es": "Código fuente",
+    "zh": "源代码"
   },
   "dl_source_portable_msg": {
     "pt": "O código utilizado no artigo sobre o problema da redução do trabalho está disponível no repositório. A referência para citação está ao final da página Sobre.",
-    "en": "The code used in the article on the labour reduction problem is available in the repository. The citation is at the end of the About page."
+    "en": "The code used in the article on the labour reduction problem is available in the repository. The citation is at the end of the About page.",
+    "es": "El código utilizado en el artículo sobre el problema de la reducción del trabajo está disponible en el repositorio. La referencia para citarlo está al final de la página Acerca de.",
+    "zh": "有关劳动化约问题的论文所用代码可在代码仓库中获取。引用文献信息位于“关于”页面末尾。"
   },
   "dl_source_code_msg": {
-    "pt": "Acesse o código que calcula os dados apresentados neste painel:"
+    "pt": "Acesse o código que calcula os dados apresentados neste painel:",
+    "es": "Acceda al código que calcula los datos presentados en este panel:",
+    "zh": "查看用于计算本面板数据的源代码："
   },
   "ISO3.ALA": {
-    "pt": "Ilhas Åland"
+    "pt": "Ilhas Åland",
+    "es": "Islas Åland",
+    "zh": "奥兰群岛"
   },
   "ISO3.ASM": {
-    "pt": "Samoa Americana"
+    "pt": "Samoa Americana",
+    "es": "Samoa Americana",
+    "zh": "美属萨摩亚"
   },
   "ISO3.AIA": {
-    "pt": "Anguila"
+    "pt": "Anguila",
+    "es": "Anguila",
+    "zh": "安圭拉"
   },
   "ISO3.ATA": {
-    "pt": "Antártida"
+    "pt": "Antártida",
+    "es": "Antártida",
+    "zh": "南极洲"
   },
   "ISO3.ABW": {
-    "pt": "Aruba"
+    "pt": "Aruba",
+    "es": "Aruba",
+    "zh": "阿鲁巴"
   },
   "ISO3.BMU": {
-    "pt": "Bermudas"
+    "pt": "Bermudas",
+    "es": "Bermudas",
+    "zh": "百慕大"
   },
   "ISO3.BVT": {
-    "pt": "Ilha Bouvet"
+    "pt": "Ilha Bouvet",
+    "es": "Isla Bouvet",
+    "zh": "布韦岛"
   },
   "ISO3.VGB": {
-    "pt": "Ilhas Virgens Britânicas"
+    "pt": "Ilhas Virgens Britânicas",
+    "es": "Islas Vírgenes Británicas",
+    "zh": "英属维尔京群岛"
   },
   "ISO3.IOT": {
-    "pt": "Território Britânico do Oceano Índico"
+    "pt": "Território Britânico do Oceano Índico",
+    "es": "Territorio Británico del Océano Índico",
+    "zh": "英属印度洋领地"
   },
   "ISO3.CYM": {
-    "pt": "Ilhas Cayman"
+    "pt": "Ilhas Cayman",
+    "es": "Islas Caimán",
+    "zh": "开曼群岛"
   },
   "ISO3.HKG": {
-    "pt": "Hong Kong, China"
+    "pt": "Hong Kong, China",
+    "es": "Hong Kong, China",
+    "zh": "中国香港"
   },
   "ISO3.MAC": {
-    "pt": "Macau, China"
+    "pt": "Macau, China",
+    "es": "Macao, China",
+    "zh": "中国澳门"
   },
   "ISO3.CXR": {
-    "pt": "Ilha Christmas"
+    "pt": "Ilha Christmas",
+    "es": "Isla de Navidad",
+    "zh": "圣诞岛"
   },
   "ISO3.CCK": {
-    "pt": "Ilhas Cocos (Keeling)"
+    "pt": "Ilhas Cocos (Keeling)",
+    "es": "Islas Cocos (Keeling)",
+    "zh": "科科斯（基林）群岛"
   },
   "ISO3.COK": {
-    "pt": "Ilhas Cook"
+    "pt": "Ilhas Cook",
+    "es": "Islas Cook",
+    "zh": "库克群岛"
   },
   "ISO3.FLK": {
-    "pt": "Ilhas Malvinas (Falkland)"
+    "pt": "Ilhas Malvinas (Falkland)",
+    "es": "Islas Malvinas (Falkland)",
+    "zh": "马尔维纳斯群岛（福克兰群岛）"
   },
   "ISO3.FRO": {
-    "pt": "Ilhas Faroé"
+    "pt": "Ilhas Faroé",
+    "es": "Islas Feroe",
+    "zh": "法罗群岛"
   },
   "ISO3.GUF": {
-    "pt": "Guiana Francesa"
+    "pt": "Guiana Francesa",
+    "es": "Guayana Francesa",
+    "zh": "法属圭亚那"
   },
   "ISO3.PYF": {
-    "pt": "Polinésia Francesa"
+    "pt": "Polinésia Francesa",
+    "es": "Polinesia Francesa",
+    "zh": "法属波利尼西亚"
   },
   "ISO3.ATF": {
-    "pt": "Terras Austrais Francesas"
+    "pt": "Terras Austrais Francesas",
+    "es": "Tierras Australes Francesas",
+    "zh": "法属南部领地"
   },
   "ISO3.GIB": {
-    "pt": "Gibraltar"
+    "pt": "Gibraltar",
+    "es": "Gibraltar",
+    "zh": "直布罗陀"
   },
   "ISO3.GRL": {
-    "pt": "Groenlândia"
+    "pt": "Groenlândia",
+    "es": "Groenlandia",
+    "zh": "格陵兰"
   },
   "ISO3.GLP": {
-    "pt": "Guadalupe"
+    "pt": "Guadalupe",
+    "es": "Guadalupe",
+    "zh": "瓜德罗普"
   },
   "ISO3.GUM": {
-    "pt": "Guam"
+    "pt": "Guam",
+    "es": "Guam",
+    "zh": "关岛"
   },
   "ISO3.GGY": {
-    "pt": "Guernsey"
+    "pt": "Guernsey",
+    "es": "Guernsey",
+    "zh": "根西岛"
   },
   "ISO3.HMD": {
-    "pt": "Ilhas Heard e McDonald"
+    "pt": "Ilhas Heard e McDonald",
+    "es": "Islas Heard y McDonald",
+    "zh": "赫德岛和麦克唐纳群岛"
   },
   "ISO3.IMN": {
-    "pt": "Ilha de Man"
+    "pt": "Ilha de Man",
+    "es": "Isla de Man",
+    "zh": "马恩岛"
   },
   "ISO3.JEY": {
-    "pt": "Jersey"
+    "pt": "Jersey",
+    "es": "Jersey",
+    "zh": "泽西岛"
   },
   "ISO3.MTQ": {
-    "pt": "Martinica"
+    "pt": "Martinica",
+    "es": "Martinica",
+    "zh": "马提尼克"
   },
   "ISO3.MYT": {
-    "pt": "Maiote"
+    "pt": "Maiote",
+    "es": "Mayotte",
+    "zh": "马约特"
   },
   "ISO3.MSR": {
-    "pt": "Montserrat"
+    "pt": "Montserrat",
+    "es": "Montserrat",
+    "zh": "蒙特塞拉特"
   },
   "ISO3.ANT": {
-    "pt": "Antilhas Neerlandesas"
+    "pt": "Antilhas Neerlandesas",
+    "es": "Antillas Neerlandesas",
+    "zh": "荷属安的列斯"
   },
   "ISO3.NCL": {
-    "pt": "Nova Caledônia"
+    "pt": "Nova Caledônia",
+    "es": "Nueva Caledonia",
+    "zh": "新喀里多尼亚"
   },
   "ISO3.NIU": {
-    "pt": "Niue"
+    "pt": "Niue",
+    "es": "Niue",
+    "zh": "纽埃"
   },
   "ISO3.NFK": {
-    "pt": "Ilha Norfolk"
+    "pt": "Ilha Norfolk",
+    "es": "Isla Norfolk",
+    "zh": "诺福克岛"
   },
   "ISO3.MNP": {
-    "pt": "Ilhas Marianas do Norte"
+    "pt": "Ilhas Marianas do Norte",
+    "es": "Islas Marianas del Norte",
+    "zh": "北马里亚纳群岛"
   },
   "ISO3.PCN": {
-    "pt": "Ilhas Pitcairn"
+    "pt": "Ilhas Pitcairn",
+    "es": "Islas Pitcairn",
+    "zh": "皮特凯恩群岛"
   },
   "ISO3.PRI": {
-    "pt": "Porto Rico"
+    "pt": "Porto Rico",
+    "es": "Puerto Rico",
+    "zh": "波多黎各"
   },
   "ISO3.REU": {
-    "pt": "Reunião"
+    "pt": "Reunião",
+    "es": "Reunión",
+    "zh": "留尼汪"
   },
   "ISO3.BLM": {
-    "pt": "São Bartolomeu"
+    "pt": "São Bartolomeu",
+    "es": "San Bartolomé",
+    "zh": "圣巴泰勒米"
   },
   "ISO3.SHN": {
-    "pt": "Santa Helena"
+    "pt": "Santa Helena",
+    "es": "Santa Elena",
+    "zh": "圣赫勒拿"
   },
   "ISO3.MAF": {
-    "pt": "São Martinho (parte francesa)"
+    "pt": "São Martinho (parte francesa)",
+    "es": "San Martín (parte francesa)",
+    "zh": "法属圣马丁"
   },
   "ISO3.SPM": {
-    "pt": "São Pedro e Miquelão"
+    "pt": "São Pedro e Miquelão",
+    "es": "San Pedro y Miquelón",
+    "zh": "圣皮埃尔和密克隆"
   },
   "ISO3.SGS": {
-    "pt": "Geórgia do Sul e Ilhas Sandwich do Sul"
+    "pt": "Geórgia do Sul e Ilhas Sandwich do Sul",
+    "es": "Georgia del Sur e Islas Sandwich del Sur",
+    "zh": "南乔治亚和南桑威奇群岛"
   },
   "ISO3.SJM": {
-    "pt": "Svalbard e Jan Mayen"
+    "pt": "Svalbard e Jan Mayen",
+    "es": "Svalbard y Jan Mayen",
+    "zh": "斯瓦尔巴和扬马延"
   },
   "ISO3.TKL": {
-    "pt": "Toquelau"
+    "pt": "Toquelau",
+    "es": "Tokelau",
+    "zh": "托克劳"
   },
   "ISO3.TCA": {
-    "pt": "Ilhas Turcas e Caicos"
+    "pt": "Ilhas Turcas e Caicos",
+    "es": "Islas Turcas y Caicos",
+    "zh": "特克斯和凯科斯群岛"
   },
   "ISO3.UMI": {
-    "pt": "Ilhas Menores Distantes dos Estados Unidos"
+    "pt": "Ilhas Menores Distantes dos Estados Unidos",
+    "es": "Islas Menores Alejadas de los Estados Unidos",
+    "zh": "美国本土外小岛屿"
   },
   "ISO3.VIR": {
-    "pt": "Ilhas Virgens Americanas"
+    "pt": "Ilhas Virgens Americanas",
+    "es": "Islas Vírgenes de los Estados Unidos",
+    "zh": "美属维尔京群岛"
   },
   "ISO3.ESH": {
-    "pt": "Saara Ocidental"
+    "pt": "Saara Ocidental",
+    "es": "Sáhara Occidental",
+    "zh": "西撒哈拉"
   },
   "wiodr13.TOT": {
-    "pt": "Total das atividades"
+    "pt": "Total das atividades",
+    "es": "Total de actividades",
+    "zh": "全部经济活动"
   },
   "wiodr13.AtB": {
-    "pt": "Agropecuária, caça, silvicultura e pesca"
+    "pt": "Agropecuária, caça, silvicultura e pesca",
+    "es": "Agricultura, ganadería, caza, silvicultura y pesca",
+    "zh": "农业、畜牧业、狩猎、林业和渔业"
   },
   "wiodr13.C": {
-    "pt": "Indústrias extrativas"
+    "pt": "Indústrias extrativas",
+    "es": "Industrias extractivas",
+    "zh": "采矿业"
   },
   "wiodr13.15t16": {
-    "pt": "Alimentos, bebidas e fumo"
+    "pt": "Alimentos, bebidas e fumo",
+    "es": "Alimentos, bebidas y tabaco",
+    "zh": "食品、饮料和烟草"
   },
   "wiodr13.17t18": {
-    "pt": "Têxteis e vestuário"
+    "pt": "Têxteis e vestuário",
+    "es": "Textiles y confección",
+    "zh": "纺织品和服装"
   },
   "wiodr13.19": {
-    "pt": "Couro e calçados"
+    "pt": "Couro e calçados",
+    "es": "Cuero y calzado",
+    "zh": "皮革和鞋类"
   },
   "wiodr13.20": {
-    "pt": "Madeira e cortiça"
+    "pt": "Madeira e cortiça",
+    "es": "Madera y corcho",
+    "zh": "木材和软木"
   },
   "wiodr13.21t22": {
-    "pt": "Celulose, papel, impressão e edição"
+    "pt": "Celulose, papel, impressão e edição",
+    "es": "Celulosa, papel, impresión y edición",
+    "zh": "纸浆、纸张、印刷和出版"
   },
   "wiodr13.23": {
-    "pt": "Coque, refino de petróleo e combustível nuclear"
+    "pt": "Coque, refino de petróleo e combustível nuclear",
+    "es": "Coque, refino de petróleo y combustible nuclear",
+    "zh": "焦炭、石油炼制和核燃料"
   },
   "wiodr13.24": {
-    "pt": "Produtos químicos"
+    "pt": "Produtos químicos",
+    "es": "Productos químicos",
+    "zh": "化学制品"
   },
   "wiodr13.25": {
-    "pt": "Borracha e plástico"
+    "pt": "Borracha e plástico",
+    "es": "Caucho y plástico",
+    "zh": "橡胶和塑料"
   },
   "wiodr13.26": {
-    "pt": "Produtos minerais não metálicos"
+    "pt": "Produtos minerais não metálicos",
+    "es": "Productos minerales no metálicos",
+    "zh": "非金属矿物制品"
   },
   "wiodr13.27t28": {
-    "pt": "Metalurgia e produtos de metal"
+    "pt": "Metalurgia e produtos de metal",
+    "es": "Metalurgia y productos metálicos",
+    "zh": "冶金和金属制品"
   },
   "wiodr13.29": {
-    "pt": "Máquinas e equipamentos não especificados"
+    "pt": "Máquinas e equipamentos não especificados",
+    "es": "Maquinaria y equipo no especificados",
+    "zh": "未另分类的机械和设备"
   },
   "wiodr13.30t33": {
-    "pt": "Equipamentos elétricos e ópticos"
+    "pt": "Equipamentos elétricos e ópticos",
+    "es": "Equipos eléctricos y ópticos",
+    "zh": "电气和光学设备"
   },
   "wiodr13.34t35": {
-    "pt": "Equipamentos de transporte"
+    "pt": "Equipamentos de transporte",
+    "es": "Equipos de transporte",
+    "zh": "运输设备"
   },
   "wiodr13.36t37": {
-    "pt": "Indústrias diversas e reciclagem"
+    "pt": "Indústrias diversas e reciclagem",
+    "es": "Industrias diversas y reciclaje",
+    "zh": "其他制造业和回收业"
   },
   "wiodr13.E": {
-    "pt": "Eletricidade, gás e água"
+    "pt": "Eletricidade, gás e água",
+    "es": "Electricidad, gas y agua",
+    "zh": "电力、燃气和水"
   },
   "wiodr13.F": {
-    "pt": "Construção"
+    "pt": "Construção",
+    "es": "Construcción",
+    "zh": "建筑业"
   },
   "wiodr13.50": {
-    "pt": "Comércio e reparação de veículos; varejo de combustíveis"
+    "pt": "Comércio e reparação de veículos; varejo de combustíveis",
+    "es": "Comercio y reparación de vehículos; venta minorista de combustibles",
+    "zh": "车辆销售与维修；燃料零售"
   },
   "wiodr13.51": {
-    "pt": "Comércio atacadista, exceto veículos"
+    "pt": "Comércio atacadista, exceto veículos",
+    "es": "Comercio mayorista, excepto vehículos",
+    "zh": "批发业（车辆除外）"
   },
   "wiodr13.52": {
-    "pt": "Comércio varejista, exceto veículos; reparação de bens domésticos"
+    "pt": "Comércio varejista, exceto veículos; reparação de bens domésticos",
+    "es": "Comercio minorista, excepto vehículos; reparación de bienes domésticos",
+    "zh": "零售业（车辆除外）；家用物品维修"
   },
   "wiodr13.H": {
-    "pt": "Alojamento e alimentação"
+    "pt": "Alojamento e alimentação",
+    "es": "Alojamiento y restauración",
+    "zh": "住宿和餐饮"
   },
   "wiodr13.60": {
-    "pt": "Transporte terrestre"
+    "pt": "Transporte terrestre",
+    "es": "Transporte terrestre",
+    "zh": "陆路运输"
   },
   "wiodr13.61": {
-    "pt": "Transporte aquaviário"
+    "pt": "Transporte aquaviário",
+    "es": "Transporte acuático",
+    "zh": "水上运输"
   },
   "wiodr13.62": {
-    "pt": "Transporte aéreo"
+    "pt": "Transporte aéreo",
+    "es": "Transporte aéreo",
+    "zh": "航空运输"
   },
   "wiodr13.63": {
-    "pt": "Atividades auxiliares dos transportes e agências de viagens"
+    "pt": "Atividades auxiliares dos transportes e agências de viagens",
+    "es": "Actividades auxiliares del transporte y agencias de viajes",
+    "zh": "运输辅助活动和旅行社"
   },
   "wiodr13.64": {
-    "pt": "Correios e telecomunicações"
+    "pt": "Correios e telecomunicações",
+    "es": "Correos y telecomunicaciones",
+    "zh": "邮政和电信"
   },
   "wiodr13.J": {
-    "pt": "Intermediação financeira"
+    "pt": "Intermediação financeira",
+    "es": "Intermediación financiera",
+    "zh": "金融中介"
   },
   "wiodr13.70": {
-    "pt": "Atividades imobiliárias"
+    "pt": "Atividades imobiliárias",
+    "es": "Actividades inmobiliarias",
+    "zh": "房地产业"
   },
   "wiodr13.71t74": {
-    "pt": "Aluguel de máquinas e equipamentos e serviços às empresas"
+    "pt": "Aluguel de máquinas e equipamentos e serviços às empresas",
+    "es": "Alquiler de maquinaria y equipo y servicios a empresas",
+    "zh": "机械设备租赁和企业服务"
   },
   "wiodr13.L": {
-    "pt": "Administração pública, defesa e seguridade social obrigatória"
+    "pt": "Administração pública, defesa e seguridade social obrigatória",
+    "es": "Administración pública, defensa y seguridad social obligatoria",
+    "zh": "公共管理、国防和强制性社会保障"
   },
   "wiodr13.M": {
-    "pt": "Educação"
+    "pt": "Educação",
+    "es": "Educación",
+    "zh": "教育"
   },
   "wiodr13.N": {
-    "pt": "Saúde e serviços sociais"
+    "pt": "Saúde e serviços sociais",
+    "es": "Salud y servicios sociales",
+    "zh": "卫生和社会服务"
   },
   "wiodr13.O": {
-    "pt": "Outros serviços coletivos, sociais e pessoais"
+    "pt": "Outros serviços coletivos, sociais e pessoais",
+    "es": "Otros servicios colectivos, sociales y personales",
+    "zh": "其他社区、社会和个人服务"
   },
   "wiodr13.P": {
-    "pt": "Serviços domésticos"
+    "pt": "Serviços domésticos",
+    "es": "Servicios domésticos",
+    "zh": "家政服务"
   },
   "wiodr16.A01": {
-    "pt": "Agricultura, pecuária, caça e serviços relacionados"
+    "pt": "Agricultura, pecuária, caça e serviços relacionados",
+    "es": "Agricultura, ganadería, caza y servicios relacionados",
+    "zh": "农业、畜牧业、狩猎及相关服务"
   },
   "wiodr16.A02": {
-    "pt": "Produção florestal"
+    "pt": "Produção florestal",
+    "es": "Silvicultura",
+    "zh": "林业"
   },
   "wiodr16.A03": {
-    "pt": "Pesca e aquicultura"
+    "pt": "Pesca e aquicultura",
+    "es": "Pesca y acuicultura",
+    "zh": "渔业和水产养殖"
   },
   "wiodr16.B": {
-    "pt": "Indústrias extrativas"
+    "pt": "Indústrias extrativas",
+    "es": "Industrias extractivas",
+    "zh": "采矿业"
   },
   "wiodr16.C10-C12": {
-    "pt": "Alimentos, bebidas e fumo"
+    "pt": "Alimentos, bebidas e fumo",
+    "es": "Alimentos, bebidas y tabaco",
+    "zh": "食品、饮料和烟草"
   },
   "wiodr16.C13-C15": {
-    "pt": "Têxteis, vestuário e produtos de couro"
+    "pt": "Têxteis, vestuário e produtos de couro",
+    "es": "Textiles, confección y productos de cuero",
+    "zh": "纺织品、服装和皮革制品"
   },
   "wiodr16.C16": {
-    "pt": "Produtos de madeira, cortiça e materiais trançados, exceto móveis"
+    "pt": "Produtos de madeira, cortiça e materiais trançados, exceto móveis",
+    "es": "Productos de madera, corcho y materiales trenzados, excepto muebles",
+    "zh": "木材、软木和编织材料制品（家具除外）"
   },
   "wiodr16.C17": {
-    "pt": "Papel e produtos de papel"
+    "pt": "Papel e produtos de papel",
+    "es": "Papel y productos de papel",
+    "zh": "纸和纸制品"
   },
   "wiodr16.C18": {
-    "pt": "Impressão e reprodução de gravações"
+    "pt": "Impressão e reprodução de gravações",
+    "es": "Impresión y reproducción de grabaciones",
+    "zh": "印刷和记录媒介复制"
   },
   "wiodr16.C19": {
-    "pt": "Coque e refino de petróleo"
+    "pt": "Coque e refino de petróleo",
+    "es": "Coque y refino de petróleo",
+    "zh": "焦炭和石油炼制"
   },
   "wiodr16.C20": {
-    "pt": "Produtos químicos"
+    "pt": "Produtos químicos",
+    "es": "Productos químicos",
+    "zh": "化学制品"
   },
   "wiodr16.C21": {
-    "pt": "Produtos farmoquímicos e farmacêuticos"
+    "pt": "Produtos farmoquímicos e farmacêuticos",
+    "es": "Productos farmacéuticos",
+    "zh": "医药制品"
   },
   "wiodr16.C22": {
-    "pt": "Produtos de borracha e plástico"
+    "pt": "Produtos de borracha e plástico",
+    "es": "Productos de caucho y plástico",
+    "zh": "橡胶和塑料制品"
   },
   "wiodr16.C23": {
-    "pt": "Produtos minerais não metálicos"
+    "pt": "Produtos minerais não metálicos",
+    "es": "Productos minerales no metálicos",
+    "zh": "非金属矿物制品"
   },
   "wiodr16.C24": {
-    "pt": "Metalurgia"
+    "pt": "Metalurgia",
+    "es": "Metalurgia",
+    "zh": "冶金"
   },
   "wiodr16.C25": {
-    "pt": "Produtos de metal, exceto máquinas e equipamentos"
+    "pt": "Produtos de metal, exceto máquinas e equipamentos",
+    "es": "Productos metálicos, excepto maquinaria y equipo",
+    "zh": "金属制品（机械和设备除外）"
   },
   "wiodr16.C26": {
-    "pt": "Equipamentos de informática, eletrônicos e ópticos"
+    "pt": "Equipamentos de informática, eletrônicos e ópticos",
+    "es": "Equipos informáticos, electrónicos y ópticos",
+    "zh": "计算机、电子和光学设备"
   },
   "wiodr16.C27": {
-    "pt": "Máquinas e equipamentos elétricos"
+    "pt": "Máquinas e equipamentos elétricos",
+    "es": "Maquinaria y equipos eléctricos",
+    "zh": "电气机械和设备"
   },
   "wiodr16.C28": {
-    "pt": "Máquinas e equipamentos não especificados"
+    "pt": "Máquinas e equipamentos não especificados",
+    "es": "Maquinaria y equipo no especificados",
+    "zh": "未另分类的机械和设备"
   },
   "wiodr16.C29": {
-    "pt": "Veículos automotores, reboques e carrocerias"
+    "pt": "Veículos automotores, reboques e carrocerias",
+    "es": "Vehículos de motor, remolques y carrocerías",
+    "zh": "机动车、挂车和车身"
   },
   "wiodr16.C30": {
-    "pt": "Outros equipamentos de transporte"
+    "pt": "Outros equipamentos de transporte",
+    "es": "Otros equipos de transporte",
+    "zh": "其他运输设备"
   },
   "wiodr16.C31_C32": {
-    "pt": "Móveis e indústrias diversas"
+    "pt": "Móveis e indústrias diversas",
+    "es": "Muebles e industrias diversas",
+    "zh": "家具和其他制造业"
   },
   "wiodr16.C33": {
-    "pt": "Manutenção, reparação e instalação de máquinas e equipamentos"
+    "pt": "Manutenção, reparação e instalação de máquinas e equipamentos",
+    "es": "Mantenimiento, reparación e instalación de maquinaria y equipo",
+    "zh": "机械设备的维护、维修和安装"
   },
   "wiodr16.D35": {
-    "pt": "Eletricidade, gás, vapor e ar condicionado"
+    "pt": "Eletricidade, gás, vapor e ar condicionado",
+    "es": "Electricidad, gas, vapor y aire acondicionado",
+    "zh": "电力、燃气、蒸汽和空调供应"
   },
   "wiodr16.E36": {
-    "pt": "Captação, tratamento e distribuição de água"
+    "pt": "Captação, tratamento e distribuição de água",
+    "es": "Captación, tratamiento y distribución de agua",
+    "zh": "水的采集、处理和供应"
   },
   "wiodr16.E37-E39": {
-    "pt": "Esgoto, resíduos, recuperação de materiais e descontaminação"
+    "pt": "Esgoto, resíduos, recuperação de materiais e descontaminação",
+    "es": "Aguas residuales, residuos, recuperación de materiales y descontaminación",
+    "zh": "污水、废弃物、材料回收和污染治理"
   },
   "wiodr16.F": {
-    "pt": "Construção"
+    "pt": "Construção",
+    "es": "Construcción",
+    "zh": "建筑业"
   },
   "wiodr16.G45": {
-    "pt": "Comércio e reparação de veículos automotores e motocicletas"
+    "pt": "Comércio e reparação de veículos automotores e motocicletas",
+    "es": "Comercio y reparación de vehículos de motor y motocicletas",
+    "zh": "机动车和摩托车销售与维修"
   },
   "wiodr16.G46": {
-    "pt": "Comércio atacadista, exceto veículos"
+    "pt": "Comércio atacadista, exceto veículos",
+    "es": "Comercio mayorista, excepto vehículos",
+    "zh": "批发业（车辆除外）"
   },
   "wiodr16.G47": {
-    "pt": "Comércio varejista, exceto veículos"
+    "pt": "Comércio varejista, exceto veículos",
+    "es": "Comercio minorista, excepto vehículos",
+    "zh": "零售业（车辆除外）"
   },
   "wiodr16.H49": {
-    "pt": "Transporte terrestre e por dutos"
+    "pt": "Transporte terrestre e por dutos",
+    "es": "Transporte terrestre y por tuberías",
+    "zh": "陆路和管道运输"
   },
   "wiodr16.H50": {
-    "pt": "Transporte aquaviário"
+    "pt": "Transporte aquaviário",
+    "es": "Transporte acuático",
+    "zh": "水上运输"
   },
   "wiodr16.H51": {
-    "pt": "Transporte aéreo"
+    "pt": "Transporte aéreo",
+    "es": "Transporte aéreo",
+    "zh": "航空运输"
   },
   "wiodr16.H52": {
-    "pt": "Armazenamento e atividades auxiliares dos transportes"
+    "pt": "Armazenamento e atividades auxiliares dos transportes",
+    "es": "Almacenamiento y actividades auxiliares del transporte",
+    "zh": "仓储和运输辅助活动"
   },
   "wiodr16.H53": {
-    "pt": "Correios e entregas"
+    "pt": "Correios e entregas",
+    "es": "Correos y mensajería",
+    "zh": "邮政和快递"
   },
   "wiodr16.I": {
-    "pt": "Alojamento e alimentação"
+    "pt": "Alojamento e alimentação",
+    "es": "Alojamiento y restauración",
+    "zh": "住宿和餐饮"
   },
   "wiodr16.J58": {
-    "pt": "Edição"
+    "pt": "Edição",
+    "es": "Edición",
+    "zh": "出版业"
   },
   "wiodr16.J59_J60": {
-    "pt": "Cinema, vídeo, televisão, gravação de som e radiodifusão"
+    "pt": "Cinema, vídeo, televisão, gravação de som e radiodifusão",
+    "es": "Cine, vídeo, televisión, grabación de sonido y radiodifusión",
+    "zh": "电影、视频、电视、录音和广播"
   },
   "wiodr16.J61": {
-    "pt": "Telecomunicações"
+    "pt": "Telecomunicações",
+    "es": "Telecomunicaciones",
+    "zh": "电信"
   },
   "wiodr16.J62_J63": {
-    "pt": "Tecnologia da informação e serviços de informação"
+    "pt": "Tecnologia da informação e serviços de informação",
+    "es": "Tecnologías y servicios de la información",
+    "zh": "信息技术和信息服务"
   },
   "wiodr16.K64": {
-    "pt": "Serviços financeiros, exceto seguros e previdência"
+    "pt": "Serviços financeiros, exceto seguros e previdência",
+    "es": "Servicios financieros, excepto seguros y pensiones",
+    "zh": "金融服务（保险和养老金除外）"
   },
   "wiodr16.K65": {
-    "pt": "Seguros, resseguros e previdência, exceto seguridade social obrigatória"
+    "pt": "Seguros, resseguros e previdência, exceto seguridade social obrigatória",
+    "es": "Seguros, reaseguros y pensiones, excepto seguridad social obligatoria",
+    "zh": "保险、再保险和养老金（强制性社会保障除外）"
   },
   "wiodr16.K66": {
-    "pt": "Atividades auxiliares dos serviços financeiros e seguros"
+    "pt": "Atividades auxiliares dos serviços financeiros e seguros",
+    "es": "Actividades auxiliares de los servicios financieros y de seguros",
+    "zh": "金融和保险辅助活动"
   },
   "wiodr16.L68": {
-    "pt": "Atividades imobiliárias"
+    "pt": "Atividades imobiliárias",
+    "es": "Actividades inmobiliarias",
+    "zh": "房地产业"
   },
   "wiodr16.M69_M70": {
-    "pt": "Serviços jurídicos, contábeis, sedes de empresas e consultoria em gestão"
+    "pt": "Serviços jurídicos, contábeis, sedes de empresas e consultoria em gestão",
+    "es": "Servicios jurídicos, contables, sedes centrales y consultoría de gestión",
+    "zh": "法律、会计、总部管理和管理咨询服务"
   },
   "wiodr16.M71": {
-    "pt": "Arquitetura, engenharia, testes e análises técnicas"
+    "pt": "Arquitetura, engenharia, testes e análises técnicas",
+    "es": "Arquitectura, ingeniería, ensayos y análisis técnicos",
+    "zh": "建筑设计、工程、技术测试和分析"
   },
   "wiodr16.M72": {
-    "pt": "Pesquisa e desenvolvimento científico"
+    "pt": "Pesquisa e desenvolvimento científico",
+    "es": "Investigación y desarrollo científico",
+    "zh": "科学研究与开发"
   },
   "wiodr16.M73": {
-    "pt": "Publicidade e pesquisa de mercado"
+    "pt": "Publicidade e pesquisa de mercado",
+    "es": "Publicidad y estudios de mercado",
+    "zh": "广告和市场研究"
   },
   "wiodr16.M74_M75": {
-    "pt": "Outras atividades profissionais, científicas, técnicas e veterinárias"
+    "pt": "Outras atividades profissionais, científicas, técnicas e veterinárias",
+    "es": "Otras actividades profesionales, científicas, técnicas y veterinarias",
+    "zh": "其他专业、科学、技术和兽医活动"
   },
   "wiodr16.N": {
-    "pt": "Atividades administrativas e serviços complementares"
+    "pt": "Atividades administrativas e serviços complementares",
+    "es": "Actividades administrativas y servicios auxiliares",
+    "zh": "行政和辅助服务活动"
   },
   "wiodr16.O84": {
-    "pt": "Administração pública, defesa e seguridade social obrigatória"
+    "pt": "Administração pública, defesa e seguridade social obrigatória",
+    "es": "Administración pública, defensa y seguridad social obligatoria",
+    "zh": "公共管理、国防和强制性社会保障"
   },
   "wiodr16.P85": {
-    "pt": "Educação"
+    "pt": "Educação",
+    "es": "Educación",
+    "zh": "教育"
   },
   "wiodr16.Q": {
-    "pt": "Saúde e serviços sociais"
+    "pt": "Saúde e serviços sociais",
+    "es": "Salud y servicios sociales",
+    "zh": "卫生和社会服务"
   },
   "wiodr16.R_S": {
-    "pt": "Outras atividades de serviços"
+    "pt": "Outras atividades de serviços",
+    "es": "Otras actividades de servicios",
+    "zh": "其他服务活动"
   },
   "wiodr16.T": {
-    "pt": "Serviços domésticos e produção das famílias para uso próprio"
+    "pt": "Serviços domésticos e produção das famílias para uso próprio",
+    "es": "Servicios domésticos y producción de los hogares para uso propio",
+    "zh": "家政服务和家庭自用生产"
   },
   "wiodr16.U": {
-    "pt": "Organizações internacionais e instituições extraterritoriais"
+    "pt": "Organizações internacionais e instituições extraterritoriais",
+    "es": "Organizaciones internacionales e instituciones extraterritoriales",
+    "zh": "国际组织和域外机构"
   }
 }

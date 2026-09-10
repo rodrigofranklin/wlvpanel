@@ -1,23 +1,26 @@
 # Build one workbook from the canonical arrays only after a download is requested.
 # A valid selection no longer depends on thousands of pre-generated XLSX files.
-wlv_download_label <- function(language, key, fallback = key) {
-  if (!key %in% rownames(language) || !"English" %in% colnames(language)) return(fallback)
-  value <- as.character(language[key, "English"])
+wlv_download_label <- function(language, key, fallback = key, lang = "en") {
+  column <- wlv_language_column(lang)
+  if (!key %in% rownames(language) || !column %in% colnames(language)) return(fallback)
+  value <- as.character(language[key, column])
   if (length(value) == 1L && !is.na(value) && nzchar(value)) value else fallback
 }
 
-wlv_download_header <- function(method, language, selected = list()) {
-  rows <- lapply(names(selected), function(label) c(paste0(label, ":"), selected[[label]]))
-  rows <- c(rows, list(c("Computation method:", method$name[[1L]]),
-    c("Main source:", method$source[[1L]])))
+wlv_download_header <- function(method, language, selected = list(), lang = "en") {
+  rows <- lapply(names(selected), function(label) c(paste0(wlv_tr(switch(label, Country = "País", Indicator = "Indicador", Sector = "Setor", Partner = "Parceiro", label), label, lang), ":"), selected[[label]]))
+  rows <- c(rows, list(c(wlv_tr("Método de cálculo:", "Computation method:", lang), method$name[[1L]]),
+    c(wlv_tr("Fonte principal:", "Main source:", lang), method$source[[1L]])))
   result <- matrix(NA_character_, nrow = 6L, ncol = 2L)
   result[seq_along(rows), ] <- do.call(rbind, rows)
-  result[6L, ] <- c("Name", "Code")
+  result[6L, ] <- c(wlv_tr("Nome", "Name", lang), wlv_tr("Código", "Code", lang))
   result
 }
 
-wlv_aggregated_download_request <- function(method, country = NULL, indicator = NULL,
-    sector = NULL, countries, sectors, metadata, methods, language, contracts) {
+# A plan is an immutable selection snapshot. Availability checks need neither a
+# transposed export matrix nor translated workbook labels and metadata.
+wlv_aggregated_download_plan <- function(method, country = NULL, indicator = NULL,
+    sector = NULL, countries, sectors, metadata, methods, contracts) {
   nonempty <- wlv_nonempty_selection
   if (!nonempty(method) || !method %in% dimnames(countries)[[1L]] ||
       !method %in% methods$code) return(NULL)
@@ -25,14 +28,13 @@ wlv_aggregated_download_request <- function(method, country = NULL, indicator = 
   href <- wlv_aggregated_download_href(method, country, indicator, sector, sector_countries)
   if (!nzchar(href)) return(NULL)
   method_row <- methods[methods$code == method, , drop = FALSE]
-  label <- function(code, fallback = code) wlv_download_label(language, code, fallback)
   public <- intersect(metadata$value, dimnames(countries)[[3L]])
   if (nonempty(indicator) && !indicator %in% public) return(NULL)
   if (nonempty(country) && !country %in% dimnames(countries)[[4L]]) return(NULL)
   selected <- list()
-  if (nonempty(country)) selected$Country <- label(paste0("ISO3.", country), country)
-  if (nonempty(indicator)) selected$Indicator <- label(indicator)
-  if (nonempty(sector)) selected$Sector <- label(paste0(method_row$source[[1L]], ".", sector), sector)
+  if (nonempty(country)) selected$Country <- list(key = paste0("ISO3.", country), fallback = country)
+  if (nonempty(indicator)) selected$Indicator <- list(key = indicator, fallback = indicator)
+  if (nonempty(sector)) selected$Sector <- list(key = paste0(method_row$source[[1L]], ".", sector), fallback = sector)
 
   if (nonempty(sector) || (nonempty(country) && nonempty(indicator))) {
     if (!method %in% names(sectors)) return(NULL)
@@ -45,33 +47,61 @@ wlv_aggregated_download_request <- function(method, country = NULL, indicator = 
     values <- values[, indicators, if (nonempty(sector)) sector else axes[[3L]],
       if (nonempty(country)) country else axes[[4L]], drop = FALSE]
     row_axis <- if (!nonempty(indicator)) 2L else if (!nonempty(sector)) 3L else 4L
-    matrix <- wlv_xlsx_export_matrix(values, row_axis, 1L)
-    row_keys <- if (row_axis == 2L) rownames(matrix) else if (row_axis == 3L)
-      paste0(method_row$source[[1L]], ".", rownames(matrix)) else paste0("ISO3.", rownames(matrix))
+    year_axis <- 1L
+    row_prefix <- if (row_axis == 2L) "" else if (row_axis == 3L)
+      paste0(method_row$source[[1L]], ".") else "ISO3."
   } else {
     indicators <- if (nonempty(indicator)) indicator else public
     if (!length(indicators)) return(NULL)
     values <- countries[method, , indicators,
       if (nonempty(country)) country else dimnames(countries)[[4L]], drop = FALSE]
     row_axis <- if (nonempty(country)) 3L else 4L
-    matrix <- wlv_xlsx_export_matrix(values, row_axis, 2L)
-    row_keys <- if (row_axis == 3L) rownames(matrix) else paste0("ISO3.", rownames(matrix))
+    year_axis <- 2L
+    row_prefix <- if (row_axis == 3L) "" else "ISO3."
   }
+  if (!wlv_has_observations(values)) return(NULL)
+  list(filename = basename(href), values = values, row_axis = row_axis,
+    year_axis = year_axis, row_prefix = row_prefix, selected = selected,
+    specs = method_row, method = method, indicator = indicator, contracts = contracts)
+}
+
+wlv_aggregated_download_data <- function(plan) {
+  if (is.null(plan)) return(NULL)
+  matrix <- wlv_xlsx_export_matrix(plan$values, plan$row_axis, plan$year_axis)
   observed_rows <- apply(matrix, 1L, wlv_has_observations)
   observed_years <- apply(matrix, 2L, wlv_has_observations)
   if (!any(observed_rows) || !any(observed_years)) return(NULL)
   matrix <- matrix[observed_rows, observed_years, drop = FALSE]
-  row_keys <- row_keys[observed_rows]
-  indicators <- if (nonempty(indicator)) indicator else rownames(matrix)
+  list(filename = plan$filename, data = matrix,
+    row_keys = paste0(plan$row_prefix, rownames(matrix)), selected = plan$selected,
+    specs = plan$specs, method = plan$method,
+    indicators = if (wlv_nonempty_selection(plan$indicator)) plan$indicator else rownames(matrix),
+    contracts = plan$contracts)
+}
+
+wlv_aggregated_download_localize <- function(data, language, lang = "en") {
+  if (is.null(data)) return(NULL)
+  label <- function(code, fallback = code) wlv_download_label(language, code, fallback, lang)
+  selected <- lapply(data$selected, function(item) label(item[["key"]], item[["fallback"]]))
+  indicators <- data$indicators
   meta <- data.frame(Code = indicators,
     Name = vapply(indicators, label, character(1L)),
     Description = vapply(paste0("desc.", indicators), label, character(1L)),
-    Observations = vapply(paste0("obs.", method, ".", indicators), label, character(1L)),
+    Observations = vapply(paste0("obs.", data$method, ".", indicators), label, character(1L)),
     row.names = NULL, stringsAsFactors = FALSE)
-  list(filename = basename(href), data = matrix,
-    labels = unname(vapply(row_keys, label, character(1L))), metadata = meta,
-    header = wlv_download_header(method_row, language, selected), specs = method_row,
-    method = method, indicators = indicators, contracts = contracts)
+  list(filename = data$filename, data = data$data,
+    labels = unname(vapply(data$row_keys, label, character(1L))), metadata = meta,
+    header = wlv_download_header(data$specs, language, selected, lang), specs = data$specs,
+    lang = wlv_language_code(lang), method = data$method,
+    indicators = indicators, contracts = data$contracts)
+}
+
+# Preserve the public request API for batch callers and existing integrations.
+wlv_aggregated_download_request <- function(method, country = NULL, indicator = NULL,
+    sector = NULL, countries, sectors, metadata, methods, language, contracts, lang = "en") {
+  plan <- wlv_aggregated_download_plan(method, country, indicator, sector,
+    countries, sectors, metadata, methods, contracts)
+  wlv_aggregated_download_localize(wlv_aggregated_download_data(plan), language, lang)
 }
 
 wlv_multilateral_indicator_codes <- function() {
@@ -81,12 +111,13 @@ wlv_multilateral_indicator_codes <- function() {
   sort(apply(combinations, 1L, paste, collapse = "."))
 }
 
-wlv_multilateral_indicator_label <- function(code) {
+wlv_multilateral_indicator_label <- function(code, lang = "en") {
   parts <- strsplit(code, ".", fixed = TRUE)[[1L]]
-  category <- c(CX = "Exports", CM = "Imports", CN = "Net trade", TS = "Value transfers from exports",
-    TR = "Value transfers from imports", TT = "Net value transfers")[[parts[[1L]]]]
-  scope <- c(T = "", P = " of productive sectors", U = " of unproductive sectors")[[parts[[2L]]]]
-  unit <- c(MP = " at market prices (USD)", DP = " at direct prices (USD)", MV = " in magnitude of value")[[parts[[3L]]]]
+  category_en <- c(CX = "Exports", CM = "Imports", CN = "Net trade", TS = "Value transfers from exports", TR = "Value transfers from imports", TT = "Net value transfers")[[parts[[1L]]]]
+  category_pt <- c(CX = "Exportações", CM = "Importações", CN = "Comércio líquido", TS = "Transferências de valor nas exportações", TR = "Transferências de valor nas importações", TT = "Transferências líquidas de valor")[[parts[[1L]]]]
+  category <- wlv_tr(category_pt, category_en, lang)
+  scope <- switch(parts[[2L]], T = "", P = wlv_tr(" dos setores produtivos", " of productive sectors", lang), U = wlv_tr(" dos setores improdutivos", " of unproductive sectors", lang))
+  unit <- switch(parts[[3L]], MP = wlv_tr(" a preços de mercado (USD)", " at market prices (USD)", lang), DP = wlv_tr(" a preços diretos (USD)", " at direct prices (USD)", lang), MV = wlv_tr(" em magnitude de valor", " in magnitude of value", lang))
   paste0(category, scope, unit)
 }
 
@@ -124,8 +155,8 @@ wlv_multilateral_matrix <- function(values, country, partners, indicator, factor
     TR = component(TRUE, TRUE), TT = component(TRUE, TRUE) - component(TRUE, FALSE))
 }
 
-wlv_multilateral_download_request <- function(method, country, partner = NULL,
-    category = NULL, scope = NULL, unit = NULL, values, methods, language) {
+wlv_multilateral_download_plan <- function(method, country, partner = NULL,
+    category = NULL, scope = NULL, unit = NULL, values, methods) {
   nonempty <- wlv_nonempty_selection
   if (!nonempty(method) || !method %in% names(values) || !method %in% methods$code ||
       !nonempty(country)) return(NULL)
@@ -135,34 +166,97 @@ wlv_multilateral_download_request <- function(method, country, partner = NULL,
   if (nonempty(partner)) {
     if (!partner %in% countries || partner == country) return(NULL)
     codes <- wlv_multilateral_indicator_codes()
-    factor <- apply(data[, "exports_productive_mp", , , drop = FALSE], 1L, sum) /
-      apply(data[, "exports_values", , , drop = FALSE], 1L, sum)
-    factor[!is.finite(factor)] <- NA_real_
-    matrix <- do.call(rbind, lapply(codes, function(code) wlv_multilateral_matrix(data, country, partner, code, factor)))
-    rownames(matrix) <- codes
-    labels <- vapply(codes, wlv_multilateral_indicator_label, character(1L))
+    # Every primitive below has a direct, unscaled row among the 45 indicators.
+    # Therefore a bilateral workbook exists exactly when either direction has
+    # an observation; zeros and infinities remain observations, as before.
+    keys <- c("exports_values", "exports_mp", "exports_productive_mp", "transfers_values",
+      "transfers_dp", "transfers_productive_values", "transfers_productive_dp")
+    if (!wlv_has_observations(data[, keys, country, partner, drop = FALSE]) &&
+        !wlv_has_observations(data[, keys, partner, country, drop = FALSE])) return(NULL)
+    matrix <- NULL
     filename <- paste(country, partner, method, "xlsx", sep = ".")
-    selected <- list(Country = wlv_download_label(language, paste0("ISO3.", country), country),
-      Partner = wlv_download_label(language, paste0("ISO3.", partner), partner))
   } else {
     if (!nonempty(category) || !nonempty(scope) || !nonempty(unit)) return(NULL)
     codes <- paste0(category, scope, unit)
     if (!codes %in% wlv_multilateral_indicator_codes()) return(NULL)
     matrix <- wlv_multilateral_matrix(data, country, countries, codes)
-    labels <- vapply(paste0("ISO3.", countries), function(key) wlv_download_label(language, key), character(1L))
+    if (!wlv_has_observations(matrix)) return(NULL)
     filename <- paste(country, codes, method, "xlsx", sep = ".")
-    selected <- list(Country = wlv_download_label(language, paste0("ISO3.", country), country),
-      Indicator = wlv_multilateral_indicator_label(codes))
+  }
+  list(filename = filename, values = if (nonempty(partner)) data else NULL,
+    data = matrix, codes = codes, country = country, partner = partner,
+    countries = countries, specs = methods[methods$code == method, , drop = FALSE])
+}
+
+wlv_multilateral_download_data <- function(plan) {
+  if (is.null(plan)) return(NULL)
+  matrix <- plan$data
+  codes <- plan$codes
+  if (wlv_nonempty_selection(plan$partner)) {
+    data <- plan$values
+    factor <- apply(data[, "exports_productive_mp", , , drop = FALSE], 1L, sum) /
+      apply(data[, "exports_values", , , drop = FALSE], 1L, sum)
+    factor[!is.finite(factor)] <- NA_real_
+    matrix <- do.call(rbind, lapply(codes, function(code)
+      wlv_multilateral_matrix(data, plan$country, plan$partner, code, factor)))
+    rownames(matrix) <- codes
   }
   rows <- apply(matrix, 1L, wlv_has_observations)
   years <- apply(matrix, 2L, wlv_has_observations)
   if (!any(rows) || !any(years)) return(NULL)
   matrix <- matrix[rows, years, drop = FALSE]
-  if (nonempty(partner)) codes <- rownames(matrix)
-  method_row <- methods[methods$code == method, , drop = FALSE]
-  list(filename = filename, data = matrix, labels = unname(labels[rows]),
-    metadata = data.frame(Code = codes, Name = vapply(codes, wlv_multilateral_indicator_label, character(1L)), row.names = NULL),
-    header = wlv_download_header(method_row, language, selected), specs = method_row)
+  if (wlv_nonempty_selection(plan$partner)) codes <- rownames(matrix)
+  list(filename = plan$filename, data = matrix, codes = codes, country = plan$country,
+    partner = plan$partner,
+    row_countries = if (wlv_nonempty_selection(plan$partner)) NULL else plan$countries[rows],
+    specs = plan$specs)
+}
+
+wlv_multilateral_download_localize <- function(data, language, lang = "en") {
+  if (is.null(data)) return(NULL)
+  codes <- data$codes
+  selected <- list(Country = wlv_download_label(language, paste0("ISO3.", data$country), data$country, lang))
+  if (wlv_nonempty_selection(data$partner)) {
+    selected$Partner <- wlv_download_label(language, paste0("ISO3.", data$partner), data$partner, lang)
+    labels <- vapply(codes, wlv_multilateral_indicator_label, character(1L), lang = lang)
+  } else {
+    selected$Indicator <- wlv_multilateral_indicator_label(codes, lang)
+    labels <- vapply(paste0("ISO3.", data$row_countries), function(key)
+      wlv_download_label(language, key, lang = lang), character(1L))
+  }
+  list(filename = data$filename, data = data$data, labels = unname(labels),
+    metadata = data.frame(Code = codes, Name = vapply(codes, wlv_multilateral_indicator_label, character(1L), lang = lang), row.names = NULL),
+    header = wlv_download_header(data$specs, language, selected, lang), specs = data$specs, lang = wlv_language_code(lang))
+}
+
+wlv_multilateral_download_request <- function(method, country, partner = NULL,
+    category = NULL, scope = NULL, unit = NULL, values, methods, language, lang = "en") {
+  plan <- wlv_multilateral_download_plan(method, country, partner, category, scope, unit, values, methods)
+  wlv_multilateral_download_localize(wlv_multilateral_download_data(plan), language, lang)
+}
+
+# Shiny asks for filename before content within the same download. Capture the
+# full request once on that click so changing a selection cannot pair a filename
+# from one snapshot with the contents or language of another.
+wlv_download_callbacks <- function(request, writer = wlv_write_download_request) {
+  pending <- NULL
+  list(filename = function() {
+    current <- request()
+    shiny::req(current)
+    pending <<- current
+    current$filename
+  }, content = function(file) {
+    current <- pending
+    pending <<- NULL
+    if (is.null(current)) current <- request()
+    writer(current, file)
+  })
+}
+
+wlv_request_download_handler <- function(request) {
+  callbacks <- wlv_download_callbacks(request)
+  shiny::downloadHandler(filename = callbacks$filename, content = callbacks$content,
+    contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 }
 
 wlv_write_download_request <- function(request, file) {

@@ -1,4 +1,7 @@
 indicator_env <- new.env(parent = environment())
+for (helper in c("download_workbooks.R", "download_requests.R")) {
+  source(file.path(wlvpanel_test_root, "utils", helper), local = indicator_env, encoding = "UTF-8")
+}
 source(file.path(wlvpanel_test_root, "modules", "indicators", "main.R"), local = indicator_env, encoding = "UTF-8")
 
 wlvpanel_indicator_fixture <- function() {
@@ -96,7 +99,15 @@ test_that("compound units use readable translated labels", {
   expect_identical(unit_label("local_currency_per_usd"), "Moeda local/US$")
 })
 
-test_that("indicator module translates without changing data and renders both views", {
+test_that("ranking layout reserves a live readout without a permanent instructional hint", {
+  for (package in c("shiny", "plotly", "leaflet", "DT")) skip_if_not_installed(package)
+  html <- withr::with_dir(wlvpanel_test_root, as.character(indicator_env$indicators_ui("ranking-layout")))
+  expect_false(grepl('id="ranking-layout-ranking_hint"', html, fixed = TRUE))
+  expect_false(grepl('class="wlv-ranking-hint"', html, fixed = TRUE))
+  expect_match(html, 'class="wlv-ranking-readout" role="status" aria-live="polite"', fixed = TRUE)
+})
+
+test_that("indicator module translates without changing data and renders all three views", {
   for (package in c("shiny", "plotly", "leaflet", "DT", "sp")) skip_if_not_installed(package)
   fixture <- wlvpanel_indicator_fixture()
   make_polygon <- function(x, id) sp::Polygons(list(sp::Polygon(matrix(c(x, 0, x + 1, 0, x + 1, 1, x, 1, x, 0), byrow = TRUE, ncol = 2L))), ID = id)
@@ -134,6 +145,18 @@ test_that("indicator module translates without changing data and renders both vi
     expect_identical(input$subgroup, "price")
     expect_identical(input$countries, "BRA")
     expect_match(output$series, "Brazil|Brasil")
+    session$setInputs(ranking_method = "W13")
+    expect_identical(output$ranking_label, "Ranking")
+    ranking <- jsonlite::fromJSON(output$ranking, simplifyVector = FALSE)
+    expect_length(ranking$x$shinyEvents, 0L)
+    expect_identical(ranking$x$layout$meta$method, "W13")
+    ranking_payload <- ranking$jsHooks$render[[1L]]$data
+    expect_identical(ranking_payload$countriesInputId, session$ns("countries"))
+    expect_identical(unlist(ranking_payload$palette, use.names = FALSE),
+      c("#8D2028", "#CC858A", "#F2DCDD", "#FCE7C0", "#F6AE2D"))
+    expect_equal(ranking$x$data[[1L]]$opacity, 1)
+    expect_identical(ranking_rows()$country, c("AAA", "BRA", "BRA"))
+    expect_identical(ranking_rows()$rank, c(1L, 2L, 1L))
     map <- jsonlite::fromJSON(output$map, simplifyVector = FALSE)
     expect_identical(map$x$calls[[1L]]$method, "createMapPane")
     expect_identical(map$x$calls[[2L]]$method, "addPolygons")
@@ -146,6 +169,8 @@ test_that("indicator module translates without changing data and renders both vi
     expect_identical(series(), original)
     expect_identical(jsonlite::fromJSON(output$map, simplifyVector = FALSE), map)
     expect_identical(input$countries, "BRA")
+    expect_identical(input$ranking_method, "W13")
+    expect_match(output$ranking_context, "countries per year", fixed = TRUE)
     expect_match(output$all, "Country", fixed = TRUE)
     expect_identical(output$map_available, "yes")
     session$setInputs(methods = character())

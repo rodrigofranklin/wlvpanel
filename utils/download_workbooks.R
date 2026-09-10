@@ -3,11 +3,17 @@ ind_type <- function(x){
 }
 
 wlv_country_axis_names <- function(codes, language_file, language = "English") {
+  if (is.character(language) && length(language) == 1L && !is.na(language) &&
+      (language %in% wlv_languages()$value ||
+       sub("[-_].*$", "", tolower(language)) %in% wlv_languages()$key)) {
+    language <- wlv_language_name(language)
+  }
   if (
     !is.character(codes) || !length(codes) || anyNA(codes) ||
       any(!nzchar(codes)) || anyDuplicated(codes) ||
       !(is.data.frame(language_file) || is.matrix(language_file)) ||
-      is.null(rownames(language_file)) || !language %in% colnames(language_file)
+      is.null(rownames(language_file)) || !is.character(language) ||
+      length(language) != 1L || is.na(language) || !language %in% colnames(language_file)
   ) {
     stop("Country display labels require a valid country axis and language table.",
       call. = FALSE

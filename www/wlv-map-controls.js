@@ -67,7 +67,7 @@
         expandGroup(group, group.querySelector('.wlv-map-group-header').getAttribute('aria-expanded') === 'true');
       });
       document.getElementById('inputs_panel').setAttribute('aria-label',
-        document.documentElement.lang === 'en' ? 'Indicators' : 'Indicadores');
+        window.wlvI18n.text('Indicadores', 'Indicators'));
       layout.querySelectorAll('[data-indicator]').forEach(function (button) {
         const active = button.dataset.indicator === code;
         button.setAttribute('aria-pressed', String(active));

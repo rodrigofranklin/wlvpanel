@@ -1,8 +1,25 @@
 setup_panel <- tagList(
   tags$div(style = "display:none", `aria-hidden` = "true",
-    selectInput("l", NULL, choices = c("Português", "English"), selected = default_language, selectize = FALSE)),
-  tags$button(id = "language_toggle", class = "btn wlv-language", type = "button",
-    lang = "en", `aria-label` = "Switch to English", "English"),
+    selectInput("l", NULL, choices = wlv_languages()$value[wlv_languages()$available], selected = default_language, selectize = FALSE)),
+  tags$div(id = "wlv-language", class = "wlv-language-control",
+    tags$div(class = "wlv-language-buttons",
+      tags$button(id = "language_toggle", class = "btn wlv-language", type = "button",
+        lang = "en", `data-language` = "English", `aria-label` = "Switch to English", "English"),
+      tags$span(class = "wlv-language-divider", `aria-hidden` = "true", "|"),
+      tags$button(id = "language_menu_toggle", class = "btn wlv-language-arrow", type = "button",
+        `aria-label` = "Escolher idioma", `aria-haspopup` = "menu", `aria-controls` = "language_menu",
+        `aria-expanded` = "false", tags$span(class = "wlv-language-chevron", `aria-hidden` = "true"))),
+    tags$ul(id = "language_menu", class = "wlv-language-menu", role = "menu", hidden = NA,
+      `aria-labelledby` = "language_menu_toggle",
+      lapply(seq_len(nrow(wlv_languages())), function(i) {
+        language <- wlv_languages()[i, ]
+        tags$li(role = "none", tags$button(type = "button", role = "menuitemradio", tabindex = "-1",
+          lang = language$code, `data-language` = language$value, `data-available` = tolower(language$available),
+          `aria-checked` = tolower(language$value == "English"),
+          `aria-disabled` = if (!language$available) "true" else NULL,
+          tags$span(language$value),
+          if (!language$available) tags$small(class = "wlv-language-soon", "Em breve")))
+      }))),
   tags$details(id = "wlv-settings", class = "wlv-settings",
     tags$summary(id = "settings_toggle", `aria-label` = "Configurações", icon("gear")),
     div(class = "wlv-settings-panel",

@@ -10,7 +10,7 @@ const evidence={url,cases:[],errors:[]};
  const browser=await chromium.launch({headless:true});
  try{
   for(const width of [1440,390]){
-   const context=await browser.newContext({viewport:{width,height:1000}}),p=await context.newPage(),staleRequests=[],assetRequests=[];
+   const context=await browser.newContext({locale: 'pt-BR', viewport:{width,height:1000}}),p=await context.newPage(),staleRequests=[],assetRequests=[];
    p.on('request',request=>{if(request.url().includes('wlv-'))assetRequests.push(request.url());});
    p.on('pageerror',e=>evidence.errors.push(String(e)));
    await context.route(/\/wlv-(country|indicators|publications|download)\.(css|js)(\?.*)?$/,async route=>{

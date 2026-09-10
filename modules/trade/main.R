@@ -12,18 +12,17 @@ trade_ui <- function(id, assets = NULL) {
   shiny::tagList(assets,
     shiny::div(class = "wlv-explore-page wlv-trade-page",
     shiny::div(class = "wlv-trade wlv-explore-content", id = ns("app"),
-      shiny::div(class = "wlv-trade-heading",
-        shiny::div(shiny::h1(text("title")), shiny::p(class = "wlv-trade-intro", text("intro")))),
+      shiny::tags$header(class = "wlv-explore-heading", shiny::h1(text("title"))),
       shiny::div(class = "wlv-trade-layout",
         shiny::tags$aside(class = "wlv-trade-controls panel panel-default", `aria-label` = "Filtros de comércio",
           shiny::tags$details(open = "open", class = "wlv-trade-filter-group",
             shiny::tags$summary(text("filters_label")),
-            shiny::selectInput(ns("method"), "Base", choices = c("…" = "__initial__"), selectize = FALSE),
+            shiny::selectInput(ns("method"), "Base", choices = c("…" = "__initial__")),
             shiny::selectizeInput(ns("country"), "País em análise", choices = NULL),
             shiny::sliderInput(ns("year"), "Ano", min = 1995, max = 2014, value = 2007, sep = "", animate = FALSE),
-            shiny::selectInput(ns("metric"), "Medida", choices = c("Transferências líquidas de valor" = "transfer", "Exportações" = "exports", "Importações" = "imports", "Saldo comercial" = "balance"), selectize = FALSE),
-            shiny::selectInput(ns("scope"), "Atividades fornecedoras", choices = c("Produtivas" = "productive", "Todas" = "total", "Improdutivas" = "unproductive"), selectize = FALSE),
-            shiny::selectInput(ns("unit"), "Unidade", choices = c("Horas de trabalho abstrato" = "value", "Dólares (US$)" = "usd"), selectize = FALSE)),
+            shiny::selectInput(ns("metric"), "Medida", choices = c("Transferências líquidas de valor" = "transfer", "Exportações" = "exports", "Importações" = "imports", "Saldo comercial" = "balance")),
+            shiny::selectInput(ns("scope"), "Atividades fornecedoras", choices = c("Produtivas" = "productive", "Todas" = "total", "Improdutivas" = "unproductive")),
+            shiny::selectInput(ns("unit"), "Unidade", choices = c("Horas de trabalho abstrato" = "value", "Dólares (US$)" = "usd"))),
           shiny::tags$details(open = "open", class = "wlv-trade-filter-group",
             shiny::tags$summary(text("detail_label")),
             shiny::selectizeInput(ns("partner"), "Parceiro comercial", choices = c("Todos os parceiros" = "")),
@@ -35,7 +34,8 @@ trade_ui <- function(id, assets = NULL) {
             shiny::p(text("unit_body")), shiny::p(text("sector_body")), shiny::p(text("base_body")))),
         shiny::div(class = "wlv-trade-main",
           shiny::div(class = "wlv-trade-overview panel panel-default",
-            shiny::uiOutput(ns("context")), shiny::uiOutput(ns("summary")),
+            shiny::uiOutput(ns("context")),
+            shiny::p(class = "wlv-trade-intro", text("intro")), shiny::uiOutput(ns("summary")),
             shiny::p(class = "wlv-trade-sign", text("sign_note")), shiny::uiOutput(ns("status"))),
           shiny::div(class = "wlv-trade-canvas panel panel-default",
             shiny::tabsetPanel(id = ns("view"),
@@ -283,7 +283,7 @@ trade_server <- function(id, store, data, lang, bases, active) {
       shown <- data.frame(values$label, values$value, values$outgoing, if (identical(input$metric, "transfer")) -values$incoming else values$incoming)
       names(shown) <- c(tr(if (input$dimension == "sector") "sector" else "partner"), tr(input$metric), tr(if (input$metric == "transfer") "outgoing" else "exports"), tr(if (input$metric == "transfer") "incoming" else "imports"))
       DT::formatRound(DT::datatable(shown, rownames = FALSE, selection = "single", escape = TRUE,
-        options = list(pageLength = 15, scrollX = TRUE, dom = "tip", order = list(list(1, "desc")), language = list(emptyTable = tr("empty"), info = if (lang() == "en") "_START_–_END_ of _TOTAL_" else "_START_–_END_ de _TOTAL_", paginate = list(previous = "‹", `next` = "›")))), columns = 2:4, digits = 2, mark = if (lang() == "en") "," else ".", dec.mark = if (lang() == "en") "." else ",")
+        options = list(pageLength = 15, scrollX = TRUE, dom = "tip", order = list(list(1, "desc")), language = list(emptyTable = tr("empty"), info = wlv_tr("_START_–_END_ de _TOTAL_", "_START_–_END_ of _TOTAL_", lang()), paginate = list(previous = "‹", `next` = "›")))), columns = 2:4, digits = 2, mark = wlv_number_marks(lang())$grouping, dec.mark = wlv_number_marks(lang())$decimal)
     }, server = FALSE)
     shiny::observeEvent(input$table_rows_selected, {
       i <- input$table_rows_selected
@@ -392,7 +392,7 @@ if (exists("modules_ui", inherits = FALSE) && exists("modules_server", inherits 
       if (!identical(IP$main_nav, "trade") || mounted) return()
       mounted <<- TRUE
       trade_server("trade", wlv_trade_store, data = list(language = language_file, methods = meta_methods, polygons = countries_sp),
-        lang = shiny::reactive(if (identical(IP$l, "English")) "en" else "pt"), bases = RV$bases,
+        lang = shiny::reactive(wlv_language_code(IP$l)), bases = RV$bases,
         active = shiny::reactive(identical(IP$main_nav, "trade")))
       OP$trade_mount <- shiny::renderUI(trade_ui("trade", wlv_trade_assets))
     }, ignoreInit = FALSE)

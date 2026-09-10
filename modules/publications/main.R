@@ -16,7 +16,7 @@ wlv_publications_text <- function(key, lang = "pt") {
     dissertation = c("Dissertação", "Master's dissertation"), thesis = c("Tese", "Doctoral thesis"),
     report = c("Relatório de pesquisa", "Research report"), software = c("Software", "Software"),
     book = c("Livro", "Book"), chapter = c("Capítulo", "Book chapter"))
-  dictionary[[key]][[if (identical(lang, "en")) 2L else 1L]]
+  wlv_tr(dictionary[[key]][[1L]], dictionary[[key]][[2L]], lang)
 }
 
 wlv_publications_author_key <- function(value) {
@@ -65,7 +65,7 @@ wlv_validate_publications <- function(catalogue) {
 
 wlv_publications_filter <- function(entries, search = "", author = "", year = "") {
   normalise <- function(value) {
-    converted <- iconv(tolower(enc2utf8(value)), from = "UTF-8", to = "ASCII//TRANSLIT", sub = "")
+    converted <- tolower(stringi::stri_trans_general(enc2utf8(value), "Latin-ASCII"))
     gsub("[[:space:]]+", " ", converted)
   }
   search <- if (is.null(search)) "" else trimws(normalise(search))
@@ -84,14 +84,19 @@ wlv_publications_ui <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
     shiny::tags$head(htmltools::includeCSS("www/wlv-publications.css")),
-    shiny::tags$main(class = "wlv-page wlv-publications",
-      shiny::uiOutput(ns("heading")),
-      shiny::div(class = "wlv-publications-filters",
-        shiny::textInput(ns("search"), wlv_publications_text("search"), value = ""),
-        shiny::selectInput(ns("author"), wlv_publications_text("author"), choices = character(), selectize = FALSE),
-        shiny::selectInput(ns("year"), wlv_publications_text("year"), choices = character(), selectize = FALSE)),
-      shiny::uiOutput(ns("results"))
-    ))
+    shiny::tags$main(class = "wlv-explore-page wlv-publications-page",
+      shiny::div(class = "wlv-explore-content wlv-publications",
+        shiny::uiOutput(ns("heading")),
+        shiny::div(class = "wlv-publications-layout",
+          shiny::div(class = "wlv-publications-panel wlv-publications-controls",
+            shiny::div(class = "wlv-publications-filters",
+              shiny::textInput(ns("search"), wlv_publications_text("search"), value = ""),
+              shiny::selectizeInput(ns("author"), wlv_publications_text("author"), choices = stats::setNames("", wlv_publications_text("all_authors")), selected = "",
+                options = list(allowEmptyOption = TRUE, onInitialize = I("function() { var option = this.options['']; if (option) { this.settings.placeholder = option.label; this.updatePlaceholder(); } }"))),
+              shiny::selectizeInput(ns("year"), wlv_publications_text("year"), choices = stats::setNames("", wlv_publications_text("all_years")), selected = "",
+                options = list(allowEmptyOption = TRUE, onInitialize = I("function() { var option = this.options['']; if (option) { this.settings.placeholder = option.label; this.updatePlaceholder(); } }")))),
+            shiny::uiOutput(ns("sources"))),
+          shiny::div(class = "wlv-publications-panel wlv-publications-results", shiny::uiOutput(ns("results")))))))
 }
 
 wlv_publications_server <- function(id, catalogue, lang) {
@@ -105,16 +110,19 @@ wlv_publications_server <- function(id, catalogue, lang) {
       shiny::updateTextInput(session, "search", label = txt("search"))
       shiny::updateSelectInput(session, "author", label = txt("author"),
         choices = c(stats::setNames("", txt("all_authors")), authors),
-        selected = shiny::isolate(input$author))
+        selected = shiny::isolate(if (is.null(input$author)) "" else input$author))
       shiny::updateSelectInput(session, "year", label = txt("year"),
         choices = c(stats::setNames("", txt("all_years")), stats::setNames(as.character(years), years)),
-        selected = shiny::isolate(input$year))
+        selected = shiny::isolate(if (is.null(input$year)) "" else input$year))
     })
     output$heading <- shiny::renderUI({
-      shiny::tagList(shiny::tags$h1(txt("title")),
-        shiny::tags$p(class = "wlv-publications-sources",
+      shiny::tags$header(class = "wlv-explore-heading",
+        shiny::tags$h1(txt("title")))
+    })
+    output$sources <- shiny::renderUI({
+      shiny::tags$p(class = "wlv-publications-sources",
           shiny::tags$a(href = catalogue$project_source, target = "_blank", rel = "noopener noreferrer", txt("project")),
-          shiny::tags$a(href = catalogue$team_source, target = "_blank", rel = "noopener noreferrer", txt("team"))))
+          shiny::tags$a(href = catalogue$team_source, target = "_blank", rel = "noopener noreferrer", txt("team")))
     })
     selected <- shiny::reactive(wlv_publications_filter(catalogue$entries, input$search, input$author, input$year))
     output$results <- shiny::renderUI({
@@ -131,7 +139,8 @@ wlv_publications_server <- function(id, catalogue, lang) {
               sprintf(txt("incomplete_authorship"), paste(unlist(entry$authors), collapse = "; "))
               else paste(unlist(entry$authors), collapse = "; ")),
             shiny::tags$p(shiny::tags$em(entry$venue)),
-            if (!is.null(entry$note)) shiny::tags$p(entry$note[[lang()]]),
+            if (!is.null(entry$note)) shiny::tags$p(wlv_tr(entry$note$pt, entry$note$en, lang(),
+              es = entry$note$es, zh = entry$note$zh)),
             shiny::div(class = "wlv-publication-links",
               if (identical(entry$url_status, "unavailable")) shiny::tags$span(txt("unavailable")) else
                 shiny::tags$a(href = entry$url, target = "_blank", rel = "noopener noreferrer", txt(if (isTRUE(entry$record_only)) "record" else "read")))))
@@ -146,5 +155,5 @@ TABPANEL <- shiny::tabPanel(l("tab_name.publications"), value = "publications", 
 modules_ui[[length(modules_ui) + 1L]] <- TABPANEL
 modules_server[[length(modules_server) + 1L]] <- function(IP, OP, RV, SESSION) {
   wlv_publications_server("publications", wlv_publications_catalogue,
-    shiny::reactive(if (identical(IP$l, "English")) "en" else "pt"))
+    shiny::reactive(wlv_language_code(IP$l)))
 }

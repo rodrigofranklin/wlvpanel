@@ -1,8 +1,21 @@
 # WLVD — painel de valores-trabalho
 
-O painel abre em português. O botão **English** no cabeçalho troca o idioma
-com um clique; no modo inglês, o mesmo botão mostra **Português**. As sete
-abas são **Sobre**, **Mapa**, **País**, **Indicadores**, **Comércio**, **Download**,
+O painel oferece **23 idiomas**, incluindo português, inglês, castellano,
+chinês simplificado e os 19 idiomas listados em [Idiomas](docs/LANGUAGES.md).
+As otimizações internas e sua verificação antes/depois estão documentadas em
+[Resultados de desempenho](docs/PERFORMANCE-RESULTS.md).
+As traduções cobrem navegação, textos, países, indicadores, gráficos,
+acessibilidade e rótulos dos arquivos exportados. Referências bibliográficas,
+nomes próprios, códigos técnicos e dados numéricos preservam seus originais.
+O controle de idioma começa com **English** como opção de troca; clicar no nome
+aplica esse idioma. A seta, separada por `|`, abre o menu; escolher um idioma
+aplica a tradução, atualiza o botão e salva a preferência por até um ano.
+O menu tem rolagem e aceita teclado, busca pelo início do nome, Escape e clique externo.
+O idioma inicial respeita, nesta ordem, `?lang=<código>`, a escolha salva,
+o país estimado pelo servidor de hospedagem, a preferência do navegador e o
+português como último recurso. A escolha manual atualiza também um `lang`
+presente no endereço, evitando que um link antigo a desfaça ao recarregar.
+As sete abas são **Sobre**, **Mapa**, **País**, **Indicadores**, **Comércio**, **Download**,
 e **Publicações**. **Como citar** encerra a página Sobre. A engrenagem ao lado do idioma permite
 selecionar as bases disponíveis nos módulos e consultar seus métodos.
 As seleções válidas são mantidas durante a troca de idioma.
@@ -21,6 +34,10 @@ Menu, categorias e indicadores usam, respectivamente, 19,2 px, 17 px e 15 px.
 Os marcadores de seleção permanecem à esquerda, alinhados ao início do texto
 das categorias, com o nome de cada indicador logo depois do marcador.
 Os arquivos da fonte e sua licença estão em `www/fonts/source-sans-3/`.
+Seletores, caixas de seleção e botões de opção seguem a paleta vermelha e âmbar.
+Os menus usam Selectize para manter essa identidade também nas listas abertas.
+Elementos de navegação, controles e imagens evitam seleção acidental; campos
+editáveis, textos corridos, referências e dados continuam disponíveis para cópia.
 A logo usa o arquivo original `www/a_batallar_ideas.png`.
 A rolagem fica na área de conteúdo abaixo do menu. O cabeçalho ocupa a largura
 inteira, sem reservar uma faixa para a barra de rolagem; páginas que cabem na
@@ -35,6 +52,12 @@ começa com Perfil do país e Downloads em uma repartição própria; em seguida
 os gráficos ocupam no máximo duas colunas. Dados Setoriais fica à direita,
 com um seletor próprio de indicador. Tabelas largas têm
 rolagem horizontal dentro de sua região.
+O painel de downloads acompanha a altura do painel Perfil do país quando ficam
+lado a lado, com os botões ancorados no topo e organizados por dados do país e
+dados setoriais. Os títulos dos grupos de gráficos são botões:
+clique, Enter ou Espaço recolhe e expande cada grupo, com seta animada.
+Os gráficos mantêm seu estado e se ajustam ao espaço disponível na reabertura;
+a preferência por movimento reduzido desativa a animação.
 
 O módulo **Comércio** destaca as transferências de valor: positivo significa
 recebimento pelo país em análise; negativo, cessão. Há ranking, composição com
@@ -61,6 +84,14 @@ grupos, usa a família do código até o primeiro ponto. Uma futura coluna
 destacando os trechos correspondentes nos resultados.
 As conversões seguem os contratos de apresentação atuais; bases com unidades
 incompatíveis aparecem em gráficos separados nesse módulo.
+Além de Série histórica e Mapa, **Ranking** mostra a posição dos países ao
+longo dos anos, por base, com faixas de cor e trajetórias em degraus inspiradas
+no Atlas, com a paleta vermelha e âmbar do WLV. O hover revela o histórico
+completo do país, com posições e valores anuais, preservando os países
+selecionados; clicar acrescenta o país à comparação. Fora do hover, todas as
+faixas mantêm a mesma saturação. O ranking usa todos os países com
+dados em cada ano; empates compartilham posição e agregados são excluídos.
+Critérios, interação e validação estão em [docs/INDICATOR-RANKING.md](docs/INDICATOR-RANKING.md).
 
 Os mapas dos módulos **Mapa** e **Indicadores** usam **Equal Earth**, uma projeção que preserva a proporção
 das áreas na representação mundial. A escolha está alinhada ao incentivo
@@ -143,7 +174,10 @@ Atualizações bibliográficas não alteram os dados estatísticos.
 As fontes consultadas, os critérios de identidade/deduplicação e as lacunas
 estão em [docs/PUBLICATIONS.md](docs/PUBLICATIONS.md).
 
-**Indicadores**, **País** e **Download** compartilham uma faixa vermelha curva
+**País**, **Indicadores**, **Comércio**, **Download** e **Publicações** usam
+o mesmo container, com largura máxima de 1680 px, margens responsivas e
+cabeçalho compacto, somente com o título. Explicações, filtros e links ficam
+nos painéis de conteúdo. As cinco abas compartilham uma faixa vermelha curva
 e uma ilustração original sobre trabalho, produção e circulação internacional,
 inspiradas na composição do Simulador do e-mar. O arquivo e o prompt estão
 documentados em [www/images/README.md](www/images/README.md).
@@ -151,7 +185,10 @@ A página **Sobre** apresenta o projeto, suas perguntas de pesquisa, estudos,
 participantes, vínculo com o LabCidades e referência para citação. Fontes e
 proveniência das quatro fotografias e do logotipo estão em
 [docs/about-sources.md](docs/about-sources.md).
-O GIF original de Rodrigo Borges tem fundo branco aplicado em CSS. Os rótulos
+O GIF original de Rodrigo Borges tem fundo branco e uma margem interna própria
+em CSS, reduzindo o rosto para aproximar seu enquadramento ao dos demais pesquisadores.
+Uma faixa clara de 16 px acompanha a moldura dos outros retratos, e a imagem
+reduzida fica alinhada à base do quadro. Os rótulos
 de `TWN` usam **Taiwan, China** nos dois idiomas, preservando o código ISO3.
 
 ## Execução e organização local
@@ -242,6 +279,23 @@ verifica as seis abas em larguras de 1440, 1024, 768, 390 e 320 px, troca de
 idioma, XLSX agregados/bilaterais/multilaterais reais e filtros de publicações;
 screenshots e resultados ficam na campanha.
 
+`tests/manual/check-language-menu.cjs` verifica o controle dividido, os idiomas
+disponíveis e a navegação por teclado. `tests/manual/check-interface-polish.cjs`
+confere as cores efetivas dos controles, o retorno dos filtros a “Todos” e a
+seleção de texto em desktop e celular. Ambos usam o mesmo ambiente de campanha.
+
+`tests/manual/check-initial-language.cjs` verifica país, navegador, preferência
+salva e links com idioma explícito. Execute seu servidor de teste com
+`WLVPANEL_COUNTRY_HEADER=CF-IPCountry`; o teste simula apenas códigos de país.
+`tests/manual/check-exploration-translations.cjs` verifica ES/ZH nas páginas
+País, Indicadores e Publicações, com busca chinesa e download XLSX real.
+`tests/manual/check-expanded-languages.cjs` percorre as sete abas nos 19 idiomas
+adicionais em desktop e celular e baixa planilhas de Indicadores e Comércio.
+Em seguida, `Rscript --vanilla tests/manual/check-localized-workbooks.R`
+confere a igualdade das células numéricas nas 38 planilhas exportadas. Os testes
+de catálogo conferem cobertura, placeholders, HTML e Unicode; a revisão
+terminológica dos agentes está documentada em `docs/i18n-review-*.md`.
+
 `tests/manual/check-publications-browser.cjs` verifica todos os coautores,
 filtros combinados e idiomas em 1440/390 px, além de cliques na imagem, no nome
 WLVD e navegação por teclado para o site do projeto. Confere também que os
@@ -268,6 +322,10 @@ atualizações sem retransmissão de geometria em 1440/320/360/390 px.
 controles à direita, base sobre o mapa, slider abaixo, enquadramento, Mundo,
 tooltip e seleção/remoção por clique. `check-country-page.cjs` cobre o catálogo
 por continente, perfil, gráficos em duas colunas, XLSX e navegação em desktop/mobile.
+`check-exploration-layout.cjs` compara o layout das cinco abas de conteúdo em
+1920/1440/768/390/320 px e verifica filtros de publicações e recolhimento dos
+grupos de gráficos por mouse/teclado, inclusive após redimensionamento e com
+movimento reduzido.
 Use Playwright e o servidor local da mesma forma que no smoke
 test, com todas as saídas direcionadas à campanha. O teste numérico
 `test-equal-earth.cjs` compara pontos com PROJ, ida e volta da projeção e

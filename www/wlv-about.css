@@ -26,6 +26,7 @@
 .wlv-about-person { background:#fff; border:1px solid var(--wlv-line); border-radius:10px; overflow:hidden; }
 .wlv-about-person img { display:block; width:100%; height:280px; object-fit:contain; object-position:center top; padding:16px 16px 0; background:var(--wlv-surface); }
 .wlv-about-person img.wlv-about-portrait-white { background:#fff; }
+.wlv-about-person img.wlv-about-portrait-borges { border:16px solid var(--wlv-surface); border-bottom:0; padding:48px 16px 0; object-position:center bottom; }
 .wlv-about-person>div { padding:22px; }
 .wlv-about-person h3 { font-size:21px; }
 .wlv-about-person-text { display:flex; align-items:center; background:var(--wlv-surface); border-top:8px solid var(--wlv-red-light); }
@@ -46,10 +47,11 @@
   .wlv-about-lab-logo { max-width:260px; }
   .wlv-about-people { gap:14px; }
   .wlv-about-person img { height:190px; }
+  .wlv-about-person img.wlv-about-portrait-borges { padding:28px 6px 0; }
   .wlv-about-person>div { padding:16px; }
   .wlv-about-person h3 { font-size:19px; }
   .wlv-about-person a { font-size:14px; }
   .wlv-about-studies { padding:22px; }
   .wlv-about-citation .wlv-citation { padding:18px; }
 }
-@media(max-width:420px) { .wlv-about-people { grid-template-columns:1fr; } .wlv-about-person img { height:260px; } .wlv-about-person-text { min-height:145px; } }
+@media(max-width:420px) { .wlv-about-people { grid-template-columns:1fr; } .wlv-about-person img { height:260px; } .wlv-about-person img.wlv-about-portrait-borges { padding:44px 14px 0; } .wlv-about-person-text { min-height:145px; } }

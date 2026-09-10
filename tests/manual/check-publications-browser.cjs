@@ -17,17 +17,31 @@ async function publications(p){
 async function expectRecords(p,ids){
   await p.waitForFunction(expected=>JSON.stringify([...document.querySelectorAll('.wlv-publication')].map(n=>n.dataset.publicationId).sort())===JSON.stringify(expected),[...ids].sort());
 }
+async function selectFilter(p,id,value){
+  await p.locator('#'+id).evaluate((node,value)=>node.selectize.setValue(value),value);
+}
+async function expectAllFilters(p,lang){
+  const expected=lang==='pt'?['Todos os membros','Todos os anos']:['All members','All years'];
+  for(const [index,id] of ['publications-author','publications-year'].entries()){
+    await p.waitForFunction(({id,label})=>{
+      const control=document.getElementById(id).selectize;
+      const visibleLabel=control.$control.text().trim()||control.$control_input.attr('placeholder');
+      return control.getValue()===''&&visibleLabel===label;
+    },{id,label:expected[index]});
+  }
+}
 (async()=>{
   const browser=await chromium.launch({headless:true});
   try{
     for(const width of [1440,390]){
-      const context=await browser.newContext({viewport:{width,height:900}});
+      const context=await browser.newContext({locale: 'pt-BR', viewport:{width,height:900}});
       const p=await context.newPage(),errors=[];
       p.on('pageerror',e=>errors.push(String(e)));
       await p.goto(url);await ready(p);
       await publications(p);
       await expectRecords(p,catalogue.entries.map(e=>e.id));
-      const options=await p.locator('#publications-author option').evaluateAll(nodes=>nodes.filter(n=>n.value).map(n=>({id:n.value,name:n.textContent})));
+      await expectAllFilters(p,'pt');
+      const options=await p.locator('#publications-author').evaluate(node=>Object.values(node.selectize.options).filter(option=>option.value).map(option=>({id:option.value,name:option.label})));
       assert.deepEqual(options.map(o=>o.id).sort(),catalogue.members.map(m=>m.id).sort());
       for(const option of options)assert.equal(option.name,catalogue.members.find(m=>m.id===option.id).name);
       for(const lang of ['pt','en']){
@@ -35,18 +49,20 @@ async function expectRecords(p,ids){
           await p.locator('#language_toggle').click();
           await p.waitForFunction(()=>document.documentElement.lang==='en'&&document.querySelector('.wlv-publications h1')?.textContent==='Publications');
         }
+        await expectAllFilters(p,lang);
         for(const member of catalogue.members){
-          await p.locator('#publications-author').selectOption(member.id);
+          await selectFilter(p,'publications-author',member.id);
           await expectRecords(p,catalogue.entries.filter(e=>e.members.includes(member.id)).map(e=>e.id));
         }
-        await p.locator('#publications-author').selectOption('sanchez');
-        await p.locator('#publications-year').selectOption('2022');
+        await selectFilter(p,'publications-author','sanchez');
+        await selectFilter(p,'publications-year','2022');
         await p.locator('#publications-search').fill('fixed capital');
         await expectRecords(p,['borges-2022-fixed-capital']);
         await p.locator('#publications-search').fill('');
-        await p.locator('#publications-year').selectOption('');
-        await p.locator('#publications-author').selectOption('');
+        await selectFilter(p,'publications-year','');
+        await selectFilter(p,'publications-author','');
         await expectRecords(p,catalogue.entries.map(e=>e.id));
+        await expectAllFilters(p,lang);
         for(const entry of catalogue.entries.filter(e=>e.url_status==='unavailable')){
           const item=p.locator('[data-publication-id="'+entry.id+'"]');
           assert.equal(await item.locator('a').count(),0);

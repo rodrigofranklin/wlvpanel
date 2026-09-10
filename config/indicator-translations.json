@@ -1,701 +1,1167 @@
 {
   "capital_stock.s.us": {
-    "pt": "Estoque de capital (USD)"
+    "pt": "Estoque de capital (USD)",
+    "es": "Stock de capital (USD)",
+    "zh": "资本存量（USD）"
   },
   "profit.s.us": {
-    "pt": "Lucro (USD)"
+    "pt": "Lucro (USD)",
+    "es": "Beneficio (USD)",
+    "zh": "利润（USD）"
   },
   "capital_stock.s.cu": {
-    "pt": "Estoque de capital (USD constantes)"
+    "pt": "Estoque de capital (USD constantes)",
+    "es": "Stock de capital (USD constantes)",
+    "zh": "资本存量（不变价 USD）"
   },
   "capital_depreciation.s.us": {
-    "pt": "Depreciação do capital (USD)"
+    "pt": "Depreciação do capital (USD)",
+    "es": "Depreciación del capital (USD)",
+    "zh": "资本折旧（USD）"
   },
   "appropriated_profit.r.pc": {
-    "pt": "Taxa de lucro apropriado"
+    "pt": "Taxa de lucro apropriado",
+    "es": "Tasa de beneficio apropiado",
+    "zh": "占有利润率"
   },
   "trade_transfers.s.mv": {
-    "pt": "Transferência de valor pelo comércio"
+    "pt": "Transferência de valor pelo comércio",
+    "es": "Transferencia de valor por el comercio",
+    "zh": "贸易价值转移"
   },
   "trade_transfers.p.s.mv": {
-    "pt": "Transferência de valor pelo comércio (setores produtivos)"
+    "pt": "Transferência de valor pelo comércio (setores produtivos)",
+    "es": "Transferencia de valor por el comercio (sectores productivos)",
+    "zh": "贸易价值转移（生产性部门）"
   },
   "exports.s.us": {
-    "pt": "Exportações de bens e serviços (USD)"
+    "pt": "Exportações de bens e serviços (USD)",
+    "es": "Exportaciones de bienes y servicios (USD)",
+    "zh": "货物和服务出口（USD）"
   },
   "exports.s.mv": {
-    "pt": "Exportações de bens e serviços (magnitude de valor)"
+    "pt": "Exportações de bens e serviços (magnitude de valor)",
+    "es": "Exportaciones de bienes y servicios (magnitud de valor)",
+    "zh": "货物和服务出口（价值量）"
   },
   "imports.s.us": {
-    "pt": "Importações de bens e serviços (USD)"
+    "pt": "Importações de bens e serviços (USD)",
+    "es": "Importaciones de bienes y servicios (USD)",
+    "zh": "货物和服务进口（USD）"
   },
   "imports.s.mv": {
-    "pt": "Importações de bens e serviços (magnitude de valor)"
+    "pt": "Importações de bens e serviços (magnitude de valor)",
+    "es": "Importaciones de bienes y servicios (magnitud de valor)",
+    "zh": "货物和服务进口（价值量）"
   },
   "trade_transfers.u.s.mv": {
-    "pt": "Transferência de valor pelo comércio (setores improdutivos)"
+    "pt": "Transferência de valor pelo comércio (setores improdutivos)",
+    "es": "Transferencia de valor por el comercio (sectores improductivos)",
+    "zh": "贸易价值转移（非生产性部门）"
   },
   "trade_balance.s.us": {
-    "pt": "Saldo comercial de bens e serviços (USD)"
+    "pt": "Saldo comercial de bens e serviços (USD)",
+    "es": "Saldo comercial de bienes y servicios (USD)",
+    "zh": "货物和服务贸易差额（USD）"
   },
   "trade_balance.s.mv": {
-    "pt": "Saldo comercial de bens e serviços (magnitude de valor)"
+    "pt": "Saldo comercial de bens e serviços (magnitude de valor)",
+    "es": "Saldo comercial de bienes y servicios (magnitud de valor)",
+    "zh": "货物和服务贸易差额（价值量）"
   },
   "trade_transfers.p.m.pc": {
-    "pt": "Transferência de valor pelo comércio (setores produtivos) (% do PIB)"
+    "pt": "Transferência de valor pelo comércio (setores produtivos) (% do PIB)",
+    "es": "Transferencia de valor por el comercio (sectores productivos) (% del PIB)",
+    "zh": "贸易价值转移（生产性部门，占 GDP 的百分比）"
   },
   "hours_worked.emp.s.hr": {
-    "pt": "Total de horas trabalhadas pelas pessoas ocupadas"
+    "pt": "Total de horas trabalhadas pelas pessoas ocupadas",
+    "es": "Total de horas trabajadas por las personas ocupadas",
+    "zh": "就业人员工作总时数"
   },
   "abstract_labour.empe.s.mv": {
-    "pt": "Trabalho abstrato total dos trabalhadores assalariados"
+    "pt": "Trabalho abstrato total dos trabalhadores assalariados",
+    "es": "Trabajo abstracto total de los trabajadores asalariados",
+    "zh": "雇员抽象劳动总量"
   },
   "abstract_labour.emp.s.mv": {
-    "pt": "Trabalho abstrato total das pessoas ocupadas"
+    "pt": "Trabalho abstrato total das pessoas ocupadas",
+    "es": "Trabajo abstracto total de las personas ocupadas",
+    "zh": "就业人员抽象劳动总量"
   },
   "abstract_labour.empe.m.mv": {
-    "pt": "Jornada anual por trabalhador assalariado (magnitude de valor)"
+    "pt": "Jornada anual por trabalhador assalariado (magnitude de valor)",
+    "es": "Jornada anual por trabajador asalariado (magnitud de valor)",
+    "zh": "每名雇员的年劳动量（价值量）"
   },
   "abstract_labour.emp.m.mv": {
-    "pt": "Jornada anual por pessoa ocupada (magnitude de valor)"
+    "pt": "Jornada anual por pessoa ocupada (magnitude de valor)",
+    "es": "Jornada anual por persona ocupada (magnitud de valor)",
+    "zh": "每名就业人员的年劳动量（价值量）"
   },
   "exchange.r.us": {
-    "pt": "Taxa de câmbio (moeda local por USD)"
+    "pt": "Taxa de câmbio (moeda local por USD)",
+    "es": "Tipo de cambio (moneda local por USD)",
+    "zh": "汇率（本币／USD）"
   },
   "go_price.r.id": {
-    "pt": "Índice de preços do produto total (moeda nacional)"
+    "pt": "Índice de preços do produto total (moeda nacional)",
+    "es": "Índice de precios del producto total (moneda nacional)",
+    "zh": "总产出价格指数（本币）"
   },
   "exchange.r.id": {
-    "pt": "Índice da taxa de câmbio"
+    "pt": "Índice da taxa de câmbio",
+    "es": "Índice del tipo de cambio",
+    "zh": "汇率指数"
   },
   "complex_labour_multiplier.empe.r.un": {
-    "pt": "Multiplicador de trabalho complexo (trabalhadores assalariados)"
+    "pt": "Multiplicador de trabalho complexo (trabalhadores assalariados)",
+    "es": "Multiplicador de trabajo complejo (trabajadores asalariados)",
+    "zh": "复杂劳动倍数（雇员）"
   },
   "complex_labour_multiplier.emp.r.un": {
-    "pt": "Multiplicador de trabalho complexo"
+    "pt": "Multiplicador de trabalho complexo",
+    "es": "Multiplicador de trabajo complejo",
+    "zh": "复杂劳动倍数"
   },
   "basket_price.r.pc": {
-    "pt": "Índice de preços da cesta de consumo"
+    "pt": "Índice de preços da cesta de consumo",
+    "es": "Índice de precios de la cesta de consumo",
+    "zh": "消费篮子价格指数"
   },
   "basket_value.r.pc": {
-    "pt": "Índice de valor da cesta de consumo"
+    "pt": "Índice de valor da cesta de consumo",
+    "es": "Índice de valor de la cesta de consumo",
+    "zh": "消费篮子价值指数"
   },
   "gdp.p.s.us": {
-    "pt": "Produto Interno Bruto dos setores produtivos (USD)"
+    "pt": "Produto Interno Bruto dos setores produtivos (USD)",
+    "es": "Producto Interior Bruto de los sectores productivos (USD)",
+    "zh": "生产性部门国内生产总值（USD）"
   },
   "gdp.s.mv": {
-    "pt": "Produto Interno Bruto (magnitude de valor)"
+    "pt": "Produto Interno Bruto (magnitude de valor)",
+    "es": "Producto Interior Bruto (magnitud de valor)",
+    "zh": "国内生产总值（价值量）"
   },
   "gross_output.s.mv": {
-    "pt": "Produto total (magnitude de valor)"
+    "pt": "Produto total (magnitude de valor)",
+    "es": "Producto total (magnitud de valor)",
+    "zh": "总产出（价值量）"
   },
   "value.m.mv": {
-    "pt": "Valor médio por unidade de produto"
+    "pt": "Valor médio por unidade de produto",
+    "es": "Valor medio por unidad de producto",
+    "zh": "单位产出平均价值"
   },
   "gdp.s.du": {
-    "pt": "Produto Interno Bruto (preços diretos — USD)"
+    "pt": "Produto Interno Bruto (preços diretos — USD)",
+    "es": "Producto Interior Bruto (precios directos — USD)",
+    "zh": "国内生产总值（直接价格 — USD）"
   },
   "gross_output.s.du": {
-    "pt": "Produto total (preços diretos — USD)"
+    "pt": "Produto total (preços diretos — USD)",
+    "es": "Producto total (precios directos — USD)",
+    "zh": "总产出（直接价格 — USD）"
   },
   "surplus_value.empe_hs.r.pc": {
-    "pt": "Taxa de mais-valor (alta qualificação)"
+    "pt": "Taxa de mais-valor (alta qualificação)",
+    "es": "Tasa de plusvalor (alta cualificación)",
+    "zh": "剩余价值率（高技能）"
   },
   "surplus_value.empe_ms.r.pc": {
-    "pt": "Taxa de mais-valor (média qualificação)"
+    "pt": "Taxa de mais-valor (média qualificação)",
+    "es": "Tasa de plusvalor (cualificación media)",
+    "zh": "剩余价值率（中等技能）"
   },
   "surplus_value.empe_ls.r.pc": {
-    "pt": "Taxa de mais-valor (baixa qualificação)"
+    "pt": "Taxa de mais-valor (baixa qualificação)",
+    "es": "Tasa de plusvalor (baja cualificación)",
+    "zh": "剩余价值率（低技能）"
   },
   "surplus_value.empe.r.pc": {
-    "pt": "Taxa de mais-valor"
+    "pt": "Taxa de mais-valor",
+    "es": "Tasa de plusvalor",
+    "zh": "剩余价值率"
   },
   "surplus_value.emp.r.pc": {
-    "pt": "Taxa de mais-valor das pessoas ocupadas"
+    "pt": "Taxa de mais-valor das pessoas ocupadas",
+    "es": "Tasa de plusvalor de las personas ocupadas",
+    "zh": "就业人员剩余价值率"
   },
   "surplus_value.emp_p.r.pc": {
-    "pt": "Taxa de mais-valor das pessoas ocupadas (trabalhadores produtivos)"
+    "pt": "Taxa de mais-valor das pessoas ocupadas (trabalhadores produtivos)",
+    "es": "Tasa de plusvalor de las personas ocupadas (trabajadores productivos)",
+    "zh": "就业人员剩余价值率（生产性劳动者）"
   },
   "surplus_value.empe_p.r.pc": {
-    "pt": "Taxa de mais-valor (trabalhadores produtivos)"
+    "pt": "Taxa de mais-valor (trabalhadores produtivos)",
+    "es": "Tasa de plusvalor (trabajadores productivos)",
+    "zh": "剩余价值率（生产性劳动者）"
   },
   "compensation.empe.s.us": {
-    "pt": "Salários e ordenados (USD)"
+    "pt": "Salários e ordenados (USD)",
+    "es": "Sueldos y salarios (USD)",
+    "zh": "工资和薪金（USD）"
   },
   "compensation.emp.s.us": {
-    "pt": "Remuneração do trabalho (USD)"
+    "pt": "Remuneração do trabalho (USD)",
+    "es": "Remuneración del trabajo (USD)",
+    "zh": "劳动报酬（USD）"
   },
   "labour_force_value.s.mv": {
-    "pt": "Capital variável (magnitude de valor)"
+    "pt": "Capital variável (magnitude de valor)",
+    "es": "Capital variable (magnitud de valor)",
+    "zh": "可变资本（价值量）"
   },
   "labour_force_value.emp.s.mv": {
-    "pt": "Remuneração do trabalho (magnitude de valor)"
+    "pt": "Remuneração do trabalho (magnitude de valor)",
+    "es": "Remuneración del trabajo (magnitud de valor)",
+    "zh": "劳动报酬（价值量）"
   },
   "compensation.emp.s.cu": {
-    "pt": "Remuneração do trabalho (USD constantes)"
+    "pt": "Remuneração do trabalho (USD constantes)",
+    "es": "Remuneración del trabajo (USD constantes)",
+    "zh": "劳动报酬（不变价 USD）"
   },
   "compensation.empe.s.cu": {
-    "pt": "Salários e ordenados (USD constantes)"
+    "pt": "Salários e ordenados (USD constantes)",
+    "es": "Sueldos y salarios (USD constantes)",
+    "zh": "工资和薪金（不变价 USD）"
   },
   "labour_force_value.m.mv": {
-    "pt": "Valor médio da força de trabalho"
+    "pt": "Valor médio da força de trabalho",
+    "es": "Valor medio de la fuerza de trabajo",
+    "zh": "劳动力平均价值"
   },
   "labour_force_value.emp.m.mv": {
-    "pt": "Valor médio de reprodução do trabalhador"
+    "pt": "Valor médio de reprodução do trabalhador",
+    "es": "Valor medio de reproducción del trabajador",
+    "zh": "劳动者再生产的平均价值"
   },
   "group.Labour and employment": {
-    "pt": "Trabalho e emprego"
+    "pt": "Trabalho e emprego",
+    "es": "Trabajo y empleo",
+    "zh": "劳动与就业"
   },
   "group.Others": {
-    "pt": "Outros"
+    "pt": "Outros",
+    "es": "Otros",
+    "zh": "其他"
   },
   "group.Wages and value of labour force": {
-    "pt": "Salários e valor da força de trabalho"
+    "pt": "Salários e valor da força de trabalho",
+    "es": "Salarios y valor de la fuerza de trabajo",
+    "zh": "工资与劳动力价值"
   },
   "group.Capital": {
-    "pt": "Capital"
+    "pt": "Capital",
+    "es": "Capital",
+    "zh": "资本"
   },
   "group.Product": {
-    "pt": "Produto"
+    "pt": "Produto",
+    "es": "Producto",
+    "zh": "产出"
   },
   "group.International trade": {
-    "pt": "Comércio internacional"
+    "pt": "Comércio internacional",
+    "es": "Comercio internacional",
+    "zh": "国际贸易"
   },
   "group.Rate of surplus value": {
-    "pt": "Taxa de mais-valor"
+    "pt": "Taxa de mais-valor",
+    "es": "Tasa de plusvalor",
+    "zh": "剩余价值率"
   },
   "desc.capital_stock.s.us": {
-    "pt": "O estoque de capital corresponde ao preço dos ativos de capital em USD correntes."
+    "pt": "O estoque de capital corresponde ao preço dos ativos de capital em USD correntes.",
+    "es": "El stock de capital corresponde al precio de los activos de capital en USD corrientes.",
+    "zh": "资本存量对应于以当期 USD 计价的资本资产价格。"
   },
   "desc.profit.s.us": {
-    "pt": "Lucro e outras remunerações do capital."
+    "pt": "Lucro e outras remunerações do capital.",
+    "es": "Beneficio y otras remuneraciones del capital.",
+    "zh": "利润及其他资本报酬。"
   },
   "desc.capital_stock.s.cu": {
-    "pt": "O estoque de capital corresponde ao preço dos ativos de capital em USD constantes (ano-base = 2000)."
+    "pt": "O estoque de capital corresponde ao preço dos ativos de capital em USD constantes (ano-base = 2000).",
+    "es": "El stock de capital corresponde al precio de los activos de capital en USD constantes (año base = 2000).",
+    "zh": "资本存量对应于以不变价 USD 计价的资本资产价格（基年 = 2000）。"
   },
   "desc.capital_depreciation.s.us": {
-    "pt": "A depreciação do capital refere-se ao desgaste físico de um ativo de capital, medido pela queda de seu preço de mercado."
+    "pt": "A depreciação do capital refere-se ao desgaste físico de um ativo de capital, medido pela queda de seu preço de mercado.",
+    "es": "La depreciación del capital se refiere al desgaste físico de un activo de capital, medido por la caída de su precio de mercado.",
+    "zh": "资本折旧指资本资产的实物损耗，以其市场价格的下降衡量。"
   },
   "desc.appropriated_profit.r.pc": {
-    "pt": "A taxa de lucro apropriado representa a relação entre o lucro líquido apropriado por um setor (lucro menos depreciação do capital) e seu estoque de capital. Trata-se de uma primeira aproximação da taxa de lucro. Ela não corresponde ao conceito marxista de taxa de lucro, isto é, o mais-valor dividido pelos capitais constante e variável."
+    "pt": "A taxa de lucro apropriado representa a relação entre o lucro líquido apropriado por um setor (lucro menos depreciação do capital) e seu estoque de capital. Trata-se de uma primeira aproximação da taxa de lucro. Ela não corresponde ao conceito marxista de taxa de lucro, isto é, o mais-valor dividido pelos capitais constante e variável.",
+    "es": "La tasa de beneficio apropiado representa la relación entre el beneficio neto apropiado por un sector (beneficio menos depreciación del capital) y su stock de capital. Es una primera aproximación a la tasa de beneficio. No corresponde al concepto marxista de tasa de beneficio, es decir, el plusvalor dividido por los capitales constante y variable.",
+    "zh": "占有利润率表示某部门占有的净利润（利润减去资本折旧）与其资本存量之比。这是对利润率的初步近似，并不等同于马克思主义的利润率概念，即剩余价值除以不变资本与可变资本之和。"
   },
   "desc.trade_transfers.s.mv": {
-    "pt": "A transferência de valor pelo comércio representa o valor recebido do resto do mundo (quando positiva) ou enviado a ele (quando negativa), em decorrência da diferença entre a magnitude de valor e o valor representado pelos preços das mercadorias. Os dados abrangem dois tipos de transferência: as originadas em setores improdutivos, nas quais a quantia de dinheiro recebida ou enviada representa valor, mas nenhum valor é entregue ou recebido em contrapartida; e as originadas em setores produtivos, nas quais a quantia de dinheiro recebida nas exportações ou enviada nas importações pode representar uma quantidade de valor diferente do trabalho abstrato efetivamente incorporado às mercadorias comercializadas."
+    "pt": "A transferência de valor pelo comércio representa o valor recebido do resto do mundo (quando positiva) ou enviado a ele (quando negativa), em decorrência da diferença entre a magnitude de valor e o valor representado pelos preços das mercadorias. Os dados abrangem dois tipos de transferência: as originadas em setores improdutivos, nas quais a quantia de dinheiro recebida ou enviada representa valor, mas nenhum valor é entregue ou recebido em contrapartida; e as originadas em setores produtivos, nas quais a quantia de dinheiro recebida nas exportações ou enviada nas importações pode representar uma quantidade de valor diferente do trabalho abstrato efetivamente incorporado às mercadorias comercializadas.",
+    "es": "La transferencia de valor por el comercio representa el valor recibido del resto del mundo (cuando es positiva) o enviado a él (cuando es negativa), debido a la diferencia entre la magnitud de valor y el valor representado por los precios de las mercancías. Los datos abarcan dos tipos de transferencia: las originadas en sectores improductivos, en las que la cantidad de dinero recibida o enviada representa valor, pero no se entrega ni se recibe valor a cambio; y las originadas en sectores productivos, en las que la cantidad de dinero recibida por las exportaciones o enviada por las importaciones puede representar una cantidad de valor distinta del trabajo abstracto efectivamente incorporado en las mercancías comercializadas.",
+    "zh": "贸易价值转移表示从世界其他地区获得的价值（正值）或向其转出的价值（负值），源于商品价值量与其价格所代表的价值之间的差异。数据涵盖两类转移：一类发生于非生产性部门，收到或支付的货币代表价值，但没有相应交付或获得价值；另一类发生于生产性部门，出口收入或进口支出所代表的价值量，可能不同于贸易商品中实际凝结的抽象劳动量。"
   },
   "desc.trade_transfers.p.s.mv": {
-    "pt": "A transferência de valor pelo comércio em setores produtivos representa o valor recebido do resto do mundo (quando positiva) ou enviado a ele (quando negativa), em decorrência da diferença entre o valor representado pela quantia de dinheiro recebida nas exportações ou enviada nas importações e o trabalho abstrato efetivamente incorporado às mercadorias comercializadas. Esses dados equivalem ao que alguns autores denominam \"troca desigual\" (Bettleheim e outros)."
+    "pt": "A transferência de valor pelo comércio em setores produtivos representa o valor recebido do resto do mundo (quando positiva) ou enviado a ele (quando negativa), em decorrência da diferença entre o valor representado pela quantia de dinheiro recebida nas exportações ou enviada nas importações e o trabalho abstrato efetivamente incorporado às mercadorias comercializadas. Esses dados equivalem ao que alguns autores denominam \"troca desigual\" (Bettleheim e outros).",
+    "es": "La transferencia de valor por el comercio en sectores productivos representa el valor recibido del resto del mundo (cuando es positiva) o enviado a él (cuando es negativa), debido a la diferencia entre el valor representado por la cantidad de dinero recibida por las exportaciones o enviada por las importaciones y el trabajo abstracto efectivamente incorporado en las mercancías comercializadas. Estos datos equivalen a lo que algunos autores denominan «intercambio desigual» (Bettleheim y otros).",
+    "zh": "生产性部门的贸易价值转移表示从世界其他地区获得的价值（正值）或向其转出的价值（负值），源于出口收入或进口支出所代表的价值，与贸易商品中实际凝结的抽象劳动之间的差异。这些数据对应于某些作者所称的“不平等交换”（Bettleheim 等）。"
   },
   "desc.exports.s.us": {
-    "pt": "As exportações de bens e serviços representam a soma dos preços de todos os bens e demais serviços de mercado fornecidos ao resto do mundo."
+    "pt": "As exportações de bens e serviços representam a soma dos preços de todos os bens e demais serviços de mercado fornecidos ao resto do mundo.",
+    "es": "Las exportaciones de bienes y servicios representan la suma de los precios de todos los bienes y demás servicios de mercado suministrados al resto del mundo.",
+    "zh": "货物和服务出口表示向世界其他地区提供的全部货物及其他市场服务的价格总和。"
   },
   "desc.exports.s.mv": {
-    "pt": "As exportações de bens e serviços representam o tempo de trabalho socialmente necessário para produzir todos os bens e demais serviços de mercado fornecidos ao resto do mundo."
+    "pt": "As exportações de bens e serviços representam o tempo de trabalho socialmente necessário para produzir todos os bens e demais serviços de mercado fornecidos ao resto do mundo.",
+    "es": "Las exportaciones de bienes y servicios representan el tiempo de trabajo socialmente necesario para producir todos los bienes y demás servicios de mercado suministrados al resto del mundo.",
+    "zh": "货物和服务出口表示生产向世界其他地区提供的全部货物及其他市场服务所需的社会必要劳动时间。"
   },
   "desc.imports.s.us": {
-    "pt": "As importações de bens e serviços representam a soma dos preços de todos os bens e demais serviços de mercado recebidos do resto do mundo."
+    "pt": "As importações de bens e serviços representam a soma dos preços de todos os bens e demais serviços de mercado recebidos do resto do mundo.",
+    "es": "Las importaciones de bienes y servicios representan la suma de los precios de todos los bienes y demás servicios de mercado recibidos del resto del mundo.",
+    "zh": "货物和服务进口表示从世界其他地区获得的全部货物及其他市场服务的价格总和。"
   },
   "desc.imports.s.mv": {
-    "pt": "As importações de bens e serviços representam o tempo de trabalho socialmente necessário para produzir todos os bens e demais serviços de mercado recebidos do resto do mundo."
+    "pt": "As importações de bens e serviços representam o tempo de trabalho socialmente necessário para produzir todos os bens e demais serviços de mercado recebidos do resto do mundo.",
+    "es": "Las importaciones de bienes y servicios representan el tiempo de trabajo socialmente necesario para producir todos los bienes y demás servicios de mercado recibidos del resto del mundo.",
+    "zh": "货物和服务进口表示生产从世界其他地区获得的全部货物及其他市场服务所需的社会必要劳动时间。"
   },
   "desc.trade_transfers.u.s.mv": {
-    "pt": "A transferência de valor pelo comércio em setores improdutivos refere-se ao valor representado pela quantia de dinheiro recebida nas exportações ou enviada nas importações em transações que envolvem setores improdutivos."
+    "pt": "A transferência de valor pelo comércio em setores improdutivos refere-se ao valor representado pela quantia de dinheiro recebida nas exportações ou enviada nas importações em transações que envolvem setores improdutivos.",
+    "es": "La transferencia de valor por el comercio en sectores improductivos se refiere al valor representado por la cantidad de dinero recibida por las exportaciones o enviada por las importaciones en transacciones que involucran a sectores improductivos.",
+    "zh": "非生产性部门的贸易价值转移，指涉及非生产性部门的交易中，出口收入或进口支出所代表的价值。"
   },
   "desc.trade_balance.s.us": {
-    "pt": "O saldo comercial de bens e serviços corresponde às exportações de bens e serviços menos as importações de bens e serviços."
+    "pt": "O saldo comercial de bens e serviços corresponde às exportações de bens e serviços menos as importações de bens e serviços.",
+    "es": "El saldo comercial de bienes y servicios corresponde a las exportaciones de bienes y servicios menos sus importaciones.",
+    "zh": "货物和服务贸易差额等于货物和服务出口减去进口。"
   },
   "desc.trade_balance.s.mv": {
-    "pt": "O saldo comercial de bens e serviços corresponde às exportações de bens e serviços menos as importações de bens e serviços. Os dados são expressos em magnitude de valor."
+    "pt": "O saldo comercial de bens e serviços corresponde às exportações de bens e serviços menos as importações de bens e serviços. Os dados são expressos em magnitude de valor.",
+    "es": "El saldo comercial de bienes y servicios corresponde a las exportaciones de bienes y servicios menos sus importaciones. Los datos se expresan en magnitud de valor.",
+    "zh": "货物和服务贸易差额等于货物和服务出口减去进口。数据以价值量表示。"
   },
   "desc.trade_transfers.p.m.pc": {
-    "pt": "A transferência de valor pelo comércio em setores produtivos representa o valor recebido do resto do mundo (quando positiva) ou enviado a ele (quando negativa), em decorrência da diferença entre o valor representado pela quantia de dinheiro recebida nas exportações ou enviada nas importações e o trabalho abstrato efetivamente incorporado às mercadorias comercializadas. Esses dados equivalem ao que alguns autores denominam \"troca desigual\" (Bettleheim e outros). Os dados são expressos em percentual do PIB em magnitude de valor."
+    "pt": "A transferência de valor pelo comércio em setores produtivos representa o valor recebido do resto do mundo (quando positiva) ou enviado a ele (quando negativa), em decorrência da diferença entre o valor representado pela quantia de dinheiro recebida nas exportações ou enviada nas importações e o trabalho abstrato efetivamente incorporado às mercadorias comercializadas. Esses dados equivalem ao que alguns autores denominam \"troca desigual\" (Bettleheim e outros). Os dados são expressos em percentual do PIB em magnitude de valor.",
+    "es": "La transferencia de valor por el comercio en sectores productivos representa el valor recibido del resto del mundo (cuando es positiva) o enviado a él (cuando es negativa), debido a la diferencia entre el valor representado por la cantidad de dinero recibida por las exportaciones o enviada por las importaciones y el trabajo abstracto efectivamente incorporado en las mercancías comercializadas. Estos datos equivalen a lo que algunos autores denominan «intercambio desigual» (Bettleheim y otros). Los datos se expresan como porcentaje del PIB en magnitud de valor.",
+    "zh": "生产性部门的贸易价值转移表示从世界其他地区获得的价值（正值）或向其转出的价值（负值），源于出口收入或进口支出所代表的价值，与贸易商品中实际凝结的抽象劳动之间的差异。这些数据对应于某些作者所称的“不平等交换”（Bettleheim 等）。数据以价值量计量的 GDP 的百分比表示。"
   },
   "desc.hours_worked.emp.s.hr": {
-    "pt": "O total de horas trabalhadas pelas pessoas ocupadas representa a soma das horas trabalhadas por essas pessoas em um ano."
+    "pt": "O total de horas trabalhadas pelas pessoas ocupadas representa a soma das horas trabalhadas por essas pessoas em um ano.",
+    "es": "El total de horas trabajadas por las personas ocupadas representa la suma de las horas trabajadas por ellas en un año.",
+    "zh": "就业人员工作总时数表示其一年内工作时数的总和。"
   },
   "desc.abstract_labour.empe.s.mv": {
-    "pt": "O trabalho abstrato total dos trabalhadores assalariados corresponde às horas trabalhadas por eles, convertidas em trabalho abstrato pelo multiplicador de trabalho complexo."
+    "pt": "O trabalho abstrato total dos trabalhadores assalariados corresponde às horas trabalhadas por eles, convertidas em trabalho abstrato pelo multiplicador de trabalho complexo.",
+    "es": "El trabajo abstracto total de los trabajadores asalariados corresponde a sus horas trabajadas, convertidas en trabajo abstracto mediante el multiplicador de trabajo complejo.",
+    "zh": "雇员抽象劳动总量对应于其工作时数，并通过复杂劳动倍数换算为抽象劳动。"
   },
   "desc.abstract_labour.emp.s.mv": {
-    "pt": "O trabalho abstrato total das pessoas ocupadas corresponde às horas trabalhadas por elas, convertidas em trabalho abstrato pelo multiplicador de trabalho complexo."
+    "pt": "O trabalho abstrato total das pessoas ocupadas corresponde às horas trabalhadas por elas, convertidas em trabalho abstrato pelo multiplicador de trabalho complexo.",
+    "es": "El trabajo abstracto total de las personas ocupadas corresponde a sus horas trabajadas, convertidas en trabajo abstracto mediante el multiplicador de trabajo complejo.",
+    "zh": "就业人员抽象劳动总量对应于其工作时数，并通过复杂劳动倍数换算为抽象劳动。"
   },
   "desc.abstract_labour.empe.m.mv": {
-    "pt": "Magnitude média de valor \"criada\" por trabalhador assalariado por ano. Inclui trabalhadores produtivos e improdutivos."
+    "pt": "Magnitude média de valor \"criada\" por trabalhador assalariado por ano. Inclui trabalhadores produtivos e improdutivos.",
+    "es": "Magnitud media de valor «creada» por trabajador asalariado al año. Incluye trabajadores productivos e improductivos.",
+    "zh": "每名雇员每年平均“创造”的价值量。包括生产性和非生产性劳动者。"
   },
   "desc.abstract_labour.emp.m.mv": {
-    "pt": "Magnitude média de valor \"criada\" por pessoa ocupada por ano. Inclui trabalhadores produtivos e improdutivos."
+    "pt": "Magnitude média de valor \"criada\" por pessoa ocupada por ano. Inclui trabalhadores produtivos e improdutivos.",
+    "es": "Magnitud media de valor «creada» por persona ocupada al año. Incluye trabajadores productivos e improductivos.",
+    "zh": "每名就业人员每年平均“创造”的价值量。包括生产性和非生产性劳动者。"
   },
   "desc.exchange.r.us": {
-    "pt": "Taxa de câmbio corrente, medida em unidades de moeda local por USD corrente (moeda local/USD)."
+    "pt": "Taxa de câmbio corrente, medida em unidades de moeda local por USD corrente (moeda local/USD).",
+    "es": "Tipo de cambio corriente, medido en unidades de moneda local por USD corriente (moneda local/USD).",
+    "zh": "当期汇率，以每单位当期 USD 所对应的本币单位数计量（本币／USD）。"
   },
   "desc.go_price.r.id": {
-    "pt": "Índice de preços do produto total armazenado em escala canônica com 2000 = 1."
+    "pt": "Índice de preços do produto total armazenado em escala canônica com 2000 = 1.",
+    "es": "Índice de precios del producto total almacenado en escala canónica con 2000 = 1.",
+    "zh": "总产出价格指数按标准尺度存储，2000 = 1。"
   },
   "desc.exchange.r.id": {
-    "pt": "Índice adimensional da taxa de câmbio em moeda local por USD corrente, normalizado para 1 em 2000."
+    "pt": "Índice adimensional da taxa de câmbio em moeda local por USD corrente, normalizado para 1 em 2000.",
+    "es": "Índice adimensional del tipo de cambio en moneda local por USD corriente, normalizado a 1 en 2000.",
+    "zh": "以每单位当期 USD 对应的本币计量的无量纲汇率指数，以 2000 年为基准归一化为 1。"
   },
   "desc.complex_labour_multiplier.empe.r.un": {
-    "pt": "Multiplicador do trabalho dos trabalhadores assalariados conforme sua complexidade e intensidade."
+    "pt": "Multiplicador do trabalho dos trabalhadores assalariados conforme sua complexidade e intensidade.",
+    "es": "Multiplicador del trabajo de los trabajadores asalariados según su complejidad e intensidad.",
+    "zh": "根据雇员劳动的复杂程度和强度确定的劳动倍数。"
   },
   "desc.complex_labour_multiplier.emp.r.un": {
-    "pt": "Multiplicador do trabalho conforme sua complexidade e intensidade."
+    "pt": "Multiplicador do trabalho conforme sua complexidade e intensidade.",
+    "es": "Multiplicador del trabajo según su complejidad e intensidad.",
+    "zh": "根据劳动的复杂程度和强度确定的劳动倍数。"
   },
   "desc.basket_price.r.pc": {
-    "pt": "O índice de preços da cesta de consumo reflete as variações nos preços pagos pelo trabalhador médio para adquirir uma cesta fixa de bens e serviços. Utiliza-se a fórmula de Laspeyres."
+    "pt": "O índice de preços da cesta de consumo reflete as variações nos preços pagos pelo trabalhador médio para adquirir uma cesta fixa de bens e serviços. Utiliza-se a fórmula de Laspeyres.",
+    "es": "El índice de precios de la cesta de consumo refleja las variaciones de los precios que paga el trabajador medio para adquirir una cesta fija de bienes y servicios. Se utiliza la fórmula de Laspeyres.",
+    "zh": "消费篮子价格指数反映普通劳动者购买固定货物和服务篮子所支付价格的变化。采用拉斯佩雷斯公式。"
   },
   "desc.basket_value.r.pc": {
-    "pt": "O índice de valor da cesta de consumo reflete as variações no tempo de trabalho socialmente necessário para produzir uma cesta fixa de consumo necessária à reprodução de um trabalhador médio. Utiliza-se a fórmula de Laspeyres."
+    "pt": "O índice de valor da cesta de consumo reflete as variações no tempo de trabalho socialmente necessário para produzir uma cesta fixa de consumo necessária à reprodução de um trabalhador médio. Utiliza-se a fórmula de Laspeyres.",
+    "es": "El índice de valor de la cesta de consumo refleja las variaciones del tiempo de trabajo socialmente necesario para producir una cesta fija de consumo necesaria para la reproducción de un trabajador medio. Se utiliza la fórmula de Laspeyres.",
+    "zh": "消费篮子价值指数反映生产普通劳动者再生产所需的固定消费篮子，其社会必要劳动时间的变化。采用拉斯佩雷斯公式。"
   },
   "desc.gdp.p.s.us": {
-    "pt": "O Produto Interno Bruto dos setores produtivos corresponde à soma das contas nacionais tradicionais desses setores, calculada pela ótica do valor adicionado, e representa o valor criado pelos residentes."
+    "pt": "O Produto Interno Bruto dos setores produtivos corresponde à soma das contas nacionais tradicionais desses setores, calculada pela ótica do valor adicionado, e representa o valor criado pelos residentes.",
+    "es": "El Producto Interior Bruto de los sectores productivos corresponde a la suma de las cuentas nacionales tradicionales de estos sectores, calculada por el enfoque del valor añadido, y representa el valor creado por los residentes.",
+    "zh": "生产性部门国内生产总值对应于按增加值法计算的这些部门传统国民账户之和，表示居民创造的价值。"
   },
   "desc.gdp.s.mv": {
-    "pt": "O Produto Interno Bruto calculado pela ótica do valor adicionado representa todo o valor criado pelos residentes. Os dados são expressos em magnitude de valor e, portanto, abrangem apenas os setores produtivos."
+    "pt": "O Produto Interno Bruto calculado pela ótica do valor adicionado representa todo o valor criado pelos residentes. Os dados são expressos em magnitude de valor e, portanto, abrangem apenas os setores produtivos.",
+    "es": "El Producto Interior Bruto calculado por el enfoque del valor añadido representa todo el valor creado por los residentes. Los datos se expresan en magnitud de valor y, por tanto, abarcan únicamente los sectores productivos.",
+    "zh": "按增加值法计算的国内生产总值表示居民创造的全部价值。数据以价值量表示，因此仅涵盖生产性部门。"
   },
   "desc.gross_output.s.mv": {
-    "pt": "O produto total é a soma do valor de todos os bens e serviços produzidos pelos residentes, isto é, o trabalho produtivo total incorporado em todas as mercadorias. Inclui o valor adicionado (capital variável e mais-valor) e o valor do consumo intermediário (capital constante)."
+    "pt": "O produto total é a soma do valor de todos os bens e serviços produzidos pelos residentes, isto é, o trabalho produtivo total incorporado em todas as mercadorias. Inclui o valor adicionado (capital variável e mais-valor) e o valor do consumo intermediário (capital constante).",
+    "es": "El producto total es la suma del valor de todos los bienes y servicios producidos por los residentes, es decir, el trabajo productivo total incorporado en todas las mercancías. Incluye el valor añadido (capital variable y plusvalor) y el valor del consumo intermedio (capital constante).",
+    "zh": "总产出是居民生产的全部货物和服务的价值总和，即凝结在全部商品中的生产性劳动总量。包括增加值（可变资本和剩余价值）以及中间消耗的价值（不变资本）。"
   },
   "desc.value.m.mv": {
-    "pt": "O valor médio por unidade de produto representa o trabalho produtivo abstrato incorporado por $ 1,00 de cada setor."
+    "pt": "O valor médio por unidade de produto representa o trabalho produtivo abstrato incorporado por $ 1,00 de cada setor.",
+    "es": "El valor medio por unidad de producto representa el trabajo productivo abstracto incorporado por cada $ 1,00 de cada sector.",
+    "zh": "单位产出平均价值表示各部门每 $ 1,00 产出中凝结的抽象生产性劳动。"
   },
   "desc.gdp.s.du": {
-    "pt": "O Produto Interno Bruto calculado pela ótica do valor adicionado representa todo o valor criado pelos residentes. Os dados são expressos em preços diretos (preços proporcionais ao valor) e, portanto, abrangem apenas os setores produtivos."
+    "pt": "O Produto Interno Bruto calculado pela ótica do valor adicionado representa todo o valor criado pelos residentes. Os dados são expressos em preços diretos (preços proporcionais ao valor) e, portanto, abrangem apenas os setores produtivos.",
+    "es": "El Producto Interior Bruto calculado por el enfoque del valor añadido representa todo el valor creado por los residentes. Los datos se expresan en precios directos (precios proporcionales al valor) y, por tanto, abarcan únicamente los sectores productivos.",
+    "zh": "按增加值法计算的国内生产总值表示居民创造的全部价值。数据以直接价格（与价值成比例的价格）表示，因此仅涵盖生产性部门。"
   },
   "desc.gross_output.s.du": {
-    "pt": "O produto total é a soma dos preços de todos os bens e serviços produzidos pelos residentes. Inclui o valor adicionado (capital variável e mais-valor) e o preço do consumo intermediário (capital constante). Os dados são expressos em preços diretos (preços proporcionais aos valores)."
+    "pt": "O produto total é a soma dos preços de todos os bens e serviços produzidos pelos residentes. Inclui o valor adicionado (capital variável e mais-valor) e o preço do consumo intermediário (capital constante). Os dados são expressos em preços diretos (preços proporcionais aos valores).",
+    "es": "El producto total es la suma de los precios de todos los bienes y servicios producidos por los residentes. Incluye el valor añadido (capital variable y plusvalor) y el precio del consumo intermedio (capital constante). Los datos se expresan en precios directos (precios proporcionales a los valores).",
+    "zh": "总产出是居民生产的全部货物和服务的价格总和。包括增加值（可变资本和剩余价值）以及中间消耗的价格（不变资本）。数据以直接价格（与价值成比例的价格）表示。"
   },
   "desc.surplus_value.empe_hs.r.pc": {
-    "pt": "Taxa de mais-valor dos trabalhadores assalariados de alta qualificação. É uma medida da exploração do trabalho em uma relação capitalista de produção."
+    "pt": "Taxa de mais-valor dos trabalhadores assalariados de alta qualificação. É uma medida da exploração do trabalho em uma relação capitalista de produção.",
+    "es": "Tasa de plusvalor de los trabajadores asalariados de alta cualificación. Es una medida de la explotación del trabajo en una relación capitalista de producción.",
+    "zh": "高技能雇员的剩余价值率，用于衡量资本主义生产关系中的劳动剥削。"
   },
   "desc.surplus_value.empe_ms.r.pc": {
-    "pt": "Taxa de mais-valor dos trabalhadores assalariados de média qualificação. É uma medida da exploração do trabalho em uma relação capitalista de produção."
+    "pt": "Taxa de mais-valor dos trabalhadores assalariados de média qualificação. É uma medida da exploração do trabalho em uma relação capitalista de produção.",
+    "es": "Tasa de plusvalor de los trabajadores asalariados de cualificación media. Es una medida de la explotación del trabajo en una relación capitalista de producción.",
+    "zh": "中等技能雇员的剩余价值率，用于衡量资本主义生产关系中的劳动剥削。"
   },
   "desc.surplus_value.empe_ls.r.pc": {
-    "pt": "Taxa de mais-valor dos trabalhadores assalariados de baixa qualificação. É uma medida da exploração do trabalho em uma relação capitalista de produção."
+    "pt": "Taxa de mais-valor dos trabalhadores assalariados de baixa qualificação. É uma medida da exploração do trabalho em uma relação capitalista de produção.",
+    "es": "Tasa de plusvalor de los trabajadores asalariados de baja cualificación. Es una medida de la explotación del trabajo en una relación capitalista de producción.",
+    "zh": "低技能雇员的剩余价值率，用于衡量资本主义生产关系中的劳动剥削。"
   },
   "desc.surplus_value.empe.r.pc": {
-    "pt": "Taxa de mais-valor dos trabalhadores assalariados produtivos e improdutivos. É uma medida da exploração do trabalho em uma relação capitalista de produção."
+    "pt": "Taxa de mais-valor dos trabalhadores assalariados produtivos e improdutivos. É uma medida da exploração do trabalho em uma relação capitalista de produção.",
+    "es": "Tasa de plusvalor de los trabajadores asalariados productivos e improductivos. Es una medida de la explotación del trabajo en una relación capitalista de producción.",
+    "zh": "生产性和非生产性雇员的剩余价值率，用于衡量资本主义生产关系中的劳动剥削。"
   },
   "desc.surplus_value.emp.r.pc": {
-    "pt": "Taxa de mais-valor das pessoas ocupadas. Inclui setores produtivos e improdutivos."
+    "pt": "Taxa de mais-valor das pessoas ocupadas. Inclui setores produtivos e improdutivos.",
+    "es": "Tasa de plusvalor de las personas ocupadas. Incluye sectores productivos e improductivos.",
+    "zh": "就业人员剩余价值率。包括生产性和非生产性部门。"
   },
   "desc.surplus_value.emp_p.r.pc": {
-    "pt": "Taxa de mais-valor das pessoas ocupadas, abrangendo apenas os setores produtivos."
+    "pt": "Taxa de mais-valor das pessoas ocupadas, abrangendo apenas os setores produtivos.",
+    "es": "Tasa de plusvalor de las personas ocupadas, que abarca únicamente los sectores productivos.",
+    "zh": "就业人员剩余价值率，仅涵盖生产性部门。"
   },
   "desc.surplus_value.empe_p.r.pc": {
-    "pt": "Taxa de mais-valor dos trabalhadores assalariados produtivos. É uma medida da exploração do trabalho em uma relação capitalista de produção."
+    "pt": "Taxa de mais-valor dos trabalhadores assalariados produtivos. É uma medida da exploração do trabalho em uma relação capitalista de produção.",
+    "es": "Tasa de plusvalor de los trabajadores asalariados productivos. Es una medida de la explotación del trabajo en una relación capitalista de producción.",
+    "zh": "生产性雇员的剩余价值率，用于衡量资本主义生产关系中的劳动剥削。"
   },
   "desc.compensation.empe.s.us": {
-    "pt": "Remuneração recebida pelos trabalhadores assalariados."
+    "pt": "Remuneração recebida pelos trabalhadores assalariados.",
+    "es": "Remuneración recibida por los trabajadores asalariados.",
+    "zh": "雇员获得的报酬。"
   },
   "desc.compensation.emp.s.us": {
-    "pt": "A remuneração do trabalho expressa em preços de mercado representa a renda recebida por todas as pessoas ocupadas em decorrência de seu trabalho. Inclui salários, ordenados e a renda recebida por trabalhadores não assalariados, como os trabalhadores por conta própria."
+    "pt": "A remuneração do trabalho expressa em preços de mercado representa a renda recebida por todas as pessoas ocupadas em decorrência de seu trabalho. Inclui salários, ordenados e a renda recebida por trabalhadores não assalariados, como os trabalhadores por conta própria.",
+    "es": "La remuneración del trabajo expresada a precios de mercado representa los ingresos que reciben todas las personas ocupadas por su trabajo. Incluye sueldos, salarios e ingresos de trabajadores no asalariados, como los trabajadores por cuenta propia.",
+    "zh": "以市场价格表示的劳动报酬，是所有就业人员因劳动而获得的收入。包括工资、薪金以及自雇劳动者等非雇员的收入。"
   },
   "desc.labour_force_value.s.mv": {
-    "pt": "Parcela do capital social total destinada à contratação da força de trabalho. Os dados são expressos em magnitude de valor, isto é, no tempo de trabalho socialmente necessário para produzir as mercadorias que compõem a cesta de consumo dos trabalhadores."
+    "pt": "Parcela do capital social total destinada à contratação da força de trabalho. Os dados são expressos em magnitude de valor, isto é, no tempo de trabalho socialmente necessário para produzir as mercadorias que compõem a cesta de consumo dos trabalhadores.",
+    "es": "Parte del capital social total destinada a contratar fuerza de trabajo. Los datos se expresan en magnitud de valor, es decir, en el tiempo de trabajo socialmente necesario para producir las mercancías que componen la cesta de consumo de los trabajadores.",
+    "zh": "社会总资本中用于雇用劳动力的部分。数据以价值量表示，即生产构成劳动者消费篮子的商品所需的社会必要劳动时间。"
   },
   "desc.labour_force_value.emp.s.mv": {
-    "pt": "A remuneração do trabalho expressa em magnitude de valor representa o tempo de trabalho socialmente necessário para produzir as mercadorias consumidas por todas as pessoas ocupadas. Inclui o capital variável e a renda recebida por trabalhadores não assalariados."
+    "pt": "A remuneração do trabalho expressa em magnitude de valor representa o tempo de trabalho socialmente necessário para produzir as mercadorias consumidas por todas as pessoas ocupadas. Inclui o capital variável e a renda recebida por trabalhadores não assalariados.",
+    "es": "La remuneración del trabajo expresada en magnitud de valor representa el tiempo de trabajo socialmente necesario para producir las mercancías consumidas por todas las personas ocupadas. Incluye el capital variable y los ingresos recibidos por trabajadores no asalariados.",
+    "zh": "以价值量表示的劳动报酬，是生产所有就业人员消费的商品所需的社会必要劳动时间。包括可变资本和非雇员获得的收入。"
   },
   "desc.compensation.emp.s.cu": {
-    "pt": "A remuneração do trabalho expressa em preços de mercado representa a renda recebida por todas as pessoas ocupadas em decorrência de seu trabalho. Inclui salários, ordenados e a renda recebida por trabalhadores não assalariados, como os trabalhadores por conta própria. Os dados são expressos em USD constantes (ano-base = 2000)."
+    "pt": "A remuneração do trabalho expressa em preços de mercado representa a renda recebida por todas as pessoas ocupadas em decorrência de seu trabalho. Inclui salários, ordenados e a renda recebida por trabalhadores não assalariados, como os trabalhadores por conta própria. Os dados são expressos em USD constantes (ano-base = 2000).",
+    "es": "La remuneración del trabajo expresada a precios de mercado representa los ingresos que reciben todas las personas ocupadas por su trabajo. Incluye sueldos, salarios e ingresos de trabajadores no asalariados, como los trabajadores por cuenta propia. Los datos se expresan en USD constantes (año base = 2000).",
+    "zh": "以市场价格表示的劳动报酬，是所有就业人员因劳动而获得的收入。包括工资、薪金以及自雇劳动者等非雇员的收入。数据以不变价 USD 表示（基年 = 2000）。"
   },
   "desc.compensation.empe.s.cu": {
-    "pt": "Remuneração recebida pelos trabalhadores assalariados em USD constantes (ano-base = 2000)."
+    "pt": "Remuneração recebida pelos trabalhadores assalariados em USD constantes (ano-base = 2000).",
+    "es": "Remuneración recibida por los trabajadores asalariados en USD constantes (año base = 2000).",
+    "zh": "雇员获得的报酬，以不变价 USD 表示（基年 = 2000）。"
   },
   "desc.labour_force_value.m.mv": {
-    "pt": "O valor médio da força de trabalho é o tempo de trabalho socialmente necessário para produzir a cesta de consumo de um trabalhador médio."
+    "pt": "O valor médio da força de trabalho é o tempo de trabalho socialmente necessário para produzir a cesta de consumo de um trabalhador médio.",
+    "es": "El valor medio de la fuerza de trabajo es el tiempo de trabajo socialmente necesario para producir la cesta de consumo de un trabajador medio.",
+    "zh": "劳动力平均价值是生产普通劳动者消费篮子所需的社会必要劳动时间。"
   },
   "desc.labour_force_value.emp.m.mv": {
-    "pt": "O valor médio de reprodução do trabalhador representa o tempo de trabalho socialmente necessário para produzir a cesta de consumo de uma pessoa ocupada."
+    "pt": "O valor médio de reprodução do trabalhador representa o tempo de trabalho socialmente necessário para produzir a cesta de consumo de uma pessoa ocupada.",
+    "es": "El valor medio de reproducción del trabajador representa el tiempo de trabajo socialmente necesario para producir la cesta de consumo de una persona ocupada.",
+    "zh": "劳动者再生产的平均价值表示生产一名就业人员消费篮子所需的社会必要劳动时间。"
   },
   "obs.W16v09.emp.s.un": {
-    "pt": "Fonte: wiodr16"
+    "pt": "Fonte: wiodr16",
+    "es": "Fuente: wiodr16",
+    "zh": "来源：wiodr16"
   },
   "obs.W16v09.empe.s.un": {
-    "pt": "Fonte: wiodr16"
+    "pt": "Fonte: wiodr16",
+    "es": "Fuente: wiodr16",
+    "zh": "来源：wiodr16"
   },
   "obs.W16v09.hours_worked.empe.s.hr": {
-    "pt": "Fonte: wiodr16"
+    "pt": "Fonte: wiodr16",
+    "es": "Fuente: wiodr16",
+    "zh": "来源：wiodr16"
   },
   "obs.W16v09.gross_output.s.us": {
-    "pt": "Fonte: wiodr16"
+    "pt": "Fonte: wiodr16",
+    "es": "Fuente: wiodr16",
+    "zh": "来源：wiodr16"
   },
   "obs.W16v09.gdp.s.us": {
-    "pt": "Fonte: wiodr16"
+    "pt": "Fonte: wiodr16",
+    "es": "Fuente: wiodr16",
+    "zh": "来源：wiodr16"
   },
   "obs.W16v09.exchange.r.us": {
-    "pt": "Calculado como a taxa de câmbio implícita do valor adicionado (VA em moeda local / VA em USD)."
+    "pt": "Calculado como a taxa de câmbio implícita do valor adicionado (VA em moeda local / VA em USD).",
+    "es": "Calculado como el tipo de cambio implícito del valor añadido (VA en moneda local / VA en USD).",
+    "zh": "按增加值隐含汇率计算（本币增加值／USD 增加值）。"
   },
   "obs.W16v09.hours_worked.emp.s.hr": {
-    "pt": "Estimado a partir da média de horas trabalhadas pelos trabalhadores assalariados."
+    "pt": "Estimado a partir da média de horas trabalhadas pelos trabalhadores assalariados.",
+    "es": "Estimado a partir de la media de horas trabajadas por los trabajadores asalariados.",
+    "zh": "根据雇员的平均工作时数估算。"
   },
   "obs.W16v09.exchange.r.id": {
-    "pt": "Calculado para cada setor como sua taxa de câmbio implícita corrente do valor adicionado dividida pela taxa implícita do valor adicionado em 2000. O índice do Resto do Mundo (ROW) reproduz o índice dos EUA."
+    "pt": "Calculado para cada setor como sua taxa de câmbio implícita corrente do valor adicionado dividida pela taxa implícita do valor adicionado em 2000. O índice do Resto do Mundo (ROW) reproduz o índice dos EUA.",
+    "es": "Calculado para cada sector como su tipo de cambio implícito corriente del valor añadido dividido por el tipo implícito del valor añadido en 2000. El índice del Resto del Mundo (ROW) reproduce el de Estados Unidos.",
+    "zh": "对每个部门，用其当期增加值隐含汇率除以 2000 年增加值隐含汇率计算。世界其他地区（ROW）的指数采用美国的指数。"
   },
   "obs.W16v09.compensation.empe.s.us": {
-    "pt": "Convertido da moeda nacional pela taxa de câmbio."
+    "pt": "Convertido da moeda nacional pela taxa de câmbio.",
+    "es": "Convertido desde la moneda nacional mediante el tipo de cambio.",
+    "zh": "按汇率从本币换算。"
   },
   "obs.W16v09.compensation.emp.s.us": {
-    "pt": "Convertido da moeda nacional pela taxa de câmbio."
+    "pt": "Convertido da moeda nacional pela taxa de câmbio.",
+    "es": "Convertido desde la moneda nacional mediante el tipo de cambio.",
+    "zh": "按汇率从本币换算。"
   },
   "obs.W16v09.capital_stock.s.us": {
-    "pt": "Convertido da moeda nacional pela taxa de câmbio."
+    "pt": "Convertido da moeda nacional pela taxa de câmbio.",
+    "es": "Convertido desde la moneda nacional mediante el tipo de cambio.",
+    "zh": "按汇率从本币换算。"
   },
   "obs.W16v09.profit.s.us": {
-    "pt": "Convertido da moeda nacional pela taxa de câmbio."
+    "pt": "Convertido da moeda nacional pela taxa de câmbio.",
+    "es": "Convertido desde la moneda nacional mediante el tipo de cambio.",
+    "zh": "按汇率从本币换算。"
   },
   "obs.W16v09.capital_stock.s.cu": {
-    "pt": "Deflacionado pelo índice de preços do produto total e convertido da moeda nacional pela taxa de câmbio."
+    "pt": "Deflacionado pelo índice de preços do produto total e convertido da moeda nacional pela taxa de câmbio.",
+    "es": "Deflactado por el índice de precios del producto total y convertido desde la moneda nacional mediante el tipo de cambio.",
+    "zh": "用总产出价格指数平减，并按汇率从本币换算。"
   },
   "obs.W16v09.complex_labour_multiplier.empe.r.un": {
-    "pt": "O tratamento padrão considera todo o trabalho como igual."
+    "pt": "O tratamento padrão considera todo o trabalho como igual.",
+    "es": "El tratamiento estándar considera todo el trabajo como igual.",
+    "zh": "标准处理方式将所有劳动视为相同。"
   },
   "obs.W16v09.complex_labour_multiplier.emp.r.un": {
-    "pt": "O tratamento padrão considera todo o trabalho como igual."
+    "pt": "O tratamento padrão considera todo o trabalho como igual.",
+    "es": "El tratamiento estándar considera todo el trabajo como igual.",
+    "zh": "标准处理方式将所有劳动视为相同。"
   },
   "obs.W16v09.gdp.p.s.us": {
-    "pt": "Obtido pela soma do PIB dos setores produtivos."
+    "pt": "Obtido pela soma do PIB dos setores produtivos.",
+    "es": "Obtenido sumando el PIB de los sectores productivos.",
+    "zh": "通过加总生产性部门的 GDP 得到。"
   },
   "obs.W16v09.gdp.s.mv": {
-    "pt": "Obtido pela soma do trabalho abstrato realizado nos setores produtivos."
+    "pt": "Obtido pela soma do trabalho abstrato realizado nos setores produtivos.",
+    "es": "Obtenido sumando el trabajo abstracto realizado en los sectores productivos.",
+    "zh": "通过加总生产性部门完成的抽象劳动得到。"
   },
   "obs.W16v09.labour_force_value.s.mv": {
-    "pt": "Obtido pela conversão da remuneração monetária dos trabalhadores assalariados em valor, conforme o valor incorporado à cesta de consumo."
+    "pt": "Obtido pela conversão da remuneração monetária dos trabalhadores assalariados em valor, conforme o valor incorporado à cesta de consumo.",
+    "es": "Obtenido convirtiendo la remuneración monetaria de los trabajadores asalariados en valor, según el valor incorporado en la cesta de consumo.",
+    "zh": "根据消费篮子中凝结的价值，将雇员的货币报酬换算为价值而得到。"
   },
   "obs.W16v09.capital_depreciation.s.us": {
-    "pt": "Consulte os pressupostos de cada método para mais informações sobre o cálculo da composição e da depreciação do capital."
+    "pt": "Consulte os pressupostos de cada método para mais informações sobre o cálculo da composição e da depreciação do capital.",
+    "es": "Consulte los supuestos de cada método para obtener más información sobre el cálculo de la composición y la depreciación del capital.",
+    "zh": "关于资本构成和折旧计算的更多信息，请参阅各方法的假设。"
   },
   "obs.W16v09.exports.s.mv": {
-    "pt": "Obtido pela soma do trabalho produtivo incorporado em todas as mercadorias fornecidas a outros países."
+    "pt": "Obtido pela soma do trabalho produtivo incorporado em todas as mercadorias fornecidas a outros países.",
+    "es": "Obtenido sumando el trabajo productivo incorporado en todas las mercancías suministradas a otros países.",
+    "zh": "通过加总向其他国家提供的全部商品中凝结的生产性劳动得到。"
   },
   "obs.W16v09.imports.s.mv": {
-    "pt": "Obtido pela soma do trabalho produtivo incorporado em todas as mercadorias recebidas de outros países."
+    "pt": "Obtido pela soma do trabalho produtivo incorporado em todas as mercadorias recebidas de outros países.",
+    "es": "Obtenido sumando el trabajo productivo incorporado en todas las mercancías recibidas de otros países.",
+    "zh": "通过加总从其他国家获得的全部商品中凝结的生产性劳动得到。"
   },
   "obs.W16v09.labour_force_value.emp.s.mv": {
-    "pt": "Obtido pela conversão da remuneração monetária do trabalho em valor, conforme o valor incorporado à cesta de consumo."
+    "pt": "Obtido pela conversão da remuneração monetária do trabalho em valor, conforme o valor incorporado à cesta de consumo.",
+    "es": "Obtenido convirtiendo la remuneración monetaria del trabajo en valor, según el valor incorporado en la cesta de consumo.",
+    "zh": "根据消费篮子中凝结的价值，将货币劳动报酬换算为价值而得到。"
   },
   "obs.W16v09.gdp.s.du": {
-    "pt": "Obtido pela conversão da soma do trabalho abstrato realizado nos setores produtivos em preços, mediante a relação entre a soma do produto total a preços de mercado e a soma do produto total em valor no mundo inteiro."
+    "pt": "Obtido pela conversão da soma do trabalho abstrato realizado nos setores produtivos em preços, mediante a relação entre a soma do produto total a preços de mercado e a soma do produto total em valor no mundo inteiro.",
+    "es": "Obtenido convirtiendo la suma del trabajo abstracto realizado en los sectores productivos en precios, mediante la relación entre la suma del producto total a precios de mercado y la suma del producto total en valor en todo el mundo.",
+    "zh": "利用全球按市场价格计量的总产出之和与按价值计量的总产出之和的比率，将生产性部门完成的抽象劳动总量换算为价格而得到。"
   },
   "obs.W16v09.surplus_value.empe.r.pc": {
-    "pt": "Obtido dividindo-se a soma do trabalho abstrato dos trabalhadores assalariados produtivos e improdutivos pelo capital variável e subtraindo-se um do resultado."
+    "pt": "Obtido dividindo-se a soma do trabalho abstrato dos trabalhadores assalariados produtivos e improdutivos pelo capital variável e subtraindo-se um do resultado.",
+    "es": "Obtenido dividiendo la suma del trabajo abstracto de los trabajadores asalariados productivos e improductivos por el capital variable y restando uno al resultado.",
+    "zh": "用生产性和非生产性雇员的抽象劳动总量除以可变资本，再从结果中减去 1 得到。"
   },
   "obs.W16v09.labour_force_value.m.mv": {
-    "pt": "Obtido pela divisão do capital variável pelo número de trabalhadores assalariados."
+    "pt": "Obtido pela divisão do capital variável pelo número de trabalhadores assalariados.",
+    "es": "Obtenido dividiendo el capital variable por el número de trabajadores asalariados.",
+    "zh": "用可变资本除以雇员人数得到。"
   },
   "obs.W16v09.labour_force_value.emp.m.mv": {
-    "pt": "Obtido pela divisão da remuneração do trabalho em magnitude de valor pelo número de pessoas ocupadas."
+    "pt": "Obtido pela divisão da remuneração do trabalho em magnitude de valor pelo número de pessoas ocupadas.",
+    "es": "Obtenido dividiendo la remuneración del trabajo en magnitud de valor por el número de personas ocupadas.",
+    "zh": "用以价值量表示的劳动报酬除以就业人员人数得到。"
   },
   "obs.W16v09.surplus_value.emp.r.pc": {
-    "pt": "Obtido dividindo-se a soma do trabalho abstrato das pessoas ocupadas em atividades produtivas e improdutivas pela remuneração do trabalho em magnitude de valor e subtraindo-se um do resultado."
+    "pt": "Obtido dividindo-se a soma do trabalho abstrato das pessoas ocupadas em atividades produtivas e improdutivas pela remuneração do trabalho em magnitude de valor e subtraindo-se um do resultado.",
+    "es": "Obtenido dividiendo la suma del trabajo abstracto de las personas ocupadas en actividades productivas e improductivas por la remuneración del trabajo en magnitud de valor y restando uno al resultado.",
+    "zh": "用生产性和非生产性活动中就业人员的抽象劳动总量，除以按价值量计量的劳动报酬，再从结果中减去 1 得到。"
   },
   "obs.W16v09.surplus_value.emp_p.r.pc": {
-    "pt": "Obtido dividindo-se a soma do trabalho abstrato das pessoas ocupadas pela remuneração do trabalho dos setores produtivos e subtraindo-se um do resultado."
+    "pt": "Obtido dividindo-se a soma do trabalho abstrato das pessoas ocupadas pela remuneração do trabalho dos setores produtivos e subtraindo-se um do resultado.",
+    "es": "Obtenido dividiendo la suma del trabajo abstracto de las personas ocupadas por la remuneración del trabajo de los sectores productivos y restando uno al resultado.",
+    "zh": "用就业人员的抽象劳动总量除以生产性部门的劳动报酬，再从结果中减去 1 得到。"
   },
   "obs.W16v09.surplus_value.empe_p.r.pc": {
-    "pt": "Obtido dividindo-se a soma do trabalho abstrato dos trabalhadores assalariados pelo capital variável dos setores produtivos e subtraindo-se um do resultado."
+    "pt": "Obtido dividindo-se a soma do trabalho abstrato dos trabalhadores assalariados pelo capital variável dos setores produtivos e subtraindo-se um do resultado.",
+    "es": "Obtenido dividiendo la suma del trabajo abstracto de los trabajadores asalariados por el capital variable de los sectores productivos y restando uno al resultado.",
+    "zh": "用雇员的抽象劳动总量除以生产性部门的可变资本，再从结果中减去 1 得到。"
   },
   "obs.zdW16.emp.s.un": {
-    "pt": "Fonte: wiodr16"
+    "pt": "Fonte: wiodr16",
+    "es": "Fuente: wiodr16",
+    "zh": "来源：wiodr16"
   },
   "obs.zdW16.empe.s.un": {
-    "pt": "Fonte: wiodr16"
+    "pt": "Fonte: wiodr16",
+    "es": "Fuente: wiodr16",
+    "zh": "来源：wiodr16"
   },
   "obs.zdW16.hours_worked.empe.s.hr": {
-    "pt": "Fonte: wiodr16"
+    "pt": "Fonte: wiodr16",
+    "es": "Fuente: wiodr16",
+    "zh": "来源：wiodr16"
   },
   "obs.zdW16.gross_output.s.us": {
-    "pt": "Fonte: wiodr16"
+    "pt": "Fonte: wiodr16",
+    "es": "Fuente: wiodr16",
+    "zh": "来源：wiodr16"
   },
   "obs.zdW16.gdp.s.us": {
-    "pt": "Fonte: wiodr16"
+    "pt": "Fonte: wiodr16",
+    "es": "Fuente: wiodr16",
+    "zh": "来源：wiodr16"
   },
   "obs.zdW16.hours_worked.emp.s.hr": {
-    "pt": "Estimado a partir da média de horas trabalhadas pelos trabalhadores assalariados."
+    "pt": "Estimado a partir da média de horas trabalhadas pelos trabalhadores assalariados.",
+    "es": "Estimado a partir de la media de horas trabajadas por los trabajadores asalariados.",
+    "zh": "根据雇员的平均工作时数估算。"
   },
   "obs.zdW16.exchange.r.us": {
-    "pt": "Calculado para cada país e ano como o valor adicionado total em moeda local dividido pelo valor adicionado total em USD correntes; em seguida, o resultado é aplicado a todos os setores. Os totais dos EUA são validados em relação a 1 USD/USD antes de serem normalizados para exatamente 1."
+    "pt": "Calculado para cada país e ano como o valor adicionado total em moeda local dividido pelo valor adicionado total em USD correntes; em seguida, o resultado é aplicado a todos os setores. Os totais dos EUA são validados em relação a 1 USD/USD antes de serem normalizados para exatamente 1.",
+    "es": "Calculado para cada país y año como el valor añadido total en moneda local dividido por el valor añadido total en USD corrientes; después, el resultado se aplica a todos los sectores. Los totales de Estados Unidos se validan respecto a 1 USD/USD antes de normalizarse exactamente a 1.",
+    "zh": "对每个国家和年份，用本币增加值总额除以当期 USD 增加值总额计算；随后将结果应用于所有部门。美国总量先按 1 USD/USD 验证，再归一化为恰好 1。"
   },
   "obs.zdW16.compensation.empe.s.us": {
-    "pt": "Convertido da moeda nacional pela taxa de câmbio."
+    "pt": "Convertido da moeda nacional pela taxa de câmbio.",
+    "es": "Convertido desde la moneda nacional mediante el tipo de cambio.",
+    "zh": "按汇率从本币换算。"
   },
   "obs.zdW16.compensation.emp.s.us": {
-    "pt": "Convertido da moeda nacional pela taxa de câmbio."
+    "pt": "Convertido da moeda nacional pela taxa de câmbio.",
+    "es": "Convertido desde la moneda nacional mediante el tipo de cambio.",
+    "zh": "按汇率从本币换算。"
   },
   "obs.zdW16.capital_stock.s.us": {
-    "pt": "Convertido da moeda nacional pela taxa de câmbio."
+    "pt": "Convertido da moeda nacional pela taxa de câmbio.",
+    "es": "Convertido desde la moneda nacional mediante el tipo de cambio.",
+    "zh": "按汇率从本币换算。"
   },
   "obs.zdW16.profit.s.us": {
-    "pt": "Convertido da moeda nacional pela taxa de câmbio."
+    "pt": "Convertido da moeda nacional pela taxa de câmbio.",
+    "es": "Convertido desde la moneda nacional mediante el tipo de cambio.",
+    "zh": "按汇率从本币换算。"
   },
   "obs.zdW16.capital_stock.s.cu": {
-    "pt": "Deflacionado pelo índice de preços do produto total e convertido da moeda nacional pela taxa de câmbio. Para o Resto do Mundo, a série constante é reconstruída depois da construção do estoque em USD correntes, utilizando-se o índice cambial com base em 2000 e o índice de preços do produto total com 2000 = 100."
+    "pt": "Deflacionado pelo índice de preços do produto total e convertido da moeda nacional pela taxa de câmbio. Para o Resto do Mundo, a série constante é reconstruída depois da construção do estoque em USD correntes, utilizando-se o índice cambial com base em 2000 e o índice de preços do produto total com 2000 = 100.",
+    "es": "Deflactado por el índice de precios del producto total y convertido desde la moneda nacional mediante el tipo de cambio. Para el Resto del Mundo, la serie constante se reconstruye después de calcular el stock en USD corrientes, utilizando el índice cambiario con base en 2000 y el índice de precios del producto total con 2000 = 100.",
+    "zh": "用总产出价格指数平减，并按汇率从本币换算。对于世界其他地区，在构建当期 USD 资本存量后，利用以 2000 年为基准的汇率指数和 2000 = 100 的总产出价格指数重建不变价序列。"
   },
   "obs.zdW16.exchange.r.id": {
-    "pt": "Calculado como a taxa de câmbio corrente de cada país e ano (moeda local/USD) dividida pela taxa de câmbio desse país em 2000. O índice do Resto do Mundo (ROW) reproduz o índice dos EUA."
+    "pt": "Calculado como a taxa de câmbio corrente de cada país e ano (moeda local/USD) dividida pela taxa de câmbio desse país em 2000. O índice do Resto do Mundo (ROW) reproduz o índice dos EUA.",
+    "es": "Calculado como el tipo de cambio corriente de cada país y año (moneda local/USD) dividido por el tipo de cambio de ese país en 2000. El índice del Resto del Mundo (ROW) reproduce el de Estados Unidos.",
+    "zh": "用每个国家和年份的当期汇率（本币／USD）除以该国 2000 年的汇率计算。世界其他地区（ROW）的指数采用美国的指数。"
   },
   "obs.zdW16.complex_labour_multiplier.empe.r.un": {
-    "pt": "O tratamento padrão considera todo o trabalho como igual."
+    "pt": "O tratamento padrão considera todo o trabalho como igual.",
+    "es": "El tratamiento estándar considera todo el trabajo como igual.",
+    "zh": "标准处理方式将所有劳动视为相同。"
   },
   "obs.zdW16.complex_labour_multiplier.emp.r.un": {
-    "pt": "O tratamento padrão considera todo o trabalho como igual."
+    "pt": "O tratamento padrão considera todo o trabalho como igual.",
+    "es": "El tratamiento estándar considera todo el trabajo como igual.",
+    "zh": "标准处理方式将所有劳动视为相同。"
   },
   "obs.zdW16.gdp.p.s.us": {
-    "pt": "Obtido pela soma do PIB dos setores produtivos."
+    "pt": "Obtido pela soma do PIB dos setores produtivos.",
+    "es": "Obtenido sumando el PIB de los sectores productivos.",
+    "zh": "通过加总生产性部门的 GDP 得到。"
   },
   "obs.zdW16.gdp.s.mv": {
-    "pt": "Obtido pela soma do trabalho abstrato realizado nos setores produtivos."
+    "pt": "Obtido pela soma do trabalho abstrato realizado nos setores produtivos.",
+    "es": "Obtenido sumando el trabajo abstracto realizado en los sectores productivos.",
+    "zh": "通过加总生产性部门完成的抽象劳动得到。"
   },
   "obs.zdW16.labour_force_value.s.mv": {
-    "pt": "Obtido pela conversão da remuneração monetária dos trabalhadores assalariados em valor, conforme o valor incorporado à cesta de consumo."
+    "pt": "Obtido pela conversão da remuneração monetária dos trabalhadores assalariados em valor, conforme o valor incorporado à cesta de consumo.",
+    "es": "Obtenido convirtiendo la remuneración monetaria de los trabajadores asalariados en valor, según el valor incorporado en la cesta de consumo.",
+    "zh": "根据消费篮子中凝结的价值，将雇员的货币报酬换算为价值而得到。"
   },
   "obs.zdW16.capital_depreciation.s.us": {
-    "pt": "Consulte os pressupostos de cada método para mais informações sobre o cálculo da composição e da depreciação do capital."
+    "pt": "Consulte os pressupostos de cada método para mais informações sobre o cálculo da composição e da depreciação do capital.",
+    "es": "Consulte los supuestos de cada método para obtener más información sobre el cálculo de la composición y la depreciación del capital.",
+    "zh": "关于资本构成和折旧计算的更多信息，请参阅各方法的假设。"
   },
   "obs.zdW16.exports.s.mv": {
-    "pt": "Obtido pela soma do trabalho produtivo incorporado em todas as mercadorias fornecidas a outros países."
+    "pt": "Obtido pela soma do trabalho produtivo incorporado em todas as mercadorias fornecidas a outros países.",
+    "es": "Obtenido sumando el trabajo productivo incorporado en todas las mercancías suministradas a otros países.",
+    "zh": "通过加总向其他国家提供的全部商品中凝结的生产性劳动得到。"
   },
   "obs.zdW16.imports.s.mv": {
-    "pt": "Obtido pela soma do trabalho produtivo incorporado em todas as mercadorias recebidas de outros países."
+    "pt": "Obtido pela soma do trabalho produtivo incorporado em todas as mercadorias recebidas de outros países.",
+    "es": "Obtenido sumando el trabajo productivo incorporado en todas las mercancías recibidas de otros países.",
+    "zh": "通过加总从其他国家获得的全部商品中凝结的生产性劳动得到。"
   },
   "obs.zdW16.labour_force_value.emp.s.mv": {
-    "pt": "Obtido pela conversão da remuneração monetária do trabalho em valor, conforme o valor incorporado à cesta de consumo."
+    "pt": "Obtido pela conversão da remuneração monetária do trabalho em valor, conforme o valor incorporado à cesta de consumo.",
+    "es": "Obtenido convirtiendo la remuneración monetaria del trabajo en valor, según el valor incorporado en la cesta de consumo.",
+    "zh": "根据消费篮子中凝结的价值，将货币劳动报酬换算为价值而得到。"
   },
   "obs.zdW16.gdp.s.du": {
-    "pt": "Obtido pela conversão da soma do trabalho abstrato realizado nos setores produtivos em preços, mediante a relação entre a soma do produto total a preços de mercado e a soma do produto total em valor no mundo inteiro."
+    "pt": "Obtido pela conversão da soma do trabalho abstrato realizado nos setores produtivos em preços, mediante a relação entre a soma do produto total a preços de mercado e a soma do produto total em valor no mundo inteiro.",
+    "es": "Obtenido convirtiendo la suma del trabajo abstracto realizado en los sectores productivos en precios, mediante la relación entre la suma del producto total a precios de mercado y la suma del producto total en valor en todo el mundo.",
+    "zh": "利用全球按市场价格计量的总产出之和与按价值计量的总产出之和的比率，将生产性部门完成的抽象劳动总量换算为价格而得到。"
   },
   "obs.zdW16.surplus_value.empe.r.pc": {
-    "pt": "Obtido dividindo-se a soma do trabalho abstrato dos trabalhadores assalariados produtivos e improdutivos pelo capital variável e subtraindo-se um do resultado."
+    "pt": "Obtido dividindo-se a soma do trabalho abstrato dos trabalhadores assalariados produtivos e improdutivos pelo capital variável e subtraindo-se um do resultado.",
+    "es": "Obtenido dividiendo la suma del trabajo abstracto de los trabajadores asalariados productivos e improductivos por el capital variable y restando uno al resultado.",
+    "zh": "用生产性和非生产性雇员的抽象劳动总量除以可变资本，再从结果中减去 1 得到。"
   },
   "obs.zdW16.labour_force_value.m.mv": {
-    "pt": "Obtido pela divisão do capital variável pelo número de trabalhadores assalariados."
+    "pt": "Obtido pela divisão do capital variável pelo número de trabalhadores assalariados.",
+    "es": "Obtenido dividiendo el capital variable por el número de trabajadores asalariados.",
+    "zh": "用可变资本除以雇员人数得到。"
   },
   "obs.zdW16.labour_force_value.emp.m.mv": {
-    "pt": "Obtido pela divisão da remuneração do trabalho em magnitude de valor pelo número de pessoas ocupadas."
+    "pt": "Obtido pela divisão da remuneração do trabalho em magnitude de valor pelo número de pessoas ocupadas.",
+    "es": "Obtenido dividiendo la remuneración del trabajo en magnitud de valor por el número de personas ocupadas.",
+    "zh": "用以价值量表示的劳动报酬除以就业人员人数得到。"
   },
   "obs.zdW16.surplus_value.emp.r.pc": {
-    "pt": "Obtido dividindo-se a soma do trabalho abstrato das pessoas ocupadas em atividades produtivas e improdutivas pela remuneração do trabalho em magnitude de valor e subtraindo-se um do resultado."
+    "pt": "Obtido dividindo-se a soma do trabalho abstrato das pessoas ocupadas em atividades produtivas e improdutivas pela remuneração do trabalho em magnitude de valor e subtraindo-se um do resultado.",
+    "es": "Obtenido dividiendo la suma del trabajo abstracto de las personas ocupadas en actividades productivas e improductivas por la remuneración del trabajo en magnitud de valor y restando uno al resultado.",
+    "zh": "用生产性和非生产性活动中就业人员的抽象劳动总量，除以按价值量计量的劳动报酬，再从结果中减去 1 得到。"
   },
   "obs.zdW16.surplus_value.emp_p.r.pc": {
-    "pt": "Obtido dividindo-se a soma do trabalho abstrato das pessoas ocupadas pela remuneração do trabalho dos setores produtivos e subtraindo-se um do resultado."
+    "pt": "Obtido dividindo-se a soma do trabalho abstrato das pessoas ocupadas pela remuneração do trabalho dos setores produtivos e subtraindo-se um do resultado.",
+    "es": "Obtenido dividiendo la suma del trabajo abstracto de las personas ocupadas por la remuneración del trabajo de los sectores productivos y restando uno al resultado.",
+    "zh": "用就业人员的抽象劳动总量除以生产性部门的劳动报酬，再从结果中减去 1 得到。"
   },
   "obs.zdW16.surplus_value.empe_p.r.pc": {
-    "pt": "Obtido dividindo-se a soma do trabalho abstrato dos trabalhadores assalariados pelo capital variável dos setores produtivos e subtraindo-se um do resultado."
+    "pt": "Obtido dividindo-se a soma do trabalho abstrato dos trabalhadores assalariados pelo capital variável dos setores produtivos e subtraindo-se um do resultado.",
+    "es": "Obtenido dividiendo la suma del trabajo abstracto de los trabajadores asalariados por el capital variable de los sectores productivos y restando uno al resultado.",
+    "zh": "用雇员的抽象劳动总量除以生产性部门的可变资本，再从结果中减去 1 得到。"
   },
   "obs.WIOD13.emp.s.un": {
-    "pt": "Fonte: wiodr13"
+    "pt": "Fonte: wiodr13",
+    "es": "Fuente: wiodr13",
+    "zh": "来源：wiodr13"
   },
   "obs.WIOD13.empe.s.un": {
-    "pt": "Fonte: wiodr13"
+    "pt": "Fonte: wiodr13",
+    "es": "Fuente: wiodr13",
+    "zh": "来源：wiodr13"
   },
   "obs.WIOD13.hours_worked.emp.s.hr": {
-    "pt": "Fonte: wiodr13"
+    "pt": "Fonte: wiodr13",
+    "es": "Fuente: wiodr13",
+    "zh": "来源：wiodr13"
   },
   "obs.WIOD13.hours_worked.empe.s.hr": {
-    "pt": "Fonte: wiodr13"
+    "pt": "Fonte: wiodr13",
+    "es": "Fuente: wiodr13",
+    "zh": "来源：wiodr13"
   },
   "obs.WIOD13.compensation.empe_hs.r.pc": {
-    "pt": "Fonte: wiodr13"
+    "pt": "Fonte: wiodr13",
+    "es": "Fuente: wiodr13",
+    "zh": "来源：wiodr13"
   },
   "obs.WIOD13.compensation.empe_ms.r.pc": {
-    "pt": "Fonte: wiodr13"
+    "pt": "Fonte: wiodr13",
+    "es": "Fuente: wiodr13",
+    "zh": "来源：wiodr13"
   },
   "obs.WIOD13.compensation.empe_ls.r.pc": {
-    "pt": "Fonte: wiodr13"
+    "pt": "Fonte: wiodr13",
+    "es": "Fuente: wiodr13",
+    "zh": "来源：wiodr13"
   },
   "obs.WIOD13.hours_worked.empe_hs.r.pc": {
-    "pt": "Fonte: wiodr13"
+    "pt": "Fonte: wiodr13",
+    "es": "Fuente: wiodr13",
+    "zh": "来源：wiodr13"
   },
   "obs.WIOD13.hours_worked.empe_ms.r.pc": {
-    "pt": "Fonte: wiodr13"
+    "pt": "Fonte: wiodr13",
+    "es": "Fuente: wiodr13",
+    "zh": "来源：wiodr13"
   },
   "obs.WIOD13.hours_worked.empe_ls.r.pc": {
-    "pt": "Fonte: wiodr13"
+    "pt": "Fonte: wiodr13",
+    "es": "Fuente: wiodr13",
+    "zh": "来源：wiodr13"
   },
   "obs.WIOD13.gross_output.s.us": {
-    "pt": "Fonte: wiodr13"
+    "pt": "Fonte: wiodr13",
+    "es": "Fuente: wiodr13",
+    "zh": "来源：wiodr13"
   },
   "obs.WIOD13.gdp.s.us": {
-    "pt": "Fonte: wiodr13"
+    "pt": "Fonte: wiodr13",
+    "es": "Fuente: wiodr13",
+    "zh": "来源：wiodr13"
   },
   "obs.WIOD13.go_price.r.id": {
-    "pt": "Fonte: wiodr13"
+    "pt": "Fonte: wiodr13",
+    "es": "Fuente: wiodr13",
+    "zh": "来源：wiodr13"
   },
   "obs.WIOD13.exchange.r.us": {
-    "pt": "Calculado para cada país e ano como o valor adicionado total em moeda local dividido pelo valor adicionado total em USD correntes; em seguida, o resultado é aplicado a todos os setores. Os totais dos EUA são validados em relação a 1 USD/USD antes de serem normalizados para exatamente 1."
+    "pt": "Calculado para cada país e ano como o valor adicionado total em moeda local dividido pelo valor adicionado total em USD correntes; em seguida, o resultado é aplicado a todos os setores. Os totais dos EUA são validados em relação a 1 USD/USD antes de serem normalizados para exatamente 1.",
+    "es": "Calculado para cada país y año como el valor añadido total en moneda local dividido por el valor añadido total en USD corrientes; después, el resultado se aplica a todos los sectores. Los totales de Estados Unidos se validan respecto a 1 USD/USD antes de normalizarse exactamente a 1.",
+    "zh": "对每个国家和年份，用本币增加值总额除以当期 USD 增加值总额计算；随后将结果应用于所有部门。美国总量先按 1 USD/USD 验证，再归一化为恰好 1。"
   },
   "obs.WIOD13.compensation.empe.s.us": {
-    "pt": "Convertido da moeda nacional pela taxa de câmbio."
+    "pt": "Convertido da moeda nacional pela taxa de câmbio.",
+    "es": "Convertido desde la moneda nacional mediante el tipo de cambio.",
+    "zh": "按汇率从本币换算。"
   },
   "obs.WIOD13.compensation.emp.s.us": {
-    "pt": "Convertido da moeda nacional pela taxa de câmbio."
+    "pt": "Convertido da moeda nacional pela taxa de câmbio.",
+    "es": "Convertido desde la moneda nacional mediante el tipo de cambio.",
+    "zh": "按汇率从本币换算。"
   },
   "obs.WIOD13.capital_stock.s.us": {
-    "pt": "Convertido da moeda nacional pela taxa de câmbio."
+    "pt": "Convertido da moeda nacional pela taxa de câmbio.",
+    "es": "Convertido desde la moneda nacional mediante el tipo de cambio.",
+    "zh": "按汇率从本币换算。"
   },
   "obs.WIOD13.profit.s.us": {
-    "pt": "Convertido da moeda nacional pela taxa de câmbio."
+    "pt": "Convertido da moeda nacional pela taxa de câmbio.",
+    "es": "Convertido desde la moneda nacional mediante el tipo de cambio.",
+    "zh": "按汇率从本币换算。"
   },
   "obs.WIOD13.exchange.r.id": {
-    "pt": "Calculado como a taxa de câmbio corrente de cada país e ano (moeda local/USD) dividida pela taxa de câmbio desse país em 2000. O índice do Resto do Mundo (ROW) reproduz o índice dos EUA. A escala de apresentação é definida pelos metadados de unidade específicos do método."
+    "pt": "Calculado como a taxa de câmbio corrente de cada país e ano (moeda local/USD) dividida pela taxa de câmbio desse país em 2000. O índice do Resto do Mundo (ROW) reproduz o índice dos EUA. A escala de apresentação é definida pelos metadados de unidade específicos do método.",
+    "es": "Calculado como el tipo de cambio corriente de cada país y año (moneda local/USD) dividido por el tipo de cambio de ese país en 2000. El índice del Resto del Mundo (ROW) reproduce el de Estados Unidos. La escala de presentación está definida por los metadatos de unidad específicos del método.",
+    "zh": "用每个国家和年份的当期汇率（本币／USD）除以该国 2000 年的汇率计算。世界其他地区（ROW）的指数采用美国的指数。展示尺度由各方法的单位元数据确定。"
   },
   "obs.WIOD13.complex_labour_multiplier.empe.r.un": {
-    "pt": "O tratamento padrão considera todo o trabalho como igual."
+    "pt": "O tratamento padrão considera todo o trabalho como igual.",
+    "es": "El tratamiento estándar considera todo el trabajo como igual.",
+    "zh": "标准处理方式将所有劳动视为相同。"
   },
   "obs.WIOD13.complex_labour_multiplier.emp.r.un": {
-    "pt": "O tratamento padrão considera todo o trabalho como igual."
+    "pt": "O tratamento padrão considera todo o trabalho como igual.",
+    "es": "El tratamiento estándar considera todo el trabajo como igual.",
+    "zh": "标准处理方式将所有劳动视为相同。"
   },
   "obs.WIOD13.gdp.p.s.us": {
-    "pt": "Obtido pela soma do PIB dos setores produtivos."
+    "pt": "Obtido pela soma do PIB dos setores produtivos.",
+    "es": "Obtenido sumando el PIB de los sectores productivos.",
+    "zh": "通过加总生产性部门的 GDP 得到。"
   },
   "obs.WIOD13.gdp.s.mv": {
-    "pt": "Obtido pela soma do trabalho abstrato realizado nos setores produtivos."
+    "pt": "Obtido pela soma do trabalho abstrato realizado nos setores produtivos.",
+    "es": "Obtenido sumando el trabajo abstracto realizado en los sectores productivos.",
+    "zh": "通过加总生产性部门完成的抽象劳动得到。"
   },
   "obs.WIOD13.basket_price.r.pc": {
-    "pt": "Armazenado em escala canônica com 2000 = 1; a escala de apresentação é definida pelos metadados de unidade específicos do método."
+    "pt": "Armazenado em escala canônica com 2000 = 1; a escala de apresentação é definida pelos metadados de unidade específicos do método.",
+    "es": "Almacenado en escala canónica con 2000 = 1; la escala de presentación está definida por los metadatos de unidad específicos del método.",
+    "zh": "按标准尺度存储，2000 = 1；展示尺度由各方法的单位元数据确定。"
   },
   "obs.WIOD13.basket_value.r.pc": {
-    "pt": "Armazenado em escala canônica com 2000 = 1; a escala de apresentação é definida pelos metadados de unidade específicos do método."
+    "pt": "Armazenado em escala canônica com 2000 = 1; a escala de apresentação é definida pelos metadados de unidade específicos do método.",
+    "es": "Almacenado en escala canónica con 2000 = 1; la escala de presentación está definida por los metadatos de unidad específicos del método.",
+    "zh": "按标准尺度存储，2000 = 1；展示尺度由各方法的单位元数据确定。"
   },
   "obs.WIOD13.labour_force_value.s.mv": {
-    "pt": "Obtido pela conversão da remuneração monetária dos trabalhadores assalariados em valor, conforme o valor incorporado à cesta de consumo."
+    "pt": "Obtido pela conversão da remuneração monetária dos trabalhadores assalariados em valor, conforme o valor incorporado à cesta de consumo.",
+    "es": "Obtenido convirtiendo la remuneración monetaria de los trabajadores asalariados en valor, según el valor incorporado en la cesta de consumo.",
+    "zh": "根据消费篮子中凝结的价值，将雇员的货币报酬换算为价值而得到。"
   },
   "obs.WIOD13.capital_depreciation.s.us": {
-    "pt": "Consulte os pressupostos de cada método para mais informações sobre o cálculo da composição e da depreciação do capital."
+    "pt": "Consulte os pressupostos de cada método para mais informações sobre o cálculo da composição e da depreciação do capital.",
+    "es": "Consulte los supuestos de cada método para obtener más información sobre el cálculo de la composición y la depreciación del capital.",
+    "zh": "关于资本构成和折旧计算的更多信息，请参阅各方法的假设。"
   },
   "obs.WIOD13.exports.s.mv": {
-    "pt": "Obtido pela soma do trabalho produtivo incorporado em todas as mercadorias fornecidas a outros países."
+    "pt": "Obtido pela soma do trabalho produtivo incorporado em todas as mercadorias fornecidas a outros países.",
+    "es": "Obtenido sumando el trabajo productivo incorporado en todas las mercancías suministradas a otros países.",
+    "zh": "通过加总向其他国家提供的全部商品中凝结的生产性劳动得到。"
   },
   "obs.WIOD13.imports.s.mv": {
-    "pt": "Obtido pela soma do trabalho produtivo incorporado em todas as mercadorias recebidas de outros países."
+    "pt": "Obtido pela soma do trabalho produtivo incorporado em todas as mercadorias recebidas de outros países.",
+    "es": "Obtenido sumando el trabajo productivo incorporado en todas las mercancías recibidas de otros países.",
+    "zh": "通过加总从其他国家获得的全部商品中凝结的生产性劳动得到。"
   },
   "obs.WIOD13.labour_force_value.emp.s.mv": {
-    "pt": "Obtido pela conversão da remuneração monetária do trabalho em valor, conforme o valor incorporado à cesta de consumo."
+    "pt": "Obtido pela conversão da remuneração monetária do trabalho em valor, conforme o valor incorporado à cesta de consumo.",
+    "es": "Obtenido convirtiendo la remuneración monetaria del trabajo en valor, según el valor incorporado en la cesta de consumo.",
+    "zh": "根据消费篮子中凝结的价值，将货币劳动报酬换算为价值而得到。"
   },
   "obs.WIOD13.surplus_value.empe_hs.r.pc": {
-    "pt": "Obtido dividindo-se a soma do trabalho abstrato dos trabalhadores assalariados de alta qualificação pela soma do valor da força de trabalho desses trabalhadores e subtraindo-se um do resultado."
+    "pt": "Obtido dividindo-se a soma do trabalho abstrato dos trabalhadores assalariados de alta qualificação pela soma do valor da força de trabalho desses trabalhadores e subtraindo-se um do resultado.",
+    "es": "Obtenido dividiendo la suma del trabajo abstracto de los trabajadores asalariados de alta cualificación por la suma del valor de su fuerza de trabajo y restando uno al resultado.",
+    "zh": "用高技能雇员的抽象劳动总量除以其劳动力价值总和，再从结果中减去 1 得到。"
   },
   "obs.WIOD13.surplus_value.empe_ms.r.pc": {
-    "pt": "Obtido dividindo-se a soma do trabalho abstrato dos trabalhadores assalariados de média qualificação pela soma do valor da força de trabalho desses trabalhadores e subtraindo-se um do resultado."
+    "pt": "Obtido dividindo-se a soma do trabalho abstrato dos trabalhadores assalariados de média qualificação pela soma do valor da força de trabalho desses trabalhadores e subtraindo-se um do resultado.",
+    "es": "Obtenido dividiendo la suma del trabajo abstracto de los trabajadores asalariados de cualificación media por la suma del valor de su fuerza de trabajo y restando uno al resultado.",
+    "zh": "用中等技能雇员的抽象劳动总量除以其劳动力价值总和，再从结果中减去 1 得到。"
   },
   "obs.WIOD13.surplus_value.empe_ls.r.pc": {
-    "pt": "Obtido dividindo-se a soma do trabalho abstrato dos trabalhadores assalariados de baixa qualificação pela soma do valor da força de trabalho desses trabalhadores e subtraindo-se um do resultado."
+    "pt": "Obtido dividindo-se a soma do trabalho abstrato dos trabalhadores assalariados de baixa qualificação pela soma do valor da força de trabalho desses trabalhadores e subtraindo-se um do resultado.",
+    "es": "Obtenido dividiendo la suma del trabajo abstracto de los trabajadores asalariados de baja cualificación por la suma del valor de su fuerza de trabajo y restando uno al resultado.",
+    "zh": "用低技能雇员的抽象劳动总量除以其劳动力价值总和，再从结果中减去 1 得到。"
   },
   "obs.WIOD13.gdp.s.du": {
-    "pt": "Obtido pela conversão da soma do trabalho abstrato realizado nos setores produtivos em preços, mediante a relação entre a soma do produto total a preços de mercado e a soma do produto total em valor no mundo inteiro."
+    "pt": "Obtido pela conversão da soma do trabalho abstrato realizado nos setores produtivos em preços, mediante a relação entre a soma do produto total a preços de mercado e a soma do produto total em valor no mundo inteiro.",
+    "es": "Obtenido convirtiendo la suma del trabajo abstracto realizado en los sectores productivos en precios, mediante la relación entre la suma del producto total a precios de mercado y la suma del producto total en valor en todo el mundo.",
+    "zh": "利用全球按市场价格计量的总产出之和与按价值计量的总产出之和的比率，将生产性部门完成的抽象劳动总量换算为价格而得到。"
   },
   "obs.WIOD13.surplus_value.empe.r.pc": {
-    "pt": "Obtido dividindo-se a soma do trabalho abstrato dos trabalhadores assalariados produtivos e improdutivos pelo capital variável e subtraindo-se um do resultado."
+    "pt": "Obtido dividindo-se a soma do trabalho abstrato dos trabalhadores assalariados produtivos e improdutivos pelo capital variável e subtraindo-se um do resultado.",
+    "es": "Obtenido dividiendo la suma del trabajo abstracto de los trabajadores asalariados productivos e improductivos por el capital variable y restando uno al resultado.",
+    "zh": "用生产性和非生产性雇员的抽象劳动总量除以可变资本，再从结果中减去 1 得到。"
   },
   "obs.WIOD13.labour_force_value.m.mv": {
-    "pt": "Obtido pela divisão do capital variável pelo número de trabalhadores assalariados."
+    "pt": "Obtido pela divisão do capital variável pelo número de trabalhadores assalariados.",
+    "es": "Obtenido dividiendo el capital variable por el número de trabajadores asalariados.",
+    "zh": "用可变资本除以雇员人数得到。"
   },
   "obs.WIOD13.labour_force_value.emp.m.mv": {
-    "pt": "Obtido pela divisão da remuneração do trabalho em magnitude de valor pelo número de pessoas ocupadas."
+    "pt": "Obtido pela divisão da remuneração do trabalho em magnitude de valor pelo número de pessoas ocupadas.",
+    "es": "Obtenido dividiendo la remuneración del trabajo en magnitud de valor por el número de personas ocupadas.",
+    "zh": "用以价值量表示的劳动报酬除以就业人员人数得到。"
   },
   "obs.WIOD13.surplus_value.emp.r.pc": {
-    "pt": "Obtido dividindo-se a soma do trabalho abstrato das pessoas ocupadas em atividades produtivas e improdutivas pela remuneração do trabalho em magnitude de valor e subtraindo-se um do resultado."
+    "pt": "Obtido dividindo-se a soma do trabalho abstrato das pessoas ocupadas em atividades produtivas e improdutivas pela remuneração do trabalho em magnitude de valor e subtraindo-se um do resultado.",
+    "es": "Obtenido dividiendo la suma del trabajo abstracto de las personas ocupadas en actividades productivas e improductivas por la remuneración del trabajo en magnitud de valor y restando uno al resultado.",
+    "zh": "用生产性和非生产性活动中就业人员的抽象劳动总量，除以按价值量计量的劳动报酬，再从结果中减去 1 得到。"
   },
   "obs.WIOD13.surplus_value.emp_p.r.pc": {
-    "pt": "Obtido dividindo-se a soma do trabalho abstrato das pessoas ocupadas pela remuneração do trabalho dos setores produtivos e subtraindo-se um do resultado."
+    "pt": "Obtido dividindo-se a soma do trabalho abstrato das pessoas ocupadas pela remuneração do trabalho dos setores produtivos e subtraindo-se um do resultado.",
+    "es": "Obtenido dividiendo la suma del trabajo abstracto de las personas ocupadas por la remuneración del trabajo de los sectores productivos y restando uno al resultado.",
+    "zh": "用就业人员的抽象劳动总量除以生产性部门的劳动报酬，再从结果中减去 1 得到。"
   },
   "obs.WIOD13.surplus_value.empe_p.r.pc": {
-    "pt": "Obtido dividindo-se a soma do trabalho abstrato dos trabalhadores assalariados pelo capital variável dos setores produtivos e subtraindo-se um do resultado."
+    "pt": "Obtido dividindo-se a soma do trabalho abstrato dos trabalhadores assalariados pelo capital variável dos setores produtivos e subtraindo-se um do resultado.",
+    "es": "Obtenido dividiendo la suma del trabajo abstracto de los trabajadores asalariados por el capital variable de los sectores productivos y restando uno al resultado.",
+    "zh": "用雇员的抽象劳动总量除以生产性部门的可变资本，再从结果中减去 1 得到。"
   },
   "obs.WIOD16.emp.s.un": {
-    "pt": "Fonte: wiodr16"
+    "pt": "Fonte: wiodr16",
+    "es": "Fuente: wiodr16",
+    "zh": "来源：wiodr16"
   },
   "obs.WIOD16.empe.s.un": {
-    "pt": "Fonte: wiodr16"
+    "pt": "Fonte: wiodr16",
+    "es": "Fuente: wiodr16",
+    "zh": "来源：wiodr16"
   },
   "obs.WIOD16.hours_worked.empe.s.hr": {
-    "pt": "Fonte: wiodr16"
+    "pt": "Fonte: wiodr16",
+    "es": "Fuente: wiodr16",
+    "zh": "来源：wiodr16"
   },
   "obs.WIOD16.gross_output.s.us": {
-    "pt": "Fonte: wiodr16"
+    "pt": "Fonte: wiodr16",
+    "es": "Fuente: wiodr16",
+    "zh": "来源：wiodr16"
   },
   "obs.WIOD16.gdp.s.us": {
-    "pt": "Fonte: wiodr16"
+    "pt": "Fonte: wiodr16",
+    "es": "Fuente: wiodr16",
+    "zh": "来源：wiodr16"
   },
   "obs.WIOD16.hours_worked.emp.s.hr": {
-    "pt": "Estimado a partir da média de horas trabalhadas pelos trabalhadores assalariados."
+    "pt": "Estimado a partir da média de horas trabalhadas pelos trabalhadores assalariados.",
+    "es": "Estimado a partir de la media de horas trabajadas por los trabajadores asalariados.",
+    "zh": "根据雇员的平均工作时数估算。"
   },
   "obs.WIOD16.exchange.r.us": {
-    "pt": "Calculado para cada país e ano como o valor adicionado total em moeda local dividido pelo valor adicionado total em USD correntes; em seguida, o resultado é aplicado a todos os setores. Os totais dos EUA são validados em relação a 1 USD/USD antes de serem normalizados para exatamente 1."
+    "pt": "Calculado para cada país e ano como o valor adicionado total em moeda local dividido pelo valor adicionado total em USD correntes; em seguida, o resultado é aplicado a todos os setores. Os totais dos EUA são validados em relação a 1 USD/USD antes de serem normalizados para exatamente 1.",
+    "es": "Calculado para cada país y año como el valor añadido total en moneda local dividido por el valor añadido total en USD corrientes; después, el resultado se aplica a todos los sectores. Los totales de Estados Unidos se validan respecto a 1 USD/USD antes de normalizarse exactamente a 1.",
+    "zh": "对每个国家和年份，用本币增加值总额除以当期 USD 增加值总额计算；随后将结果应用于所有部门。美国总量先按 1 USD/USD 验证，再归一化为恰好 1。"
   },
   "obs.WIOD16.go_price.r.id": {
-    "pt": "Os metadados de apresentação multiplicam o valor canônico por 100; o valor armazenado nunca é reescalonado."
+    "pt": "Os metadados de apresentação multiplicam o valor canônico por 100; o valor armazenado nunca é reescalonado.",
+    "es": "Los metadatos de presentación multiplican el valor canónico por 100; el valor almacenado nunca se reescala.",
+    "zh": "展示元数据将标准值乘以 100；存储值从不重新缩放。"
   },
   "obs.WIOD16.compensation.empe.s.us": {
-    "pt": "Convertido da moeda nacional pela taxa de câmbio."
+    "pt": "Convertido da moeda nacional pela taxa de câmbio.",
+    "es": "Convertido desde la moneda nacional mediante el tipo de cambio.",
+    "zh": "按汇率从本币换算。"
   },
   "obs.WIOD16.compensation.emp.s.us": {
-    "pt": "Convertido da moeda nacional pela taxa de câmbio."
+    "pt": "Convertido da moeda nacional pela taxa de câmbio.",
+    "es": "Convertido desde la moneda nacional mediante el tipo de cambio.",
+    "zh": "按汇率从本币换算。"
   },
   "obs.WIOD16.capital_stock.s.us": {
-    "pt": "Convertido da moeda nacional pela taxa de câmbio."
+    "pt": "Convertido da moeda nacional pela taxa de câmbio.",
+    "es": "Convertido desde la moneda nacional mediante el tipo de cambio.",
+    "zh": "按汇率从本币换算。"
   },
   "obs.WIOD16.profit.s.us": {
-    "pt": "Convertido da moeda nacional pela taxa de câmbio."
+    "pt": "Convertido da moeda nacional pela taxa de câmbio.",
+    "es": "Convertido desde la moneda nacional mediante el tipo de cambio.",
+    "zh": "按汇率从本币换算。"
   },
   "obs.WIOD16.capital_stock.s.cu": {
-    "pt": "Deflacionado pelo índice de preços do produto total e convertido da moeda nacional pela taxa de câmbio. Para o Resto do Mundo, a série constante é reconstruída depois da construção do estoque em USD correntes, utilizando-se o índice cambial com base em 2000 e o índice canônico de preços do produto total com 2000 = 1."
+    "pt": "Deflacionado pelo índice de preços do produto total e convertido da moeda nacional pela taxa de câmbio. Para o Resto do Mundo, a série constante é reconstruída depois da construção do estoque em USD correntes, utilizando-se o índice cambial com base em 2000 e o índice canônico de preços do produto total com 2000 = 1.",
+    "es": "Deflactado por el índice de precios del producto total y convertido desde la moneda nacional mediante el tipo de cambio. Para el Resto del Mundo, la serie constante se reconstruye después de calcular el stock en USD corrientes, utilizando el índice cambiario con base en 2000 y el índice canónico de precios del producto total con 2000 = 1.",
+    "zh": "用总产出价格指数平减，并按汇率从本币换算。对于世界其他地区，在构建当期 USD 资本存量后，利用以 2000 年为基准的汇率指数和 2000 = 1 的标准总产出价格指数重建不变价序列。"
   },
   "obs.WIOD16.exchange.r.id": {
-    "pt": "Calculado como a taxa de câmbio corrente de cada país e ano (moeda local/USD) dividida pela taxa de câmbio desse país em 2000. O índice do Resto do Mundo (ROW) reproduz o índice dos EUA. A escala de apresentação é definida pelos metadados de unidade específicos do método."
+    "pt": "Calculado como a taxa de câmbio corrente de cada país e ano (moeda local/USD) dividida pela taxa de câmbio desse país em 2000. O índice do Resto do Mundo (ROW) reproduz o índice dos EUA. A escala de apresentação é definida pelos metadados de unidade específicos do método.",
+    "es": "Calculado como el tipo de cambio corriente de cada país y año (moneda local/USD) dividido por el tipo de cambio de ese país en 2000. El índice del Resto del Mundo (ROW) reproduce el de Estados Unidos. La escala de presentación está definida por los metadatos de unidad específicos del método.",
+    "zh": "用每个国家和年份的当期汇率（本币／USD）除以该国 2000 年的汇率计算。世界其他地区（ROW）的指数采用美国的指数。展示尺度由各方法的单位元数据确定。"
   },
   "obs.WIOD16.complex_labour_multiplier.empe.r.un": {
-    "pt": "O tratamento padrão considera todo o trabalho como igual."
+    "pt": "O tratamento padrão considera todo o trabalho como igual.",
+    "es": "El tratamiento estándar considera todo el trabajo como igual.",
+    "zh": "标准处理方式将所有劳动视为相同。"
   },
   "obs.WIOD16.complex_labour_multiplier.emp.r.un": {
-    "pt": "O tratamento padrão considera todo o trabalho como igual."
+    "pt": "O tratamento padrão considera todo o trabalho como igual.",
+    "es": "El tratamiento estándar considera todo el trabajo como igual.",
+    "zh": "标准处理方式将所有劳动视为相同。"
   },
   "obs.WIOD16.gdp.p.s.us": {
-    "pt": "Obtido pela soma do PIB dos setores produtivos."
+    "pt": "Obtido pela soma do PIB dos setores produtivos.",
+    "es": "Obtenido sumando el PIB de los sectores productivos.",
+    "zh": "通过加总生产性部门的 GDP 得到。"
   },
   "obs.WIOD16.gdp.s.mv": {
-    "pt": "Obtido pela soma do trabalho abstrato realizado nos setores produtivos."
+    "pt": "Obtido pela soma do trabalho abstrato realizado nos setores produtivos.",
+    "es": "Obtenido sumando el trabajo abstracto realizado en los sectores productivos.",
+    "zh": "通过加总生产性部门完成的抽象劳动得到。"
   },
   "obs.WIOD16.basket_price.r.pc": {
-    "pt": "Armazenado em escala canônica com 2000 = 1; a escala de apresentação é definida pelos metadados de unidade específicos do método."
+    "pt": "Armazenado em escala canônica com 2000 = 1; a escala de apresentação é definida pelos metadados de unidade específicos do método.",
+    "es": "Almacenado en escala canónica con 2000 = 1; la escala de presentación está definida por los metadatos de unidad específicos del método.",
+    "zh": "按标准尺度存储，2000 = 1；展示尺度由各方法的单位元数据确定。"
   },
   "obs.WIOD16.basket_value.r.pc": {
-    "pt": "Armazenado em escala canônica com 2000 = 1; a escala de apresentação é definida pelos metadados de unidade específicos do método."
+    "pt": "Armazenado em escala canônica com 2000 = 1; a escala de apresentação é definida pelos metadados de unidade específicos do método.",
+    "es": "Almacenado en escala canónica con 2000 = 1; la escala de presentación está definida por los metadatos de unidad específicos del método.",
+    "zh": "按标准尺度存储，2000 = 1；展示尺度由各方法的单位元数据确定。"
   },
   "obs.WIOD16.labour_force_value.s.mv": {
-    "pt": "Obtido pela conversão da remuneração monetária dos trabalhadores assalariados em valor, conforme o valor incorporado à cesta de consumo."
+    "pt": "Obtido pela conversão da remuneração monetária dos trabalhadores assalariados em valor, conforme o valor incorporado à cesta de consumo.",
+    "es": "Obtenido convirtiendo la remuneración monetaria de los trabajadores asalariados en valor, según el valor incorporado en la cesta de consumo.",
+    "zh": "根据消费篮子中凝结的价值，将雇员的货币报酬换算为价值而得到。"
   },
   "obs.WIOD16.capital_depreciation.s.us": {
-    "pt": "Consulte os pressupostos de cada método para mais informações sobre o cálculo da composição e da depreciação do capital."
+    "pt": "Consulte os pressupostos de cada método para mais informações sobre o cálculo da composição e da depreciação do capital.",
+    "es": "Consulte los supuestos de cada método para obtener más información sobre el cálculo de la composición y la depreciación del capital.",
+    "zh": "关于资本构成和折旧计算的更多信息，请参阅各方法的假设。"
   },
   "obs.WIOD16.exports.s.mv": {
-    "pt": "Obtido pela soma do trabalho produtivo incorporado em todas as mercadorias fornecidas a outros países."
+    "pt": "Obtido pela soma do trabalho produtivo incorporado em todas as mercadorias fornecidas a outros países.",
+    "es": "Obtenido sumando el trabajo productivo incorporado en todas las mercancías suministradas a otros países.",
+    "zh": "通过加总向其他国家提供的全部商品中凝结的生产性劳动得到。"
   },
   "obs.WIOD16.imports.s.mv": {
-    "pt": "Obtido pela soma do trabalho produtivo incorporado em todas as mercadorias recebidas de outros países."
+    "pt": "Obtido pela soma do trabalho produtivo incorporado em todas as mercadorias recebidas de outros países.",
+    "es": "Obtenido sumando el trabajo productivo incorporado en todas las mercancías recibidas de otros países.",
+    "zh": "通过加总从其他国家获得的全部商品中凝结的生产性劳动得到。"
   },
   "obs.WIOD16.labour_force_value.emp.s.mv": {
-    "pt": "Obtido pela conversão da remuneração monetária do trabalho em valor, conforme o valor incorporado à cesta de consumo."
+    "pt": "Obtido pela conversão da remuneração monetária do trabalho em valor, conforme o valor incorporado à cesta de consumo.",
+    "es": "Obtenido convirtiendo la remuneración monetaria del trabajo en valor, según el valor incorporado en la cesta de consumo.",
+    "zh": "根据消费篮子中凝结的价值，将货币劳动报酬换算为价值而得到。"
   },
   "obs.WIOD16.gdp.s.du": {
-    "pt": "Obtido pela conversão da soma do trabalho abstrato realizado nos setores produtivos em preços, mediante a relação entre a soma do produto total a preços de mercado e a soma do produto total em valor no mundo inteiro."
+    "pt": "Obtido pela conversão da soma do trabalho abstrato realizado nos setores produtivos em preços, mediante a relação entre a soma do produto total a preços de mercado e a soma do produto total em valor no mundo inteiro.",
+    "es": "Obtenido convirtiendo la suma del trabajo abstracto realizado en los sectores productivos en precios, mediante la relación entre la suma del producto total a precios de mercado y la suma del producto total en valor en todo el mundo.",
+    "zh": "利用全球按市场价格计量的总产出之和与按价值计量的总产出之和的比率，将生产性部门完成的抽象劳动总量换算为价格而得到。"
   },
   "obs.WIOD16.surplus_value.empe.r.pc": {
-    "pt": "Obtido dividindo-se a soma do trabalho abstrato dos trabalhadores assalariados produtivos e improdutivos pelo capital variável e subtraindo-se um do resultado."
+    "pt": "Obtido dividindo-se a soma do trabalho abstrato dos trabalhadores assalariados produtivos e improdutivos pelo capital variável e subtraindo-se um do resultado.",
+    "es": "Obtenido dividiendo la suma del trabajo abstracto de los trabajadores asalariados productivos e improductivos por el capital variable y restando uno al resultado.",
+    "zh": "用生产性和非生产性雇员的抽象劳动总量除以可变资本，再从结果中减去 1 得到。"
   },
   "obs.WIOD16.labour_force_value.m.mv": {
-    "pt": "Obtido pela divisão do capital variável pelo número de trabalhadores assalariados."
+    "pt": "Obtido pela divisão do capital variável pelo número de trabalhadores assalariados.",
+    "es": "Obtenido dividiendo el capital variable por el número de trabajadores asalariados.",
+    "zh": "用可变资本除以雇员人数得到。"
   },
   "obs.WIOD16.labour_force_value.emp.m.mv": {
-    "pt": "Obtido pela divisão da remuneração do trabalho em magnitude de valor pelo número de pessoas ocupadas."
+    "pt": "Obtido pela divisão da remuneração do trabalho em magnitude de valor pelo número de pessoas ocupadas.",
+    "es": "Obtenido dividiendo la remuneración del trabajo en magnitud de valor por el número de personas ocupadas.",
+    "zh": "用以价值量表示的劳动报酬除以就业人员人数得到。"
   },
   "obs.WIOD16.surplus_value.emp.r.pc": {
-    "pt": "Obtido dividindo-se a soma do trabalho abstrato das pessoas ocupadas em atividades produtivas e improdutivas pela remuneração do trabalho em magnitude de valor e subtraindo-se um do resultado."
+    "pt": "Obtido dividindo-se a soma do trabalho abstrato das pessoas ocupadas em atividades produtivas e improdutivas pela remuneração do trabalho em magnitude de valor e subtraindo-se um do resultado.",
+    "es": "Obtenido dividiendo la suma del trabajo abstracto de las personas ocupadas en actividades productivas e improductivas por la remuneración del trabajo en magnitud de valor y restando uno al resultado.",
+    "zh": "用生产性和非生产性活动中就业人员的抽象劳动总量，除以按价值量计量的劳动报酬，再从结果中减去 1 得到。"
   },
   "obs.WIOD16.surplus_value.emp_p.r.pc": {
-    "pt": "Obtido dividindo-se a soma do trabalho abstrato das pessoas ocupadas pela remuneração do trabalho dos setores produtivos e subtraindo-se um do resultado."
+    "pt": "Obtido dividindo-se a soma do trabalho abstrato das pessoas ocupadas pela remuneração do trabalho dos setores produtivos e subtraindo-se um do resultado.",
+    "es": "Obtenido dividiendo la suma del trabajo abstracto de las personas ocupadas por la remuneración del trabajo de los sectores productivos y restando uno al resultado.",
+    "zh": "用就业人员的抽象劳动总量除以生产性部门的劳动报酬，再从结果中减去 1 得到。"
   },
   "obs.WIOD16.surplus_value.empe_p.r.pc": {
-    "pt": "Obtido dividindo-se a soma do trabalho abstrato dos trabalhadores assalariados pelo capital variável dos setores produtivos e subtraindo-se um do resultado."
+    "pt": "Obtido dividindo-se a soma do trabalho abstrato dos trabalhadores assalariados pelo capital variável dos setores produtivos e subtraindo-se um do resultado.",
+    "es": "Obtenido dividiendo la suma del trabajo abstracto de los trabajadores asalariados por el capital variable de los sectores productivos y restando uno al resultado.",
+    "zh": "用雇员的抽象劳动总量除以生产性部门的可变资本，再从结果中减去 1 得到。"
   }
 }

@@ -73,12 +73,11 @@ wlv_country_region_label <- function(region, lng = default_language) {
   labels <- c("Africa" = "África", "Asia" = "Ásia", "Europe" = "Europa",
               "North America" = "América do Norte", "South America" = "América do Sul",
               "Oceania" = "Oceania", "Aggregates" = "Agregados", "Other" = "Outros")
-  if (identical(lng, "English")) return(region)
-  unname(labels[region])
+  wlv_tr(unname(labels[region]), region, lng)
 }
 
 wlv_country_search_fold <- function(text) {
-  tolower(iconv(enc2utf8(text), from = "UTF-8", to = "ASCII//TRANSLIT", sub = ""))
+  tolower(stringi::stri_trans_general(enc2utf8(text), "Latin-ASCII"))
 }
 
 wlv_country_search_label <- function(label, query) {
@@ -103,6 +102,8 @@ wlv_country_search_label <- function(label, query) {
 
 ### UI ####
 
+source("modules/country/landing.R", encoding = "UTF-8")
+
 # This is an ordinary page: country selection is independent of the map, and
 # navigation, charts, comparisons and sector tables stay in the document flow.
 country_panel <- tags$main(
@@ -112,18 +113,10 @@ country_panel <- tags$main(
   htmltools::includeCSS("www/wlv-country.css"),
   htmltools::includeScript("www/wlv-country.js"),
   div(class = "wlv-explore-content",
-  div(class = "wlv-country-page-heading", tags$h1(id = "country_page_title", l("tab_name.country"))),
+  tags$header(class = "wlv-country-page-heading wlv-explore-heading", tags$h1(id = "country_page_title", l("tab_name.country"))),
+  wlv_country_landing_ui(),
   conditionalPanel(
-    "output.show_country_panel == ''",
-    id = "wlv-country-catalogue",
-    div(class = "wlv-country-catalogue-filters panel panel-default",
-      textInput("co_catalogue_search", "Buscar país", width = "100%"),
-      selectInput("co_catalogue_region", "Continente", choices = NULL, width = "100%", selectize = FALSE)
-    ),
-    uiOutput("co_country_catalogue")
-  ),
-  conditionalPanel(
-    "output.show_country_panel != ''",
+    "output.show_country_panel != '' && output.co_entry_expanded == 'true'",
     id = "wlv-country-content",
   div(
     id = "wlv-country-detail",
@@ -135,13 +128,8 @@ country_panel <- tags$main(
       class = "wlv-country-header",
       div(
         class = "wlv-country-heading",
-        actionButton("co_catalogue_back", "Voltar aos países", icon = icon("arrow-left")),
+        actionButton("co_catalogue_back", "Voltar à visão geral", icon = icon("arrow-up")),
         tags$h2(textOutput("co_panel_title", inline = TRUE))
-      ),
-      div(
-        class = "wlv-country-selector",
-        selectizeInput("co_select_country", label = "País", choices = NULL,
-                       width = "100%", options = list(allowEmptyOption = TRUE))
       ),
       div(
         class = "wlv-country-year",
@@ -164,29 +152,49 @@ country_panel <- tags$main(
         ),
         div(
           class = "wlv-country-downloads panel panel-default",
-          div(
-            class = "wlv-country-download-block",
-            icon("flag"),
-            div(tags$h3(l("co_panel_download_country")), uiOutput("country_link"))
-          ),
-          div(
-            class = "wlv-country-download-block",
-            icon("chart-pie"),
-            div(tags$h3(l("co_panel_download_sector")), uiOutput("sector_data_link"))
+          div(class = "panel-heading", tags$h3(l("tab_name.download"))),
+          div(class = "wlv-country-download-list",
+            div(
+              class = "wlv-country-download-block",
+              tags$h4(icon("flag"), l("co_panel_download_country")),
+              uiOutput("country_link", class = "wlv-country-download-links")
+            ),
+            div(
+              class = "wlv-country-download-block",
+              tags$h4(icon("chart-pie"), l("co_panel_download_sector")),
+              uiOutput("sector_data_link", class = "wlv-country-download-links")
+            )
           )
         )
       ),
         div(
           class = "wlv-country-series",
-          lapply(groups, function(group) {
+          lapply(seq_along(groups), function(group_index) {
+            group <- groups[[group_index]]
+            content_id <- paste0("wlv-country-group-", group_index)
             tags$section(
               class = "wlv-country-group",
-              tags$h3(l(paste0("group.", group))),
+              tags$h3(
+                class = "wlv-country-group-heading",
+                tags$button(
+                  id = paste0(content_id, "-toggle"), type = "button",
+                  class = "wlv-country-group-toggle collapsed",
+                  `data-toggle` = "collapse", `data-target` = paste0("#", content_id),
+                  `aria-controls` = content_id, `aria-expanded` = "false",
+                  icon("chevron-right", class = "wlv-country-group-chevron"),
+                  l(paste0("group.", group))
+                )
+              ),
               div(
-                class = "wlv-country-chart-grid",
-                lapply(meta_indicators$value[meta_indicators$groups == group], function(indicator) {
-                  uiOutput(paste0(indicator, "_plot"), class = "wlv-country-chart-slot")
-                })
+                id = content_id, class = "wlv-country-group-content collapse",
+                `aria-labelledby` = paste0(content_id, "-toggle"),
+                `aria-hidden` = "true", inert = "",
+                div(
+                  class = "wlv-country-chart-grid",
+                  lapply(meta_indicators$value[meta_indicators$groups == group], function(indicator) {
+                    uiOutput(paste0(indicator, "_plot"), class = "wlv-country-chart-slot")
+                  })
+                )
               )
             )
           })
@@ -269,7 +277,9 @@ country_panel <- tagList(country_panel,
 )
 
 co_info_panel <- conditionalPanel(
-  "output.show_info_panel != 0",
+  # Antes da primeira resposta do servidor, o output ainda é undefined.
+  # Abra somente para o estado explícito enviado por renderText().
+  "output.show_info_panel === '1'",
   id = "wlv-country-info-overlay",
   class = "wlv-country-info-overlay",
   div(
@@ -311,19 +321,20 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
   observe({
     countries <- country_availability()$countries
     current <- isolate(IP$co_select_country)
+    fallback <- if ("BRA" %in% countries) "BRA" else countries[[1L]]
     selected <- if (is.null(current) || !length(current)) {
-      ""
-    } else if (identical(current, "") || current %in% countries) {
+      fallback
+    } else if (current %in% countries) {
       current
     } else {
-      ""
+      fallback
     }
     labels <- lb(paste0("ISO3.", countries), IP$l)
     choices <- stats::setNames(countries, labels)
     choices <- choices[order(labels)]
     updateSelectizeInput(
       SESSION, "co_select_country", label = wlv_tr("País", "Country", IP$l),
-      choices = c(stats::setNames("", ""), choices), selected = selected,
+      choices = choices, selected = selected,
       server = FALSE,
       options = list(placeholder = lb("co_select_country.placeholder", IP$l))
     )
@@ -345,7 +356,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
     updateSelectInput(SESSION, "co_catalogue_region", label = wlv_tr("Continente", "Continent", IP$l),
       choices = c(stats::setNames("", wlv_tr("Todos os continentes", "All continents", IP$l)), choices), selected = region)
     updateTextInput(SESSION, "co_catalogue_search", label = wlv_tr("Buscar país", "Search countries", IP$l))
-    updateActionButton(SESSION, "co_catalogue_back", label = wlv_tr("Voltar aos países", "Back to countries", IP$l))
+    updateActionButton(SESSION, "co_catalogue_back", label = wlv_tr("Voltar à visão geral", "Back to overview", IP$l))
   })
   OP$co_country_catalogue <- renderUI({
     rows <- catalogue_countries()
@@ -375,9 +386,6 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
       updateSelectizeInput(SESSION, "co_select_country", selected = country)
     }
   }, ignoreInit = TRUE)
-  observeEvent(IP$co_catalogue_back, {
-    updateSelectizeInput(SESSION, "co_select_country", selected = "")
-  })
   show_country_panel <- reactive({
     country <- IP$co_select_country
     if (wlv_nonempty_selection(country) && country %in% country_availability()$countries) country else ""
@@ -386,6 +394,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
   co_panel_year <- reactiveVal(default_year)
   OP$show_country_panel <- renderText(show_country_panel())
   outputOptions(OP,"show_country_panel", suspendWhenHidden = FALSE)
+  wlv_country_landing_server(IP, OP, RV, SESSION, country_availability, show_country_panel)
   
   ## Change input controls accordingly bases selected in setup panel ####
   observe({
@@ -532,7 +541,7 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
                              x="-0.1",
                              font = list(size = "10")),
                margin = list(l = 48, t = 6, r = 12, b = 50, pad = 0)) |>
-        config(displaylogo = FALSE,
+        wlv_plotly_config(lng, displaylogo = FALSE,
                displayModeBar = FALSE,
                responsive = TRUE)
       
@@ -686,30 +695,29 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
   outputOptions(OP,"co_panel_profile", suspendWhenHidden = FALSE)
   
   ## Download links ####
-  # The same request builder used by Download creates workbooks only on click.
-  # Available observations, rather than a pre-generated archive, enable a link.
-  country_download_requests <- reactive({
+  # A language-independent selection plan enables each link. Export matrices
+  # and translated workbook metadata are composed only after an actual click.
+  country_download_plans <- reactive({
     methods <- RV$bases()
     country <- IP$co_select_country
     if (!wlv_nonempty_selection(country)) return(list())
     stats::setNames(lapply(methods, function(method) {
-      wlv_aggregated_download_request(
+      wlv_aggregated_download_plan(
         method, country = country, countries = sea_countries, sectors = sea_sectors,
-        metadata = meta_indicators, methods = meta_methods, language = language_file,
-        contracts = meta_indicator_contracts
+        metadata = meta_indicators, methods = meta_methods, contracts = meta_indicator_contracts
       )
     }), methods)
   })
-  sector_download_requests <- reactive({
+  sector_download_plans <- reactive({
     methods <- RV$bases()
     country <- IP$co_select_country
     indicator <- co_panel_sector_indicator()
     if (!wlv_nonempty_selection(country) || !wlv_nonempty_selection(indicator)) return(list())
     stats::setNames(lapply(methods, function(method) {
-      wlv_aggregated_download_request(
+      wlv_aggregated_download_plan(
         method, country = country, indicator = indicator, countries = sea_countries,
         sectors = sea_sectors, metadata = meta_indicators, methods = meta_methods,
-        language = language_file, contracts = meta_indicator_contracts
+        contracts = meta_indicator_contracts
       )
     }), methods)
   })
@@ -719,28 +727,24 @@ country_panel_server <-  function(IP, OP, RV, SESSION) {
       class = "wlv-country-download-empty",
       wlv_tr("Nenhum arquivo disponível para esta seleção.", "No file available for this selection.", IP$l)
     ))
-    links <- unlist(lapply(available, function(method) {
-      list(downloadLink(paste0(prefix, method), method), "|")
-    }), recursive = FALSE)
-    do.call(tagList, links[-length(links)])
+    do.call(tagList, lapply(available, function(method) {
+      downloadLink(
+        paste0(prefix, method), tagList(icon("download"), method),
+        class = "wlv-country-download-link"
+      )
+    }))
   }
-  OP$country_link <- renderUI(download_links(country_download_requests(), "co_country_file_"))
-  OP$sector_data_link <- renderUI(download_links(sector_download_requests(), "co_sector_file_"))
+  OP$country_link <- renderUI(download_links(country_download_plans(), "co_country_file_"))
+  OP$sector_data_link <- renderUI(download_links(sector_download_plans(), "co_sector_file_"))
   outputOptions(OP,"country_link", suspendWhenHidden = FALSE)
   outputOptions(OP,"sector_data_link", suspendWhenHidden = FALSE)
   lapply(meta_methods$code, function(method) {
-    country_request <- reactive(country_download_requests()[[method]])
-    sector_request <- reactive(sector_download_requests()[[method]])
-    OP[[paste0("co_country_file_", method)]] <- downloadHandler(
-      filename = function() { req(country_request()); country_request()$filename },
-      content = function(file) wlv_write_download_request(country_request(), file),
-      contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
-    OP[[paste0("co_sector_file_", method)]] <- downloadHandler(
-      filename = function() { req(sector_request()); sector_request()$filename },
-      content = function(file) wlv_write_download_request(sector_request(), file),
-      contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
+    country_data <- reactive(wlv_aggregated_download_data(country_download_plans()[[method]]))
+    sector_data <- reactive(wlv_aggregated_download_data(sector_download_plans()[[method]]))
+    OP[[paste0("co_country_file_", method)]] <- wlv_request_download_handler(function()
+      wlv_aggregated_download_localize(country_data(), language_file, IP$l))
+    OP[[paste0("co_sector_file_", method)]] <- wlv_request_download_handler(function()
+      wlv_aggregated_download_localize(sector_data(), language_file, IP$l))
   })
   
   ## Sector table ####

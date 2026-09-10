@@ -32,7 +32,7 @@ async function bounds(page, name) {
   try {
     for (const width of widths) {
       const mobile = width < 768;
-      const context = await browser.newContext({viewport:{width,height:mobile ? 844 : 1000},
+      const context = await browser.newContext({locale: 'pt-BR', viewport:{width,height:mobile ? 844 : 1000},
         isMobile:mobile, hasTouch:mobile, reducedMotion:'reduce'});
       const page = await context.newPage();
       activePage = page;

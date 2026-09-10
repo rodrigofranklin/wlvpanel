@@ -15,6 +15,7 @@ load_download_export_functions <- function() {
     globalenv()
   }
   environment <- new.env(parent = parent)
+  source(wlvpanel_file("utils", "i18n.R"), local = environment, encoding = "UTF-8")
   sys.source(wlvpanel_file("utils", "display_contracts.R"), envir = environment)
   expressions <- parse(wlvpanel_file("utils", "download_workbooks.R"))
   functions <- c(

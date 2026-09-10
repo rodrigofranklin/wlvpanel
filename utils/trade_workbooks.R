@@ -48,7 +48,7 @@ wlv_trade_workbook_text <- function(key, lang = "pt") {
     observed = c("Componentes observados", "Observed components"), expected = c("Componentes esperados", "Expected components")
   )
   value <- texts[[key]]
-  if (is.null(value)) key else value[[if (identical(lang, "en")) 2L else 1L]]
+  if (is.null(value)) key else wlv_tr(value[[1L]], value[[2L]], lang)
 }
 
 wlv_trade_workbook_equal <- function(actual, expected, label) {
@@ -66,7 +66,7 @@ wlv_trade_workbook_equal <- function(actual, expected, label) {
 wlv_trade_workbook_payload <- function(rows, selection = list(), context = list(),
     lang = "pt", provenance = NULL, kind = c("selection", "series")) {
   kind <- match.arg(kind)
-  lang <- if (lang %in% c("en", "English")) "en" else "pt"
+  lang <- wlv_language_code(lang)
   tr <- function(key) wlv_trade_workbook_text(key, lang)
   if (!is.data.frame(rows) || !nrow(rows) || nrow(rows) > 1048570L ||
       !all(c("year", "value", "outgoing", "incoming", "coverage") %in% names(rows)) ||

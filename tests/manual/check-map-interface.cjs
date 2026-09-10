@@ -90,7 +90,7 @@ async function polygonFrame(page, source = 'WIOD13') {
   try {
     for(const width of widths) {
       const mobile=width<768;
-      const context=await browser.newContext({viewport:{width,height:viewportHeight},isMobile:mobile,hasTouch:mobile});
+      const context=await browser.newContext({locale: 'pt-BR', viewport:{width,height:viewportHeight},isMobile:mobile,hasTouch:mobile});
       const page=await context.newPage();
       const errors=[],external=[],frames=[];
       page.on('pageerror',e=>errors.push(String(e)));
@@ -161,7 +161,7 @@ async function polygonFrame(page, source = 'WIOD13') {
           }
         }
         frames.length=0;
-        await page.locator('#co_map_method').selectOption('WIOD16');
+        await page.locator('#co_map_method').evaluate(node=>node.selectize.setValue('WIOD16'));
         await page.waitForFunction(()=>document.getElementById('co_select_year') && window.jQuery('#co_select_year').data('ionRangeSlider').options.max>2007);
         await idle(page);
         const range=await page.locator('#co_select_year').evaluate(n=>{const x=window.jQuery(n).data('ionRangeSlider'); return {min:x.options.min,max:x.options.max};});
@@ -175,7 +175,7 @@ async function polygonFrame(page, source = 'WIOD13') {
         await page.locator('#co_select_year').evaluate(n=>{window.jQuery(n).data('ionRangeSlider').update({from:2014});window.jQuery(n).trigger('change');});
         await page.waitForFunction(()=>Shiny.shinyapp.$inputValues.co_select_year===2014);
         if(mobile) await activate(page,page.locator('.wlv-map-tool[data-map-sheet="base"]'));
-        await page.locator('#co_map_method').selectOption('WIOD13');
+        await page.locator('#co_map_method').evaluate(node=>node.selectize.setValue('WIOD13'));
         await page.waitForFunction(()=>document.getElementById('co_select_year').value==='2007');
         await idle(page);
         const sourceRestored=await snapshot(page);

@@ -1,17 +1,23 @@
-.wlv-publications { max-width: 1180px; margin-inline: auto; }
-.wlv-publications-filters { display: grid; grid-template-columns: 2fr 1.4fr .8fr; gap: 1rem; margin-top: 1.5rem; }
-.wlv-publications-filters .shiny-input-container { width: 100%; min-width: 0; }
-.wlv-publications-sources, .wlv-publication-links { display: flex; flex-wrap: wrap; gap: .6rem 1.5rem; }
-.wlv-publications-count { margin-block: .7rem 1.1rem; font-weight: 600; }
+.wlv-publications-layout { display: grid; gap: 24px; }
+.wlv-publications-panel { min-width: 0; padding: 20px; background: var(--wlv-surface); border: 1px solid var(--wlv-line); border-radius: 10px; }
+.wlv-publications-filters { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr) minmax(0, .8fr); gap: 20px; align-items: end; }
+.wlv-publications-filters .shiny-input-container { width: 100%; min-width: 0; margin-bottom: 0; }
+.wlv-publications-filters .form-control { width: 100%; }
+.wlv-publications-sources, .wlv-publication-links { display: flex; flex-wrap: wrap; gap: 10px 24px; }
+.wlv-publications-sources { margin: 20px 0 0; padding-top: 16px; border-top: 1px solid var(--wlv-line); font-size: 14px; }
+.wlv-publications-sources a { overflow-wrap: anywhere; }
+.wlv-publications-count { margin: 0 0 20px; font-weight: 600; }
 .wlv-publications-list { margin: 0; padding: 0; list-style: none; }
-.wlv-publication { padding: 1.4rem 0; border-top: 1px solid var(--wlv-line); }
-.wlv-publication h2 { margin: .4rem 0 .65rem; font-size: 20px; line-height: 1.45; }
-.wlv-publication-meta { color: var(--wlv-muted); font-size: 12px; }
+.wlv-publication { padding: 24px 0; border-top: 1px solid var(--wlv-line); }
+.wlv-publications-list > li:last-child .wlv-publication { padding-bottom: 0; }
+.wlv-publication h2 { margin: 6px 0 10px; font-size: 20px; line-height: 1.45; }
+.wlv-publication-meta { margin: 0; color: var(--wlv-muted); font-size: 13px; }
 .wlv-publication-authors { line-height: 1.6; }
 .wlv-publication a { overflow-wrap: anywhere; }
+.wlv-publication-links { margin-top: 16px; }
 .wlv-publication a:focus-visible, .wlv-publications-sources a:focus-visible { outline: 3px solid var(--wlv-red-dark); outline-offset: 3px; }
-@media (max-width: 700px) {
-  .wlv-publications-filters { grid-template-columns: 1fr; gap: .1rem; }
-  .wlv-publication { padding: 1.1rem 0; }
+@media (max-width: 767px) {
+  .wlv-publications-filters { grid-template-columns: 1fr; gap: 16px; }
+  .wlv-publication { padding: 20px 0; }
   .wlv-publication h2 { font-size: 18px; }
 }

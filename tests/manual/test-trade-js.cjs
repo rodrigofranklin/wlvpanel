@@ -49,6 +49,10 @@ const root = {
     return {geometryReady: () => { geometryReady++; }, resize: () => { resized++; }, destroy: () => { projectionDestroyed++; }};
   }}
 };
+root.wlvI18n = {
+  code: () => root.document.documentElement.lang.split('-')[0],
+  text: (pt, en) => root.document.documentElement.lang === 'en' ? en : pt
+};
 vm.runInNewContext(script, root, {filename: 'www/wlv-trade.js'});
 const api = root.module.exports;
 assert.equal(typeof handlers.wlvTradeMap, 'function');
@@ -103,21 +107,40 @@ assert.equal(url.searchParams.get('trade_open'), '1');
 // Exercise the SVG layer against map projection methods, not longitude-based
 // interpolation. The fake DOM is intentionally small and does not load a browser.
 class SvgNode {
-  constructor(tag) { this.tag = tag; this.attributes = {}; this.style = {}; this.children = []; this.listeners = {}; }
+  constructor(tag) {
+    this.tag = tag; this.attributes = {}; this.style = {}; this.children = []; this.listeners = {};
+    this.listenerCount = 0; this.insertions = 0; this.removals = 0;
+  }
   setAttribute(name, value) { this.attributes[name] = String(value); }
-  appendChild(child) { child.parentNode = this; this.children.push(child); return child; }
-  removeChild(child) { this.children.splice(this.children.indexOf(child), 1); child.parentNode = null; return child; }
-  addEventListener(name, handler) { this.listeners[name] = handler; }
+  getAttribute(name) { return this.attributes[name] ?? null; }
+  removeAttribute(name) { delete this.attributes[name]; }
+  appendChild(child) { return this.insertBefore(child, null); }
+  insertBefore(child, next) {
+    if (child === next) return child;
+    if (child.parentNode) child.parentNode.removeChild(child);
+    const index = next == null ? this.children.length : this.children.indexOf(next);
+    assert.notEqual(index, -1, 'The reference node must belong to its parent.');
+    this.children.splice(index, 0, child); child.parentNode = this; this.insertions++;
+    return child;
+  }
+  removeChild(child) {
+    const index = this.children.indexOf(child);
+    assert.notEqual(index, -1, 'Only an attached node may be removed.');
+    this.children.splice(index, 1); child.parentNode = null; this.removals++;
+    return child;
+  }
+  addEventListener(name, handler) { this.listeners[name] = handler; this.listenerCount++; }
   get firstChild() { return this.children[0] || null; }
 }
-root.document.createElementNS = (_, tag) => new SvgNode(tag);
+let createdNodes = 0;
+root.document.createElementNS = (_, tag) => { createdNodes++; return new SvgNode(tag); };
 const overlayPane = new SvgNode('div'), panes = {overlayPane};
 const projectedCoordinates = [], removedTooltips = [];
 const flowMap = Object.assign(map({BRA: layer(), CHN: layer(), CAN: layer()}), {
-  scale: 2, origin: {x: 0, y: 0},
+  scale: 2, origin: {x: 0, y: 0}, size: {x: 720, y: 360},
   getPanes() { return panes; }, getPane(name) { return panes[name]; },
   createPane(name) { panes[name] = new SvgNode('div'); return panes[name]; },
-  getSize() { return {x: 720, y: 360}; },
+  getSize() { return this.size; },
   containerPointToLayerPoint() { return this.origin; },
   latLngToLayerPoint(coordinates) {
     projectedCoordinates.push(Array.from(coordinates));
@@ -166,12 +189,68 @@ assert.equal(inputs.at(-1)[1].id, 'CHN');
 firstArrow.listeners.keydown({key: 'Enter', preventDefault() {}, stopPropagation() {}});
 assert.equal(inputs.at(-1)[1].source, 'trade-flow');
 const previousPath = firstArrow.children[0].attributes.d;
+const originalShaft = firstArrow.children[0], originalHead = firstArrow.children[1];
+const secondArrow = flowState.flowSvg.children[1];
+const originalListeners = {...firstArrow.listeners};
+const beforePan = {nodes: createdNodes, insertions: flowState.flowSvg.insertions, removals: flowState.flowSvg.removals};
 flowMap.scale = 1.5; flowMap.origin = {x: 37, y: 19};
 flowMap.listeners['move zoom viewreset resize']();
+assert.equal(flowState.flowSvg.children[0], firstArrow, 'Pan/zoom must preserve the group identity and keyboard focus target.');
+assert.equal(firstArrow.children[0], originalShaft);
+assert.equal(firstArrow.children[1], originalHead);
+assert.equal(createdNodes, beforePan.nodes, 'Pan/zoom must allocate no replacement SVG nodes.');
+assert.equal(flowState.flowSvg.insertions, beforePan.insertions, 'Unchanged groups must not be moved in the DOM.');
+assert.equal(flowState.flowSvg.removals, beforePan.removals);
+assert.equal(firstArrow.listenerCount, 7, 'Listeners must be installed exactly once per group.');
+Object.entries(originalListeners).forEach(([name, listener]) => assert.equal(firstArrow.listeners[name], listener));
 assert.notEqual(flowState.flowSvg.children[0].children[0].attributes.d, previousPath);
 assert.equal(flowState.flowSvg.style.left, '37px');
 assert.equal(flowState.flowSvg.style.top, '19px');
 assert.equal(flowState.flowSvg.children[0].children[0].attributes['stroke-width'], '14');
+firstArrow.listeners.focus();
+const newGeometry = api.curveGeometry({x: 413, y: 71}, {x: 173, y: 131}, 14, 'CHN');
+assert.deepEqual(Array.from(lastTooltip.latlng), [
+  90 - (newGeometry.middle.y + 19) / 1.5, (newGeometry.middle.x + 37) / 1.5 - 180
+], 'Keyboard tooltips must use the latest projected midpoint.');
+firstArrow.listeners.blur();
+const revisedRows = [
+  {...flowRows[1], amount: 50, value: -50, width: 7, color: '#102030', label: 'Updated Canada', aria_label: 'Updated accessible Canada'},
+  {...flowRows[0], from: 'BRA', to: 'CHN', amount: 120, value: -120, width: 15, label: 'Updated China'}
+];
+api.receive({id: flowElement.id, flows: {enabled: true, rows: revisedRows, legend: 'Updated legend'}});
+assert.equal(flowState.flowSvg.children[0], secondArrow, 'Server order must change without recreating surviving arrows.');
+assert.equal(flowState.flowSvg.children[1], firstArrow);
+assert.equal(flowState.flowSvg.attributes['aria-label'], 'Updated legend');
+assert.equal(secondArrow.attributes['aria-label'], 'Updated accessible Canada');
+assert.equal(secondArrow.attributes['data-amount'], '50');
+assert.equal(secondArrow.children[0].attributes['stroke-width'], '7');
+assert.equal(secondArrow.children[0].attributes.stroke, '#102030');
+assert.equal(secondArrow.children[1].attributes.fill, '#102030');
+assert.equal(firstArrow.attributes['data-from'], 'BRA');
+assert.equal(firstArrow.attributes['data-to'], 'CHN');
+assert.equal(firstArrow.children[0].attributes.stroke, '#8D2028');
+firstArrow.listeners.pointerenter({});
+assert.equal(lastTooltip.content, 'Updated China', 'Retained listeners must read the latest translation and amount.');
+firstArrow.listeners.pointerleave();
+const beforeKey = inputs.length;
+firstArrow.listeners.keydown({key: ' ', preventDefault() {}, stopPropagation() {}});
+assert.equal(inputs.length, beforeKey + 1, 'Space keeps keyboard activation.');
+assert.equal(inputs.at(-1)[1].id, 'CHN');
+firstArrow.listeners.keydown({key: 'Escape'});
+assert.equal(inputs.length, beforeKey + 1, 'Other keys must not select a partner.');
+api.receive({id: flowElement.id, flows: {enabled: true, interactive: false, rows: revisedRows}});
+assert.equal(flowState.flowSvg.children[1], firstArrow);
+assert.equal(firstArrow.attributes.role, undefined);
+assert.equal(firstArrow.attributes.tabindex, undefined);
+assert.equal(firstArrow.children[0].style.pointerEvents, '');
+firstArrow.listeners.click({}); firstArrow.listeners.focus(); firstArrow.listeners.keydown({key: 'Enter'});
+assert.equal(inputs.length, beforeKey + 1, 'A retained noninteractive arrow must not emit Shiny input.');
+assert.equal(flowState.flowTooltip, null);
+api.receive({id: flowElement.id, flows: {enabled: true, rows: revisedRows}});
+assert.equal(firstArrow.attributes.role, 'button');
+assert.equal(firstArrow.attributes.tabindex, '0');
+assert.equal(firstArrow.children[0].style.pointerEvents, 'stroke');
+assert.equal(firstArrow.listenerCount, 7, 'Toggling interaction must not duplicate listeners.');
 const acrossMap = api.curveGeometry({x: 5, y: 90}, {x: 715, y: 95}, 10, 'date-line');
 assert.equal(acrossMap.end.x, 715);
 assert.ok(!/NaN|Infinity/.test(acrossMap.shaft + acrossMap.head));
@@ -179,6 +258,10 @@ assert.equal(api.curveGeometry({x: 5, y: 5}, {x: 5, y: 5}, 10, 'same-point'), nu
 api.receive({id: flowElement.id, flows: {enabled: true, rows: [flowRows[1]]}});
 assert.equal(api.flows(flowElement.id).count, 1);
 assert.equal(flowState.flowSvg.children[0].attributes['data-partner'], 'CAN');
+assert.equal(flowState.flowSvg.children[0], secondArrow, 'Removing another partner must retain the surviving group.');
+const afterRemoval = inputs.length;
+firstArrow.listeners.click({});
+assert.equal(inputs.length, afterRemoval, 'Detached nodes must not emit stale selections.');
 api.receive({id: flowElement.id, flows: {enabled: false, rows: flowRows}});
 assert.equal(api.flows(flowElement.id).count, 0);
 assert.equal(flowState.flowSvg.children.length, 0);
@@ -187,7 +270,38 @@ assert.equal(api.flows(flowElement.id).count, 0);
 api.receive({id: flowElement.id, flows: {enabled: true, rows: flowRows}});
 api.receive({id: flowElement.id, countries: {CHN: {color: 'gold', label: 'China'}}});
 assert.equal(api.flows(flowElement.id).count, 0, 'A replacement metric without arrows must clear the previous arrows.');
+const twelveRows = Array.from({length: 12}, (_, index) => ({...flowRows[index % 2], id: 'partner-' + index}));
+api.receive({id: flowElement.id, flows: {enabled: true, rows: twelveRows}});
+assert.equal(api.flows(flowElement.id).count, 12);
+const twelveGroups = [...flowState.flowSvg.children], twelveNodes = createdNodes;
+const twelveInsertions = flowState.flowSvg.insertions, twelveRemovals = flowState.flowSvg.removals;
+for (let index = 0; index < 20; index++) {
+  flowMap.origin = {x: index, y: index / 2};
+  flowMap.listeners['move zoom viewreset resize']();
+}
+assert.equal(createdNodes, twelveNodes, 'Twenty map moves must create zero nodes for the twelve existing arrows.');
+assert.equal(flowState.flowSvg.insertions, twelveInsertions);
+assert.equal(flowState.flowSvg.removals, twelveRemovals);
+twelveGroups.forEach((group, index) => {
+  assert.equal(flowState.flowSvg.children[index], group);
+  assert.equal(group.listenerCount, 7);
+});
+flowMap.size = {x: 0, y: 0};
+flowMap.listeners['move zoom viewreset resize']();
+assert.equal(flowState.flowSvg.children.length, 0, 'A zero-size viewport must clear stale visible geometry, as before.');
+assert.equal(flowState.flowNodes.size, 0);
+assert.equal(api.flows(flowElement.id).count, 0);
+flowMap.size = {x: 720, y: 360};
+flowMap.listeners['move zoom viewreset resize']();
+assert.equal(api.flows(flowElement.id).count, 12, 'Returning to a measurable viewport must restore its current arrows.');
+api.receive({id: flowElement.id, flows: {enabled: true, rows: [flowRows[0], flowRows[0]]}});
+assert.equal(api.flows(flowElement.id).count, 2, 'Repeated partner IDs must remain separate rows.');
+assert.notEqual(flowState.flowSvg.children[0], flowState.flowSvg.children[1]);
 flowState.destroy();
 assert.equal(panes['wlv-trade-flows'].children.length, 0);
 assert.equal(Object.keys(flowMap.listeners).length, 0);
-console.log('Trade JS: lifecycle, map races, responsive controls, versioned URL, projected arrows, proportional widths, hover/click and cleanup passed.');
+assert.equal(flowState.flowNodes.size, 0, 'Destroyed maps must release retained flow records.');
+const afterDestroy = inputs.length;
+twelveGroups[0].listeners.click({});
+assert.equal(inputs.length, afterDestroy);
+console.log('Trade JS: lifecycle, map races, responsive controls, versioned URL, retained projected arrows, current data/listeners, keyboard, proportional widths and cleanup passed.');

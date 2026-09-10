@@ -17,6 +17,14 @@ stopifnot(grepl('id="wlv-country-page"', ui_html, fixed = TRUE))
 stopifnot(grepl('id="co_select_country"', ui_html, fixed = TRUE))
 stopifnot(!grepl('wlv-country-overlay', ui_html, fixed = TRUE))
 stopifnot(!grepl('close_country_panel', ui_html, fixed = TRUE))
+group_buttons <- regmatches(ui_html, gregexpr('<button[^>]*class="wlv-country-group-toggle[^"<>]*"[^>]*>', ui_html))[[1L]]
+group_contents <- regmatches(ui_html, gregexpr('<div[^>]*class="wlv-country-group-content[^"<>]*"[^>]*>', ui_html))[[1L]]
+stopifnot(length(group_buttons) == length(groups), length(group_contents) == length(groups))
+stopifnot(all(grepl('class="wlv-country-group-toggle collapsed"', group_buttons, fixed = TRUE)))
+stopifnot(all(grepl('aria-expanded="false"', group_buttons, fixed = TRUE)))
+stopifnot(all(grepl('class="wlv-country-group-content collapse"', group_contents, fixed = TRUE)))
+stopifnot(all(grepl('aria-hidden="true"', group_contents, fixed = TRUE)))
+stopifnot(all(grepl('inert=""', group_contents, fixed = TRUE)))
 country_css <- paste(readLines("www/wlv-country.css", encoding = "UTF-8"), collapse = "\n")
 stopifnot(!grepl(".wlv-country-overlay", country_css, fixed = TRUE))
 plot_payload <- function(rendered_ui) {
@@ -50,6 +58,9 @@ shiny::testServer(function(input, output, session) {
   )
   stopifnot(identical(output$show_country_panel, "BRA"))
   stopifnot(identical(output$co_panel_title, "Brazil"))
+  stopifnot(identical(output$co_entry_expanded, "false"))
+  session$setInputs(co_entry_more = 1L)
+  stopifnot(identical(output$co_entry_expanded, "true"))
   stopifnot(identical(output$co_panel_year_text, "2007"))
   stopifnot(nzchar(output$co_panel_profile))
   stopifnot(grepl('id="co_country_file_WIOD13"', output$country_link$html, fixed = TRUE))
@@ -71,6 +82,8 @@ shiny::testServer(function(input, output, session) {
   stopifnot(identical(output$co_panel_sector_indicator, lb("gdp.s.mv", "English")))
   stopifnot(nzchar(output$co_panel_sector_WIOD13))
   session$setInputs(l = "Português")
+  session$setInputs(co_select_country = "BRA")
+  stopifnot(identical(output$co_entry_expanded, "true"))
   stopifnot(identical(output$co_panel_profile_label, "Perfil do país"))
   stopifnot(identical(output$co_panel_title, "Brasil"))
   stopifnot(identical(last_control("co_select_country")$value, "BRA"))
@@ -103,11 +116,11 @@ shiny::testServer(function(input, output, session) {
   session$setInputs(main_nav = "map")
   stopifnot(identical(output$show_info_panel, "0"))
   stopifnot(identical(output$show_country_panel, "BRA"))
-  # Empty selection is an ordinary page state; hidden DT outputs cancel instead
+  # Empty selection returns to the catalogue; hidden DT outputs cancel instead
   # of sending NULL (which breaks DT's lazy renderer).
   session$setInputs(co_select_country = "")
   stopifnot(identical(output$show_country_panel, ""))
-  stopifnot(grepl("Selecione um país", output$country_page_empty, fixed = TRUE))
+  stopifnot(grepl('data-wlv-country="BRA"', output$co_country_catalogue$html, fixed = TRUE))
   for (id in c("co_panel_profile", "co_sector_panel", "co_panel_sector_WIOD13")) {
     closed_output <- tryCatch(output[[id]], error = identity)
     stopifnot(inherits(closed_output, "shiny.output.cancel"))

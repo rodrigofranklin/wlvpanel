@@ -15,6 +15,22 @@ async function settle(page) {
 async function select(page, id, value) {
   await page.locator('#' + id).evaluate((node, value) => node.selectize.setValue(value), value);
 }
+async function openCatalogue(page) {
+  const catalogue = page.locator('#wlv-country-catalogue');
+  if (!(await catalogue.evaluate(node => node.open))) await catalogue.locator(':scope > summary').click();
+  await page.locator('#co_catalogue_search').waitFor({ state: 'visible' });
+}
+async function openDetails(page) {
+  await page.locator('#co_entry_more').click();
+  await page.locator('#wlv-country-detail').waitFor({ state: 'visible' });
+  const toggle = page.locator('#wlv-country-group-1-toggle');
+  if (await toggle.getAttribute('aria-expanded') !== 'true') await toggle.click();
+  await page.waitForFunction(() => {
+    const group = document.getElementById('wlv-country-group-1');
+    return group?.classList.contains('in') && group.getAttribute('aria-hidden') === 'false';
+  });
+  await settle(page);
+}
 async function nav(page, value) {
   if (await page.locator('.navbar-toggle').isVisible() &&
       !(await page.locator('.navbar-collapse').isVisible())) await page.locator('.navbar-toggle').click();
@@ -28,25 +44,29 @@ async function nav(page, value) {
   const browser = await chromium.launch({ headless: true });
   try {
     for (const width of [1920, 1440, 390, 320]) {
-      const context = await browser.newContext({ viewport: { width, height: width > 768 ? 1000 : 844 }, hasTouch: width < 768 });
+      const context = await browser.newContext({ locale: 'pt-BR', viewport: { width, height: width > 768 ? 1000 : 844 }, hasTouch: width < 768 });
       const page = await context.newPage();
       page.on('pageerror', error => evidence.errors.push(String(error)));
       await page.goto(url, { waitUntil: 'domcontentloaded' });
       await page.waitForFunction(() => window.Shiny?.shinyapp?.$inputValues.main_nav, null, { timeout: 45000 });
       await nav(page, 'country');
-      await page.locator('#wlv-country-catalogue').waitFor({ state: 'visible' });
+      await page.locator('#wlv-country-entry').waitFor({ state: 'visible' });
+      await page.waitForFunction(() => document.getElementById('co_select_country')?.value === 'BRA');
+      assert.equal(await page.locator('#co_select_country').inputValue(), 'BRA', 'Country opens on the Brazil overview');
+      assert.equal(await page.locator('#wlv-country-catalogue').evaluate(node => node.open), false, 'Country catalogue starts collapsed');
+      assert.equal(await page.locator('#wlv-country-detail').isVisible(), false, 'Country details wait for Show me more');
+      await openCatalogue(page);
       await page.locator('[data-wlv-country="BRA"]').waitFor();
-      assert.equal(await page.locator('#co_select_country').inputValue(), '', 'Country opens on the catalogue');
       assert.ok(await page.locator('.wlv-country-catalogue-group').count() >= 5, 'Countries are grouped geographically');
       const countryCodes = await page.locator('[data-wlv-country]').evaluateAll(nodes => nodes.map(node => node.dataset.wlvCountry));
       assert.ok(countryCodes.includes('ROW') && countryCodes.includes('WWW'), 'Aggregate observations are retained');
       assert.equal((await page.locator('[data-wlv-country="TWN"]').textContent()).trim(), 'Taiwan, China', 'Country catalogue uses the requested name');
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 2), 'Catalogue fits the viewport');
       await page.screenshot({ path: path.join(campaign, 'results', 'country-catalogue-' + width + '.png') });
-      await page.locator('#co_catalogue_region').selectOption('Europe');
+      await page.locator('#co_catalogue_region').evaluate(node => node.selectize.setValue('Europe'));
       await page.waitForFunction(() => document.querySelectorAll('.wlv-country-catalogue-group').length === 1 && !document.querySelector('[data-wlv-country="BRA"]'));
       assert.equal(await page.locator('[data-wlv-country="GBR"]').count(), 1, 'Continent filter retains the matching countries');
-      await page.locator('#co_catalogue_region').selectOption('');
+      await page.locator('#co_catalogue_region').evaluate(node => node.selectize.setValue(''));
       await page.locator('#co_catalogue_search').fill('mex');
       await page.waitForFunction(() => document.querySelectorAll('[data-wlv-country]').length === 1);
       assert.equal(await page.locator('[data-wlv-country="MEX"] mark').count(), 1, 'Search is accent-insensitive and highlighted');
@@ -54,6 +74,9 @@ async function nav(page, value) {
       await page.locator('#co_catalogue_search').fill('');
       await page.locator('[data-wlv-country="BRA"]').click();
       await page.waitForFunction(() => document.getElementById('co_panel_title')?.textContent === 'Brasil');
+      assert.equal(await page.locator('#wlv-country-catalogue').evaluate(node => node.open), false, 'Selecting a country closes the catalogue');
+      assert.equal(await page.locator('#wlv-country-detail').isVisible(), false, 'Catalogue selection keeps the country overview');
+      await openDetails(page);
       await page.waitForFunction(() => document.querySelectorAll('.wlv-country-chart-slot .js-plotly-plot').length > 0);
       await settle(page);
       assert.equal(await page.locator('#co_select_country').count(), 1, 'Country input occurs once');
@@ -123,18 +146,21 @@ async function nav(page, value) {
       assert.equal(await page.locator('#co_panel_year').inputValue(), '2008');
       assert.equal(await page.locator('#co_panel_sector_select').inputValue(), 'gdp.s.mv');
       assert.equal((await page.locator('#country_page_title').textContent()).trim(), 'Country');
+      assert.equal(await page.locator('#wlv-country-detail').isVisible(), true, 'Changing language preserves the expanded country details');
 
       await nav(page, 'map');
       await nav(page, 'country');
       assert.equal(await page.locator('#co_select_country').inputValue(), 'BRA', 'Navigation preserves country');
       assert.equal(await page.locator('#co_panel_year').inputValue(), '2008', 'Navigation preserves year');
       await page.locator('#co_catalogue_back').click();
-      await page.locator('#wlv-country-catalogue').waitFor({ state: 'visible' });
-      assert.equal((await page.locator('[data-wlv-country="TWN"]').textContent()).trim(), 'Taiwan, China', 'Country name stays the same in English');
       await page.locator('#wlv-country-detail').waitFor({ state: 'hidden' });
+      assert.equal(await page.locator('#co_select_country').inputValue(), 'BRA', 'Back to overview preserves the selected country');
+      await openCatalogue(page);
+      assert.equal((await page.locator('[data-wlv-country="TWN"]').textContent()).trim(), 'Taiwan, China', 'Country name stays the same in English');
       await page.locator('[data-wlv-country="AUS"]').click();
       await page.waitForFunction(() => document.getElementById('co_panel_title')?.textContent === 'Australia');
-      await page.locator('#wlv-country-detail').waitFor({ state: 'visible' });
+      assert.equal(await page.locator('#wlv-country-detail').isVisible(), false, 'Choosing another country returns its overview');
+      await openDetails(page);
       await settle(page);
       evidence.viewports.push({ ...layout, country: 'AUS', status: 'passed' });
       await context.close();

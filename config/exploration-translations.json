@@ -1,0 +1,694 @@
+{
+  "Indicators": {
+    "es": "Indicadores",
+    "zh": "指标"
+  },
+  "Indicator": {
+    "es": "Indicador",
+    "zh": "指标"
+  },
+  "Countries to compare": {
+    "es": "Países para comparar",
+    "zh": "比较国家"
+  },
+  "Databases to compare": {
+    "es": "Bases para comparar",
+    "zh": "比较数据库"
+  },
+  "Year": {
+    "es": "Año",
+    "zh": "年份"
+  },
+  "Map database": {
+    "es": "Base del mapa",
+    "zh": "地图数据库"
+  },
+  "Time series": {
+    "es": "Serie histórica",
+    "zh": "时间序列"
+  },
+  "Map": {
+    "es": "Mapa",
+    "zh": "地图"
+  },
+  "Indicator catalogue": {
+    "es": "Catálogo de indicadores",
+    "zh": "指标目录"
+  },
+  "Ranking": {
+    "es": "Clasificación",
+    "zh": "排名"
+  },
+  "Ranking database": {
+    "es": "Base de la clasificación",
+    "zh": "排名数据库"
+  },
+  "Country rankings over time": {
+    "es": "Posición de los países a lo largo del tiempo",
+    "zh": "各国历年排名"
+  },
+  "1st = highest indicator value. Ties share the same rank. Rankings include countries with data in each year and exclude aggregates; coverage may vary. Highlights show rank above and value below.": {
+    "es": "1.º = mayor valor del indicador. Los empates comparten posición. La clasificación incluye los países con datos en cada año y excluye agregados; la cobertura puede variar. En los destacados, la posición aparece arriba y el valor abajo.",
+    "zh": "第1名表示指标值最高。数值相同的国家并列排名。排名包括当年有数据的国家，不包括汇总地区；各年覆盖范围可能不同。高亮项上方显示排名，下方显示数值。"
+  },
+  "Higher values": {
+    "es": "Valores más altos",
+    "zh": "较高值"
+  },
+  "Lower values": {
+    "es": "Valores más bajos",
+    "zh": "较低值"
+  },
+  "Colors: fifths of each year's ranking": {
+    "es": "Colores: quintiles de la clasificación anual",
+    "zh": "颜色：年度排名的五等分组"
+  },
+  "Scroll the chart horizontally to explore the years.": {
+    "es": "Deslice el gráfico horizontalmente para recorrer los años.",
+    "zh": "水平滚动图表以查看各年份。"
+  },
+  "Group": {
+    "es": "Grupo",
+    "zh": "组别"
+  },
+  "Subgroup": {
+    "es": "Subgrupo",
+    "zh": "子组"
+  },
+  "All groups": {
+    "es": "Todos los grupos",
+    "zh": "所有组别"
+  },
+  "All subgroups": {
+    "es": "Todos los subgrupos",
+    "zh": "所有子组"
+  },
+  "Back to catalogue": {
+    "es": "Volver al catálogo",
+    "zh": "返回目录"
+  },
+  "Search the catalogue": {
+    "es": "Buscar en el catálogo",
+    "zh": "搜索目录"
+  },
+  "All countries": {
+    "es": "Todos los países",
+    "zh": "所有国家"
+  },
+  "Selected countries": {
+    "es": "Países seleccionados",
+    "zh": "已选国家"
+  },
+  "Country": {
+    "es": "País",
+    "zh": "国家"
+  },
+  "Tap a row or a country on the map to add it to the comparison.": {
+    "es": "Pulse una fila o un país en el mapa para añadirlo a la comparación.",
+    "zh": "点击表格行或地图上的国家，将其加入比较。"
+  },
+  "Tap a row to remove the country from the comparison.": {
+    "es": "Pulse una fila para retirar el país de la comparación.",
+    "zh": "点击表格行，将该国家移出比较。"
+  },
+  "No observations are available for this selection.": {
+    "es": "No hay observaciones para esta selección.",
+    "zh": "当前选择没有可用的观测数据。"
+  },
+  "Select at least one country and database to compare.": {
+    "es": "Seleccione al menos un país y una base para comparar.",
+    "zh": "请至少选择一个国家和一个数据库进行比较。"
+  },
+  "No indicators found.": {
+    "es": "No se encontraron indicadores.",
+    "zh": "未找到指标。"
+  },
+  "Download selected series (CSV)": {
+    "es": "Descargar la serie seleccionada (CSV)",
+    "zh": "下载所选序列（CSV）"
+  },
+  "Complete indicator by database (XLSX)": {
+    "es": "Indicador completo por base (XLSX)",
+    "zh": "按数据库下载完整指标（XLSX）"
+  },
+  "Includes all years for the selected countries and databases, in display units.": {
+    "es": "Incluye todos los años de los países y bases seleccionados, en las unidades mostradas.",
+    "zh": "包含所选国家和数据库的全部年份，数值使用页面显示的单位。"
+  },
+  "No data": {
+    "es": "Sin datos",
+    "zh": "无数据"
+  },
+  "Unit": {
+    "es": "Unidad",
+    "zh": "单位"
+  },
+  "Databases with different units appear in separate charts.": {
+    "es": "Las bases con unidades diferentes se muestran en gráficos separados.",
+    "zh": "单位不同的数据库分别显示在不同图表中。"
+  },
+  "Search country:": {
+    "es": "Buscar país:",
+    "zh": "搜索国家："
+  },
+  "_START_–_END_ of _TOTAL_ countries": {
+    "es": "_START_–_END_ de _TOTAL_ países",
+    "zh": "第 _START_–_END_ 项，共 _TOTAL_ 个国家"
+  },
+  "Previous": {
+    "es": "Anterior",
+    "zh": "上一页"
+  },
+  "Next": {
+    "es": "Siguiente",
+    "zh": "下一页"
+  },
+  "Index": {
+    "es": "Índice",
+    "zh": "指数"
+  },
+  "Index points": {
+    "es": "Puntos de índice",
+    "zh": "指数点"
+  },
+  "People": {
+    "es": "Personas",
+    "zh": "人数"
+  },
+  "Hours": {
+    "es": "Horas",
+    "zh": "小时"
+  },
+  "Abstract labour hours": {
+    "es": "Horas de trabajo abstracto",
+    "zh": "抽象劳动小时"
+  },
+  "mv/person": {
+    "es": "mv/persona",
+    "zh": "mv/人"
+  },
+  "Local currency/US$": {
+    "es": "Moneda local/US$",
+    "zh": "本币/美元"
+  },
+  "Ratio": {
+    "es": "Razón",
+    "zh": "比率"
+  },
+  "Multiplier": {
+    "es": "Multiplicador",
+    "zh": "乘数"
+  },
+  "Capital stock": {
+    "es": "Stock de capital",
+    "zh": "资本存量"
+  },
+  "Profit": {
+    "es": "Ganancia",
+    "zh": "利润"
+  },
+  "Capital depreciation": {
+    "es": "Depreciación del capital",
+    "zh": "资本折旧"
+  },
+  "Appropriated profit": {
+    "es": "Ganancia apropiada",
+    "zh": "占有的利润"
+  },
+  "Value transfers through trade": {
+    "es": "Transferencias de valor mediante el comercio",
+    "zh": "贸易中的价值转移"
+  },
+  "Exports": {
+    "es": "Exportaciones",
+    "zh": "出口"
+  },
+  "Imports": {
+    "es": "Importaciones",
+    "zh": "进口"
+  },
+  "Trade balance": {
+    "es": "Saldo comercial",
+    "zh": "贸易差额"
+  },
+  "Hours worked": {
+    "es": "Horas trabajadas",
+    "zh": "实际工作小时"
+  },
+  "Employed people": {
+    "es": "Personas ocupadas",
+    "zh": "就业人数"
+  },
+  "Employees": {
+    "es": "Trabajadores asalariados",
+    "zh": "雇员"
+  },
+  "Abstract labour": {
+    "es": "Trabajo abstracto",
+    "zh": "抽象劳动"
+  },
+  "Exchange rate": {
+    "es": "Tipo de cambio",
+    "zh": "汇率"
+  },
+  "Gross output prices": {
+    "es": "Precios de la producción total",
+    "zh": "总产出价格"
+  },
+  "Complex labour multiplier": {
+    "es": "Multiplicador del trabajo complejo",
+    "zh": "复杂劳动乘数"
+  },
+  "Consumption basket price": {
+    "es": "Precio de la cesta de consumo",
+    "zh": "消费篮子价格"
+  },
+  "Consumption basket value": {
+    "es": "Valor de la cesta de consumo",
+    "zh": "消费篮子价值"
+  },
+  "Gross output": {
+    "es": "Producción total",
+    "zh": "总产出"
+  },
+  "Gross Domestic Product": {
+    "es": "Producto interno bruto",
+    "zh": "国内生产总值"
+  },
+  "Value": {
+    "es": "Valor",
+    "zh": "价值"
+  },
+  "Surplus value": {
+    "es": "Plusvalor",
+    "zh": "剩余价值"
+  },
+  "Labour compensation": {
+    "es": "Remuneración del trabajo",
+    "zh": "劳动报酬"
+  },
+  "Value of labour power": {
+    "es": "Valor de la fuerza de trabajo",
+    "zh": "劳动力价值"
+  },
+  " countries per year": {
+    "es": " países por año",
+    "zh": " 个国家/年"
+  },
+  "Rank": {
+    "es": "Posición",
+    "zh": "名次"
+  },
+  "Publications": {
+    "es": "Publicaciones",
+    "zh": "出版物"
+  },
+  "Search by title, author or topic": {
+    "es": "Buscar por título, autoría o tema",
+    "zh": "按标题、作者或主题搜索"
+  },
+  "Project member": {
+    "es": "Miembro del proyecto",
+    "zh": "项目成员"
+  },
+  "All members": {
+    "es": "Todos los miembros",
+    "zh": "所有成员"
+  },
+  "All years": {
+    "es": "Todos los años",
+    "zh": "所有年份"
+  },
+  "references found": {
+    "es": "referencias encontradas",
+    "zh": "条文献记录"
+  },
+  "No catalogued reference matches this search.": {
+    "es": "Ninguna referencia del catálogo coincide con esta búsqueda.",
+    "zh": "目录中没有与本次搜索匹配的文献。"
+  },
+  "Open publication": {
+    "es": "Acceder a la publicación",
+    "zh": "查看出版物"
+  },
+  "Online text temporarily unavailable": {
+    "es": "Texto en línea temporalmente no disponible",
+    "zh": "在线全文暂不可用"
+  },
+  "View bibliographic record": {
+    "es": "Ver registro bibliográfico",
+    "zh": "查看书目记录"
+  },
+  "Work linked to %s's ORCID; the source does not provide the complete author list.": {
+    "es": "Obra vinculada al ORCID de %s; la fuente no proporciona la lista completa de autores.",
+    "zh": "该作品关联至 %s 的 ORCID；来源未提供完整作者名单。"
+  },
+  "Publications on the project website": {
+    "es": "Publicaciones en el sitio del proyecto",
+    "zh": "项目网站上的出版物"
+  },
+  "Project team": {
+    "es": "Equipo del proyecto",
+    "zh": "项目团队"
+  },
+  "Journal article": {
+    "es": "Artículo de revista",
+    "zh": "期刊论文"
+  },
+  "Conference paper": {
+    "es": "Trabajo en congreso",
+    "zh": "会议论文"
+  },
+  "Master's dissertation": {
+    "es": "Tesis de maestría",
+    "zh": "硕士学位论文"
+  },
+  "Doctoral thesis": {
+    "es": "Tesis doctoral",
+    "zh": "博士学位论文"
+  },
+  "Research report": {
+    "es": "Informe de investigación",
+    "zh": "研究报告"
+  },
+  "Software": {
+    "es": "Software",
+    "zh": "软件"
+  },
+  "Book": {
+    "es": "Libro",
+    "zh": "图书"
+  },
+  "Book chapter": {
+    "es": "Capítulo de libro",
+    "zh": "图书章节"
+  },
+  "View sector breakdown": {
+    "es": "Ver composición por sector",
+    "zh": "查看部门构成"
+  },
+  "Information: ": {
+    "es": "Información: ",
+    "zh": "信息："
+  },
+  "Africa": {
+    "es": "África",
+    "zh": "非洲"
+  },
+  "Asia": {
+    "es": "Asia",
+    "zh": "亚洲"
+  },
+  "Europe": {
+    "es": "Europa",
+    "zh": "欧洲"
+  },
+  "North America": {
+    "es": "América del Norte",
+    "zh": "北美洲"
+  },
+  "South America": {
+    "es": "América del Sur",
+    "zh": "南美洲"
+  },
+  "Oceania": {
+    "es": "Oceanía",
+    "zh": "大洋洲"
+  },
+  "Aggregates": {
+    "es": "Agregados",
+    "zh": "汇总地区"
+  },
+  "Other": {
+    "es": "Otros",
+    "zh": "其他"
+  },
+  "Reference year": {
+    "es": "Año de referencia",
+    "zh": "参考年份"
+  },
+  "Country profile": {
+    "es": "Perfil del país",
+    "zh": "国家概况"
+  },
+  "Indicator by sector": {
+    "es": "Indicador por sector",
+    "zh": "按部门查看指标"
+  },
+  "Close information": {
+    "es": "Cerrar información",
+    "zh": "关闭信息"
+  },
+  "Continent": {
+    "es": "Continente",
+    "zh": "大洲"
+  },
+  "All continents": {
+    "es": "Todos los continentes",
+    "zh": "所有大洲"
+  },
+  "Search countries": {
+    "es": "Buscar países",
+    "zh": "搜索国家"
+  },
+  "Back to overview": {
+    "es": "Volver a la visión general",
+    "zh": "返回概览"
+  },
+  "No countries found.": {
+    "es": "No se encontraron países.",
+    "zh": "未找到国家。"
+  },
+  "Incompatible display units": {
+    "es": "Unidades de presentación incompatibles",
+    "zh": "显示单位不兼容"
+  },
+  "No file available for this selection.": {
+    "es": "No hay archivos disponibles para esta selección.",
+    "zh": "当前选择没有可用文件。"
+  },
+  "Not provided": {
+    "es": "No se informa",
+    "zh": "未提供"
+  },
+  "About": {
+    "es": "Acerca de",
+    "zh": "关于"
+  },
+  "Variable": {
+    "es": "Variable",
+    "zh": "变量"
+  },
+  "Description": {
+    "es": "Descripción",
+    "zh": "说明"
+  },
+  "Notes": {
+    "es": "Observaciones",
+    "zh": "备注"
+  },
+  "no observations. Choose another source or year.": {
+    "es": "sin observaciones. Elija otra base o año.",
+    "zh": "无观测数据。请选择其他数据库或年份。"
+  },
+  "Dataset": {
+    "es": "Base de datos",
+    "zh": "数据库"
+  },
+  "The working year and surplus value": {
+    "es": "La jornada anual y el plusvalor",
+    "zh": "年度劳动时间与剩余价值"
+  },
+  "Annual abstract labour hours per employee": {
+    "es": "Horas anuales de trabajo abstracto por asalariado",
+    "zh": "每名雇员的年度抽象劳动小时"
+  },
+  "Value across borders": {
+    "es": "El valor que cruza las fronteras",
+    "zh": "跨境价值流动"
+  },
+  "Billion abstract labour hours per year": {
+    "es": "Miles de millones de horas de trabajo abstracto al año",
+    "zh": "每年十亿抽象劳动小时"
+  },
+  "Explore another country": {
+    "es": "Explorar otro país",
+    "zh": "探索其他国家"
+  },
+  "Browse countries and aggregates": {
+    "es": "Ver países y agregados",
+    "zh": "查看国家及汇总地区"
+  },
+  "How the flows are calculated": {
+    "es": "Cómo se calculan los flujos",
+    "zh": "流量的计算方法"
+  },
+  "Show me more": {
+    "es": "Mostrar más",
+    "zh": "查看更多"
+  },
+  "Sent": {
+    "es": "Enviado",
+    "zh": "流出"
+  },
+  "Received": {
+    "es": "Recibido",
+    "zh": "流入"
+  },
+  "export hours + hours represented by money paid for imports.": {
+    "es": "horas de las exportaciones + horas representadas por el dinero pagado por las importaciones.",
+    "zh": "出口商品中的劳动小时 + 进口付款所代表的劳动小时。"
+  },
+  "import hours + hours represented by money received for exports.": {
+    "es": "horas de las importaciones + horas representadas por el dinero recibido por las exportaciones.",
+    "zh": "进口商品中的劳动小时 + 出口收入所代表的劳动小时。"
+  },
+  "Net balance = received − sent. Money is converted into hours using the dataset’s annual international factor.": {
+    "es": "Saldo neto = recibido − enviado. El dinero se convierte en horas mediante el factor internacional anual de la propia base.",
+    "zh": "净余额 = 流入 − 流出。货币按该数据库各年度的国际换算系数折算为劳动小时。"
+  },
+  "A portrait of labour, its compensation and exchanges of value with the world.": {
+    "es": "Un retrato del trabajo, su remuneración y los intercambios de valor con el mundo.",
+    "zh": "了解劳动、劳动报酬及与世界各地的价值交换。"
+  },
+  "In ": {
+    "es": "En ",
+    "zh": "在 "
+  },
+  ", the average working year amounts to ": {
+    "es": ", la jornada anual media equivale a ",
+    "zh": " 年，每名雇员平均年度劳动时间相当于 "
+  },
+  " abstract labour hours per employee. Of these, ": {
+    "es": " horas de trabajo abstracto por asalariado. De estas, ",
+    "zh": " 个抽象劳动小时。其中，"
+  },
+  " hours replace the value of labour power and ": {
+    "es": " horas reponen el valor de la fuerza de trabajo y ",
+    "zh": " 小时补偿劳动力价值，"
+  },
+  " hours correspond to surplus value.": {
+    "es": " horas corresponden al plusvalor.",
+    "zh": " 小时构成剩余价值。"
+  },
+  "Working time and labour power value series are unavailable for this selection in this dataset.": {
+    "es": "Las series de jornada laboral y valor de la fuerza de trabajo no están disponibles para esta selección en esta base.",
+    "zh": "该数据库没有当前选择的劳动时间和劳动力价值序列。"
+  },
+  "In international trade, in ": {
+    "es": "En el comercio internacional, en ",
+    "zh": "在国际贸易中，"
+  },
+  "value sent and received were balanced.": {
+    "es": "el valor enviado y el recibido se equilibraron.",
+    "zh": "流出价值与流入价值相等。"
+  },
+  " received a net ": {
+    "es": " recibió, en términos netos, ",
+    "zh": "净流入 "
+  },
+  " sent a net ": {
+    "es": " envió, en términos netos, ",
+    "zh": "净流出 "
+  },
+  " billion abstract labour hours.": {
+    "es": " miles de millones de horas de trabajo abstracto.",
+    "zh": " 十亿抽象劳动小时。"
+  },
+  "The trade flow breakdown is unavailable for this selection in this dataset.": {
+    "es": "El desglose de los flujos comerciales no está disponible para esta selección en esta base.",
+    "zh": "该数据库没有当前选择的贸易流量分解数据。"
+  },
+  "Rate of exploitation": {
+    "es": "Tasa de explotación",
+    "zh": "剥削率"
+  },
+  "surplus value / labour power": {
+    "es": "plusvalor / fuerza de trabajo",
+    "zh": "剩余价值 / 劳动力价值"
+  },
+  "Net value transfer": {
+    "es": "Transferencia neta de valor",
+    "zh": "净价值转移"
+  },
+  "billion hours · received − sent": {
+    "es": "miles de millones de horas · recibido − enviado",
+    "zh": "十亿小时 · 流入 − 流出"
+  },
+  "Source: WLVD · ": {
+    "es": "Fuente: WLVD · ",
+    "zh": "来源：WLVD · "
+  },
+  ". Each indicator highlights its latest available year.": {
+    "es": ". Cada indicador destaca su último año disponible.",
+    "zh": "。各指标均显示其最近可用年份。"
+  },
+  "Working time": {
+    "es": "Jornada de trabajo",
+    "zh": "劳动时间"
+  },
+  "Working day": {
+    "es": "Jornada de trabajo",
+    "zh": "劳动时间"
+  },
+  "Gross value sent": {
+    "es": "Valor bruto enviado",
+    "zh": "流出价值总额"
+  },
+  "Gross value received": {
+    "es": "Valor bruto recibido",
+    "zh": "流入价值总额"
+  },
+  "Unavailable": {
+    "es": "No disponible",
+    "zh": "不可用"
+  },
+  "The filled area shows surplus value: working day minus the value of labour power. Red marks a positive difference; amber marks a negative difference.": {
+    "es": "El área rellena representa el plusvalor: jornada de trabajo menos valor de la fuerza de trabajo. El rojo indica una diferencia positiva; el ámbar, una negativa.",
+    "zh": "填充区域表示剩余价值，即劳动时间减去劳动力价值。红色表示正差额，琥珀色表示负差额。"
+  },
+  "The red area shows net value sent; the amber area shows net value received.": {
+    "es": "El área roja representa el envío neto de valor; la de color ámbar, la recepción neta.",
+    "zh": "红色区域表示价值净流出；琥珀色区域表示价值净流入。"
+  },
+  "No data available for this country and method.": {
+    "es": "No hay datos disponibles para este país y método.",
+    "zh": "该国家和方法没有可用数据。"
+  },
+  "Net value received": {
+    "es": "Recepción neta de valor",
+    "zh": "价值净流入"
+  },
+  "Net value sent": {
+    "es": "Envío neto de valor",
+    "zh": "价值净流出"
+  },
+  " and ": {
+    "es": " y ",
+    "zh": "与"
+  },
+  "Curves are smoothed. Focus each year to read its original values. Gaps mean unavailable data.": {
+    "es": "Las curvas están suavizadas. Seleccione cada año con el teclado para consultar los valores originales. Los huecos indican datos no disponibles.",
+    "zh": "曲线经过平滑处理。使用键盘聚焦各年份可读取原始数值。空缺表示数据不可用。"
+  },
+  "One series is unavailable; the difference cannot be calculated.": {
+    "es": "Una serie no está disponible; no es posible calcular la diferencia.",
+    "zh": "其中一条序列不可用，无法计算差额。"
+  },
+  "In {year}, the average working year amounts to {workday} abstract labour hours per employee. Of these, {labour_power} hours replace the value of labour power and {surplus} hours correspond to surplus value.": {
+    "es": "En {year}, la jornada anual media equivale a {workday} horas de trabajo abstracto por asalariado. De estas, {labour_power} horas reponen el valor de la fuerza de trabajo y {surplus} horas corresponden al plusvalor.",
+    "zh": "{year}年，每名雇员的平均年度劳动时间相当于{workday}个抽象劳动小时。其中，{labour_power}小时补偿劳动力价值，{surplus}小时构成剩余价值。"
+  },
+  "In international trade, in {year}, {country} received a net {hours} billion abstract labour hours.": {
+    "es": "En el comercio internacional, en {year}, {country} recibió, en términos netos, {hours} miles de millones de horas de trabajo abstracto.",
+    "zh": "在国际贸易中，{year}年{country}净流入{hours}十亿抽象劳动小时。"
+  },
+  "In international trade, in {year}, {country} sent a net {hours} billion abstract labour hours.": {
+    "es": "En el comercio internacional, en {year}, {country} envió, en términos netos, {hours} miles de millones de horas de trabajo abstracto.",
+    "zh": "在国际贸易中，{year}年{country}净流出{hours}十亿抽象劳动小时。"
+  },
+  "In international trade, in {year}, value sent and received were balanced.": {
+    "es": "En el comercio internacional, en {year}, el valor enviado y el recibido se equilibraron.",
+    "zh": "在国际贸易中，{year}年流出的价值与流入的价值相等。"
+  }
+}

@@ -2,9 +2,6 @@
   min-width: 0;
   scroll-margin-top: 16px;
 }
-.wlv-country-page > .wlv-explore-content { max-width: 1680px; margin: auto; }
-.wlv-country-page-heading { margin-bottom: 24px; }
-.wlv-country-page-heading h1 { margin: 0; color: #fff; font-size: clamp(26px, 3vw, 34px); }
 .wlv-country-selector { flex: 0 1 230px; min-width: 170px; }
 .wlv-country-selector .form-group { margin: 0; }
 .wlv-country-empty { padding: 32px 24px; color: var(--wlv-muted); }
@@ -79,16 +76,27 @@
 .wlv-country-profile .dataTables_wrapper { min-width: 360px; }
 .wlv-country-detail .profile_table { border: 0 !important; line-height: 1.5; font-size: 13px; width: 100% !important; }
 .wlv-country-detail .profile_table th, .wlv-country-detail .profile_table td { padding: 9px 8px; }
-.wlv-country-downloads { display: flex; flex-direction: column; justify-content: center; background: #fff; padding: 4px 16px; }
-.wlv-country-download-block { display: flex; gap: 14px; align-items: flex-start; padding: 14px 0; }
+.wlv-country-downloads { align-self: stretch; background: #fff; overflow: hidden; }
+.wlv-country-download-list { display: grid; grid-template-columns: minmax(0, 1fr); }
+.wlv-country-download-block { display: flex; flex-direction: column; gap: 12px; min-width: 0; padding: 16px; }
 .wlv-country-download-block + .wlv-country-download-block { border-top: 1px solid var(--wlv-line); }
-.wlv-country-download-block > .fa { font-size: 20px; color: var(--wlv-red-dark); padding-top: 4px; }
-.wlv-country-download-block h3 { font-size: 14px; margin-bottom: 6px; }
-.wlv-country-download-block a { display: inline-flex; align-items: center; min-height: 36px; padding: 3px 6px; font-weight: 600; }
+.wlv-country-download-block h4 { display: flex; align-items: flex-start; gap: 8px; margin: 0; color: var(--wlv-text); font-size: 14px; font-weight: 600; line-height: 1.5; }
+.wlv-country-download-block h4 > .fa { flex: 0 0 16px; margin-top: 3px; color: var(--wlv-red-dark); }
+.wlv-country-download-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 8px; }
+.wlv-country-download-links .wlv-country-download-link { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; padding: 8px; border: 1px solid var(--wlv-line); border-radius: 6px; background: var(--wlv-surface); color: var(--wlv-red-dark); font-size: 13px; font-weight: 600; line-height: 1.4; text-align: center; text-decoration: none; overflow-wrap: anywhere; transition: border-color 150ms ease, background-color 150ms ease; }
+.wlv-country-download-link .fa { flex-shrink: 0; font-size: 12px; }
+.wlv-country-download-links .wlv-country-download-link:hover { border-color: var(--wlv-red-dark); background: #fff; }
 .wlv-country-download-empty { display: block; font-size: 12px; color: var(--wlv-muted); line-height: 1.5; }
+.wlv-country-download-links > .wlv-country-download-empty { grid-column: 1 / -1; }
 .wlv-country-series { min-width: 0; }
 .wlv-country-group { margin-bottom: 30px; }
-.wlv-country-group > h3 { margin: 0 0 12px; padding: 12px 16px; color: var(--wlv-red-dark); background: var(--wlv-surface); border: 1px solid var(--wlv-line); border-radius: 8px; }
+.wlv-country-group > .wlv-country-group-heading { margin: 0; }
+.wlv-country-group-toggle { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 48px; padding: 12px 16px; color: var(--wlv-red-dark); background: var(--wlv-surface); border: 1px solid var(--wlv-line); border-radius: 8px; font: inherit; text-align: left; cursor: pointer; transition: border-color 150ms ease; }
+.wlv-country-group-toggle:hover { border-color: var(--wlv-red-dark); }
+.wlv-country-group-chevron { flex: 0 0 12px; font-size: 12px; text-align: center; transform: rotate(0deg); transition: transform 220ms ease; }
+.wlv-country-group-toggle[aria-expanded="true"] .wlv-country-group-chevron { transform: rotate(90deg); }
+.wlv-country-group-content > .wlv-country-chart-grid { padding-top: 12px; }
+.wlv-country-group-content.collapsing { transition-duration: 220ms; }
 .wlv-country-chart-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .wlv-country-chart-slot { min-width: 0; }
 /* Empty outputs must stay visible so Shiny can render their first chart. */
@@ -131,12 +139,10 @@
   .wlv-country-chart-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .wlv-country-sectors { position: static; }
   .wlv-country-overview { grid-template-columns: minmax(0, 1fr); }
-  .wlv-country-downloads { flex-direction: row; gap: 24px; justify-content: flex-start; }
-  .wlv-country-download-block { flex: 1; }
-  .wlv-country-download-block + .wlv-country-download-block { border-top: 0; }
+  .wlv-country-download-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wlv-country-download-block + .wlv-country-download-block { border-top: 0; border-left: 1px solid var(--wlv-line); }
 }
 @media (max-width: 600px) {
-  .wlv-country-page-heading { margin-bottom: 20px; }
   .wlv-country-catalogue-filters, .wlv-country-catalogue-groups { grid-template-columns: minmax(0, 1fr); gap: 16px; }
   .wlv-country-catalogue-filters { padding: 16px; }
   .wlv-country-selector { min-width: 0; }
@@ -148,10 +154,9 @@
   .wlv-country-body { padding-bottom: max(24px, env(safe-area-inset-bottom)); }
   .wlv-country-chart-grid { grid-template-columns: minmax(0, 1fr); }
   .wlv-country-overview { gap: 12px; margin-bottom: 22px; }
-  .wlv-country-downloads { gap: 12px; padding: 2px 12px; }
-  .wlv-country-download-block { gap: 8px; }
-  .wlv-country-download-block > .fa { display: none; }
-  .wlv-country-download-block h3 { font-size: 13px; }
+  .wlv-country-download-list { grid-template-columns: minmax(0, 1fr); }
+  .wlv-country-download-block { padding: 14px 16px; }
+  .wlv-country-download-block + .wlv-country-download-block { border-top: 1px solid var(--wlv-line); border-left: 0; }
   .wlv-country-info-overlay { padding: 12px; }
   .wlv-country-info { margin: 2vh auto; }
   .wlv-country-info .panel-heading { padding: 14px; }
@@ -160,5 +165,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .wlv-country-body { scroll-behavior: auto; }
-  .wlv-country-catalogue-arrow { transition: none; }
+  .wlv-country-catalogue-arrow, .wlv-country-group-chevron, .wlv-country-group-toggle, .wlv-country-download-links .wlv-country-download-link { transition: none; }
+  .wlv-country-group-content.collapsing { transition: none; }
 }

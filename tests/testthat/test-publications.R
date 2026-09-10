@@ -1,6 +1,6 @@
 load_publications_for_test <- function() {
   root <- if (file.exists("modules/publications/main.R")) "." else "../.."
-  environment <- new.env(parent = globalenv())
+  environment <- new.env(parent = environment())
   expressions <- parse(file.path(root, "modules/publications/main.R"), encoding = "UTF-8")
   for (expression in expressions) {
     if (is.call(expression) && identical(expression[[1L]], as.name("<-")) && is.symbol(expression[[2L]]) &&

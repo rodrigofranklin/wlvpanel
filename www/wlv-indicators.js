@@ -92,7 +92,7 @@
       details.className = 'wlv-indicator-legend';
       details.open = state.legendOpen;
       const summary = root.document.createElement('summary');
-      summary.textContent = root.document.documentElement.lang === 'en' ? 'Legend' : 'Legenda';
+      summary.textContent = root.wlvI18n.text('Legenda', 'Legend');
       const content = root.document.createElement('div');
       content.className = 'wlv-indicator-legend-content';
       while (legend.firstChild) content.appendChild(legend.firstChild);
@@ -122,11 +122,9 @@
       {polygonPane: "wlv-indicator-polygons", waitForGeometry: true}) : null;
     state.translate = function () {
       if (!element.setAttribute || !root.document) return;
-      element.setAttribute("aria-label", root.document.documentElement.lang === "en" ?
-        "Indicator map in Equal Earth. Use arrow keys to pan and plus or minus to zoom. Click a country or use Countries to compare to add it to the comparison." :
-        "Mapa do indicador em Equal Earth. Use as setas para mover e mais ou menos para ampliar. Clique em um país ou use Países para comparar para adicioná-lo à comparação.");
+      element.setAttribute("aria-label", root.wlvI18n.text("Mapa do indicador em Equal Earth. Use as setas para mover e mais ou menos para ampliar. Clique em um país ou use Países para comparar para adicioná-lo à comparação.", "Indicator map in Equal Earth. Use arrow keys to pan and plus or minus to zoom. Click a country or use Countries to compare to add it to the comparison."));
       element.querySelectorAll('.wlv-indicator-legend > summary').forEach(function (summary) {
-        summary.textContent = root.document.documentElement.lang === 'en' ? 'Legend' : 'Legenda';
+        summary.textContent = root.wlvI18n.text('Legenda', 'Legend');
       });
     };
     state.translate();

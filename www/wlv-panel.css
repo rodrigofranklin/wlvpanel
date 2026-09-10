@@ -2,6 +2,13 @@
 @font-face { font-family:'Source Sans 3'; src:url('fonts/source-sans-3/SourceSans3VF-Italic.ttf.woff2') format('woff2'); font-weight:200 900; font-style:italic; font-display:swap; }
 :root { --wlv-font:'Source Sans 3',sans-serif; --wlv-red-dark:#8D2028; --wlv-red-light:#FFA29A; --wlv-amber:#F6AE2D; --wlv-ink:var(--wlv-red-dark); --wlv-accent:var(--wlv-red-dark); --wlv-text:#292B2E; --wlv-muted:#65595A; --wlv-paper:#F7F3ED; --wlv-surface:#FFF1E9; --wlv-line:#E5DCD8; --wlv-ocean:#E3E9EB; --wlv-land:#F7F3ED; --wlv-grid:#CDD5D6; --wlv-topbar-height:45px; --wlv-nav-height:100px; }
 * { box-sizing:border-box; }
+:root:lang(zh) { --wlv-font:'Source Sans 3','Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif; }
+:lang(zh) h1,:lang(zh) h2,:lang(zh) h3 { letter-spacing:0; }
+:root:lang(ja) { --wlv-font:'Source Sans 3','Yu Gothic','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif; }
+:root:lang(ko) { --wlv-font:'Source Sans 3','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR',sans-serif; }
+:root:lang(hi),:root:lang(bn) { --wlv-font:'Source Sans 3','Nirmala UI','Noto Sans Devanagari','Noto Sans Bengali',sans-serif; }
+:root:lang(th) { --wlv-font:'Source Sans 3','Leelawadee UI','Thonburi','Noto Sans Thai',sans-serif; }
+:lang(ja) h1,:lang(ja) h2,:lang(ja) h3,:lang(ko) h1,:lang(ko) h2,:lang(ko) h3,:lang(hi) h1,:lang(hi) h2,:lang(hi) h3,:lang(bn) h1,:lang(bn) h2,:lang(bn) h3,:lang(th) h1,:lang(th) h2,:lang(th) h3 { letter-spacing:0; }
 /* A rolagem pertence ao conteúdo abaixo do menu, sem faixa vazia no cabeçalho. */
 html { height:100%; overflow:hidden; scrollbar-gutter:auto; }
 body { height:100dvh; overflow:hidden; display:flex; flex-direction:column; }
@@ -11,6 +18,15 @@ body > .container-fluid > .row { margin-inline:0; }
 /* Neutraliza o peso 200 herdado do tema Simplex nos textos corridos e tabelas. */
 body { background:var(--wlv-paper); color:var(--wlv-text); font-family:var(--wlv-font); font-size:15px; font-weight:400; line-height:1.55; }
 button,input,select,textarea { font-family:inherit; }
+/* Controles e elementos de navegação não geram seleção acidental ao clicar/arrastar. */
+.wlv-topbar,.navbar,button,.btn,summary,label,[role='button'],[role='tab'],
+.nav-tabs,.selectize-input,.selectize-dropdown,.irs,.leaflet-control,
+.wlv-country-landing-chart,.plotly .modebar,img { -webkit-user-select:none; user-select:none; }
+/* Campos editáveis e o conteúdo de leitura continuam disponíveis para copiar. */
+input:not([type='checkbox']):not([type='radio']):not([type='range']),textarea,
+[contenteditable='true'],.wlv-settings-panel .wlv-method-info { -webkit-user-select:text; user-select:text; }
+img { -webkit-user-drag:none; }
+::selection { background:var(--wlv-amber); color:var(--wlv-red-dark); }
 a { color:var(--wlv-red-dark); }
 a:hover { color:#AD3336; }
 h1,h2,h3,h4 { color:var(--wlv-ink); font-family:inherit; font-weight:650; line-height:1.2; }
@@ -56,10 +72,18 @@ h3 { font-size:20px; }
 .wlv-toolbar .selectize-input { min-height:42px; padding:7px 10px; }
 .wlv-toolbar #info_bases { margin-left:auto; white-space:nowrap; }
 .selectize-input,.form-control { border:1px solid var(--wlv-line); border-radius:6px; box-shadow:none; min-height:42px; font-family:var(--wlv-font); font-size:14px; }
-.selectize-input.focus { box-shadow:0 0 0 2px #8D202833; border-color:var(--wlv-red-dark); }
+.selectize-input.focus,.form-control:focus { box-shadow:0 0 0 2px #8D202833; border-color:var(--wlv-red-dark); }
 .selectize-dropdown { font-size:14px; line-height:1.5; max-width:calc(100vw - 32px); }
 .selectize-dropdown .option { padding:9px 12px; white-space:normal; }
+.selectize-dropdown .selected { background:var(--wlv-red-dark); color:#fff; }
+.selectize-dropdown .active,.selectize-dropdown .active:not(.selected),.selectize-dropdown .selected.active { background:var(--wlv-amber); color:var(--wlv-red-dark); }
+.selectize-dropdown .selected .highlight { background:#FFFFFF33; color:inherit; }
+.selectize-dropdown .active .highlight { background:#FFFFFF80; color:inherit; }
 .selectize-control.multi .selectize-input>div { background:var(--wlv-surface); color:var(--wlv-ink); border-radius:3px; }
+.selectize-control.multi .selectize-input>div.active { background:var(--wlv-amber); color:var(--wlv-red-dark); }
+input[type='checkbox'],input[type='radio'],input[type='range'] { accent-color:var(--wlv-red-dark); }
+.btn-default:active,.btn-default.active,.btn-default:active:focus { background:var(--wlv-amber); border-color:var(--wlv-red-dark); color:var(--wlv-red-dark); box-shadow:none; }
+table.dataTable tbody tr.selected,table.dataTable tbody tr.selected>td { background:var(--wlv-amber); color:var(--wlv-red-dark); }
 .control-label { font-size:13px; font-weight:600; }
 .form-group { margin-bottom:20px; }
 .wlv-page { max-width:1400px; margin:0 auto; padding:28px; }

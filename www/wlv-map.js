@@ -86,13 +86,12 @@
       details.className = "wlv-map-legend";
       details.open = state.legendOpen;
       const summary = root.document.createElement("summary");
-      const english = root.document.documentElement.lang === "en";
-      const icon = root.document.createElement("i");
+            const icon = root.document.createElement("i");
       icon.className = "fas fa-list";
       icon.setAttribute("aria-hidden", "true");
       const label = root.document.createElement("span");
       label.setAttribute("data-wlv-label", "map.legend");
-      label.textContent = english ? "Legend" : "Legenda";
+      label.textContent = root.wlvI18n.text("Legenda", "Legend");
       summary.append(icon, label);
       const content = root.document.createElement("div");
       content.className = "wlv-map-legend-content";
@@ -108,7 +107,7 @@
       const closeLabel = root.document.createElement("span");
       closeLabel.className = "sr-only";
       closeLabel.setAttribute("data-wlv-label", "app.close");
-      closeLabel.textContent = english ? "Close" : "Fechar";
+      closeLabel.textContent = root.wlvI18n.text("Fechar", "Close");
       close.append(cross, closeLabel);
       close.addEventListener("click", function () {
         details.open = false;

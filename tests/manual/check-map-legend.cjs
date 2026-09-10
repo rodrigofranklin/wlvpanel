@@ -25,7 +25,7 @@ async function selectMap(page,mobile) {
  try {
   for (const viewport of viewports) {
    const mobile=viewport.width<768;
-   const context=await browser.newContext({viewport,hasTouch:mobile});
+   const context=await browser.newContext({locale: 'pt-BR', viewport,hasTouch:mobile});
    const page=await context.newPage(); active=page;
    page.on('pageerror',error=>report.errors.push(error.message));
    await page.goto('http://127.0.0.1:'+(process.env.WLVPANEL_PORT || '38129'));

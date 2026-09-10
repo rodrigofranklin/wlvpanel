@@ -1,6 +1,6 @@
 wlv_trade_text <- function(key, lang = "pt") {
   entries <- list(
-    title = c("Transferências de valor", "Value transfers"),
+    title = c("Comércio", "Trade"),
     intro = c("Explore ganhos e perdas nas relações comerciais entre países.", "Explore gains and losses in trade relations between countries."),
     method = c("Base", "Database"), country = c("País em análise", "Country in focus"),
     year = c("Ano", "Year"), metric = c("Medida", "Measure"), scope = c("Atividades fornecedoras", "Supplying activities"),
@@ -46,12 +46,12 @@ wlv_trade_text <- function(key, lang = "pt") {
     base_body = c("WIOD13 e WIOD16 têm classificações e coberturas diferentes. As séries não são emendadas. A WIOD13 mantém a cobertura usada pelo painel, até 2007.", "WIOD13 and WIOD16 have different classifications and coverage. Their series are not spliced. WIOD13 retains the panel's coverage, through 2007.")
   )
   if (!key %in% names(entries)) return(key)
-  entries[[key]][[if (identical(lang, "en")) 2L else 1L]]
+  wlv_tr(entries[[key]][[1L]], entries[[key]][[2L]], lang)
 }
 
 wlv_trade_label <- function(language, key, lang = "pt", fallback = key) {
   if (!length(key)) return(character())
-  value <- as.character(language[match(key, rownames(language)), if (identical(lang, "en")) "English" else "Português"])
+  value <- as.character(language[match(key, rownames(language)), wlv_language_column(lang)])
   missing <- is.na(value) | !nzchar(value)
   value[missing] <- rep_len(fallback, length(value))[missing]
   value
@@ -59,7 +59,10 @@ wlv_trade_label <- function(language, key, lang = "pt", fallback = key) {
 
 wlv_trade_number <- function(value, lang = "pt") {
   if (length(value) != 1L || !is.finite(value)) return(wlv_trade_text("missing", lang))
-  exponent <- if (abs(value) < 1000) 0L else min(4L, floor(log10(abs(value)) / 3))
-  suffixes <- if (identical(lang, "en")) c("", " K", " M", " B", " T") else c("", " mil", " M", " bi", " tri")
-  paste0(format(round(value / 1000^exponent, 2L), big.mark = if (identical(lang, "en")) "," else ".", decimal.mark = if (identical(lang, "en")) "." else ",", scientific = FALSE, trim = TRUE), suffixes[[exponent + 1L]])
+  code <- wlv_language_code(lang)
+  scale <- if (code == "zh") 10000 else 1000
+  exponent <- if (abs(value) < scale) 0L else min(if (code == "zh") 3L else 4L, floor(log(abs(value), base = scale)))
+  suffixes <- switch(code, en = c("", " K", " M", " B", " T"), es = c("", " mil", " M", " mil M", " bill."), zh = c("", "万", "亿", "万亿"), pt = c("", " mil", " M", " bi", " tri"), c("", " ×10³", " ×10⁶", " ×10⁹", " ×10¹²"))
+  marks <- wlv_number_marks(lang)
+  paste0(format(round(value / scale^exponent, 2L), big.mark = marks$grouping, decimal.mark = marks$decimal, scientific = FALSE, trim = TRUE), suffixes[[exponent + 1L]])
 }

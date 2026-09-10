@@ -40,7 +40,7 @@ async function download(p,id,file){
   const browser=await chromium.launch({headless:true});
   try{
     for(const width of [1440,1024,768,390,320]){
-      const p=await browser.newPage({viewport:{width,height:900},acceptDownloads:true});
+      const p=await browser.newPage({locale: 'pt-BR', viewport:{width,height:900},acceptDownloads:true});
       const errors=[];p.on('pageerror',e=>errors.push(String(e)));
       try{
         await p.goto('http://127.0.0.1:'+(process.env.WLVPANEL_PORT||'38129'));
@@ -98,7 +98,8 @@ async function download(p,id,file){
         await p.waitForFunction(()=>document.querySelectorAll('.wlv-publication').length===0);
         await p.locator('#publications-search').fill('');
         await p.waitForFunction(n=>document.querySelectorAll('.wlv-publication').length===n,total);
-        await p.locator('#language_toggle').click();
+        await p.locator('#language_menu_toggle').click();
+        await p.locator('#language_menu [lang="pt-BR"]').click();
         await p.waitForFunction(()=>document.documentElement.lang==='pt-BR'&&document.querySelector('.wlv-publications h1')?.textContent==='Publicações');
         await layout(p,'publications');
         await p.screenshot({path:path.join(results,'publications-'+width+'.png'),fullPage:true});

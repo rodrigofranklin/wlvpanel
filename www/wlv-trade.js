@@ -103,51 +103,106 @@
     const svg = flowOverlay(state);
     if (!svg) return;
     closeFlowTooltip(state);
-    while (svg.firstChild) svg.removeChild(svg.firstChild);
     state.flowCount = 0;
     svg.style.display = specification.enabled && specification.rows.length ? "block" : "none";
-    if (!specification.enabled || !specification.rows.length) return;
+    if (!specification.enabled || !specification.rows.length) {
+      state.flowNodes.forEach(record => svg.removeChild(record.group));
+      state.flowNodes.clear();
+      return;
+    }
     const map = state.map, size = map.getSize();
-    if (!size || size.x <= 0 || size.y <= 0) return;
+    if (!size || size.x <= 0 || size.y <= 0) {
+      state.flowNodes.forEach(record => svg.removeChild(record.group));
+      state.flowNodes.clear();
+      return;
+    }
     const origin = typeof map.containerPointToLayerPoint === "function" ? map.containerPointToLayerPoint([0, 0]) : {x: 0, y: 0};
     svg.style.left = origin.x + "px"; svg.style.top = origin.y + "px";
     svg.setAttribute("width", size.x); svg.setAttribute("height", size.y);
     svg.setAttribute("viewBox", "0 0 " + size.x + " " + size.y);
-    svg.setAttribute("aria-label", specification.legend || (language() === "en" ? "Net value transfers; arrow direction shows who receives value." : "Transferências líquidas de valor; a direção da seta indica quem recebe valor."));
-    const node = tag => root.document.createElementNS("http://www.w3.org/2000/svg", tag);
+    svg.setAttribute("aria-label", specification.legend || (root.wlvI18n.text("Transferências líquidas de valor; a direção da seta indica quem recebe valor.", "Net value transfers; arrow direction shows who receives value.")));
+    const retained = new Set(), occurrences = new Map();
     specification.rows.forEach(function (flow) {
+      // The server normally supplies one row per partner. An occurrence index
+      // also keeps repeated IDs independent instead of merging their arrows.
+      const id = String(flow.id), occurrence = occurrences.get(id) || 0;
+      occurrences.set(id, occurrence + 1);
+      const key = JSON.stringify([id, occurrence]);
       const source = map.latLngToLayerPoint([flow.from_lat, flow.from_lng]);
       const target = map.latLngToLayerPoint([flow.to_lat, flow.to_lng]);
       const geometry = curveGeometry({x: source.x - origin.x, y: source.y - origin.y},
         {x: target.x - origin.x, y: target.y - origin.y}, flow.width, flow.id);
       if (!geometry) return;
-      const group = node("g"), shaft = node("path"), head = node("path");
+      let record = state.flowNodes.get(key);
+      if (!record) {
+        record = createFlowNode(state);
+        state.flowNodes.set(key, record);
+      }
+      retained.add(key);
+      const group = record.group, shaft = record.shaft, head = record.head;
+      record.flow = flow;
+      record.middle = {x: geometry.middle.x + origin.x, y: geometry.middle.y + origin.y};
+      record.interactive = specification.interactive;
       const color = typeof flow.color === "string" ? flow.color : flow.value > 0 ? "#b37b15" : "#8D2028";
       const description = flow.aria_label || (flow.label == null ? flow.from + " → " + flow.to + ": " + flow.amount : String(flow.label).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim());
-      group.setAttribute("class", "wlv-trade-flow"); group.setAttribute("data-partner", flow.id);
-      group.setAttribute("data-from", flow.from); group.setAttribute("data-to", flow.to);
-      group.setAttribute("data-amount", flow.amount); group.setAttribute("data-width", flow.width);
-      group.setAttribute("aria-label", description);
-      shaft.setAttribute("class", "wlv-trade-flow-line"); shaft.setAttribute("d", geometry.shaft);
-      shaft.setAttribute("fill", "none"); shaft.setAttribute("stroke", color);
-      shaft.setAttribute("stroke-width", flow.width); shaft.setAttribute("stroke-opacity", "0.85");
-      shaft.setAttribute("vector-effect", "non-scaling-stroke");
-      head.setAttribute("class", "wlv-trade-flow-head"); head.setAttribute("d", geometry.head);
-      head.setAttribute("fill", color); head.setAttribute("fill-opacity", "0.95"); head.style.pointerEvents = "none";
+      flowAttribute(group, "data-partner", flow.id);
+      flowAttribute(group, "data-from", flow.from); flowAttribute(group, "data-to", flow.to);
+      flowAttribute(group, "data-amount", flow.amount); flowAttribute(group, "data-width", flow.width);
+      flowAttribute(group, "aria-label", description);
+      flowAttribute(shaft, "d", geometry.shaft); flowAttribute(shaft, "stroke", color);
+      flowAttribute(shaft, "stroke-width", flow.width);
+      flowAttribute(head, "d", geometry.head); flowAttribute(head, "fill", color);
       if (specification.interactive) {
-        group.setAttribute("role", "button"); group.setAttribute("tabindex", "0");
+        flowAttribute(group, "role", "button"); flowAttribute(group, "tabindex", "0");
         shaft.style.pointerEvents = "stroke"; shaft.style.cursor = "pointer";
-        const middle = {x: geometry.middle.x + origin.x, y: geometry.middle.y + origin.y};
-        group.addEventListener("pointerenter", event => openFlowTooltip(state, flow, event, middle));
-        group.addEventListener("pointermove", event => openFlowTooltip(state, flow, event, middle));
-        group.addEventListener("pointerleave", () => closeFlowTooltip(state));
-        group.addEventListener("focus", () => openFlowTooltip(state, flow, null, middle));
-        group.addEventListener("blur", () => closeFlowTooltip(state));
-        group.addEventListener("click", event => selectFlow(state, flow, event));
-        group.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") selectFlow(state, flow, event); });
+      } else {
+        group.removeAttribute("role"); group.removeAttribute("tabindex");
+        shaft.style.pointerEvents = ""; shaft.style.cursor = "";
       }
-      group.appendChild(shaft); group.appendChild(head); svg.appendChild(group); state.flowCount += 1;
+      // Moving unchanged groups is unnecessary and can disturb keyboard focus.
+      // insertBefore is used only when membership or the server's order changes.
+      const nextGroup = svg.children[state.flowCount] || null;
+      if (nextGroup !== group) svg.insertBefore(group, nextGroup);
+      state.flowCount += 1;
     });
+    state.flowNodes.forEach(function (record, key) {
+      if (retained.has(key)) return;
+      svg.removeChild(record.group);
+      state.flowNodes.delete(key);
+    });
+  }
+
+  function flowAttribute(node, name, value) {
+    const text = String(value);
+    if (node.getAttribute(name) !== text) node.setAttribute(name, text);
+  }
+
+  function createFlowNode(state) {
+    const node = tag => root.document.createElementNS("http://www.w3.org/2000/svg", tag);
+    const group = node("g"), shaft = node("path"), head = node("path");
+    const record = {group: group, shaft: shaft, head: head, flow: null, middle: null, interactive: false};
+    group.setAttribute("class", "wlv-trade-flow");
+    shaft.setAttribute("class", "wlv-trade-flow-line"); shaft.setAttribute("fill", "none");
+    shaft.setAttribute("stroke-opacity", "0.85"); shaft.setAttribute("vector-effect", "non-scaling-stroke");
+    head.setAttribute("class", "wlv-trade-flow-head"); head.setAttribute("fill-opacity", "0.95");
+    head.style.pointerEvents = "none";
+    // A retained group's listeners read its current data, including translated
+    // labels, direction and the projected midpoint after pan/zoom.
+    const interactive = handler => event => {
+      if (state.active && record.interactive && group.parentNode === state.flowSvg) handler(event);
+    };
+    const hover = interactive(event => openFlowTooltip(state, record.flow, event, record.middle));
+    group.addEventListener("pointerenter", hover);
+    group.addEventListener("pointermove", hover);
+    group.addEventListener("pointerleave", interactive(() => closeFlowTooltip(state)));
+    group.addEventListener("focus", interactive(() => openFlowTooltip(state, record.flow, null, record.middle)));
+    group.addEventListener("blur", interactive(() => closeFlowTooltip(state)));
+    group.addEventListener("click", interactive(event => selectFlow(state, record.flow, event)));
+    group.addEventListener("keydown", interactive(event => {
+      if (event.key === "Enter" || event.key === " ") selectFlow(state, record.flow, event);
+    }));
+    group.appendChild(shaft); group.appendChild(head);
+    return record;
   }
 
   function flush(id) {
@@ -189,7 +244,7 @@
     schedule(message.id);
   }
 
-  function language() { return root.document && root.document.documentElement.lang === "en" ? "en" : "pt"; }
+  function language() { return root.wlvI18n.code(); }
 
   function applyState(id) {
     const selection = selections.get(id);
@@ -197,6 +252,8 @@
     if (!selection || !app) return;
     app.dataset.ready = "true";
     if (selection.lang) app.dataset.tradeLang = selection.lang;
+    const controls = app.querySelector && app.querySelector(".wlv-trade-controls");
+    if (controls) controls.setAttribute("aria-label", root.wlvI18n.text("Filtros de comércio", "Trade filters"));
     if (!app.dataset.tradeFiltersInitialized) {
       if (root.matchMedia && root.matchMedia("(max-width: 767px)").matches) {
         app.querySelectorAll(".wlv-trade-controls details.wlv-trade-filter-group").forEach(function (details) { details.open = false; });
@@ -257,14 +314,12 @@
     const previous = maps.get(element.id);
     if (previous && previous.active && previous.map === map && previous.element === element) { schedule(element.id); return previous; }
     if (previous) previous.destroy();
-    const state = {map: map, element: element, active: true, announced: false, tooltips: new Map()};
+    const state = {map: map, element: element, active: true, announced: false, tooltips: new Map(), flowNodes: new Map()};
     state.projection = root.WLVEqualEarth ? root.WLVEqualEarth.attach(element, map,
       {polygonPane: "wlv-trade-polygons", waitForGeometry: true}) : null;
     state.translate = function () {
       if (!element.setAttribute) return;
-      element.setAttribute("aria-label", language() === "en" ?
-        "Trade partner map in Equal Earth. Use arrow keys to pan and plus or minus to zoom. Click a country to select a partner." :
-        "Mapa de parceiros comerciais em Equal Earth. Use as setas para mover e mais ou menos para ampliar. Clique em um país para selecionar um parceiro.");
+      element.setAttribute("aria-label", root.wlvI18n.text("Mapa de parceiros comerciais em Equal Earth. Use as setas para mover e mais ou menos para ampliar. Clique em um país para selecionar um parceiro.", "Trade partner map in Equal Earth. Use arrow keys to pan and plus or minus to zoom. Click a country to select a partner."));
     };
     state.translate();
     if (root.MutationObserver && root.document) {
@@ -299,6 +354,7 @@
       closeFlowTooltip(state);
       if (state.flowSvg && state.flowSvg.parentNode) state.flowSvg.parentNode.removeChild(state.flowSvg);
       state.flowSvg = null; state.flowCount = 0;
+      state.flowNodes.clear();
       state.tooltips.forEach(function (record, tooltip) {
         if (tooltip._setPosition === record.position) tooltip._setPosition = record.original;
       });

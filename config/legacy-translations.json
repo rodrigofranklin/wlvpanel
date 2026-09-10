@@ -1,0 +1,970 @@
+{
+  "ps.title.setup_panel": {
+    "es": "Panel de configuración",
+    "zh": "设置面板"
+  },
+  "ps.language": {
+    "es": "Idioma",
+    "zh": "语言"
+  },
+  "ps.bases_info": {
+    "es": "Información de las bases",
+    "zh": "数据来源信息"
+  },
+  "ps.base_1": {
+    "es": "Base 1",
+    "zh": "数据来源 1"
+  },
+  "ps.base_2": {
+    "es": "Base 2",
+    "zh": "数据来源 2"
+  },
+  "ps.base_3": {
+    "es": "Base 3",
+    "zh": "数据来源 3"
+  },
+  "ps.base_4": {
+    "es": "Base 4",
+    "zh": "数据来源 4"
+  },
+  "ps.title.bases_info": {
+    "es": "Información de las bases",
+    "zh": "数据来源信息"
+  },
+  "ps.base_code": {
+    "es": "Código de la base:",
+    "zh": "数据来源代码："
+  },
+  "ps.base_source": {
+    "es": "Fuente:",
+    "zh": "来源："
+  },
+  "ps.base_name": {
+    "es": "Nombre:",
+    "zh": "名称："
+  },
+  "ps.description": {
+    "es": "Descripción:",
+    "zh": "说明："
+  },
+  "tab_name.trade": {
+    "es": "Comercio",
+    "zh": "贸易"
+  },
+  "co_select_country.placeholder": {
+    "es": "Busque un país…",
+    "zh": "搜索国家…"
+  },
+  "big.mark": {
+    "es": ".",
+    "zh": ","
+  },
+  "decimal.mark": {
+    "es": ",",
+    "zh": "."
+  },
+  "hours": {
+    "es": "horas",
+    "zh": "小时"
+  },
+  "ISO3.AFG": {
+    "es": "Afganistán",
+    "zh": "阿富汗"
+  },
+  "ISO3.ALB": {
+    "es": "Albania",
+    "zh": "阿尔巴尼亚"
+  },
+  "ISO3.DZA": {
+    "es": "Argelia",
+    "zh": "阿尔及利亚"
+  },
+  "ISO3.AND": {
+    "es": "Andorra",
+    "zh": "安道尔"
+  },
+  "ISO3.AGO": {
+    "es": "Angola",
+    "zh": "安哥拉"
+  },
+  "ISO3.ATG": {
+    "es": "Antigua y Barbuda",
+    "zh": "安提瓜和巴布达"
+  },
+  "ISO3.ARG": {
+    "es": "Argentina",
+    "zh": "阿根廷"
+  },
+  "ISO3.ARM": {
+    "es": "Armenia",
+    "zh": "亚美尼亚"
+  },
+  "ISO3.AUS": {
+    "es": "Australia",
+    "zh": "澳大利亚"
+  },
+  "ISO3.AUT": {
+    "es": "Austria",
+    "zh": "奥地利"
+  },
+  "ISO3.AZE": {
+    "es": "Azerbaiyán",
+    "zh": "阿塞拜疆"
+  },
+  "ISO3.BHS": {
+    "es": "Bahamas",
+    "zh": "巴哈马"
+  },
+  "ISO3.BHR": {
+    "es": "Baréin",
+    "zh": "巴林"
+  },
+  "ISO3.BGD": {
+    "es": "Bangladés",
+    "zh": "孟加拉国"
+  },
+  "ISO3.BRB": {
+    "es": "Barbados",
+    "zh": "巴巴多斯"
+  },
+  "ISO3.BLR": {
+    "es": "Bielorrusia",
+    "zh": "白俄罗斯"
+  },
+  "ISO3.BEL": {
+    "es": "Bélgica",
+    "zh": "比利时"
+  },
+  "ISO3.BLZ": {
+    "es": "Belice",
+    "zh": "伯利兹"
+  },
+  "ISO3.BEN": {
+    "es": "Benín",
+    "zh": "贝宁"
+  },
+  "ISO3.BTN": {
+    "es": "Bután",
+    "zh": "不丹"
+  },
+  "ISO3.BOL": {
+    "es": "Bolivia",
+    "zh": "玻利维亚"
+  },
+  "ISO3.BIH": {
+    "es": "Bosnia y Herzegovina",
+    "zh": "波斯尼亚和黑塞哥维那"
+  },
+  "ISO3.BWA": {
+    "es": "Botsuana",
+    "zh": "博茨瓦纳"
+  },
+  "ISO3.BRA": {
+    "es": "Brasil",
+    "zh": "巴西"
+  },
+  "ISO3.BRN": {
+    "es": "Brunéi",
+    "zh": "文莱"
+  },
+  "ISO3.BGR": {
+    "es": "Bulgaria",
+    "zh": "保加利亚"
+  },
+  "ISO3.BFA": {
+    "es": "Burkina Faso",
+    "zh": "布基纳法索"
+  },
+  "ISO3.BDI": {
+    "es": "Burundi",
+    "zh": "布隆迪"
+  },
+  "ISO3.KHM": {
+    "es": "Camboya",
+    "zh": "柬埔寨"
+  },
+  "ISO3.CMR": {
+    "es": "Camerún",
+    "zh": "喀麦隆"
+  },
+  "ISO3.CAN": {
+    "es": "Canadá",
+    "zh": "加拿大"
+  },
+  "ISO3.CPV": {
+    "es": "Cabo Verde",
+    "zh": "佛得角"
+  },
+  "ISO3.CAF": {
+    "es": "República Centroafricana",
+    "zh": "中非共和国"
+  },
+  "ISO3.TCD": {
+    "es": "Chad",
+    "zh": "乍得"
+  },
+  "ISO3.CHL": {
+    "es": "Chile",
+    "zh": "智利"
+  },
+  "ISO3.CHN": {
+    "es": "China",
+    "zh": "中国"
+  },
+  "ISO3.COL": {
+    "es": "Colombia",
+    "zh": "哥伦比亚"
+  },
+  "ISO3.COM": {
+    "es": "Comoras",
+    "zh": "科摩罗"
+  },
+  "ISO3.COG": {
+    "es": "Congo-Brazzaville",
+    "zh": "刚果（布）"
+  },
+  "ISO3.COD": {
+    "es": "República Democrática del Congo",
+    "zh": "刚果民主共和国"
+  },
+  "ISO3.CRI": {
+    "es": "Costa Rica",
+    "zh": "哥斯达黎加"
+  },
+  "ISO3.CIV": {
+    "es": "Costa de Marfil",
+    "zh": "科特迪瓦"
+  },
+  "ISO3.HRV": {
+    "es": "Croacia",
+    "zh": "克罗地亚"
+  },
+  "ISO3.CUB": {
+    "es": "Cuba",
+    "zh": "古巴"
+  },
+  "ISO3.CYP": {
+    "es": "Chipre",
+    "zh": "塞浦路斯"
+  },
+  "ISO3.CZE": {
+    "es": "República Checa",
+    "zh": "捷克共和国"
+  },
+  "ISO3.DNK": {
+    "es": "Dinamarca",
+    "zh": "丹麦"
+  },
+  "ISO3.DJI": {
+    "es": "Yibuti",
+    "zh": "吉布提"
+  },
+  "ISO3.DMA": {
+    "es": "Dominica",
+    "zh": "多米尼克"
+  },
+  "ISO3.DOM": {
+    "es": "República Dominicana",
+    "zh": "多米尼加共和国"
+  },
+  "ISO3.ECU": {
+    "es": "Ecuador",
+    "zh": "厄瓜多尔"
+  },
+  "ISO3.EGY": {
+    "es": "Egipto",
+    "zh": "埃及"
+  },
+  "ISO3.SLV": {
+    "es": "El Salvador",
+    "zh": "萨尔瓦多"
+  },
+  "ISO3.GNQ": {
+    "es": "Guinea Ecuatorial",
+    "zh": "赤道几内亚"
+  },
+  "ISO3.ERI": {
+    "es": "Eritrea",
+    "zh": "厄立特里亚"
+  },
+  "ISO3.EST": {
+    "es": "Estonia",
+    "zh": "爱沙尼亚"
+  },
+  "ISO3.ETH": {
+    "es": "Etiopía",
+    "zh": "埃塞俄比亚"
+  },
+  "ISO3.FJI": {
+    "es": "Fiyi",
+    "zh": "斐济"
+  },
+  "ISO3.FIN": {
+    "es": "Finlandia",
+    "zh": "芬兰"
+  },
+  "ISO3.FRA": {
+    "es": "Francia",
+    "zh": "法国"
+  },
+  "ISO3.GAB": {
+    "es": "Gabón",
+    "zh": "加蓬"
+  },
+  "ISO3.GMB": {
+    "es": "Gambia",
+    "zh": "冈比亚"
+  },
+  "ISO3.GEO": {
+    "es": "Georgia",
+    "zh": "格鲁吉亚"
+  },
+  "ISO3.DEU": {
+    "es": "Alemania",
+    "zh": "德国"
+  },
+  "ISO3.GHA": {
+    "es": "Ghana",
+    "zh": "加纳"
+  },
+  "ISO3.GRC": {
+    "es": "Grecia",
+    "zh": "希腊"
+  },
+  "ISO3.GRD": {
+    "es": "Granada",
+    "zh": "格林纳达"
+  },
+  "ISO3.GTM": {
+    "es": "Guatemala",
+    "zh": "危地马拉"
+  },
+  "ISO3.GIN": {
+    "es": "Guinea",
+    "zh": "几内亚"
+  },
+  "ISO3.GNB": {
+    "es": "Guinea-Bisáu",
+    "zh": "几内亚比绍"
+  },
+  "ISO3.GUY": {
+    "es": "Guyana",
+    "zh": "圭亚那"
+  },
+  "ISO3.HTI": {
+    "es": "Haití",
+    "zh": "海地"
+  },
+  "ISO3.VAT": {
+    "es": "Ciudad del Vaticano",
+    "zh": "梵蒂冈"
+  },
+  "ISO3.HND": {
+    "es": "Honduras",
+    "zh": "洪都拉斯"
+  },
+  "ISO3.HUN": {
+    "es": "Hungría",
+    "zh": "匈牙利"
+  },
+  "ISO3.ISL": {
+    "es": "Islandia",
+    "zh": "冰岛"
+  },
+  "ISO3.IND": {
+    "es": "India",
+    "zh": "印度"
+  },
+  "ISO3.IDN": {
+    "es": "Indonesia",
+    "zh": "印度尼西亚"
+  },
+  "ISO3.IRN": {
+    "es": "Irán",
+    "zh": "伊朗"
+  },
+  "ISO3.IRQ": {
+    "es": "Irak",
+    "zh": "伊拉克"
+  },
+  "ISO3.IRL": {
+    "es": "Irlanda",
+    "zh": "爱尔兰"
+  },
+  "ISO3.ISR": {
+    "es": "Israel",
+    "zh": "以色列"
+  },
+  "ISO3.ITA": {
+    "es": "Italia",
+    "zh": "意大利"
+  },
+  "ISO3.JAM": {
+    "es": "Jamaica",
+    "zh": "牙买加"
+  },
+  "ISO3.JPN": {
+    "es": "Japón",
+    "zh": "日本"
+  },
+  "ISO3.JOR": {
+    "es": "Jordania",
+    "zh": "约旦"
+  },
+  "ISO3.KAZ": {
+    "es": "Kazajistán",
+    "zh": "哈萨克斯坦"
+  },
+  "ISO3.KEN": {
+    "es": "Kenia",
+    "zh": "肯尼亚"
+  },
+  "ISO3.KIR": {
+    "es": "Kiribati",
+    "zh": "基里巴斯"
+  },
+  "ISO3.PRK": {
+    "es": "Corea del Norte",
+    "zh": "朝鲜"
+  },
+  "ISO3.KOR": {
+    "es": "Corea del Sur",
+    "zh": "韩国"
+  },
+  "ISO3.KWT": {
+    "es": "Kuwait",
+    "zh": "科威特"
+  },
+  "ISO3.KGZ": {
+    "es": "Kirguistán",
+    "zh": "吉尔吉斯斯坦"
+  },
+  "ISO3.LAO": {
+    "es": "Laos",
+    "zh": "老挝"
+  },
+  "ISO3.LVA": {
+    "es": "Letonia",
+    "zh": "拉脱维亚"
+  },
+  "ISO3.LBN": {
+    "es": "Líbano",
+    "zh": "黎巴嫩"
+  },
+  "ISO3.LSO": {
+    "es": "Lesoto",
+    "zh": "莱索托"
+  },
+  "ISO3.LBR": {
+    "es": "Liberia",
+    "zh": "利比里亚"
+  },
+  "ISO3.LBY": {
+    "es": "Libia",
+    "zh": "利比亚"
+  },
+  "ISO3.LIE": {
+    "es": "Liechtenstein",
+    "zh": "列支敦士登"
+  },
+  "ISO3.LTU": {
+    "es": "Lituania",
+    "zh": "立陶宛"
+  },
+  "ISO3.LUX": {
+    "es": "Luxemburgo",
+    "zh": "卢森堡"
+  },
+  "ISO3.MKD": {
+    "es": "Macedonia del Norte",
+    "zh": "北马其顿"
+  },
+  "ISO3.MDG": {
+    "es": "Madagascar",
+    "zh": "马达加斯加"
+  },
+  "ISO3.MWI": {
+    "es": "Malaui",
+    "zh": "马拉维"
+  },
+  "ISO3.MYS": {
+    "es": "Malasia",
+    "zh": "马来西亚"
+  },
+  "ISO3.MDV": {
+    "es": "Maldivas",
+    "zh": "马尔代夫"
+  },
+  "ISO3.MLI": {
+    "es": "Mali",
+    "zh": "马里"
+  },
+  "ISO3.MLT": {
+    "es": "Malta",
+    "zh": "马耳他"
+  },
+  "ISO3.MHL": {
+    "es": "Islas Marshall",
+    "zh": "马绍尔群岛"
+  },
+  "ISO3.MRT": {
+    "es": "Mauritania",
+    "zh": "毛里塔尼亚"
+  },
+  "ISO3.MUS": {
+    "es": "Mauricio",
+    "zh": "毛里求斯"
+  },
+  "ISO3.MEX": {
+    "es": "México",
+    "zh": "墨西哥"
+  },
+  "ISO3.FSM": {
+    "es": "Micronesia",
+    "zh": "密克罗尼西亚"
+  },
+  "ISO3.MDA": {
+    "es": "Moldavia",
+    "zh": "摩尔多瓦"
+  },
+  "ISO3.MCO": {
+    "es": "Mónaco",
+    "zh": "摩纳哥"
+  },
+  "ISO3.MNG": {
+    "es": "Mongolia",
+    "zh": "蒙古"
+  },
+  "ISO3.MNE": {
+    "es": "Montenegro",
+    "zh": "黑山"
+  },
+  "ISO3.MAR": {
+    "es": "Marruecos",
+    "zh": "摩洛哥"
+  },
+  "ISO3.MOZ": {
+    "es": "Mozambique",
+    "zh": "莫桑比克"
+  },
+  "ISO3.MMR": {
+    "es": "Myanmar",
+    "zh": "缅甸"
+  },
+  "ISO3.NAM": {
+    "es": "Namibia",
+    "zh": "纳米比亚"
+  },
+  "ISO3.NRU": {
+    "es": "Nauru",
+    "zh": "瑙鲁"
+  },
+  "ISO3.NPL": {
+    "es": "Nepal",
+    "zh": "尼泊尔"
+  },
+  "ISO3.NLD": {
+    "es": "Países Bajos",
+    "zh": "荷兰"
+  },
+  "ISO3.NZL": {
+    "es": "Nueva Zelanda",
+    "zh": "新西兰"
+  },
+  "ISO3.NIC": {
+    "es": "Nicaragua",
+    "zh": "尼加拉瓜"
+  },
+  "ISO3.NER": {
+    "es": "Níger",
+    "zh": "尼日尔"
+  },
+  "ISO3.NGA": {
+    "es": "Nigeria",
+    "zh": "尼日利亚"
+  },
+  "ISO3.NOR": {
+    "es": "Noruega",
+    "zh": "挪威"
+  },
+  "ISO3.OMN": {
+    "es": "Omán",
+    "zh": "阿曼"
+  },
+  "ISO3.PAK": {
+    "es": "Pakistán",
+    "zh": "巴基斯坦"
+  },
+  "ISO3.PLW": {
+    "es": "Palaos",
+    "zh": "帕劳"
+  },
+  "ISO3.PSE": {
+    "es": "Estado de Palestina",
+    "zh": "巴勒斯坦国"
+  },
+  "ISO3.PAN": {
+    "es": "Panamá",
+    "zh": "巴拿马"
+  },
+  "ISO3.PNG": {
+    "es": "Papúa Nueva Guinea",
+    "zh": "巴布亚新几内亚"
+  },
+  "ISO3.PRY": {
+    "es": "Paraguay",
+    "zh": "巴拉圭"
+  },
+  "ISO3.PER": {
+    "es": "Perú",
+    "zh": "秘鲁"
+  },
+  "ISO3.PHL": {
+    "es": "Filipinas",
+    "zh": "菲律宾"
+  },
+  "ISO3.POL": {
+    "es": "Polonia",
+    "zh": "波兰"
+  },
+  "ISO3.PRT": {
+    "es": "Portugal",
+    "zh": "葡萄牙"
+  },
+  "ISO3.QAT": {
+    "es": "Catar",
+    "zh": "卡塔尔"
+  },
+  "ISO3.ROU": {
+    "es": "Rumanía",
+    "zh": "罗马尼亚"
+  },
+  "ISO3.RUS": {
+    "es": "Rusia",
+    "zh": "俄罗斯"
+  },
+  "ISO3.RWA": {
+    "es": "Ruanda",
+    "zh": "卢旺达"
+  },
+  "ISO3.KNA": {
+    "es": "San Cristóbal y Nieves",
+    "zh": "圣基茨和尼维斯"
+  },
+  "ISO3.LCA": {
+    "es": "Santa Lucía",
+    "zh": "圣卢西亚"
+  },
+  "ISO3.VCT": {
+    "es": "San Vicente y las Granadinas",
+    "zh": "圣文森特和格林纳丁斯"
+  },
+  "ISO3.WSM": {
+    "es": "Samoa",
+    "zh": "萨摩亚"
+  },
+  "ISO3.SMR": {
+    "es": "San Marino",
+    "zh": "圣马力诺"
+  },
+  "ISO3.STP": {
+    "es": "Santo Tomé y Príncipe",
+    "zh": "圣多美和普林西比"
+  },
+  "ISO3.SAU": {
+    "es": "Arabia Saudí",
+    "zh": "沙特阿拉伯"
+  },
+  "ISO3.SEN": {
+    "es": "Senegal",
+    "zh": "塞内加尔"
+  },
+  "ISO3.SRB": {
+    "es": "Serbia",
+    "zh": "塞尔维亚"
+  },
+  "ISO3.SYC": {
+    "es": "Seychelles",
+    "zh": "塞舌尔"
+  },
+  "ISO3.SLE": {
+    "es": "Sierra Leona",
+    "zh": "塞拉利昂"
+  },
+  "ISO3.SGP": {
+    "es": "Singapur",
+    "zh": "新加坡"
+  },
+  "ISO3.SVK": {
+    "es": "Eslovaquia",
+    "zh": "斯洛伐克"
+  },
+  "ISO3.SVN": {
+    "es": "Eslovenia",
+    "zh": "斯洛文尼亚"
+  },
+  "ISO3.SLB": {
+    "es": "Islas Salomón",
+    "zh": "所罗门群岛"
+  },
+  "ISO3.SOM": {
+    "es": "Somalia",
+    "zh": "索马里"
+  },
+  "ISO3.ZAF": {
+    "es": "Sudáfrica",
+    "zh": "南非"
+  },
+  "ISO3.SSD": {
+    "es": "Sudán del Sur",
+    "zh": "南苏丹"
+  },
+  "ISO3.ESP": {
+    "es": "España",
+    "zh": "西班牙"
+  },
+  "ISO3.LKA": {
+    "es": "Sri Lanka",
+    "zh": "斯里兰卡"
+  },
+  "ISO3.SDN": {
+    "es": "Sudán",
+    "zh": "苏丹"
+  },
+  "ISO3.SUR": {
+    "es": "Surinam",
+    "zh": "苏里南"
+  },
+  "ISO3.SWZ": {
+    "es": "Esuatini",
+    "zh": "斯威士兰"
+  },
+  "ISO3.SWE": {
+    "es": "Suecia",
+    "zh": "瑞典"
+  },
+  "ISO3.CHE": {
+    "es": "Suiza",
+    "zh": "瑞士"
+  },
+  "ISO3.SYR": {
+    "es": "Siria",
+    "zh": "叙利亚"
+  },
+  "ISO3.TJK": {
+    "es": "Tayikistán",
+    "zh": "塔吉克斯坦"
+  },
+  "ISO3.TZA": {
+    "es": "Tanzania",
+    "zh": "坦桑尼亚"
+  },
+  "ISO3.THA": {
+    "es": "Tailandia",
+    "zh": "泰国"
+  },
+  "ISO3.TLS": {
+    "es": "Timor Oriental",
+    "zh": "东帝汶"
+  },
+  "ISO3.TGO": {
+    "es": "Togo",
+    "zh": "多哥"
+  },
+  "ISO3.TON": {
+    "es": "Tonga",
+    "zh": "汤加"
+  },
+  "ISO3.TTO": {
+    "es": "Trinidad y Tobago",
+    "zh": "特立尼达和多巴哥"
+  },
+  "ISO3.TUN": {
+    "es": "Túnez",
+    "zh": "突尼斯"
+  },
+  "ISO3.TUR": {
+    "es": "Turquía",
+    "zh": "土耳其"
+  },
+  "ISO3.TKM": {
+    "es": "Turkmenistán",
+    "zh": "土库曼斯坦"
+  },
+  "ISO3.TUV": {
+    "es": "Tuvalu",
+    "zh": "图瓦卢"
+  },
+  "ISO3.UGA": {
+    "es": "Uganda",
+    "zh": "乌干达"
+  },
+  "ISO3.UKR": {
+    "es": "Ucrania",
+    "zh": "乌克兰"
+  },
+  "ISO3.ARE": {
+    "es": "Emiratos Árabes Unidos",
+    "zh": "阿拉伯联合酋长国"
+  },
+  "ISO3.GBR": {
+    "es": "Reino Unido",
+    "zh": "英国"
+  },
+  "ISO3.USA": {
+    "es": "Estados Unidos",
+    "zh": "美国"
+  },
+  "ISO3.URY": {
+    "es": "Uruguay",
+    "zh": "乌拉圭"
+  },
+  "ISO3.UZB": {
+    "es": "Uzbekistán",
+    "zh": "乌兹别克斯坦"
+  },
+  "ISO3.VUT": {
+    "es": "Vanuatu",
+    "zh": "瓦努阿图"
+  },
+  "ISO3.VEN": {
+    "es": "Venezuela",
+    "zh": "委内瑞拉"
+  },
+  "ISO3.VNM": {
+    "es": "Vietnam",
+    "zh": "越南"
+  },
+  "ISO3.YEM": {
+    "es": "Yemen",
+    "zh": "也门"
+  },
+  "ISO3.ZMB": {
+    "es": "Zambia",
+    "zh": "赞比亚"
+  },
+  "ISO3.ZWE": {
+    "es": "Zimbabue",
+    "zh": "津巴布韦"
+  },
+  "ISO3.WWW": {
+    "es": "Mundo",
+    "zh": "世界"
+  },
+  "ISO3.WW": {
+    "es": "Mundo",
+    "zh": "世界"
+  },
+  "ISO3.WA": {
+    "es": "Resto de Asia",
+    "zh": "亚洲其他地区"
+  },
+  "ISO3.WE": {
+    "es": "Resto de Europa",
+    "zh": "欧洲其他地区"
+  },
+  "ISO3.WL": {
+    "es": "Resto de América Latina",
+    "zh": "拉丁美洲其他地区"
+  },
+  "ISO3.WM": {
+    "es": "Resto de Oriente Medio",
+    "zh": "中东其他地区"
+  },
+  "ISO3.WLF": {
+    "es": "Resto de África",
+    "zh": "非洲其他地区"
+  },
+  "ISO3.ROW": {
+    "es": "Resto del Mundo",
+    "zh": "世界其他地区"
+  },
+  "compensation.empe_hs.r.pc": {
+    "es": "Participación de la remuneración de los trabajadores de alta cualificación",
+    "zh": "高技能劳动者报酬占比"
+  },
+  "compensation.empe_ms.r.pc": {
+    "es": "Participación de la remuneración de los trabajadores de cualificación media",
+    "zh": "中等技能劳动者报酬占比"
+  },
+  "compensation.empe_ls.r.pc": {
+    "es": "Participación de la remuneración de los trabajadores de baja cualificación",
+    "zh": "低技能劳动者报酬占比"
+  },
+  "hours_worked.empe_hs.r.pc": {
+    "es": "Participación de las horas trabajadas por trabajadores de alta cualificación",
+    "zh": "高技能劳动者工作时数占比"
+  },
+  "hours_worked.empe_ms.r.pc": {
+    "es": "Participación de las horas trabajadas por trabajadores de cualificación media",
+    "zh": "中等技能劳动者工作时数占比"
+  },
+  "hours_worked.empe_ls.r.pc": {
+    "es": "Participación de las horas trabajadas por trabajadores de baja cualificación",
+    "zh": "低技能劳动者工作时数占比"
+  },
+  "desc.compensation.empe_hs.r.pc": {
+    "es": "Participación de la remuneración de los trabajadores asalariados de alta cualificación (% de la remuneración total).",
+    "zh": "高技能雇员的报酬占比（占报酬总额的百分比）。"
+  },
+  "desc.compensation.empe_ms.r.pc": {
+    "es": "Participación de la remuneración de los trabajadores asalariados de cualificación media (% de la remuneración total).",
+    "zh": "中等技能雇员的报酬占比（占报酬总额的百分比）。"
+  },
+  "desc.compensation.empe_ls.r.pc": {
+    "es": "Participación de la remuneración de los trabajadores asalariados de baja cualificación (% de la remuneración total).",
+    "zh": "低技能雇员的报酬占比（占报酬总额的百分比）。"
+  },
+  "desc.hours_worked.empe_hs.r.pc": {
+    "es": "Participación de las horas trabajadas por trabajadores asalariados de alta cualificación (% del total de horas trabajadas).",
+    "zh": "高技能雇员的工作时数占比（占工作总时数的百分比）。"
+  },
+  "desc.hours_worked.empe_ms.r.pc": {
+    "es": "Participación de las horas trabajadas por trabajadores asalariados de cualificación media (% del total de horas trabajadas).",
+    "zh": "中等技能雇员的工作时数占比（占工作总时数的百分比）。"
+  },
+  "desc.hours_worked.empe_ls.r.pc": {
+    "es": "Participación de las horas trabajadas por trabajadores asalariados de baja cualificación (% del total de horas trabajadas).",
+    "zh": "低技能雇员的工作时数占比（占工作总时数的百分比）。"
+  },
+  "emp.s.un": {
+    "es": "Número de personas ocupadas",
+    "zh": "就业人员人数"
+  },
+  "empe.s.un": {
+    "es": "Número de trabajadores asalariados",
+    "zh": "雇员人数"
+  },
+  "hours_worked.empe.s.hr": {
+    "es": "Total de horas trabajadas por trabajadores asalariados",
+    "zh": "雇员工作总时数"
+  },
+  "gross_output.s.us": {
+    "es": "Producto total (USD)",
+    "zh": "总产出（USD）"
+  },
+  "gdp.s.us": {
+    "es": "Producto Interior Bruto (USD)",
+    "zh": "国内生产总值（USD）"
+  },
+  "desc.emp.s.un": {
+    "es": "Número total de personas ocupadas.",
+    "zh": "就业人员总人数。"
+  },
+  "desc.empe.s.un": {
+    "es": "Número total de trabajadores asalariados.",
+    "zh": "雇员总人数。"
+  },
+  "desc.hours_worked.empe.s.hr": {
+    "es": "Número total de horas trabajadas por trabajadores asalariados.",
+    "zh": "雇员工作时数总和。"
+  },
+  "desc.gross_output.s.us": {
+    "es": "Producto total en USD.",
+    "zh": "以 USD 计量的总产出。"
+  },
+  "desc.gdp.s.us": {
+    "es": "Producto Interior Bruto en USD corrientes.",
+    "zh": "以当期 USD 计量的国内生产总值。"
+  }
+}

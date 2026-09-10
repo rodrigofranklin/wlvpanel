@@ -80,7 +80,7 @@ async function navigate(page, value) {
   const browser = await chromium.launch({headless:true});
   try {
     for (const width of widths) {
-      const page = await browser.newPage({viewport:{width,height:900}});
+      const page = await browser.newPage({locale: 'pt-BR', viewport:{width,height:900}});
       const errors = [];
       page.on('pageerror', error => errors.push(String(error)));
       try {

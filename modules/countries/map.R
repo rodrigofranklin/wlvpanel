@@ -131,6 +131,14 @@ map_indicator_info <- function(indicator, methods, lng,
   )
 }
 
+# A delta retains the complete color/tooltip pair for each changed layer. The
+# client merges these by id before the existing map renderer consumes them,
+# including messages that arrive before Leaflet has added the geometry.
+wlv_map_layer_delta <- function(previous, layers) {
+  changed <- vapply(layers, function(layer) !identical(previous[[layer$id]], layer), logical(1L))
+  layers[changed]
+}
+
 ### UI ####
 
 # Controles únicos: o CSS os apresenta como painéis flutuantes no mobile.
@@ -151,7 +159,7 @@ map_ui <- div(class = "wlv-map-canvas",
   leafletOutput("map", width = "100%", height = "100%"),
   div(class = "wlv-map-float wlv-map-filter-panel",
     div(id = "map-base-panel", class = "wlv-map-base",
-      selectInput("co_map_method", l("map.base"), choices = init_bases, selectize = FALSE)),
+      selectInput("co_map_method", l("map.base"), choices = init_bases)),
     div(id = "map-year-panel", class = "wlv-map-year",
       sliderInput("co_select_year", label = l("map.year"), min = 1995,
         max = 2007, value = default_year, ticks = FALSE, sep = "",
@@ -196,6 +204,9 @@ map_server <- function(IP, OP, RV, SESSION) {
   OP$map_indicator_list <- renderUI({
     rows <- meta_indicators[meta_indicators$value %in% control_availability(), ]
     selected <- isolate(IP$co_select_indicator)
+    lang <- isolate(IP$l)
+    # The structure only depends on availability. Existing label translation
+    # updates these spans in place and preserves expanded groups and focus.
     tags$ul(class = "wlv-map-indicator-list", lapply(unique(rows$groups), function(group) {
       codes <- rows$value[rows$groups == group]
       expanded <- any(codes %in% selected)
@@ -203,7 +214,7 @@ map_server <- function(IP, OP, RV, SESSION) {
       tags$li(class = "wlv-map-indicator-group",
         tags$button(type = "button", class = "wlv-map-group-header",
           "aria-expanded" = if (expanded) "true" else "false", "aria-controls" = body_id,
-          tags$span(lb(paste0("group.", group), IP$l)),
+          tags$span(`data-wlv-label` = paste0("group.", group), lb(paste0("group.", group), lang)),
           tags$span(class = "wlv-map-group-arrow", icon("chevron-right"))),
         tags$ul(id = body_id, class = "wlv-map-group-body",
           "data-expanded" = if (expanded) "true" else "false",
@@ -219,11 +230,12 @@ map_server <- function(IP, OP, RV, SESSION) {
                     stroke = "#fff", "stroke-width" = "1"),
                   tags$circle(cx = "8.5", cy = "8.5", r = "4", class = "inner-circle", fill = "#fff"))),
               div(class = "wlv-map-indicator-text",
-                tags$span(id = label_id, class = "wlv-map-indicator-label", lb(code, IP$l)),
+                tags$span(id = label_id, class = "wlv-map-indicator-label",
+                  `data-wlv-label` = code, lb(code, lang)),
                 HTML("&nbsp;"),
                 tags$button(type = "button", class = "wlv-map-indicator-help",
                   "data-indicator-info" = code,
-                  "aria-label" = paste(wlv_tr("Sobre", "About", IP$l), lb(code, IP$l)),
+                  "aria-label" = paste(wlv_tr("Sobre", "About", lang), lb(code, lang)),
                   icon("question-circle"))))
           })))
     }))
@@ -423,6 +435,7 @@ map_server <- function(IP, OP, RV, SESSION) {
   loaded_methods <- character()
   shown_method <- NULL
   map_instance <- NULL
+  delivered_layers <- list()
   observe({
     ready <- IP$map_wlv_ready
     req(ready)
@@ -431,9 +444,11 @@ map_server <- function(IP, OP, RV, SESSION) {
     pallet <- pallet()
     labels <- labels()
     # Um novo widget (por exemplo, após reconexão) precisa receber a geometria.
-    if (!identical(map_instance, ready)) {
+    reset <- !identical(map_instance, ready)
+    if (reset) {
       loaded_methods <<- character()
       shown_method <<- NULL
+      delivered_layers <<- list()
       map_instance <<- ready
     }
     proxy <- leafletProxy("map", session = SESSION, deferUntilFlush = FALSE)
@@ -472,11 +487,17 @@ map_server <- function(IP, OP, RV, SESSION) {
         label = as.character(labels[[method]][[i]])
       ))
     }), recursive = FALSE, use.names = FALSE)
-    SESSION$sendCustomMessage("wlv-map-update", list(id = "map", layers = updates))
+    delta <- wlv_map_layer_delta(delivered_layers, updates)
+    if (length(delta) || reset) {
+      SESSION$sendCustomMessage("wlv-map-delta", list(id = "map", instance = ready,
+        reset = reset, layers = delta))
+      for (layer in delta) delivered_layers[[layer$id]] <<- layer
+    }
   })
   
   ## Legend control ####
   # Change legend with layer
+  legend_key <- NULL
   observe({
     method <- active_method()
     map_data <- map_data()
@@ -491,6 +512,10 @@ map_server <- function(IP, OP, RV, SESSION) {
 
     method <- intersect(method, methods)
     method <- if (length(method)) method[[1L]] else methods[[1L]]
+    key <- list(instance = IP$map_wlv_ready, method = method, indicator = indicator,
+      lang = lng, values = map_data[[method]]$data)
+    if (identical(key, legend_key)) return()
+    legend_key <<- key
     proxy <- leafletProxy("map", session = SESSION)
     proxy |> removeControl("wlv-legend")
     if (any(is.finite(map_data[[method]]$data))) {

@@ -1,142 +1,212 @@
 {
   "text.quote": {
     "pt": "Ao utilizar os dados ou o código em pesquisas e publicações, cite o seguinte trabalho:",
-    "en": "When using the data or code in research and publications, please cite the following study:"
+    "en": "When using the data or code in research and publications, please cite the following study:",
+    "es": "Al utilizar los datos o el código en investigaciones y publicaciones, cite el siguiente estudio:",
+    "zh": "在研究和出版物中使用本项目的数据或代码时，请引用以下研究："
   },
   "about2.kicker": {
     "pt": "WLVD · Base Mundial de Valores-Trabalho",
-    "en": "WLVD · World Labour Values Database"
+    "en": "WLVD · World Labour Values Database",
+    "es": "WLVD · Base Mundial de Valores-Trabajo",
+    "zh": "WLVD · 世界劳动价值数据库"
   },
   "about2.title": {
     "pt": "O trabalho por trás da economia mundial.",
-    "en": "The labour behind the world economy."
+    "en": "The labour behind the world economy.",
+    "es": "El trabajo detrás de la economía mundial.",
+    "zh": "世界经济背后的劳动。"
   },
   "about2.intro": {
     "pt": "Uma base para investigar como o trabalho se transforma em riqueza, como essa riqueza se distribui e como circula entre os países.",
-    "en": "A database for investigating how labour becomes wealth, how that wealth is distributed and how it flows between countries."
+    "en": "A database for investigating how labour becomes wealth, how that wealth is distributed and how it flows between countries.",
+    "es": "Una base de datos para investigar cómo el trabajo se transforma en riqueza, cómo se distribuye esa riqueza y cómo circula entre países.",
+    "zh": "本数据库用于研究劳动如何转化为财富、财富如何分配，以及财富如何在国家之间流动。"
   },
   "about2.project_kicker": {
     "pt": "O projeto",
-    "en": "The project"
+    "en": "The project",
+    "es": "El proyecto",
+    "zh": "项目介绍"
   },
   "about2.project_title": {
     "pt": "Dar dimensão empírica à teoria do valor",
-    "en": "Bringing empirical evidence to value theory"
+    "en": "Bringing empirical evidence to value theory",
+    "es": "Aportar evidencia empírica a la teoría del valor",
+    "zh": "为价值理论提供经验证据"
   },
   "about2.project_text": {
     "pt": "A Base Mundial de Valores-Trabalho reúne estimativas para estudar a produção, a exploração do trabalho e as relações econômicas internacionais. O painel torna essas informações acessíveis por meio de mapas, séries históricas, perfis nacionais e arquivos para download.",
-    "en": "The World Labour Values Database brings together estimates for studying production, labour exploitation and international economic relations. This panel provides access through maps, time series, country profiles and downloadable files."
+    "en": "The World Labour Values Database brings together estimates for studying production, labour exploitation and international economic relations. This panel provides access through maps, time series, country profiles and downloadable files.",
+    "es": "La Base Mundial de Valores-Trabajo reúne estimaciones para estudiar la producción, la explotación del trabajo y las relaciones económicas internacionales. Este panel permite acceder a ellas mediante mapas, series históricas, perfiles nacionales y archivos descargables.",
+    "zh": "世界劳动价值数据库汇集了用于研究生产、劳动剥削和国际经济关系的估算数据。本面板通过地图、时间序列、国家概况和可下载文件提供这些信息。"
   },
   "about2.project_network": {
     "pt": "O projeto integra a agenda do Grupo de Estudos Concretos sobre Teoria do Valor, uma rede internacional de pesquisa dedicada ao estudo crítico da economia com dados e diferentes abordagens teóricas e metodológicas.",
-    "en": "The project is part of the research agenda of the Group of Concrete Studies on Theory of Value, an international network studying the economy critically through data and different theoretical and methodological approaches."
+    "en": "The project is part of the research agenda of the Group of Concrete Studies on Theory of Value, an international network studying the economy critically through data and different theoretical and methodological approaches.",
+    "es": "El proyecto forma parte de la agenda del Grupo de Estudios Concretos sobre Teoría del Valor, una red internacional de investigación dedicada al estudio crítico de la economía a partir de datos y de distintos enfoques teóricos y metodológicos.",
+    "zh": "本项目属于价值理论具体研究小组的研究议程。该国际研究网络运用数据以及不同的理论和方法，对经济进行批判性研究。"
   },
   "about2.project_link": {
     "pt": "Conheça o projeto e sua agenda de pesquisa →",
-    "en": "Explore the project and its research agenda →"
+    "en": "Explore the project and its research agenda →",
+    "es": "Conozca el proyecto y su agenda de investigación →",
+    "zh": "了解项目及其研究议程 →"
   },
   "about2.questions": {
     "pt": "O que podemos investigar?",
-    "en": "What can we investigate?"
+    "en": "What can we investigate?",
+    "es": "¿Qué podemos investigar?",
+    "zh": "我们可以研究什么？"
   },
   "about2.labour_title": {
     "pt": "Trabalho e exploração",
-    "en": "Labour and exploitation"
+    "en": "Labour and exploitation",
+    "es": "Trabajo y explotación",
+    "zh": "劳动与剥削"
   },
   "about2.labour_text": {
     "pt": "Horas trabalhadas, remuneração e mais-valor ajudam a examinar as relações entre trabalho realizado e riqueza apropriada.",
-    "en": "Working hours, compensation and surplus value help examine the relationship between labour performed and wealth appropriated."
+    "en": "Working hours, compensation and surplus value help examine the relationship between labour performed and wealth appropriated.",
+    "es": "Las horas trabajadas, la remuneración y el plusvalor ayudan a examinar la relación entre el trabajo realizado y la riqueza apropiada.",
+    "zh": "劳动时间、报酬和剩余价值有助于考察已完成的劳动与被占有的财富之间的关系。"
   },
   "about2.production_title": {
     "pt": "Produção e rentabilidade",
-    "en": "Production and profitability"
+    "en": "Production and profitability",
+    "es": "Producción y rentabilidad",
+    "zh": "生产与盈利能力"
   },
   "about2.production_text": {
     "pt": "Valores, capital e lucro permitem comparar a estrutura produtiva e acompanhar suas transformações ao longo do tempo.",
-    "en": "Values, capital and profit allow comparisons of productive structures and their changes over time."
+    "en": "Values, capital and profit allow comparisons of productive structures and their changes over time.",
+    "es": "Los valores, el capital y la ganancia permiten comparar las estructuras productivas y sus transformaciones a lo largo del tiempo.",
+    "zh": "价值、资本和利润数据可用于比较生产结构，并追踪其随时间发生的变化。"
   },
   "about2.trade_title": {
     "pt": "Relações internacionais",
-    "en": "International relations"
+    "en": "International relations",
+    "es": "Relaciones internacionales",
+    "zh": "国际关系"
   },
   "about2.trade_text": {
     "pt": "Fluxos de comércio e transferências de valor oferecem uma perspectiva sobre a divisão internacional do trabalho e a troca desigual.",
-    "en": "Trade flows and value transfers offer a perspective on the international division of labour and unequal exchange."
+    "en": "Trade flows and value transfers offer a perspective on the international division of labour and unequal exchange.",
+    "es": "Los flujos comerciales y las transferencias de valor ofrecen una perspectiva sobre la división internacional del trabajo y el intercambio desigual.",
+    "zh": "贸易流动和价值转移为研究国际劳动分工和不平等交换提供了视角。"
   },
   "about2.research_kicker": {
     "pt": "Da pesquisa à consulta",
-    "en": "From research to exploration"
+    "en": "From research to exploration",
+    "es": "De la investigación a la consulta",
+    "zh": "从研究到探索"
   },
   "about2.research_title": {
     "pt": "Dados que convidam a novas perguntas",
-    "en": "Data that invite new questions"
+    "en": "Data that invite new questions",
+    "es": "Datos que invitan a nuevas preguntas",
+    "zh": "引出新问题的数据"
   },
   "about2.research_text": {
     "pt": "As estimativas dialogam com problemas clássicos da teoria do valor e com questões da economia contemporânea. Consulte a metodologia e observe a base, o período e a unidade de cada indicador ao comparar resultados. O código-fonte está disponível para examinar os cálculos e desenvolver novas análises.",
-    "en": "The estimates address longstanding questions in value theory and contemporary economic issues. Consult the methodology and check each indicator’s source, period and unit when comparing results. The source code is available to examine the calculations and develop new analyses."
+    "en": "The estimates address longstanding questions in value theory and contemporary economic issues. Consult the methodology and check each indicator’s source, period and unit when comparing results. The source code is available to examine the calculations and develop new analyses.",
+    "es": "Las estimaciones abordan problemas clásicos de la teoría del valor y cuestiones de la economía contemporánea. Consulte la metodología y compruebe la base, el período y la unidad de cada indicador al comparar resultados. El código fuente está disponible para examinar los cálculos y desarrollar nuevos análisis.",
+    "zh": "这些估算回应了价值理论的经典问题和当代经济问题。比较结果时，请查阅方法说明，并核对各指标的数据来源、时期和单位。源代码可供检查计算过程和开展新的分析。"
   },
   "about2.code_link": {
     "pt": "Acessar o código-fonte →",
-    "en": "View the source code →"
+    "en": "View the source code →",
+    "es": "Acceder al código fuente →",
+    "zh": "查看源代码 →"
   },
   "about2.method_title": {
     "pt": "Como comparar trabalhos diferentes?",
-    "en": "How can different kinds of labour be compared?"
+    "en": "How can different kinds of labour be compared?",
+    "es": "¿Cómo comparar trabajos diferentes?",
+    "zh": "如何比较不同种类的劳动？"
   },
   "about2.method_text": {
     "pt": "O estudo metodológico de 2022 compara formas de reduzir trabalho complexo a trabalho simples e questiona a hipótese de equalização das taxas de exploração. Suas estimativas integram a construção da WLVD.",
-    "en": "The 2022 methodological study compares ways of reducing complex labour to simple labour and questions the hypothesis of equal exploitation rates. Its estimates form part of the construction of the WLVD."
+    "en": "The 2022 methodological study compares ways of reducing complex labour to simple labour and questions the hypothesis of equal exploitation rates. Its estimates form part of the construction of the WLVD.",
+    "es": "El estudio metodológico de 2022 compara formas de reducir el trabajo complejo a trabajo simple y cuestiona la hipótesis de igualación de las tasas de explotación. Sus estimaciones forman parte de la construcción de la WLVD.",
+    "zh": "2022年的方法研究比较了将复杂劳动还原为简单劳动的不同方式，并质疑剥削率均等化假说。其估算构成了WLVD建设的一部分。"
   },
   "about2.method_link": {
     "pt": "Ler o artigo metodológico · 2022 →",
-    "en": "Read the methodological article · 2022 →"
+    "en": "Read the methodological article · 2022 →",
+    "es": "Leer el artículo metodológico · 2022 →",
+    "zh": "阅读方法研究论文 · 2022 →"
   },
   "about2.applications_title": {
     "pt": "O que as trocas internacionais revelam?",
-    "en": "What does international trade reveal?"
+    "en": "What does international trade reveal?",
+    "es": "¿Qué revela el comercio internacional?",
+    "zh": "国际贸易揭示了什么？"
   },
   "about2.applications_text": {
     "pt": "Estudos sobre Brasil e China investigam o trabalho incorporado no comércio e as transferências de valor entre economias, considerando parceiros comerciais e estruturas produtivas.",
-    "en": "Studies of Brazil and China investigate labour embodied in trade and value transfers between economies, considering trading partners and productive structures."
+    "en": "Studies of Brazil and China investigate labour embodied in trade and value transfers between economies, considering trading partners and productive structures.",
+    "es": "Los estudios sobre Brasil y China investigan el trabajo incorporado en el comercio y las transferencias de valor entre economías, considerando los socios comerciales y las estructuras productivas.",
+    "zh": "关于巴西和中国的研究考察了贸易中包含的劳动以及经济体之间的价值转移，并考虑贸易伙伴和生产结构。"
   },
   "about2.brazil_link": {
     "pt": "Brasil · artigo de 2022 →",
-    "en": "Brazil · 2022 article →"
+    "en": "Brazil · 2022 article →",
+    "es": "Brasil · artículo de 2022 →",
+    "zh": "巴西 · 2022年论文 →"
   },
   "about2.china_link": {
     "pt": "China · estudo de 2024 →",
-    "en": "China · 2024 study →"
+    "en": "China · 2024 study →",
+    "es": "China · estudio de 2024 →",
+    "zh": "中国 · 2024年研究 →"
   },
   "about2.team_kicker": {
     "pt": "Uma construção coletiva",
-    "en": "A collective undertaking"
+    "en": "A collective undertaking",
+    "es": "Una construcción colectiva",
+    "zh": "集体建设"
   },
   "about2.team_title": {
     "pt": "Pessoas por trás da pesquisa",
-    "en": "People behind the research"
+    "en": "People behind the research",
+    "es": "Las personas detrás de la investigación",
+    "zh": "研究背后的团队"
   },
   "about2.team_text": {
     "pt": "Coordenadores apresentados pelo projeto e coautores do estudo metodológico da WLVD. A rede reúne também outros pesquisadores e colaboradores.",
-    "en": "Coordinators listed by the project and coauthors of the WLVD methodological study. The network also includes other researchers and collaborators."
+    "en": "Coordinators listed by the project and coauthors of the WLVD methodological study. The network also includes other researchers and collaborators.",
+    "es": "Coordinadores presentados por el proyecto y coautores del estudio metodológico de la WLVD. La red también incluye a otros investigadores y colaboradores.",
+    "zh": "这里列出了项目介绍的协调人及WLVD方法研究的共同作者。该网络还包括其他研究人员和合作者。"
   },
   "about2.profile": {
     "pt": "Conhecer o pesquisador →",
-    "en": "View researcher profile →"
+    "en": "View researcher profile →",
+    "es": "Conocer al investigador →",
+    "zh": "查看研究人员简介 →"
   },
   "about2.team_link": {
     "pt": "Conheça a equipe e os demais integrantes →",
-    "en": "Meet the team and other members →"
+    "en": "Meet the team and other members →",
+    "es": "Conozca al equipo y a los demás integrantes →",
+    "zh": "了解团队及其他成员 →"
   },
   "about2.institution_kicker": {
     "pt": "Vínculo institucional",
-    "en": "Institutional affiliation"
+    "en": "Institutional affiliation",
+    "es": "Vínculo institucional",
+    "zh": "机构关系"
   },
   "about2.institution_text": {
     "pt": "O WLVD está vinculado ao LabCidades. Essa parceria aproxima a pesquisa sobre trabalho, produção e desenvolvimento da construção de ferramentas públicas para explorar dados.",
-    "en": "The WLVD is affiliated with LabCidades. This partnership connects research on labour, production and development with public tools for exploring data."
+    "en": "The WLVD is affiliated with LabCidades. This partnership connects research on labour, production and development with public tools for exploring data.",
+    "es": "La WLVD está vinculada a LabCidades. Esta colaboración conecta la investigación sobre trabajo, producción y desarrollo con la creación de herramientas públicas para explorar datos.",
+    "zh": "WLVD与LabCidades建立了机构联系。这一合作将劳动、生产和发展研究与面向公众的数据探索工具建设相结合。"
   },
   "about2.institution_link": {
     "pt": "Visitar o LabCidades →",
-    "en": "Visit LabCidades →"
+    "en": "Visit LabCidades →",
+    "es": "Visitar LabCidades →",
+    "zh": "访问LabCidades →"
   }
 }

@@ -1,4 +1,13 @@
+function(request) {
+initial <- wlv_initial_language(request)
+message <- wlv_language_messages(initial$language)
+initial$labels <- message$labels
+initial$phrases <- message$phrases
+initial$fingerprint <- message$fingerprint
+initial$languages <- wlv_languages()
 tagList(
+  tags$div(hidden = NA, textInput("wlv_language_bootstrap", NULL, value = initial$fingerprint)),
+  tags$head(tags$script(HTML(paste0("window.wlvInitialLanguage = ", jsonlite::toJSON(initial, auto_unbox = TRUE, null = "null"), ";")))),
   tags$header(class = "wlv-topbar",
     tags$a(class = "wlv-brand", href = "https://worldlabourvalues.org/", `aria-label` = "WLVD — World Labour Values Database",
       tags$img(src = "a_batallar_ideas.png", alt = "", height = "40", width = "40"),
@@ -23,3 +32,4 @@ tagList(
     "World Labour Values Task Force", tags$span("CC BY-NC-SA 4.0"))
 ), modules_ui))
 )
+}
