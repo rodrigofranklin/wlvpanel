@@ -1,8 +1,8 @@
 # WLVD — painel de valores-trabalho
 
 O painel abre em português. O botão **English** no cabeçalho troca o idioma
-com um clique; no modo inglês, o mesmo botão mostra **Português**. As seis
-abas são **Sobre**, **Mapa**, **País**, **Indicadores**, **Download**,
+com um clique; no modo inglês, o mesmo botão mostra **Português**. As sete
+abas são **Sobre**, **Mapa**, **País**, **Indicadores**, **Comércio**, **Download**,
 e **Publicações**. **Como citar** encerra a página Sobre. A engrenagem ao lado do idioma permite
 selecionar as bases disponíveis nos módulos e consultar seus métodos.
 As seleções válidas são mantidas durante a troca de idioma.
@@ -35,6 +35,18 @@ começa com Perfil do país e Downloads em uma repartição própria; em seguida
 os gráficos ocupam no máximo duas colunas. Dados Setoriais fica à direita,
 com um seletor próprio de indicador. Tabelas largas têm
 rolagem horizontal dentro de sua região.
+
+O módulo **Comércio** destaca as transferências de valor: positivo significa
+recebimento pelo país em análise; negativo, cessão. Há ranking, composição com
+grupos contíguos por cor e legenda externa, mapa Equal Earth com setas de transferência, séries,
+tabela e exportação XLSX no padrão dos demais arquivos WLVDB,
+com filtros de parceiro, setor fornecedor, atividades e unidade. A interface usa
+o mesmo fundo ilustrado das páginas analíticas, com os filtros à direita no
+desktop. O gráfico de ganhos e perdas vai, de cima para baixo, do maior envio
+líquido ao maior recebimento líquido, incluindo os grupos de outros parceiros.
+O módulo é carregado somente ao abrir a aba. Os dados bilaterais e os recortes anuais são lidos sob
+demanda, com cache limitado; a inicialização das outras abas não os carrega.
+Preparação dos arquivos locais e convenções estão em [docs/TRADE.md](docs/TRADE.md).
 
 O módulo **Indicadores** recupera `panel_indicators.R` do commit `ebe8168`,
 removido em `c3246bd`: catálogo inicial por grupos com busca, séries por país/base,

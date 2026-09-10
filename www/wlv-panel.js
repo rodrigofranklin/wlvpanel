@@ -9,6 +9,7 @@
   }
   function readNavigation() {
     try {
+      if (new URLSearchParams(window.location.search).get('trade_open') === '1' && navigationLink('trade')) return 'trade';
       var entry = document.cookie.split(';').map(function (item) { return item.trim(); }).find(function (item) {
         return item.indexOf(navigationCookie + '=') === 0;
       });

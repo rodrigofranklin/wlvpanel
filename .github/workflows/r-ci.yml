@@ -21,7 +21,7 @@ jobs:
         with:
           r-version: release
           use-public-rspm: true
-      - name: Install contract test dependencies
+      - name: Install contract and Trade test dependencies
         shell: Rscript --vanilla {0}
         run: |
           repository <- Sys.getenv("RSPM", unset = "")
@@ -29,7 +29,8 @@ jobs:
             repository <- "https://cloud.r-project.org"
           }
           install.packages(
-            c("testthat", "jsonlite", "openssl", "openxlsx", "shiny"),
+            c("testthat", "jsonlite", "openssl", "openxlsx", "shiny",
+              "digest", "fst", "htmltools", "htmlwidgets", "plotly", "leaflet", "DT"),
             repos = c(CRAN = repository)
           )
       - name: Parse contract sources
@@ -59,5 +60,5 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22'
-      - name: Run map JavaScript tests
-        run: node --test tests/manual/test-equal-earth.cjs tests/manual/test-map-update.cjs tests/manual/test-map-years.cjs tests/manual/test-indicators-map-js.cjs
+      - name: Run map and Trade JavaScript tests
+        run: node --test tests/manual/test-equal-earth.cjs tests/manual/test-map-update.cjs tests/manual/test-map-years.cjs tests/manual/test-indicators-map-js.cjs tests/manual/test-trade-js.cjs
