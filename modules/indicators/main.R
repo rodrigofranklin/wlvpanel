@@ -150,8 +150,8 @@ wlv_indicators_subgroup_label <- function(code, lang = "pt") {
 indicators_ui <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
-    shiny::tags$link(rel = "stylesheet", href = "wlv-indicators.css"),
-    shiny::tags$script(src = "wlv-indicators.js"),
+    htmltools::includeCSS("www/wlv-indicators.css"),
+    htmltools::includeScript("www/wlv-indicators.js"),
     shiny::div(class = "wlv-explore-page",
      shiny::div(class = "wlv-indicators wlv-explore-content",
       shiny::h2(shiny::textOutput(ns("title"), inline = TRUE)),

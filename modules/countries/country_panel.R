@@ -109,8 +109,8 @@ country_panel <- tags$main(
   id = "wlv-country-page",
   class = "wlv-country-page wlv-explore-page",
   `aria-labelledby` = "country_page_title",
-  tags$link(rel = "stylesheet", href = "wlv-country.css"),
-  tags$script(src = "wlv-country.js"),
+  htmltools::includeCSS("www/wlv-country.css"),
+  htmltools::includeScript("www/wlv-country.js"),
   div(class = "wlv-explore-content",
   div(class = "wlv-country-page-heading", tags$h1(id = "country_page_title", l("tab_name.country"))),
   conditionalPanel(

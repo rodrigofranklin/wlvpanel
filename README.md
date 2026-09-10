@@ -235,6 +235,15 @@ filtros combinados e idiomas em 1440/390 px, além de cliques na imagem, no nome
 WLVD e navegação por teclado para o site do projeto. Confere também que os
 registros com fontes indisponíveis permaneçam visíveis sem links quebrados.
 
+Os CSS e JavaScript próprios dos módulos são incorporados no HTML durante a
+construção da interface, junto do código R. Isso evita que um navegador reutilize
+estilos anteriores ao `git pull`, cobrindo o fundo ou desmontando o catálogo de
+países. Após atualizar o código, reinicie a aplicação no servidor e recarregue
+as sessões já abertas no navegador para receber a interface nova.
+`tests/manual/check-cached-assets.cjs` simula respostas antigas nos endereços dos
+módulos e confere fundo, botões, colunas e seleção de países em desktop/mobile.
+`WLVPANEL_URL` permite executar essa verificação também em uma URL publicada.
+
 `tests/manual/check-plotly-loading.cjs` verifica a abertura do país após trocar
 o idioma, atrasando uma única carga da biblioteca de gráficos em sete segundos.
 Usa as mesmas variáveis de ambiente do teste de navegador.

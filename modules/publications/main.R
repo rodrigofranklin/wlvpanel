@@ -83,7 +83,7 @@ wlv_publications_filter <- function(entries, search = "", author = "", year = ""
 wlv_publications_ui <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
-    shiny::tags$head(shiny::tags$link(rel = "stylesheet", href = "wlv-publications.css")),
+    shiny::tags$head(htmltools::includeCSS("www/wlv-publications.css")),
     shiny::tags$main(class = "wlv-page wlv-publications",
       shiny::uiOutput(ns("heading")),
       shiny::div(class = "wlv-publications-filters",

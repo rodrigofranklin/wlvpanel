@@ -18,7 +18,7 @@ wlv_download_multilateral_data <- local({
 TABPANEL <- tabPanel(
   l("tab_name.download"),
   value = "download",
-  tags$script(src = "wlv-download.js"),
+  htmltools::includeScript("www/wlv-download.js"),
   div(class = "wlv-explore-page wlv-download-page",
     div(class = "wlv-explore-content",
     tags$h1(l("tab_name.download")),

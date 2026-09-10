@@ -14,6 +14,8 @@ source("utils/i18n.R", encoding = "UTF-8")
 
 # Capturar os assets junto do código R evita que um processo já aberto use
 # um módulo antigo com CSS/JavaScript de uma atualização posterior do disco.
+# Os módulos também incorporam seus CSS/JS na construção da interface para
+# não reutilizar arquivos de uma versão anterior no cache do navegador.
 wlv_shared_assets <- tagList(
   includeCSS("www/wlv-panel.css"),
   includeCSS("www/wlv-explore.css"),
